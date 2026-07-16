@@ -110,68 +110,10 @@ button {
   padding: 20px 0;
 }
 
-.logo-wrap {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.logo {
-  font-size: 56px;
-  line-height: 0.95;
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.logo-line {
-  display: block;
-}
-
-.logo-line--white {
-  color: #fff;
-}
-
-.logo-line--gradient {
-  background: linear-gradient(90deg, #ff9d1f, #ffd60a);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.star {
-  position: absolute;
-  width: 34px;
-  height: 34px;
-  clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
-  filter: blur(0.2px);
-}
-
-.star-pink {
-  top: -18px;
-  right: 40px;
-  background: #ff6fa5;
-  box-shadow: 0 0 20px rgba(255, 111, 165, 0.6);
-}
-
-.star-purple {
-  top: 30px;
-  left: -10px;
-  width: 44px;
-  height: 44px;
-  background: #9b7bf0;
-  box-shadow: 0 0 24px rgba(155, 123, 240, 0.6);
-}
-
-.star-green {
-  bottom: 10px;
-  right: -14px;
-  width: 26px;
-  height: 26px;
-  background: #8fe3b0;
-  box-shadow: 0 0 16px rgba(143, 227, 176, 0.6);
+.logo-img {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
 }
 
 .subtitle {
@@ -251,8 +193,17 @@ button {
   line-height: 1.2;
 }
 
-.card-icon {
-  align-self: flex-end;
+.card-icon-img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 75%;
+  height: auto;
+  pointer-events: none;
+}
+
+.card-shop .card-icon-img {
+  width: 85%;
 }
 
 .badge-dot {
@@ -265,8 +216,3 @@ button {
   background: #ff4d4f;
 }
 
-@media (max-width: 360px) {
-  .logo {
-    font-size: 46px;
-  }
-}
