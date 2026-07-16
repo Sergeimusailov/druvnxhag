@@ -33,5 +33,5 @@ function shuffle(input) {
 }
 
 function drawPlayerSet() {
-  return shuffle(CARD_ROSTER).slice(0, 11);
+  return shuffle(CARD_ROSTER).slice(0, 8);
 }
