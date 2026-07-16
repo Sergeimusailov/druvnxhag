@@ -2,7 +2,7 @@ const TURN_SECONDS = 20;
 const RING_CIRCUMFERENCE = 213.6;
 const POST_MOVE_DELAY = 2000;
 const OVERLAY_DURATION = 3000;
-const FLIGHT_DURATION = 450;
+const FLIGHT_DURATION = 900;
 
 function withInstanceIds(cards, prefix) {
   return cards.map((card, i) => ({ ...card, instanceId: `${prefix}-${i}` }));
@@ -256,6 +256,7 @@ function flyGhost(fromRect, toRect, innerHTML) {
       height: `${fromRect.height}px`,
       margin: '0',
       zIndex: '200',
+      borderRadius: '16%',
       transition: `transform ${FLIGHT_DURATION}ms cubic-bezier(.32,.72,.35,1)`,
     });
     document.body.appendChild(ghost);
