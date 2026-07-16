@@ -1,0 +1,272 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background: #05050a;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 60% at 12% 100%, rgba(224, 122, 30, 0.35), transparent 60%),
+    radial-gradient(80% 40% at 85% 0%, rgba(120, 80, 200, 0.25), transparent 60%),
+    #0b0b0d;
+  padding: 20px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.link-btn {
+  background: none;
+  color: #5b9bff;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.coins-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 6px 14px 6px 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #f2b53c 60%, #c98a1e);
+  display: inline-block;
+}
+
+.secondrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #5b9bff;
+}
+
+.circle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.logo-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  font-size: 56px;
+  line-height: 0.95;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.logo-line {
+  display: block;
+}
+
+.logo-line--white {
+  color: #fff;
+}
+
+.logo-line--gradient {
+  background: linear-gradient(90deg, #ff9d1f, #ffd60a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.star {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+  filter: blur(0.2px);
+}
+
+.star-pink {
+  top: -18px;
+  right: 40px;
+  background: #ff6fa5;
+  box-shadow: 0 0 20px rgba(255, 111, 165, 0.6);
+}
+
+.star-purple {
+  top: 30px;
+  left: -10px;
+  width: 44px;
+  height: 44px;
+  background: #9b7bf0;
+  box-shadow: 0 0 24px rgba(155, 123, 240, 0.6);
+}
+
+.star-green {
+  bottom: 10px;
+  right: -14px;
+  width: 26px;
+  height: 26px;
+  background: #8fe3b0;
+  box-shadow: 0 0 16px rgba(143, 227, 176, 0.6);
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 16px;
+  line-height: 1.4;
+  max-width: 300px;
+}
+
+.btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 600;
+  transition: transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #ffe066, #f6cf3c);
+  color: #1a1400;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #5b9bff;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "shop collection"
+    "shop stats";
+  gap: 12px;
+  height: 220px;
+}
+
+.card {
+  position: relative;
+  background: #17171a;
+  border-radius: 20px;
+  padding: 16px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 0.1s ease;
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+.card-shop {
+  grid-area: shop;
+}
+
+.card-collection {
+  grid-area: collection;
+}
+
+.card-stats {
+  grid-area: stats;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-icon {
+  align-self: flex-end;
+}
+
+.badge-dot {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4d4f;
+}
+
+@media (max-width: 360px) {
+  .logo {
+    font-size: 46px;
+  }
+}
