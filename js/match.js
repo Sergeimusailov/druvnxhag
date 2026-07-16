@@ -1,16 +1,22 @@
-const HAND_START = [
-  { top: 3, left: 9, right: 7, bottom: 0 },
-  { top: 5, left: 0, right: 3, bottom: 8 },
-  { top: 3, left: 3, right: 7, bottom: 2 },
-];
+const TURN_SECONDS = 20;
+const RING_CIRCUMFERENCE = 213.6;
+
+function withInstanceIds(cards, prefix) {
+  return cards.map((card, i) => ({ ...card, instanceId: `${prefix}-${i}` }));
+}
 
 const state = {
   board: new Array(9).fill(null),
-  hand: HAND_START.map((c, i) => ({ ...c, id: i })),
-  nextId: HAND_START.length,
+  yourHand: [],
+  yourDeck: [],
+  oppHand: [],
+  oppDeck: [],
   scoreYou: 0,
   scoreOpp: 0,
-  yourTurn: true,
+  turn: 'you',
+  timeLeft: TURN_SECONDS,
+  timerInterval: null,
+  gameOver: false,
 };
 
 const boardEl = document.getElementById('board');
@@ -19,6 +25,40 @@ const scoreYouEl = document.getElementById('scoreYou');
 const scoreOppEl = document.getElementById('scoreOpp');
 const scoreBarEl = document.getElementById('scoreBar');
 const turnStatusEl = document.getElementById('turnStatus');
+const deckYouEl = document.getElementById('deckYou');
+const deckOppEl = document.getElementById('deckOpp');
+const turnOverlayEl = document.getElementById('turnOverlay');
+const turnOverlayTextEl = document.getElementById('turnOverlayText');
+const timerProgressEl = document.querySelector('.timer-progress');
+
+function neighborsOf(index) {
+  const row = Math.floor(index / 3);
+  const col = index % 3;
+  const result = {};
+  if (row > 0) result.up = index - 3;
+  if (row < 2) result.down = index + 3;
+  if (col > 0) result.left = index - 1;
+  if (col < 2) result.right = index + 1;
+  return result;
+}
+
+function capturesForPlacement(board, index, card, owner) {
+  const n = neighborsOf(index);
+  const captured = [];
+  if (n.up !== undefined && board[n.up] && board[n.up].owner !== owner && card.top > board[n.up].card.bottom) {
+    captured.push(n.up);
+  }
+  if (n.down !== undefined && board[n.down] && board[n.down].owner !== owner && card.bottom > board[n.down].card.top) {
+    captured.push(n.down);
+  }
+  if (n.left !== undefined && board[n.left] && board[n.left].owner !== owner && card.left > board[n.left].card.right) {
+    captured.push(n.left);
+  }
+  if (n.right !== undefined && board[n.right] && board[n.right].owner !== owner && card.right > board[n.right].card.left) {
+    captured.push(n.right);
+  }
+  return captured;
+}
 
 function cardInnerHTML(card) {
   return `
@@ -31,27 +71,27 @@ function cardInnerHTML(card) {
 
 function renderBoard() {
   boardEl.innerHTML = '';
-  state.board.forEach((card, index) => {
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-    cell.dataset.index = index;
-    if (card) {
-      cell.dataset.filled = 'true';
+  state.board.forEach((cell, index) => {
+    const cellEl = document.createElement('div');
+    cellEl.className = 'cell';
+    cellEl.dataset.index = index;
+    if (cell) {
+      cellEl.dataset.filled = 'true';
       const cardEl = document.createElement('div');
-      cardEl.className = 'card owner-you';
-      cardEl.innerHTML = cardInnerHTML(card);
-      cell.appendChild(cardEl);
+      cardEl.className = `card owner-${cell.owner === 'you' ? 'you' : 'opp'}`;
+      cardEl.innerHTML = cardInnerHTML(cell.card);
+      cellEl.appendChild(cardEl);
     }
-    boardEl.appendChild(cell);
+    boardEl.appendChild(cellEl);
   });
 }
 
 function renderHand() {
   handEl.innerHTML = '';
-  state.hand.forEach((card) => {
+  state.yourHand.forEach((card) => {
     const cardEl = document.createElement('div');
     cardEl.className = 'card in-hand';
-    cardEl.dataset.id = card.id;
+    cardEl.dataset.id = card.instanceId;
     cardEl.innerHTML = cardInnerHTML(card);
     makeDraggable(cardEl, card);
     handEl.appendChild(cardEl);
@@ -71,29 +111,170 @@ function renderScore() {
   }
 }
 
+function renderDecks() {
+  deckYouEl.textContent = state.yourDeck.length;
+  deckOppEl.textContent = state.oppDeck.length;
+}
+
+function recomputeScore() {
+  let you = 0;
+  let opp = 0;
+  state.board.forEach((cell) => {
+    if (cell && cell.owner === 'you') you++;
+    if (cell && cell.owner === 'opp') opp++;
+  });
+  state.scoreYou = you;
+  state.scoreOpp = opp;
+}
+
 function renderAll() {
   renderBoard();
   renderHand();
   renderScore();
+  renderDecks();
 }
 
-function placeCard(card, index) {
-  if (!state.yourTurn || state.board[index]) return;
-  state.board[index] = card;
-  state.hand = state.hand.filter((c) => c.id !== card.id);
-  state.scoreYou++;
-  state.yourTurn = false;
+function setTimerRing(fraction) {
+  const offset = RING_CIRCUMFERENCE * (1 - fraction);
+  timerProgressEl.style.strokeDashoffset = offset;
+  timerProgressEl.classList.remove('timer-warn', 'timer-danger');
+  if (fraction <= 0.15) timerProgressEl.classList.add('timer-danger');
+  else if (fraction <= 0.4) timerProgressEl.classList.add('timer-warn');
+}
+
+function stopTimer() {
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+  }
+}
+
+function startTimer() {
+  stopTimer();
+  state.timeLeft = TURN_SECONDS;
+  setTimerRing(1);
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    setTimerRing(Math.max(state.timeLeft, 0) / TURN_SECONDS);
+    if (state.timeLeft <= 0) {
+      stopTimer();
+      onYourTimeout();
+    }
+  }, 1000);
+}
+
+function onYourTimeout() {
+  if (state.gameOver || state.turn !== 'you' || state.yourHand.length === 0) return;
+  const card = state.yourHand[Math.floor(Math.random() * state.yourHand.length)];
+  const emptyCells = state.board.map((c, i) => (c ? null : i)).filter((i) => i !== null);
+  const index = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  placeCard(card, index, 'you');
+}
+
+function showTurnOverlay(text, ms) {
+  return new Promise((resolve) => {
+    turnOverlayTextEl.textContent = text;
+    turnOverlayEl.classList.add('visible');
+    setTimeout(() => {
+      turnOverlayEl.classList.remove('visible');
+      resolve();
+    }, ms);
+  });
+}
+
+function drawCardForOwner(owner) {
+  if (owner === 'you' && state.yourHand.length < 3 && state.yourDeck.length > 0) {
+    state.yourHand.push(state.yourDeck.shift());
+  }
+  if (owner === 'opp' && state.oppHand.length < 3 && state.oppDeck.length > 0) {
+    state.oppHand.push(state.oppDeck.shift());
+  }
+}
+
+function placeCard(card, index, owner) {
+  if (state.gameOver || state.board[index]) return;
+  const captured = capturesForPlacement(state.board, index, card, owner);
+  state.board[index] = { card, owner };
+  captured.forEach((i) => {
+    state.board[i].owner = owner;
+  });
+
+  if (owner === 'you') {
+    state.yourHand = state.yourHand.filter((c) => c.instanceId !== card.instanceId);
+  } else {
+    state.oppHand = state.oppHand.filter((c) => c.instanceId !== card.instanceId);
+  }
+
+  recomputeScore();
   renderAll();
-  turnStatusEl.textContent = 'Ход соперника';
+
+  const filledCount = state.board.filter(Boolean).length;
+  if (filledCount >= 9) {
+    endGame();
+    return;
+  }
+
+  advanceTurn(owner);
+}
+
+function advanceTurn(justMovedOwner) {
+  stopTimer();
+  const nextOwner = justMovedOwner === 'you' ? 'opp' : 'you';
+  drawCardForOwner(justMovedOwner);
+  renderHand();
+  renderDecks();
+
+  turnStatusEl.textContent = nextOwner === 'you' ? 'Ваш ход' : 'Ход соперника';
+  showTurnOverlay(nextOwner === 'you' ? 'Ваш ход' : 'Ход соперника', 900).then(() => {
+    if (state.gameOver) return;
+    state.turn = nextOwner;
+    if (nextOwner === 'opp') {
+      runOpponentTurn();
+    } else {
+      startTimer();
+    }
+  });
+}
+
+function chooseOpponentMove() {
+  let best = null;
+  state.oppHand.forEach((card) => {
+    state.board.forEach((cell, index) => {
+      if (cell) return;
+      const gain = capturesForPlacement(state.board, index, card, 'opp').length;
+      if (!best || gain > best.gain || (gain === best.gain && Math.random() < 0.3)) {
+        best = { card, index, gain };
+      }
+    });
+  });
+  return best;
+}
+
+function runOpponentTurn() {
   setTimeout(() => {
-    state.yourTurn = true;
-    turnStatusEl.textContent = 'Ваш ход';
-  }, 900);
+    if (state.gameOver) return;
+    const move = chooseOpponentMove();
+    if (move) {
+      placeCard(move.card, move.index, 'opp');
+    }
+  }, 1000);
+}
+
+function endGame() {
+  state.gameOver = true;
+  stopTimer();
+  let text = 'Ничья';
+  if (state.scoreYou > state.scoreOpp) text = 'Победа!';
+  else if (state.scoreOpp > state.scoreYou) text = 'Поражение';
+  turnStatusEl.textContent = 'Матч завершён';
+  turnOverlayTextEl.textContent = `${text}\n${state.scoreYou} : ${state.scoreOpp}`;
+  turnOverlayTextEl.style.whiteSpace = 'pre-line';
+  turnOverlayEl.classList.add('visible');
 }
 
 function makeDraggable(cardEl, card) {
   cardEl.addEventListener('pointerdown', (e) => {
-    if (!state.yourTurn) return;
+    if (state.turn !== 'you' || state.gameOver) return;
     e.preventDefault();
 
     const rect = cardEl.getBoundingClientRect();
@@ -130,7 +311,7 @@ function makeDraggable(cardEl, card) {
       const el = document.elementFromPoint(ev.clientX, ev.clientY);
       const cell = el && el.closest('.cell');
       if (cell && cell.dataset.filled !== 'true') {
-        placeCard(card, parseInt(cell.dataset.index, 10));
+        placeCard(card, parseInt(cell.dataset.index, 10), 'you');
       }
     }
 
@@ -139,6 +320,20 @@ function makeDraggable(cardEl, card) {
   });
 }
 
+function initGame() {
+  const yourSet = withInstanceIds(drawPlayerSet(), 'you');
+  const oppSet = withInstanceIds(drawPlayerSet(), 'opp');
+
+  state.yourHand = yourSet.slice(0, 3);
+  state.yourDeck = yourSet.slice(3);
+  state.oppHand = oppSet.slice(0, 3);
+  state.oppDeck = oppSet.slice(3);
+
+  renderAll();
+  turnStatusEl.textContent = 'Ваш ход';
+  startTimer();
+}
+
 document.getElementById('infoBtn').addEventListener('click', () => {});
 
-renderAll();
+initGame();
