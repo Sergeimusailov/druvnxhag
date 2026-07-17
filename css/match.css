@@ -342,7 +342,7 @@ a {
   border-radius: 12px;
   background: #3a3a42;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.55);
+  color: #252525;
 }
 
 .card.owner-you {
@@ -362,7 +362,7 @@ a {
 }
 
 .card.in-hand {
-  color: rgba(255, 255, 255, 0.55);
+  color: #252525;
   background: #333339;
 }
 
@@ -411,7 +411,7 @@ a {
 .card .num-left,
 .card .num-right {
   top: 41.379%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   font-size: 14px;
 }
 
