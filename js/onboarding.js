@@ -461,6 +461,7 @@ function endGame() {
 /* ---------------- Onboarding script engine ---------------- */
 
 const onbBlockerEl = document.getElementById('onbBlocker');
+const onbScrimEl = document.getElementById('onbScrim');
 const spotlightEl = document.getElementById('spotlight');
 const tooltipEl = document.getElementById('tooltip');
 const tooltipTailEl = document.getElementById('tooltipTail');
@@ -606,11 +607,15 @@ function positionTooltip(el) {
   if (!el) {
     tooltipTailEl.style.display = 'none';
     tooltipEl.classList.remove('tooltip-above');
+    tooltipEl.classList.add('tooltip-centered');
     tooltipEl.style.left = `${(window.innerWidth - width) / 2}px`;
-    tooltipEl.style.top = '132px';
+    tooltipEl.style.top = '50%';
+    onbScrimEl.classList.add('active');
     return;
   }
 
+  onbScrimEl.classList.remove('active');
+  tooltipEl.classList.remove('tooltip-centered');
   tooltipTailEl.style.display = '';
   const r = el.getBoundingClientRect();
   const targetCenterX = r.left + r.width / 2;
@@ -661,6 +666,7 @@ function showTooltip(stepDef, stepNumber, targetEl) {
 function hideTooltip() {
   tooltipEl.classList.remove('visible');
   onbBlockerEl.classList.remove('active');
+  onbScrimEl.classList.remove('active');
   tooltipTarget = null;
 }
 

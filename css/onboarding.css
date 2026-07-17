@@ -15,6 +15,20 @@
   pointer-events: all;
 }
 
+.onb-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 295;
+  background: rgba(0, 0, 0, 0.68);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.onb-scrim.active {
+  opacity: 1;
+}
+
 .spotlight {
   position: fixed;
   border-radius: 16px;
@@ -125,6 +139,10 @@
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
   border-bottom: 12px solid #ffdd2d;
+}
+
+.tooltip.tooltip-centered {
+  transform: translateY(-50%);
 }
 
 .tooltip.tooltip-above .tooltip-tail {
