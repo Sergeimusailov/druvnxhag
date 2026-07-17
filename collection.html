@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Коллекция и колода — Арена Карт</title>
+  <link rel="stylesheet" href="css/collection.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute">
+    <defs>
+      <mask id="card-mask-def" maskUnits="userSpaceOnUse" x="0" y="0" width="118" height="118" fill="black">
+        <rect fill="white" width="118" height="118"/>
+        <path d="M105 1C111.627 1 117 6.37258 117 13V105C117 111.627 111.627 117 105 117H13C6.37258 117 1 111.627 1 105V13C1 6.37258 6.37258 1 13 1H105ZM13 9C10.7909 9 9 10.7909 9 13V45.664C9 45.8502 9.14978 46.0017 9.33594 46.0039C16.3604 46.1821 22 51.9326 22 59C22 65.5022 17.2264 70.8894 10.9926 71.8483C9.90082 72.0162 9 72.8954 9 74V105C9 107.209 10.7909 109 13 109H44C45.1046 109 45.9838 108.099 46.1517 107.007C47.1106 100.774 52.4978 96 59 96C65.5022 96 70.8894 100.774 71.8483 107.007C72.0162 108.099 72.8954 109 74 109H105C107.209 109 109 107.209 109 105V74C109 72.8954 108.099 72.0162 107.007 71.8483C100.774 70.8894 96 65.5022 96 59C96 52.4978 100.774 47.1106 107.007 46.1517C108.099 45.9838 109 45.1046 109 44V13C109 10.7909 107.209 9 105 9H72.336C72.1498 9 71.9983 9.14978 71.9961 9.33594C71.8179 16.3604 66.0674 22 59 22C51.9326 22 46.1821 16.3604 46.0039 9.33594C46.0017 9.14978 45.8502 9 45.664 9H13Z"/>
+      </mask>
+    </defs>
+  </svg>
+
+  <div class="saved-banner" id="savedBanner">Колода сохранена</div>
+
+  <main class="collection">
+    <div class="collection-topbar">
+      <a class="icon-btn back-btn" href="index.html" aria-label="Назад">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5 L7 12 L15 19" stroke="#428bf9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <div class="collection-title">Коллекция и колода</div>
+      <button class="icon-btn info-btn" aria-label="Подсказки">i</button>
+    </div>
+
+    <div class="deck-panel">
+      <div class="deck-panel-header">
+        <span class="deck-panel-title">Колода</span>
+        <span class="deck-warning" id="deckWarning">⚠️ Заполните колоду</span>
+      </div>
+      <div class="deck-grid" id="deckGrid"></div>
+    </div>
+
+    <div class="collection-grid" id="collectionGrid"></div>
+
+    <button class="save-btn" id="saveBtn">Сохранить</button>
+  </main>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <div class="sheet" id="cardSheet">
+    <div class="sheet-bar"></div>
+    <button class="sheet-close" id="sheetClose" aria-label="Закрыть">×</button>
+    <div class="sheet-card-wrap">
+      <div class="card sheet-card" id="sheetCard"></div>
+    </div>
+    <p class="sheet-desc" id="sheetDesc"></p>
+    <div class="sheet-actions">
+      <button class="sheet-btn" id="sheetActionBtn"></button>
+      <p class="sheet-helper" id="sheetHelper"></p>
+    </div>
+  </div>
+
+  <script src="js/cards.js"></script>
+  <script src="js/collection.js"></script>
+</body>
+</html>
