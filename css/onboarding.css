@@ -1,0 +1,140 @@
+/* Onboarding overlay layer (spotlight + coach mark), layered on top of match.css */
+
+.onb-blocker {
+  position: fixed;
+  inset: 0;
+  z-index: 290;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.onb-blocker.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.spotlight {
+  position: fixed;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.68);
+  border: 2px solid #ffdd2d;
+  pointer-events: none;
+  z-index: 300;
+  opacity: 0;
+  transition: left 0.35s cubic-bezier(0.32, 0.72, 0.35, 1),
+    top 0.35s cubic-bezier(0.32, 0.72, 0.35, 1),
+    width 0.35s cubic-bezier(0.32, 0.72, 0.35, 1),
+    height 0.35s cubic-bezier(0.32, 0.72, 0.35, 1),
+    opacity 0.25s ease;
+}
+
+.spotlight.visible {
+  opacity: 1;
+}
+
+.spotlight.pulse {
+  animation: spotlightPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.68), 0 0 0 0 rgba(255, 221, 45, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.68), 0 0 0 10px rgba(255, 221, 45, 0);
+  }
+}
+
+.hand .card.onb-inactive {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hand .card.onb-active-card {
+  animation: onbCardPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes onbCardPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 221, 45, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 221, 45, 0);
+  }
+}
+
+.coach {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 140%);
+  width: calc(100% - 36px);
+  max-width: 394px;
+  background: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 16px 20px 20px;
+  z-index: 310;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.coach.visible {
+  transform: translate(-50%, 0);
+}
+
+.coach-step {
+  font-size: 12px;
+  font-weight: 600;
+  color: #428bf9;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.coach-text {
+  font-size: 15px;
+  line-height: 1.45;
+  color: #f6f7f8;
+}
+
+.coach-hint {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffdd2d;
+}
+
+.coach-hint.visible {
+  display: flex;
+}
+
+.coach-hint::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffdd2d;
+  animation: dotPulse 1.4s infinite;
+}
+
+.coach-btn {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  background: #ffdd2d;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.coach-btn.hidden {
+  display: none;
+}
