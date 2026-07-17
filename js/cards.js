@@ -23,6 +23,24 @@ const CARD_ROSTER = [
   { name: 'Цунами', top: 4, left: 7, right: 5, bottom: 8 },
 ];
 
+const CARD_PIC_POOL = [
+  'assets/card-pic__01.png',
+  'assets/card-pic__02.png',
+  'assets/card-pic__03.png',
+  'assets/card-pic__04.png',
+  'assets/card-pic__05.png',
+  'assets/card-pic__06.png',
+  'assets/card-pic__07.png',
+  'assets/card-pic__08.png',
+  'assets/card-pic__09.png',
+];
+
+CARD_ROSTER.forEach((card) => {
+  if (!card.pic) {
+    card.pic = CARD_PIC_POOL[Math.floor(Math.random() * CARD_PIC_POOL.length)];
+  }
+});
+
 function shuffle(input) {
   const arr = [...input];
   for (let i = arr.length - 1; i > 0; i--) {

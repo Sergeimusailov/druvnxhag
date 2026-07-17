@@ -342,7 +342,7 @@ a {
   border-radius: 12px;
   background: #3a3a42;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .card.owner-you {
@@ -362,7 +362,7 @@ a {
 }
 
 .card.in-hand {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.55);
   background: #333339;
 }
 
@@ -401,26 +401,26 @@ a {
 }
 
 .card .num-top {
-  top: 8px;
+  top: 0%;
 }
 
 .card .num-bottom {
-  bottom: 8px;
+  top: 82.759%;
 }
 
 .card .num-left,
 .card .num-right {
-  top: 50%;
-  transform: translateY(-50%);
+  top: 41.379%;
+  transform: translate(-50%, -50%);
   font-size: 14px;
 }
 
 .card .num-left {
-  left: 10px;
+  left: 8.621%;
 }
 
 .card .num-right {
-  right: 10px;
+  left: 91.379%;
 }
 
 /* Hand */
