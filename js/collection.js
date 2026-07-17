@@ -1,3 +1,5 @@
+const LONG_PRESS_MS = 500;
+
 const deckGridEl = document.getElementById('deckGrid');
 const collectionGridEl = document.getElementById('collectionGrid');
 const deckWarningEl = document.getElementById('deckWarning');
@@ -13,9 +15,60 @@ const sheetActionBtnEl = document.getElementById('sheetActionBtn');
 const sheetHelperEl = document.getElementById('sheetHelper');
 
 let deckNames = getSavedDeckNames().filter((name) => CARD_ROSTER.some((c) => c.name === name));
+let savedDeckNames = [...deckNames];
 
 function isInDeck(name) {
   return deckNames.includes(name);
+}
+
+function isDeckDirty() {
+  if (deckNames.length !== savedDeckNames.length) return true;
+  const a = [...deckNames].sort();
+  const b = [...savedDeckNames].sort();
+  return a.some((name, i) => name !== b[i]);
+}
+
+function attachCardInteractions(el, { onTap, onLongPress }) {
+  let timer = null;
+  let longPressed = false;
+
+  function start() {
+    longPressed = false;
+    el.classList.add('pressing');
+    timer = setTimeout(() => {
+      longPressed = true;
+      el.classList.remove('pressing');
+      onLongPress();
+    }, LONG_PRESS_MS);
+  }
+
+  function cancelPress() {
+    clearTimeout(timer);
+    el.classList.remove('pressing');
+  }
+
+  el.addEventListener('pointerdown', start);
+  el.addEventListener('pointerup', cancelPress);
+  el.addEventListener('pointerleave', cancelPress);
+  el.addEventListener('pointercancel', cancelPress);
+  el.addEventListener('click', () => {
+    if (longPressed) {
+      longPressed = false;
+      return;
+    }
+    onTap();
+  });
+}
+
+function removeFromDeck(name) {
+  deckNames = deckNames.filter((n) => n !== name);
+  renderAll();
+}
+
+function addToDeck(name) {
+  if (deckNames.length >= DECK_SIZE || isInDeck(name)) return;
+  deckNames.push(name);
+  renderAll();
 }
 
 function renderDeck() {
@@ -27,7 +80,10 @@ function renderDeck() {
       const card = CARD_ROSTER.find((c) => c.name === name);
       slotEl.className = 'deck-slot card';
       slotEl.innerHTML = cardInnerHTML(card);
-      slotEl.addEventListener('click', () => openSheet(card, 'remove'));
+      attachCardInteractions(slotEl, {
+        onTap: () => openSheet(card, 'remove'),
+        onLongPress: () => removeFromDeck(card.name),
+      });
     } else {
       slotEl.className = 'deck-slot empty';
     }
@@ -35,7 +91,7 @@ function renderDeck() {
   }
 
   deckWarningEl.classList.toggle('hidden', deckNames.length >= DECK_SIZE);
-  saveBtnEl.classList.toggle('visible', deckNames.length === DECK_SIZE);
+  saveBtnEl.classList.toggle('visible', deckNames.length === DECK_SIZE && isDeckDirty());
 }
 
 function renderCollection() {
@@ -44,8 +100,12 @@ function renderCollection() {
     const slotEl = document.createElement('div');
     slotEl.className = `collection-slot card${isInDeck(card.name) ? ' in-deck' : ''}`;
     slotEl.innerHTML = cardInnerHTML(card);
-    slotEl.addEventListener('click', () => {
-      openSheet(card, isInDeck(card.name) ? 'remove' : 'add');
+    attachCardInteractions(slotEl, {
+      onTap: () => openSheet(card, isInDeck(card.name) ? 'remove' : 'add'),
+      onLongPress: () => {
+        if (isInDeck(card.name)) removeFromDeck(card.name);
+        else addToDeck(card.name);
+      },
     });
     collectionGridEl.appendChild(slotEl);
   });
@@ -65,8 +125,7 @@ function openSheet(card, mode) {
     sheetActionBtnEl.className = 'sheet-btn remove';
     sheetHelperEl.classList.remove('visible');
     sheetActionBtnEl.onclick = () => {
-      deckNames = deckNames.filter((name) => name !== card.name);
-      renderAll();
+      removeFromDeck(card.name);
       closeSheet();
     };
   } else if (deckNames.length >= DECK_SIZE) {
@@ -80,8 +139,7 @@ function openSheet(card, mode) {
     sheetActionBtnEl.className = 'sheet-btn add';
     sheetHelperEl.classList.remove('visible');
     sheetActionBtnEl.onclick = () => {
-      deckNames.push(card.name);
-      renderAll();
+      addToDeck(card.name);
       closeSheet();
     };
   }
@@ -101,6 +159,8 @@ sheetBackdropEl.addEventListener('click', closeSheet);
 saveBtnEl.addEventListener('click', () => {
   if (deckNames.length !== DECK_SIZE) return;
   saveDeckNames(deckNames);
+  savedDeckNames = [...deckNames];
+  renderAll();
   savedBannerEl.classList.add('visible');
   setTimeout(() => {
     savedBannerEl.classList.remove('visible');
