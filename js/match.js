@@ -1,8 +1,11 @@
 const TURN_SECONDS = 20;
 const RING_CIRCUMFERENCE = 213.6;
-const POST_MOVE_DELAY = 2000;
+const POST_MOVE_DELAY = 1000;
 const OVERLAY_DURATION = 3000;
 const FLIGHT_DURATION = 900;
+const OPP_THINK_MIN = 3000;
+const OPP_THINK_MAX = 6000;
+const OPP_THINKING_MESSAGES = ['Думает', 'Перебирает карты', 'Сравнивает числа'];
 
 function withInstanceIds(cards, prefix) {
   return cards.map((card, i) => ({ ...card, instanceId: `${prefix}-${i}` }));
@@ -37,6 +40,8 @@ const deckOppEl = document.getElementById('deckOpp');
 const turnOverlayEl = document.getElementById('turnOverlay');
 const turnOverlayTextEl = document.getElementById('turnOverlayText');
 const timerProgressEl = document.querySelector('.timer-progress');
+const oppStatusEl = document.getElementById('oppStatus');
+const oppStatusTextEl = document.getElementById('oppStatusText');
 
 function neighborsOf(index) {
   const row = Math.floor(index / 3);
@@ -401,10 +406,27 @@ function chooseOpponentMove() {
   return best;
 }
 
+function startOppThinkingStatus() {
+  let i = 0;
+  oppStatusTextEl.textContent = OPP_THINKING_MESSAGES[i];
+  oppStatusEl.classList.add('visible');
+  const interval = setInterval(() => {
+    i = (i + 1) % OPP_THINKING_MESSAGES.length;
+    oppStatusTextEl.textContent = OPP_THINKING_MESSAGES[i];
+  }, 1300);
+  return () => {
+    clearInterval(interval);
+    oppStatusEl.classList.remove('visible');
+  };
+}
+
 async function runOpponentTurn() {
   drawCardForOwner('opp');
   renderDecks();
-  await wait(700);
+  const stopThinking = startOppThinkingStatus();
+  const thinkTime = OPP_THINK_MIN + Math.random() * (OPP_THINK_MAX - OPP_THINK_MIN);
+  await wait(thinkTime);
+  stopThinking();
   if (state.gameOver) return;
   const move = chooseOpponentMove();
   if (move) {
@@ -429,8 +451,10 @@ async function turnTransition(justMovedOwner) {
   state.turn = nextOwner;
   turnStatusEl.textContent = nextOwner === 'you' ? 'Ваш ход' : 'Ход соперника';
   if (nextOwner === 'opp') {
+    handEl.classList.add('disabled');
     runOpponentTurn();
   } else {
+    handEl.classList.remove('disabled');
     refillYourHandWithFlight();
     startTimer();
   }
