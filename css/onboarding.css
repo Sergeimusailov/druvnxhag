@@ -65,6 +65,33 @@
   }
 }
 
+.drag-trail {
+  position: fixed;
+  z-index: 305;
+  background: linear-gradient(90deg, rgba(255, 221, 45, 0.1), rgba(255, 221, 45, 0.85));
+  border: 2px solid #ffdd2d;
+  border-radius: 999px;
+  box-shadow: 0 0 16px 4px rgba(255, 221, 45, 0.55);
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.drag-trail.drag-trail-pulse {
+  animation: dragTapPulse 0.7s ease-out;
+}
+
+@keyframes dragTapPulse {
+  0% {
+    box-shadow: 0 0 16px 4px rgba(255, 221, 45, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(255, 221, 45, 0.55), 0 0 0 14px rgba(255, 221, 45, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 16px 4px rgba(255, 221, 45, 0.55), 0 0 0 26px rgba(255, 221, 45, 0);
+  }
+}
+
 .tooltip {
   position: fixed;
   z-index: 310;

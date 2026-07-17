@@ -559,6 +559,7 @@ function makeDraggable(cardEl, card) {
 
 async function handleScriptedDrop(card, index) {
   expectedDrag = null;
+  stopDragHint();
   hideSpotlight();
   hideTooltip();
   commitPlacement(card, index, 'you');
@@ -668,6 +669,77 @@ window.addEventListener('resize', () => {
   refreshTooltipTarget();
 });
 
+let dragHintCancel = null;
+
+function startDragHint(cardEl, cellEl) {
+  stopDragHint();
+  const trailEl = document.createElement('div');
+  trailEl.className = 'drag-trail';
+  document.body.appendChild(trailEl);
+
+  let cancelled = false;
+  dragHintCancel = () => {
+    cancelled = true;
+    trailEl.remove();
+  };
+
+  const size = 24;
+
+  async function loop() {
+    while (!cancelled) {
+      if (!cardEl.isConnected || !cellEl.isConnected) break;
+      const cardRect = cardEl.getBoundingClientRect();
+      const cellRect = cellEl.getBoundingClientRect();
+      const from = { x: cardRect.left + cardRect.width / 2, y: cardRect.top + cardRect.height / 2 };
+      const to = { x: cellRect.left + cellRect.width / 2, y: cellRect.top + cellRect.height / 2 };
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const distance = Math.hypot(dx, dy);
+      const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+      trailEl.style.top = `${to.y - size / 2}px`;
+      trailEl.style.height = `${size}px`;
+      trailEl.style.transformOrigin = '100% 50%';
+      trailEl.style.transform = `rotate(${angle}deg)`;
+      trailEl.style.opacity = '1';
+      trailEl.style.width = `${distance}px`;
+      trailEl.style.left = `${to.x - distance}px`;
+
+      const obj = { len: distance };
+      await new Promise((resolve) => {
+        anime({
+          targets: obj,
+          len: size,
+          duration: 650,
+          easing: 'easeInOutQuad',
+          update: () => {
+            trailEl.style.width = `${obj.len}px`;
+            trailEl.style.left = `${to.x - obj.len}px`;
+          },
+          complete: resolve,
+        });
+      });
+      if (cancelled) break;
+
+      trailEl.classList.add('drag-trail-pulse');
+      await wait(700);
+      if (cancelled) break;
+      trailEl.classList.remove('drag-trail-pulse');
+      trailEl.style.opacity = '0';
+      await wait(300);
+    }
+  }
+
+  loop();
+}
+
+function stopDragHint() {
+  if (dragHintCancel) {
+    dragHintCancel();
+    dragHintCancel = null;
+  }
+}
+
 const STEPS = [
   { kind: 'info', text: 'Добро пожаловать в Арену Карт! Покажем, как проходит матч.' },
   { kind: 'info', text: 'Вы играете против ИИ-соперника — Константина. У него тоже есть своя колода карт.', target: '.player-opponent' },
@@ -693,6 +765,7 @@ async function runStep(i) {
   const step = STEPS[i];
 
   if (step.kind === 'info') {
+    stopDragHint();
     onbBlockerEl.classList.add('active');
     const targetEl = step.target ? document.querySelector(step.target) : null;
     positionSpotlight(targetEl);
@@ -700,20 +773,23 @@ async function runStep(i) {
     tooltipBtnEl.onclick = () => advanceStep();
   } else if (step.kind === 'drag') {
     onbBlockerEl.classList.remove('active');
+    hideSpotlight();
     const card = state.yourHand.find((c) => c.name === step.cardName);
     expectedDrag = card ? { instanceId: card.instanceId, index: step.targetIndex } : null;
     applyHandActiveState();
     const cellEl = boardEl.querySelector(`.cell[data-index="${step.targetIndex}"]`);
-    positionSpotlight(cellEl);
-    spotlightEl.classList.add('pulse');
+    const cardEl = card ? handEl.querySelector(`.card[data-id="${card.instanceId}"]`) : null;
+    if (cardEl && cellEl) startDragHint(cardEl, cellEl);
     showTooltip(step, i + 1, cellEl);
   } else if (step.kind === 'auto-opp-move') {
+    stopDragHint();
     hideTooltip();
     hideSpotlight();
     const card = state.oppHand.find((c) => c.name === step.cardName);
     await performScriptedOppMove(card, step.index);
     advanceStep();
   } else if (step.kind === 'final') {
+    stopDragHint();
     onbBlockerEl.classList.add('active');
     positionSpotlight(null);
     showTooltip(step, i + 1, null);
