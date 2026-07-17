@@ -10,7 +10,7 @@
   <main class="match">
     <div class="match-topbar">
       <a class="icon-btn back-btn" href="index.html" aria-label="Назад">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5 L7 12 L15 19" stroke="#5b9bff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5 L7 12 L15 19" stroke="#428bf9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
       <div class="match-title">
         <div class="match-title-text">Матч</div>
@@ -44,16 +44,20 @@
       </div>
     </div>
 
-    <div class="score-row">
-      <span class="score-num score-you" id="scoreYou">0</span>
-      <span class="score-label">Клеток занято</span>
-      <span class="score-num score-opp" id="scoreOpp">0</span>
-    </div>
-    <div class="score-bar" id="scoreBar"></div>
+    <div class="field-panel">
+      <div class="score-panel">
+        <div class="score-row">
+          <span class="score-num score-you" id="scoreYou">0</span>
+          <span class="score-label">Клеток занято</span>
+          <span class="score-num score-opp" id="scoreOpp">0</span>
+        </div>
+        <div class="score-bar" id="scoreBar"></div>
+      </div>
 
-    <div class="board-wrap">
-      <div class="board" id="board"></div>
-      <div class="turn-overlay" id="turnOverlay"><span id="turnOverlayText"></span></div>
+      <div class="board-wrap">
+        <div class="board" id="board"></div>
+        <div class="turn-overlay" id="turnOverlay"><span id="turnOverlayText"></span></div>
+      </div>
     </div>
 
     <div class="hand" id="hand"></div>

@@ -78,7 +78,7 @@ function cardInnerHTML(card) {
 }
 
 function spawnParticles(cellEl, owner) {
-  const color = owner === 'you' ? '#5b9bff' : '#ff5b5b';
+  const color = owner === 'you' ? '#2265d3' : '#e32d2d';
   const count = 10;
   for (let i = 0; i < count; i++) {
     const p = document.createElement('span');
