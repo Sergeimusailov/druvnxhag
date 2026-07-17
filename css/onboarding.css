@@ -65,76 +65,108 @@
   }
 }
 
-.coach {
+.tooltip {
   position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translate(-50%, 140%);
-  width: calc(100% - 36px);
-  max-width: 394px;
-  background: #1c1c1e;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 16px 20px 20px;
   z-index: 310;
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1);
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+  transition: opacity 0.2s ease, left 0.3s cubic-bezier(0.32, 0.72, 0.35, 1),
+    top 0.3s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
-.coach.visible {
-  transform: translate(-50%, 0);
+.tooltip.visible {
+  opacity: 1;
+  pointer-events: all;
 }
 
-.coach-step {
-  font-size: 12px;
-  font-weight: 600;
-  color: #428bf9;
+.tooltip-tail {
+  position: absolute;
+  top: -11px;
+  width: 24px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.tooltip-tail::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 12px solid #ffdd2d;
+}
+
+.tooltip.tooltip-above .tooltip-tail {
+  top: auto;
+  bottom: -11px;
+}
+
+.tooltip.tooltip-above .tooltip-tail::before {
+  bottom: auto;
+  top: 0;
+  border-bottom: none;
+  border-top: 12px solid #ffdd2d;
+}
+
+.tooltip-body {
+  background: #ffdd2d;
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+}
+
+.tooltip-step {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(51, 51, 51, 0.55);
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
-.coach-text {
+.tooltip-text {
   font-size: 15px;
-  line-height: 1.45;
-  color: #f6f7f8;
+  line-height: 1.4;
+  color: #333;
 }
 
-.coach-hint {
+.tooltip-hint {
   display: none;
   align-items: center;
   gap: 6px;
   margin-top: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #ffdd2d;
+  color: #2c2c2e;
 }
 
-.coach-hint.visible {
+.tooltip-hint.visible {
   display: flex;
 }
 
-.coach-hint::before {
+.tooltip-hint::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #ffdd2d;
+  background: #2c2c2e;
   animation: dotPulse 1.4s infinite;
 }
 
-.coach-btn {
-  display: block;
-  width: 100%;
-  margin-top: 14px;
-  background: #ffdd2d;
-  color: #333;
-  font-size: 16px;
+.tooltip-btn {
+  display: inline-flex;
+  margin-top: 12px;
+  background: #2c2c2e;
+  color: #fff;
+  font-size: 13px;
   font-weight: 600;
-  padding: 14px;
-  border-radius: 14px;
-  text-align: center;
+  padding: 8px 18px;
+  border-radius: 100px;
 }
 
-.coach-btn.hidden {
+.tooltip-btn.hidden {
   display: none;
 }

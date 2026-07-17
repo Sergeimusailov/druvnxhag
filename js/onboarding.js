@@ -462,11 +462,12 @@ function endGame() {
 
 const onbBlockerEl = document.getElementById('onbBlocker');
 const spotlightEl = document.getElementById('spotlight');
-const coachEl = document.getElementById('coach');
-const coachStepEl = document.getElementById('coachStep');
-const coachTextEl = document.getElementById('coachText');
-const coachHintEl = document.getElementById('coachHint');
-const coachBtnEl = document.getElementById('coachBtn');
+const tooltipEl = document.getElementById('tooltip');
+const tooltipTailEl = document.getElementById('tooltipTail');
+const tooltipStepEl = document.getElementById('tooltipStep');
+const tooltipTextEl = document.getElementById('tooltipText');
+const tooltipHintEl = document.getElementById('tooltipHint');
+const tooltipBtnEl = document.getElementById('tooltipBtn');
 
 let scriptMode = true;
 let currentStep = -1;
@@ -559,7 +560,7 @@ function makeDraggable(cardEl, card) {
 async function handleScriptedDrop(card, index) {
   expectedDrag = null;
   hideSpotlight();
-  hideCoach();
+  hideTooltip();
   commitPlacement(card, index, 'you');
   await wait(POST_MOVE_DELAY);
   advanceStep();
@@ -591,12 +592,81 @@ function hideSpotlight() {
   spotlightTarget = null;
 }
 
-function hideCoach() {
-  coachEl.classList.remove('visible');
-  onbBlockerEl.classList.remove('active');
+let tooltipTarget = null; // element the tooltip is currently anchored to (null = centered fallback)
+
+function positionTooltip(el) {
+  tooltipTarget = el || null;
+  const margin = 16;
+  const gap = 14;
+  const maxWidth = 320;
+  const width = Math.min(maxWidth, window.innerWidth - margin * 2);
+  tooltipEl.style.width = `${width}px`;
+
+  if (!el) {
+    tooltipTailEl.style.display = 'none';
+    tooltipEl.classList.remove('tooltip-above');
+    tooltipEl.style.left = `${(window.innerWidth - width) / 2}px`;
+    tooltipEl.style.top = '132px';
+    return;
+  }
+
+  tooltipTailEl.style.display = '';
+  const r = el.getBoundingClientRect();
+  const targetCenterX = r.left + r.width / 2;
+
+  let left = targetCenterX - width / 2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - margin - width));
+  tooltipEl.style.left = `${left}px`;
+
+  const tailWidth = 24;
+  let tailLeft = targetCenterX - left - tailWidth / 2;
+  tailLeft = Math.max(12, Math.min(tailLeft, width - 12 - tailWidth));
+  tooltipTailEl.style.left = `${tailLeft}px`;
+
+  const spaceBelow = window.innerHeight - r.bottom;
+  const spaceAbove = r.top;
+  if (spaceBelow >= spaceAbove) {
+    tooltipEl.classList.remove('tooltip-above');
+    tooltipEl.style.top = `${r.bottom + gap}px`;
+  } else {
+    tooltipEl.classList.add('tooltip-above');
+    const bubbleHeight = tooltipEl.offsetHeight;
+    tooltipEl.style.top = `${r.top - gap - bubbleHeight}px`;
+  }
 }
 
-window.addEventListener('resize', refreshSpotlightTarget);
+function refreshTooltipTarget() {
+  if (tooltipEl.classList.contains('visible')) {
+    positionTooltip(tooltipTarget && tooltipTarget.isConnected ? tooltipTarget : null);
+  }
+}
+
+function showTooltip(stepDef, stepNumber, targetEl) {
+  tooltipStepEl.textContent = `Шаг ${stepNumber} из ${STEPS.length}`;
+  tooltipTextEl.textContent = stepDef.text;
+  if (stepDef.kind === 'drag') {
+    tooltipHintEl.textContent = 'Перетащите карту, чтобы продолжить';
+    tooltipHintEl.classList.add('visible');
+    tooltipBtnEl.classList.add('hidden');
+  } else {
+    tooltipHintEl.classList.remove('visible');
+    tooltipBtnEl.classList.remove('hidden');
+    tooltipBtnEl.textContent = stepDef.kind === 'final' ? 'Начать игру' : 'Продолжить';
+  }
+  positionTooltip(targetEl);
+  tooltipEl.classList.add('visible');
+}
+
+function hideTooltip() {
+  tooltipEl.classList.remove('visible');
+  onbBlockerEl.classList.remove('active');
+  tooltipTarget = null;
+}
+
+window.addEventListener('resize', () => {
+  refreshSpotlightTarget();
+  refreshTooltipTarget();
+});
 
 const STEPS = [
   { kind: 'info', text: 'Добро пожаловать в Арену Карт! Покажем, как проходит матч.' },
@@ -617,21 +687,6 @@ const STEPS = [
   { kind: 'final', text: 'Вы знаете основы! Доиграйте матч самостоятельно — дальше игра идёт в реальном времени.' },
 ];
 
-function updateCoachChrome(stepDef, stepNumber) {
-  coachStepEl.textContent = `Шаг ${stepNumber} из ${STEPS.length}`;
-  coachTextEl.textContent = stepDef.text;
-  if (stepDef.kind === 'drag') {
-    coachHintEl.textContent = 'Перетащите карту, чтобы продолжить';
-    coachHintEl.classList.add('visible');
-    coachBtnEl.classList.add('hidden');
-  } else {
-    coachHintEl.classList.remove('visible');
-    coachBtnEl.classList.remove('hidden');
-    coachBtnEl.textContent = stepDef.kind === 'final' ? 'Начать игру' : 'Продолжить';
-  }
-  coachEl.classList.add('visible');
-}
-
 async function runStep(i) {
   currentStep = i;
   if (i >= STEPS.length) return;
@@ -639,32 +694,30 @@ async function runStep(i) {
 
   if (step.kind === 'info') {
     onbBlockerEl.classList.add('active');
-    updateCoachChrome(step, i + 1);
-    positionSpotlight(step.target ? document.querySelector(step.target) : null);
+    const targetEl = step.target ? document.querySelector(step.target) : null;
+    positionSpotlight(targetEl);
+    showTooltip(step, i + 1, targetEl);
+    tooltipBtnEl.onclick = () => advanceStep();
   } else if (step.kind === 'drag') {
     onbBlockerEl.classList.remove('active');
-    updateCoachChrome(step, i + 1);
     const card = state.yourHand.find((c) => c.name === step.cardName);
     expectedDrag = card ? { instanceId: card.instanceId, index: step.targetIndex } : null;
     applyHandActiveState();
     const cellEl = boardEl.querySelector(`.cell[data-index="${step.targetIndex}"]`);
     positionSpotlight(cellEl);
     spotlightEl.classList.add('pulse');
+    showTooltip(step, i + 1, cellEl);
   } else if (step.kind === 'auto-opp-move') {
-    hideCoach();
+    hideTooltip();
     hideSpotlight();
     const card = state.oppHand.find((c) => c.name === step.cardName);
     await performScriptedOppMove(card, step.index);
     advanceStep();
   } else if (step.kind === 'final') {
     onbBlockerEl.classList.add('active');
-    updateCoachChrome(step, i + 1);
     positionSpotlight(null);
-    coachBtnEl.onclick = finishScript;
-  }
-
-  if (step.kind === 'info') {
-    coachBtnEl.onclick = () => advanceStep();
+    showTooltip(step, i + 1, null);
+    tooltipBtnEl.onclick = finishScript;
   }
 }
 
@@ -692,7 +745,7 @@ async function performScriptedOppMove(card, index) {
 function finishScript() {
   scriptMode = false;
   expectedDrag = null;
-  hideCoach();
+  hideTooltip();
   hideSpotlight();
   applyHandActiveState();
   turnTransition('opp');
