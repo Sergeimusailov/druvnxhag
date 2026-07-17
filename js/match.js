@@ -23,6 +23,7 @@ const state = {
   turn: 'you',
   gameOver: false,
   lastPlacedIndex: null,
+  lastPlacedFaceDown: false,
 };
 
 const boardEl = document.getElementById('board');
@@ -110,6 +111,28 @@ function playLandAnimation(cardEl) {
   });
 }
 
+function flipCardToFront(cardEl, card) {
+  return new Promise((resolve) => {
+    anime({
+      targets: cardEl,
+      scaleX: [1, 0],
+      duration: 150,
+      easing: 'easeInQuad',
+      complete: () => {
+        cardEl.classList.remove('face-back');
+        cardEl.innerHTML = cardInnerHTML(card);
+        anime({
+          targets: cardEl,
+          scaleX: [0, 1],
+          duration: 150,
+          easing: 'easeOutQuad',
+          complete: resolve,
+        });
+      },
+    });
+  });
+}
+
 function renderBoard() {
   boardEl.innerHTML = '';
   state.board.forEach((cell, index) => {
@@ -119,8 +142,9 @@ function renderBoard() {
     if (cell) {
       cellEl.dataset.filled = 'true';
       const cardEl = document.createElement('div');
-      cardEl.className = `card owner-${cell.owner}`;
-      cardEl.innerHTML = cardInnerHTML(cell.card);
+      const isFaceDown = index === state.lastPlacedIndex && state.lastPlacedFaceDown;
+      cardEl.className = `card owner-${cell.owner}${isFaceDown ? ' face-back' : ''}`;
+      cardEl.innerHTML = isFaceDown ? '' : cardInnerHTML(cell.card);
       cellEl.appendChild(cardEl);
       if (index === state.lastPlacedIndex) playLandAnimation(cardEl);
     }
@@ -132,7 +156,7 @@ function renderBoard() {
   }
 }
 
-function renderHand(hideIndex) {
+function renderHand(hideIndex, faceBackIndex) {
   handEl.innerHTML = '';
   for (let slot = 0; slot < 3; slot++) {
     const slotEl = document.createElement('div');
@@ -141,9 +165,10 @@ function renderHand(hideIndex) {
     const card = state.yourHand[slot];
     if (card) {
       const cardEl = document.createElement('div');
-      cardEl.className = 'card in-hand';
+      const isFaceBack = slot === faceBackIndex;
+      cardEl.className = `card in-hand${isFaceBack ? ' face-back' : ''}`;
       cardEl.dataset.id = card.instanceId;
-      cardEl.innerHTML = cardInnerHTML(card);
+      cardEl.innerHTML = isFaceBack ? '' : cardInnerHTML(card);
       if (slot === hideIndex) cardEl.classList.add('hand-card-hidden');
       makeDraggable(cardEl, card);
       slotEl.appendChild(cardEl);
@@ -254,7 +279,7 @@ function isBoardFull() {
   return state.board.every(Boolean);
 }
 
-function commitPlacement(card, index, owner) {
+function commitPlacement(card, index, owner, options = {}) {
   const captured = capturesForPlacement(state.board, index, card, owner);
   state.board[index] = { card, owner };
   captured.forEach((i) => {
@@ -269,16 +294,17 @@ function commitPlacement(card, index, owner) {
 
   recomputeScore();
   state.lastPlacedIndex = index;
+  state.lastPlacedFaceDown = !!options.faceDown;
   renderBoard();
   renderHand();
   renderScore();
   renderDecks();
 }
 
-function flyGhost(fromRect, toRect, innerHTML) {
+function flyGhost(fromRect, toRect, innerHTML, faceDown) {
   return new Promise((resolve) => {
     const ghost = document.createElement('div');
-    ghost.className = 'card drag-ghost';
+    ghost.className = `card drag-ghost${faceDown ? ' face-back' : ''}`;
     ghost.innerHTML = innerHTML || '';
     Object.assign(ghost.style, {
       position: 'fixed',
@@ -317,7 +343,7 @@ function flyGhost(fromRect, toRect, innerHTML) {
 async function flyFromDeckToCell(owner, index) {
   const badgeEl = owner === 'you' ? deckYouEl : deckOppEl;
   const cellEl = boardEl.querySelector(`.cell[data-index="${index}"]`);
-  await flyGhost(badgeEl.getBoundingClientRect(), cellEl.getBoundingClientRect(), '');
+  await flyGhost(badgeEl.getBoundingClientRect(), cellEl.getBoundingClientRect(), '', true);
 }
 
 async function refillYourHandWithFlight() {
@@ -330,8 +356,10 @@ async function refillYourHandWithFlight() {
   const slotEl = handEl.querySelector(`.hand-slot[data-slot="${slotIndex}"]`);
   const badgeRect = deckYouEl.getBoundingClientRect();
   const slotRect = slotEl.getBoundingClientRect();
-  await flyGhost(badgeRect, slotRect, cardInnerHTML(card));
-  renderHand();
+  await flyGhost(badgeRect, slotRect, '', true);
+  renderHand(undefined, slotIndex);
+  const cardEl = handEl.querySelector(`.hand-slot[data-slot="${slotIndex}"] .card`);
+  await flipCardToFront(cardEl, card);
 }
 
 async function playerPlaceCard(card, index) {
@@ -369,7 +397,10 @@ async function runOpponentTurn() {
   const move = chooseOpponentMove();
   if (move) {
     await flyFromDeckToCell('opp', move.index);
-    commitPlacement(move.card, move.index, 'opp');
+    commitPlacement(move.card, move.index, 'opp', { faceDown: true });
+    await wait(450);
+    const cardEl = boardEl.querySelector(`.cell[data-index="${move.index}"] .card`);
+    await flipCardToFront(cardEl, move.card);
   }
   await wait(POST_MOVE_DELAY);
   if (isBoardFull()) {
