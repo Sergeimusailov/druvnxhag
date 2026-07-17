@@ -311,21 +311,15 @@ function flyGhost(fromRect, toRect, innerHTML, faceDown) {
       margin: '0',
       zIndex: '200',
       borderRadius: '16%',
-      transformOrigin: 'top left',
     });
     document.body.appendChild(ghost);
 
-    const dx = toRect.left - fromRect.left;
-    const dy = toRect.top - fromRect.top;
-    const sx = toRect.width / fromRect.width;
-    const sy = toRect.height / fromRect.height;
-
     anime({
       targets: ghost,
-      translateX: dx,
-      translateY: dy,
-      scaleX: sx,
-      scaleY: sy,
+      left: `${toRect.left}px`,
+      top: `${toRect.top}px`,
+      width: `${toRect.width}px`,
+      height: `${toRect.height}px`,
       duration: FLIGHT_DURATION,
       easing: 'cubicBezier(.32,.72,.35,1)',
       complete: () => {
