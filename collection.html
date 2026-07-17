@@ -16,28 +16,32 @@
     </defs>
   </svg>
 
-  <div class="saved-banner" id="savedBanner">Колода сохранена</div>
+  <div class="saved-banner force-hidden" id="savedBanner">Колода сохранена</div>
 
   <main class="collection">
-    <div class="collection-topbar">
-      <a class="icon-btn back-btn" href="index.html" aria-label="Назад">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5 L7 12 L15 19" stroke="#428bf9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <div class="collection-title">Коллекция и колода</div>
-      <button class="icon-btn info-btn" aria-label="Подсказки">i</button>
-    </div>
-
-    <div class="deck-panel">
-      <div class="deck-panel-header">
-        <span class="deck-panel-title">Колода</span>
-        <span class="deck-warning" id="deckWarning">⚠️ Заполните колоду</span>
+    <div class="collection-header">
+      <div class="collection-topbar">
+        <a class="icon-btn back-btn" href="index.html" aria-label="Назад">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5 L7 12 L15 19" stroke="#428bf9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <div class="collection-title">Коллекция и колода</div>
+        <button class="icon-btn info-btn" aria-label="Подсказки">i</button>
       </div>
-      <div class="deck-grid" id="deckGrid"></div>
+
+      <div class="deck-panel">
+        <div class="deck-panel-header">
+          <span class="deck-panel-title">Колода</span>
+          <span class="deck-warning" id="deckWarning">⚠️ Заполните колоду</span>
+        </div>
+        <div class="deck-grid" id="deckGrid"></div>
+      </div>
     </div>
 
-    <div class="collection-grid" id="collectionGrid"></div>
+    <div class="collection-scroll">
+      <div class="collection-grid" id="collectionGrid"></div>
+    </div>
 
-    <button class="save-btn" id="saveBtn">Сохранить</button>
+    <button class="save-btn force-hidden" id="saveBtn">Сохранить</button>
   </main>
 
   <div class="sheet-backdrop" id="sheetBackdrop"></div>
