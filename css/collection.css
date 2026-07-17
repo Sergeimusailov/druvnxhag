@@ -143,13 +143,9 @@ a {
   cursor: pointer;
 }
 
-.collection-slot.in-deck::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  border: 2px solid #428bf9;
-  pointer-events: none;
+.collection-slot.in-deck {
+  opacity: 0.35;
+  filter: grayscale(60%);
 }
 
 /* Save button */

@@ -172,6 +172,8 @@ button {
   justify-content: space-between;
   overflow: hidden;
   transition: transform 0.1s ease;
+  color: inherit;
+  text-decoration: none;
 }
 
 .card:active {
