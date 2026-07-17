@@ -1,5 +1,3 @@
-const LONG_PRESS_MS = 500;
-
 const deckGridEl = document.getElementById('deckGrid');
 const collectionGridEl = document.getElementById('collectionGrid');
 const deckWarningEl = document.getElementById('deckWarning');
@@ -28,38 +26,6 @@ function isDeckDirty() {
   return a.some((name, i) => name !== b[i]);
 }
 
-function attachCardInteractions(el, { onTap, onLongPress }) {
-  let timer = null;
-  let longPressed = false;
-
-  function start() {
-    longPressed = false;
-    el.classList.add('pressing');
-    timer = setTimeout(() => {
-      longPressed = true;
-      el.classList.remove('pressing');
-      onLongPress();
-    }, LONG_PRESS_MS);
-  }
-
-  function cancelPress() {
-    clearTimeout(timer);
-    el.classList.remove('pressing');
-  }
-
-  el.addEventListener('pointerdown', start);
-  el.addEventListener('pointerup', cancelPress);
-  el.addEventListener('pointerleave', cancelPress);
-  el.addEventListener('pointercancel', cancelPress);
-  el.addEventListener('click', () => {
-    if (longPressed) {
-      longPressed = false;
-      return;
-    }
-    onTap();
-  });
-}
-
 function removeFromDeck(name) {
   deckNames = deckNames.filter((n) => n !== name);
   renderAll();
@@ -80,10 +46,7 @@ function renderDeck() {
       const card = CARD_ROSTER.find((c) => c.name === name);
       slotEl.className = 'deck-slot card';
       slotEl.innerHTML = cardInnerHTML(card);
-      attachCardInteractions(slotEl, {
-        onTap: () => openSheet(card, 'remove'),
-        onLongPress: () => removeFromDeck(card.name),
-      });
+      slotEl.addEventListener('click', () => openSheet(card, 'remove'));
     } else {
       slotEl.className = 'deck-slot empty';
     }
@@ -100,12 +63,8 @@ function renderCollection() {
     const slotEl = document.createElement('div');
     slotEl.className = `collection-slot card${isInDeck(card.name) ? ' in-deck' : ''}`;
     slotEl.innerHTML = cardInnerHTML(card);
-    attachCardInteractions(slotEl, {
-      onTap: () => openSheet(card, isInDeck(card.name) ? 'remove' : 'add'),
-      onLongPress: () => {
-        if (isInDeck(card.name)) removeFromDeck(card.name);
-        else addToDeck(card.name);
-      },
+    slotEl.addEventListener('click', () => {
+      openSheet(card, isInDeck(card.name) ? 'remove' : 'add');
     });
     collectionGridEl.appendChild(slotEl);
   });
