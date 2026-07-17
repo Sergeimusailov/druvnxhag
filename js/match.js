@@ -21,8 +21,6 @@ const state = {
   scoreYou: 0,
   scoreOpp: 0,
   turn: 'you',
-  timeLeft: TURN_SECONDS,
-  timerInterval: null,
   gameOver: false,
   lastPlacedIndex: null,
 };
@@ -83,14 +81,33 @@ function spawnParticles(cellEl, owner) {
   for (let i = 0; i < count; i++) {
     const p = document.createElement('span');
     p.className = 'particle';
+    p.style.background = color;
+    cellEl.appendChild(p);
+
     const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.5 - 0.25);
     const dist = 26 + Math.random() * 20;
-    p.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
-    p.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
-    p.style.background = color;
-    p.addEventListener('animationend', () => p.remove());
-    cellEl.appendChild(p);
+    anime({
+      targets: p,
+      translateX: Math.cos(angle) * dist,
+      translateY: Math.sin(angle) * dist,
+      scale: [1, 0.3],
+      opacity: [1, 0],
+      duration: 500,
+      easing: 'easeOutQuad',
+      complete: () => p.remove(),
+    });
   }
+}
+
+function playLandAnimation(cardEl) {
+  anime({
+    targets: cardEl,
+    scaleX: [0.5, 1.15, 0.92, 1.03, 1],
+    scaleY: [0.5, 0.85, 1.08, 0.98, 1],
+    opacity: [0, 1],
+    duration: 420,
+    easing: 'easeOutElastic(1, 0.6)',
+  });
 }
 
 function renderBoard() {
@@ -104,8 +121,8 @@ function renderBoard() {
       const cardEl = document.createElement('div');
       cardEl.className = `card owner-${cell.owner}`;
       cardEl.innerHTML = cardInnerHTML(cell.card);
-      if (index === state.lastPlacedIndex) cardEl.classList.add('plop');
       cellEl.appendChild(cardEl);
+      if (index === state.lastPlacedIndex) playLandAnimation(cardEl);
     }
     boardEl.appendChild(cellEl);
   });
@@ -164,33 +181,35 @@ function recomputeScore() {
   state.scoreOpp = opp;
 }
 
-function setTimerRing(fraction) {
-  const offset = RING_CIRCUMFERENCE * (1 - fraction);
-  timerProgressEl.style.strokeDashoffset = offset;
-  timerProgressEl.classList.remove('timer-warn', 'timer-danger');
-  if (fraction <= 0.15) timerProgressEl.classList.add('timer-danger');
-  else if (fraction <= 0.4) timerProgressEl.classList.add('timer-warn');
-}
+let timerAnim = null;
 
 function stopTimer() {
-  if (state.timerInterval) {
-    clearInterval(state.timerInterval);
-    state.timerInterval = null;
+  if (timerAnim) {
+    timerAnim.pause();
+    timerAnim = null;
   }
 }
 
 function startTimer() {
   stopTimer();
-  state.timeLeft = TURN_SECONDS;
-  setTimerRing(1);
-  state.timerInterval = setInterval(() => {
-    state.timeLeft--;
-    setTimerRing(Math.max(state.timeLeft, 0) / TURN_SECONDS);
-    if (state.timeLeft <= 0) {
-      stopTimer();
-      onYourTimeout();
-    }
-  }, 1000);
+  timerProgressEl.classList.remove('timer-warn', 'timer-danger');
+  timerProgressEl.style.strokeDashoffset = 0;
+  timerAnim = anime({
+    targets: timerProgressEl,
+    strokeDashoffset: RING_CIRCUMFERENCE,
+    duration: TURN_SECONDS * 1000,
+    easing: 'linear',
+    update: (anim) => {
+      const remaining = 1 - anim.progress / 100;
+      if (remaining <= 0.15) {
+        timerProgressEl.classList.add('timer-danger');
+        timerProgressEl.classList.remove('timer-warn');
+      } else if (remaining <= 0.4) {
+        timerProgressEl.classList.add('timer-warn');
+      }
+    },
+    complete: onYourTimeout,
+  });
 }
 
 function onYourTimeout() {
@@ -203,9 +222,22 @@ function onYourTimeout() {
 
 function showTurnOverlay(text, ms) {
   turnOverlayTextEl.textContent = text;
-  turnOverlayEl.classList.add('visible');
-  return wait(ms).then(() => {
-    turnOverlayEl.classList.remove('visible');
+  return new Promise((resolve) => {
+    anime({
+      targets: turnOverlayEl,
+      opacity: [0, 1],
+      duration: 250,
+      easing: 'easeOutQuad',
+    });
+    setTimeout(() => {
+      anime({
+        targets: turnOverlayEl,
+        opacity: [1, 0],
+        duration: 250,
+        easing: 'easeInQuad',
+        complete: resolve,
+      });
+    }, ms);
   });
 }
 
@@ -257,7 +289,7 @@ function flyGhost(fromRect, toRect, innerHTML) {
       margin: '0',
       zIndex: '200',
       borderRadius: '16%',
-      transition: `transform ${FLIGHT_DURATION}ms cubic-bezier(.32,.72,.35,1)`,
+      transformOrigin: 'top left',
     });
     document.body.appendChild(ghost);
 
@@ -266,15 +298,19 @@ function flyGhost(fromRect, toRect, innerHTML) {
     const sx = toRect.width / fromRect.width;
     const sy = toRect.height / fromRect.height;
 
-    void ghost.offsetWidth;
-    requestAnimationFrame(() => {
-      ghost.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+    anime({
+      targets: ghost,
+      translateX: dx,
+      translateY: dy,
+      scaleX: sx,
+      scaleY: sy,
+      duration: FLIGHT_DURATION,
+      easing: 'cubicBezier(.32,.72,.35,1)',
+      complete: () => {
+        ghost.remove();
+        resolve();
+      },
     });
-
-    setTimeout(() => {
-      ghost.remove();
-      resolve();
-    }, FLIGHT_DURATION + 30);
   });
 }
 
@@ -366,7 +402,12 @@ function endGame() {
   turnStatusEl.textContent = 'Матч завершён';
   turnOverlayTextEl.textContent = `${text}\n${state.scoreYou} : ${state.scoreOpp}`;
   turnOverlayTextEl.style.whiteSpace = 'pre-line';
-  turnOverlayEl.classList.add('visible');
+  anime({
+    targets: turnOverlayEl,
+    opacity: [0, 1],
+    duration: 400,
+    easing: 'easeOutQuad',
+  });
 }
 
 function makeDraggable(cardEl, card) {
