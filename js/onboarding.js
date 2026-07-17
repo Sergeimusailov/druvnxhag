@@ -594,6 +594,24 @@ function hideSpotlight() {
   spotlightTarget = null;
 }
 
+let numHighlightEls = [];
+
+function clearNumberHighlights() {
+  numHighlightEls.forEach((el) => el.classList.remove('onb-num-highlight'));
+  numHighlightEls = [];
+}
+
+function applyNumberHighlights(compare) {
+  if (!compare) return;
+  compare.forEach(({ index, side }) => {
+    const el = boardEl.querySelector(`.cell[data-index="${index}"] .num-${side}`);
+    if (el) {
+      el.classList.add('onb-num-highlight');
+      numHighlightEls.push(el);
+    }
+  });
+}
+
 let tooltipTarget = null; // element the tooltip is currently anchored to (null = centered fallback)
 
 function positionTooltip(el) {
@@ -755,10 +773,10 @@ const STEPS = [
   { kind: 'drag', text: 'Перетащите первую карту в центральную клетку поля.', cardName: 'Росток', targetIndex: 4 },
   { kind: 'info', text: 'Отлично! Карта расставлена. Теперь ход соперника.', target: '#board' },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 5 },
-  { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', target: '.cell[data-index="5"]' },
+  { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', target: '.cell[data-index="5"]', compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
   { kind: 'info', text: 'Теперь ваш шанс на захват! Числа соседних карт сравниваются — большее побеждает и переворачивает клетку.', target: '#hand' },
   { kind: 'drag', text: 'Перетащите карту в клетку сверху от карты соперника, чтобы захватить её.', cardName: 'Ромашка', targetIndex: 2 },
-  { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', target: '.cell[data-index="2"]' },
+  { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', target: '.cell[data-index="2"]', compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
   { kind: 'info', text: 'Когда в руке останется меньше 3 карт, она пополнится из вашей колоды.', target: '#deckYou' },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
@@ -769,6 +787,7 @@ async function runStep(i) {
   currentStep = i;
   if (i >= STEPS.length) return;
   const step = STEPS[i];
+  clearNumberHighlights();
 
   if (step.kind === 'info') {
     stopDragHint();
@@ -776,6 +795,7 @@ async function runStep(i) {
     const targetEl = step.target ? document.querySelector(step.target) : null;
     positionSpotlight(targetEl);
     showTooltip(step, i + 1, targetEl);
+    applyNumberHighlights(step.compare);
     tooltipBtnEl.onclick = () => advanceStep();
   } else if (step.kind === 'drag') {
     onbBlockerEl.classList.remove('active');
