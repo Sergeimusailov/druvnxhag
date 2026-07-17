@@ -568,13 +568,31 @@ async function handleScriptedDrop(card, index) {
   advanceStep();
 }
 
-function positionSpotlight(el) {
-  spotlightTarget = el || null;
-  if (!el) {
+function resolveRect(target) {
+  if (!target) return null;
+  const els = (Array.isArray(target) ? target : [target]).filter(Boolean);
+  if (!els.length) return null;
+  const rects = els.map((el) => el.getBoundingClientRect());
+  const left = Math.min(...rects.map((r) => r.left));
+  const top = Math.min(...rects.map((r) => r.top));
+  const right = Math.max(...rects.map((r) => r.right));
+  const bottom = Math.max(...rects.map((r) => r.bottom));
+  return { left, top, right, bottom, width: right - left, height: bottom - top };
+}
+
+function isTargetConnected(target) {
+  if (!target) return false;
+  const els = Array.isArray(target) ? target : [target];
+  return els.length > 0 && els.every((el) => el && el.isConnected);
+}
+
+function positionSpotlight(target) {
+  spotlightTarget = target || null;
+  const r = resolveRect(target);
+  if (!r) {
     spotlightEl.classList.remove('visible', 'pulse');
     return;
   }
-  const r = el.getBoundingClientRect();
   const pad = 6;
   spotlightEl.style.left = `${r.left - pad}px`;
   spotlightEl.style.top = `${r.top - pad}px`;
@@ -584,7 +602,7 @@ function positionSpotlight(el) {
 }
 
 function refreshSpotlightTarget() {
-  if (spotlightTarget && spotlightTarget.isConnected) {
+  if (isTargetConnected(spotlightTarget)) {
     positionSpotlight(spotlightTarget);
   }
 }
@@ -614,15 +632,16 @@ function applyNumberHighlights(compare) {
 
 let tooltipTarget = null; // element the tooltip is currently anchored to (null = centered fallback)
 
-function positionTooltip(el) {
-  tooltipTarget = el || null;
+function positionTooltip(target) {
+  tooltipTarget = target || null;
   const margin = 16;
   const gap = 14;
   const maxWidth = 320;
   const width = Math.min(maxWidth, window.innerWidth - margin * 2);
   tooltipEl.style.width = `${width}px`;
 
-  if (!el) {
+  const r = resolveRect(target);
+  if (!r) {
     tooltipTailEl.style.display = 'none';
     tooltipEl.classList.remove('tooltip-above');
     tooltipEl.classList.add('tooltip-centered');
@@ -635,7 +654,6 @@ function positionTooltip(el) {
   onbScrimEl.classList.remove('active');
   tooltipEl.classList.remove('tooltip-centered');
   tooltipTailEl.style.display = '';
-  const r = el.getBoundingClientRect();
   const targetCenterX = r.left + r.width / 2;
 
   let left = targetCenterX - width / 2;
@@ -661,7 +679,7 @@ function positionTooltip(el) {
 
 function refreshTooltipTarget() {
   if (tooltipEl.classList.contains('visible')) {
-    positionTooltip(tooltipTarget && tooltipTarget.isConnected ? tooltipTarget : null);
+    positionTooltip(isTargetConnected(tooltipTarget) ? tooltipTarget : null);
   }
 }
 
@@ -773,10 +791,10 @@ const STEPS = [
   { kind: 'drag', text: 'Перетащите первую карту в центральную клетку поля.', cardName: 'Росток', targetIndex: 4 },
   { kind: 'info', text: 'Отлично! Карта расставлена. Теперь ход соперника.', target: '#board' },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 5 },
-  { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', target: '.cell[data-index="5"]', compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
+  { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
   { kind: 'info', text: 'Теперь ваш шанс на захват! Числа соседних карт сравниваются — большее побеждает и переворачивает клетку.', target: '#hand' },
   { kind: 'drag', text: 'Перетащите карту в клетку сверху от карты соперника, чтобы захватить её.', cardName: 'Ромашка', targetIndex: 2 },
-  { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', target: '.cell[data-index="2"]', compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
+  { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
   { kind: 'info', text: 'Когда в руке останется меньше 3 карт, она пополнится из вашей колоды.', target: '#deckYou' },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
@@ -792,7 +810,11 @@ async function runStep(i) {
   if (step.kind === 'info') {
     stopDragHint();
     onbBlockerEl.classList.add('active');
-    const targetEl = step.target ? document.querySelector(step.target) : null;
+    const targetEl = step.targets
+      ? step.targets.map((sel) => document.querySelector(sel)).filter(Boolean)
+      : step.target
+        ? document.querySelector(step.target)
+        : null;
     positionSpotlight(targetEl);
     showTooltip(step, i + 1, targetEl);
     applyNumberHighlights(step.compare);
