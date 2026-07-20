@@ -459,6 +459,7 @@ async function refillYourHandWithFlight() {
 async function playerPlaceCard(card, index) {
   if (state.turn !== 'you' || state.gameOver || state.board[index]) return;
   state.turn = 'locked';
+  handEl.classList.add('disabled');
   stopTimer();
   const captured = commitPlacement(card, index, 'you');
   await resolveCaptures(index, card, captured, 'you');
@@ -526,12 +527,14 @@ async function runOpponentTurn() {
 
 async function turnTransition(justMovedOwner) {
   const nextOwner = justMovedOwner === 'you' ? 'opp' : 'you';
+  // keep the hand disabled while the "whose turn" overlay is showing so no
+  // stray move slips through during the switch
+  handEl.classList.add('disabled');
   await showTurnOverlay(nextOwner === 'you' ? 'Ваш ход' : 'Ход соперника', OVERLAY_DURATION);
   if (state.gameOver) return;
   state.turn = nextOwner;
   turnStatusEl.textContent = nextOwner === 'you' ? 'Ваш ход' : 'Ход соперника';
   if (nextOwner === 'opp') {
-    handEl.classList.add('disabled');
     runOpponentTurn();
   } else {
     handEl.classList.remove('disabled');
