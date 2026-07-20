@@ -792,11 +792,10 @@ const STEPS = [
   { kind: 'info', text: 'Отлично! Карта расставлена. Теперь ход соперника.', target: '#board' },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 5 },
   { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
-  { kind: 'info', text: 'Теперь ваш шанс на захват! Числа соседних карт сравниваются — большее побеждает и переворачивает клетку.', target: '#hand' },
-  { kind: 'drag', text: 'Перетащите карту в клетку сверху от карты соперника, чтобы захватить её.', cardName: 'Ромашка', targetIndex: 2 },
+  { kind: 'drag', text: 'Теперь ваш шанс на захват. Перетащите карту в эту клетку.', cardName: 'Ромашка', targetIndex: 2, avoidIndex: 5 },
   { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
-  { kind: 'info', text: 'Когда в руке останется меньше 3 карт, она пополнится из вашей колоды.', target: '#deckYou' },
+  { kind: 'info', text: 'Вы добираете карту после хода соперника. В руке у вас всегда 3 карты.', target: '#deckYou' },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
   { kind: 'final', text: 'Вы знаете основы! Доиграйте матч самостоятельно — дальше игра идёт в реальном времени.' },
 ];
@@ -828,7 +827,8 @@ async function runStep(i) {
     const cellEl = boardEl.querySelector(`.cell[data-index="${step.targetIndex}"]`);
     const cardEl = card ? handEl.querySelector(`.card[data-id="${card.instanceId}"]`) : null;
     if (cardEl && cellEl) startDragHint(cardEl, cellEl);
-    showTooltip(step, i + 1, cellEl);
+    const avoidEl = step.avoidIndex !== undefined ? boardEl.querySelector(`.cell[data-index="${step.avoidIndex}"]`) : null;
+    showTooltip(step, i + 1, avoidEl ? [cellEl, avoidEl] : cellEl);
   } else if (step.kind === 'auto-opp-move') {
     stopDragHint();
     hideTooltip();
