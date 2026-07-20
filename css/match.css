@@ -486,6 +486,36 @@ a {
   left: 91.379%;
 }
 
+/* Capture animation: number highlight + directional recolor sweep */
+
+.card .num.num-capture-hl {
+  background: #ffdd2d;
+  color: #1c1c1e;
+  padding: 2px 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 221, 45, 0.3), 0 0 14px 4px rgba(255, 221, 45, 0.65);
+  animation: numCaptureHl 0.9s ease-in-out;
+  z-index: 3;
+}
+
+@keyframes numCaptureHl {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.35);
+  }
+}
+
+.card .capture-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* Hand */
 
 .hand {

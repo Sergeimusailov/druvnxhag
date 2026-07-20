@@ -278,12 +278,11 @@ function isBoardFull() {
   return state.board.every(Boolean);
 }
 
+// Places the card and returns the captured neighbor indices WITHOUT flipping
+// their owner yet — resolveCaptures() animates and finalizes the flips.
 function commitPlacement(card, index, owner, options = {}) {
   const captured = capturesForPlacement(state.board, index, card, owner);
   state.board[index] = { card, owner };
-  captured.forEach((i) => {
-    state.board[i].owner = owner;
-  });
 
   if (owner === 'you') {
     state.yourHand = state.yourHand.filter((c) => c.instanceId !== card.instanceId);
@@ -298,6 +297,108 @@ function commitPlacement(card, index, owner, options = {}) {
   renderHand();
   renderScore();
   renderDecks();
+  return captured;
+}
+
+const CAPTURE_HL_MS = 900;
+const CAPTURE_SWEEP_MS = 500;
+let captureHlEls = [];
+
+function captureDir(index, ni) {
+  const n = neighborsOf(index);
+  if (ni === n.up) return 'up';
+  if (ni === n.down) return 'down';
+  if (ni === n.left) return 'left';
+  if (ni === n.right) return 'right';
+  return null;
+}
+
+// side-number pair highlighted for a capture: [attacker side, defender side]
+const CAPTURE_SIDE_MAP = {
+  up: ['num-top', 'num-bottom'],
+  down: ['num-bottom', 'num-top'],
+  left: ['num-left', 'num-right'],
+  right: ['num-right', 'num-left'],
+};
+
+function highlightCaptureNumbers(index, captured) {
+  captureHlEls = [];
+  const placedCardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
+  captured.forEach((ni) => {
+    const dir = captureDir(index, ni);
+    const neighborCardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
+    if (!dir || !placedCardEl || !neighborCardEl) return;
+    const [aSel, dSel] = CAPTURE_SIDE_MAP[dir];
+    const aEl = placedCardEl.querySelector(`.${aSel}`);
+    const dEl = neighborCardEl.querySelector(`.${dSel}`);
+    [aEl, dEl].forEach((el) => {
+      if (el) {
+        el.classList.add('num-capture-hl');
+        captureHlEls.push(el);
+      }
+    });
+  });
+}
+
+function clearCaptureHighlights() {
+  captureHlEls.forEach((el) => el.classList.remove('num-capture-hl'));
+  captureHlEls = [];
+}
+
+// directional clip-path wipe of a same-card overlay in the new owner colour,
+// so the colour "floods" the captured card from the attacking edge
+function sweepRecolor(ni, index, owner) {
+  return new Promise((resolve) => {
+    const cardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
+    if (!cardEl || !state.board[ni]) {
+      resolve();
+      return;
+    }
+    const dir = captureDir(index, ni);
+    const overlay = document.createElement('div');
+    overlay.className = `card owner-${owner} capture-sweep`;
+    overlay.innerHTML = cardInnerHTML(state.board[ni].card);
+    cardEl.appendChild(overlay);
+    const clipAt = {
+      up: (p) => `inset(${p}% 0 0 0)`,
+      down: (p) => `inset(0 0 ${p}% 0)`,
+      left: (p) => `inset(0 0 0 ${p}%)`,
+      right: (p) => `inset(0 ${p}% 0 0)`,
+    }[dir] || ((p) => `inset(0 0 ${p}% 0)`);
+    const proxy = { p: 100 };
+    overlay.style.clipPath = clipAt(100);
+    anime({
+      targets: proxy,
+      p: 0,
+      duration: CAPTURE_SWEEP_MS,
+      easing: 'easeInOutQuad',
+      update: () => {
+        overlay.style.clipPath = clipAt(proxy.p);
+      },
+      complete: () => {
+        cardEl.className = `card owner-${owner}`;
+        overlay.remove();
+        resolve();
+      },
+    });
+  });
+}
+
+async function resolveCaptures(index, card, captured, owner) {
+  if (!captured || !captured.length) return;
+  highlightCaptureNumbers(index, captured);
+  await wait(CAPTURE_HL_MS);
+  clearCaptureHighlights();
+  await Promise.all(captured.map((ni) => sweepRecolor(ni, index, owner)));
+  captured.forEach((ni) => {
+    if (state.board[ni]) state.board[ni].owner = owner;
+  });
+  recomputeScore();
+  renderScore();
+  captured.forEach((ni) => {
+    const cellEl = boardEl.querySelector(`.cell[data-index="${ni}"]`);
+    if (cellEl) spawnParticles(cellEl, owner);
+  });
 }
 
 function flyGhost(fromRect, toRect, innerHTML, faceDown) {
@@ -359,8 +460,9 @@ async function playerPlaceCard(card, index) {
   if (state.turn !== 'you' || state.gameOver || state.board[index]) return;
   state.turn = 'locked';
   stopTimer();
-  commitPlacement(card, index, 'you');
-  await wait(POST_MOVE_DELAY);
+  const captured = commitPlacement(card, index, 'you');
+  await resolveCaptures(index, card, captured, 'you');
+  await wait(captured.length ? 300 : POST_MOVE_DELAY);
   if (isBoardFull()) {
     endGame();
     return;
@@ -405,14 +507,16 @@ async function runOpponentTurn() {
   stopThinking();
   if (state.gameOver) return;
   const move = chooseOpponentMove();
+  let captured = [];
   if (move) {
     await flyFromDeckToCell('opp', move.index);
-    commitPlacement(move.card, move.index, 'opp', { faceDown: true });
+    captured = commitPlacement(move.card, move.index, 'opp', { faceDown: true });
     await wait(450);
     const cardEl = boardEl.querySelector(`.cell[data-index="${move.index}"] .card`);
     await flipCardToFront(cardEl, move.card);
+    await resolveCaptures(move.index, move.card, captured, 'opp');
   }
-  await wait(POST_MOVE_DELAY);
+  await wait(captured.length ? 300 : POST_MOVE_DELAY);
   if (isBoardFull()) {
     endGame();
     return;
