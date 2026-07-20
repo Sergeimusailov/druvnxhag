@@ -854,6 +854,8 @@ async function performScriptedOppMove(card, index) {
     advanceStep();
     return;
   }
+  drawCardForOwner('opp');
+  renderDecks();
   const stopThinking = startOppThinkingStatus();
   await wait(1400);
   stopThinking();
@@ -863,6 +865,7 @@ async function performScriptedOppMove(card, index) {
   const cardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
   await flipCardToFront(cardEl, card);
   await wait(POST_MOVE_DELAY);
+  await refillYourHandWithFlight();
 }
 
 function finishScript() {
