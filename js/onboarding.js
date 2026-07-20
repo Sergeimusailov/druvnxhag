@@ -795,7 +795,6 @@ const STEPS = [
   { kind: 'drag', text: 'Теперь ваш шанс на захват. Перетащите карту в эту клетку.', cardName: 'Ромашка', targetIndex: 2, avoidIndex: 5 },
   { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
-  { kind: 'info', text: 'Вы добираете карту после хода соперника. В руке у вас всегда 3 карты.', target: '#deckYou' },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
   { kind: 'final', text: 'Вы знаете основы! Доиграйте матч самостоятельно — дальше игра идёт в реальном времени.' },
 ];
