@@ -301,7 +301,7 @@ function commitPlacement(card, index, owner, options = {}) {
 }
 
 const CAPTURE_HL_MS = 900;
-const CAPTURE_SWEEP_MS = 500;
+const CAPTURE_SWEEP_MS = 900;
 let captureHlEls = [];
 
 function captureDir(index, ni) {
@@ -371,7 +371,7 @@ function sweepRecolor(ni, index, owner) {
       targets: proxy,
       p: 0,
       duration: CAPTURE_SWEEP_MS,
-      easing: 'easeInOutQuad',
+      easing: 'cubicBezier(0.55, 0.06, 0.68, 0.19)',
       update: () => {
         overlay.style.clipPath = clipAt(proxy.p);
       },
