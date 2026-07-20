@@ -216,19 +216,25 @@ a {
 }
 
 .timer-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
 }
 
+/* Gauge: near-full ring with a gap at the bottom (see RING_ARC/RING_C in JS) */
 .timer-ring {
   width: 64px;
   height: 64px;
-  transform: rotate(-90deg);
+  transform: rotate(118deg);
 }
 
 .timer-track {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.12);
   stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 178.02 213.63;
 }
 
 .timer-progress {
@@ -236,9 +242,23 @@ a {
   stroke: #3ddc72;
   stroke-width: 6;
   stroke-linecap: round;
-  stroke-dasharray: 213.6;
-  stroke-dashoffset: 0;
+  stroke-dasharray: 178.02 213.63;
   transition: stroke 0.3s ease;
+}
+
+.timer-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.timer-icon svg {
+  width: 26px;
+  height: 26px;
 }
 
 .timer-progress.timer-warn {

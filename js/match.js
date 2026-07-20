@@ -1,5 +1,6 @@
 const TURN_SECONDS = 20;
-const RING_CIRCUMFERENCE = 213.6;
+const RING_C = 213.63; // circumference (2*pi*34)
+const RING_ARC = 178.02; // visible arc (~300deg), gap at bottom
 const POST_MOVE_DELAY = 1000;
 const OVERLAY_DURATION = 3000;
 const FLIGHT_DURATION = 900;
@@ -214,14 +215,16 @@ function stopTimer() {
 function startTimer() {
   stopTimer();
   timerProgressEl.classList.remove('timer-warn', 'timer-danger');
-  timerProgressEl.style.strokeDashoffset = 0;
+  const prog = { len: RING_ARC };
+  timerProgressEl.style.strokeDasharray = `${RING_ARC} ${RING_C}`;
   timerAnim = anime({
-    targets: timerProgressEl,
-    strokeDashoffset: RING_CIRCUMFERENCE,
+    targets: prog,
+    len: 0,
     duration: TURN_SECONDS * 1000,
     easing: 'linear',
-    update: (anim) => {
-      const remaining = 1 - anim.progress / 100;
+    update: () => {
+      timerProgressEl.style.strokeDasharray = `${prog.len} ${RING_C}`;
+      const remaining = prog.len / RING_ARC;
       if (remaining <= 0.15) {
         timerProgressEl.classList.add('timer-danger');
         timerProgressEl.classList.remove('timer-warn');
