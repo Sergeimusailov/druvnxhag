@@ -796,7 +796,7 @@ const STEPS = [
   { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
-  { kind: 'final', text: 'Вы знаете основы! Доиграйте матч самостоятельно — дальше игра идёт в реальном времени.' },
+  { kind: 'final', text: 'Теперь вы знаете основы! Доиграйте матч до конца чтобы получить вашу первую награду.' },
 ];
 
 async function runStep(i) {
