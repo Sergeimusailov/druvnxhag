@@ -788,7 +788,7 @@ const STEPS = [
   { kind: 'info', text: 'На каждый ход даётся 20 секунд — следите за таймером.', target: '.timer-wrap' },
   { kind: 'info', text: 'Поле состоит из 9 клеток. Цель — занять клеток больше, чем соперник.', target: '#board' },
   { kind: 'info', text: 'Это ваши карты, которыми можно ходить. У каждой карты есть числа — это сила.', target: '#hand' },
-  { kind: 'drag', text: 'Перетащите первую карту в центральную клетку поля.', cardName: 'Росток', targetIndex: 4 },
+  { kind: 'drag', text: 'Сделайте первый ход, покажем как работают силы у карт.', cardName: 'Росток', targetIndex: 4 },
   { kind: 'info', text: 'Отлично! Карта расставлена. Теперь ход соперника.', target: '#board' },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 5 },
   { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
