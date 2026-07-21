@@ -751,6 +751,7 @@ function applyNumberHighlights(compare) {
 }
 
 let tooltipTarget = null; // element the tooltip is currently anchored to (null = centered fallback)
+let tooltipForceAbove = false; // step can pin the bubble above its target
 
 function positionTooltip(target) {
   tooltipTarget = target || null;
@@ -787,7 +788,7 @@ function positionTooltip(target) {
 
   const spaceBelow = window.innerHeight - r.bottom;
   const spaceAbove = r.top;
-  if (spaceBelow >= spaceAbove) {
+  if (!tooltipForceAbove && spaceBelow >= spaceAbove) {
     tooltipEl.classList.remove('tooltip-above');
     tooltipEl.style.top = `${r.bottom + gap}px`;
   } else {
@@ -815,6 +816,7 @@ function showTooltip(stepDef, stepNumber, targetEl) {
     tooltipBtnEl.classList.remove('hidden');
     tooltipBtnEl.textContent = stepDef.kind === 'final' ? 'Начать игру' : 'Продолжить';
   }
+  tooltipForceAbove = !!stepDef.tooltipAbove;
   positionTooltip(targetEl);
   tooltipEl.classList.add('visible');
 }
@@ -824,6 +826,7 @@ function hideTooltip() {
   onbBlockerEl.classList.remove('active');
   onbScrimEl.classList.remove('active');
   tooltipTarget = null;
+  tooltipForceAbove = false;
 }
 
 window.addEventListener('resize', () => {
@@ -915,8 +918,7 @@ const STEPS = [
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
   { kind: 'auto-opp-move', cardName: 'Шип', index: 5 },
   { kind: 'info', text: 'Соперник захватил сразу две карты! Каждая выигравшая сторона забирает свою клетку.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
-  { kind: 'info', text: 'Прострел! Если сразу за захваченной картой стоит ещё одна карта соперника, они тоже сравниваются — можно забрать обе.', targets: ['.cell[data-index="5"]', '.cell[data-index="8"]'], targetHand: 'Цунами', compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
-  { kind: 'drag', text: 'Перетащите карту в эту клетку, чтобы сделать прострел.', cardName: 'Цунами', targetIndex: 2, avoidIndexes: [5], compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'drag', text: 'Ещё можно захватить сразу 2 карты соперника. Перетащите карту сюда.', cardName: 'Цунами', targetIndex: 2, tooltipAbove: true, compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
   { kind: 'info', text: 'Прострел удался! Вы вернули обе клетки одним ходом.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 3 },
   { kind: 'final', text: 'Теперь вы знаете основы! Доиграйте матч до конца чтобы получить вашу первую награду.' },
