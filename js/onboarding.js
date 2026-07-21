@@ -910,7 +910,6 @@ const STEPS = [
   { kind: 'info', text: 'Это ваши карты, которыми можно ходить. У каждой карты есть числа — это сила.', target: '#hand' },
   { kind: 'drag', text: 'Сделайте первый ход, покажем как работают силы у карт.', cardName: 'Кувшинка', targetIndex: 4 },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 8 },
-  { kind: 'info', text: 'Соперник поставил карту в угол — там её сложнее захватить.', target: '.cell[data-index="8"]' },
   { kind: 'drag', text: 'Теперь ваш шанс на захват. Перетащите карту в эту клетку.', cardName: 'Ромашка', targetIndex: 7, avoidIndexes: [8], compare: [{ hand: 'Ромашка', side: 'right' }, { index: 8, side: 'left' }] },
   { kind: 'info', text: 'Захват! Ваша правая сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="7"]', '.cell[data-index="8"]'], compare: [{ index: 7, side: 'right' }, { index: 8, side: 'left' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
