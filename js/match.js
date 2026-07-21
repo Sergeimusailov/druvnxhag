@@ -55,22 +55,32 @@ function neighborsOf(index) {
   return result;
 }
 
+// [attacking edge of the card facing dir, defending edge of the neighbor]
+const CAPTURE_EDGE = {
+  up: ['top', 'bottom'],
+  down: ['bottom', 'top'],
+  left: ['left', 'right'],
+  right: ['right', 'left'],
+};
+
+// Returns capture events { index, dir, chain, attackerIndex }. A direct win can
+// "прострелить" one cell further along the same line: the captured card's far
+// edge is compared against the enemy card right behind it.
 function capturesForPlacement(board, index, card, owner) {
+  const events = [];
   const n = neighborsOf(index);
-  const captured = [];
-  if (n.up !== undefined && board[n.up] && board[n.up].owner !== owner && card.top > board[n.up].card.bottom) {
-    captured.push(n.up);
+  for (const dir of ['up', 'down', 'left', 'right']) {
+    const ni = n[dir];
+    if (ni === undefined || !board[ni] || board[ni].owner === owner) continue;
+    const [atk, def] = CAPTURE_EDGE[dir];
+    if (card[atk] <= board[ni].card[def]) continue;
+    events.push({ index: ni, dir, chain: false, attackerIndex: index });
+    const ci = neighborsOf(ni)[dir];
+    if (ci !== undefined && board[ci] && board[ci].owner !== owner && board[ni].card[atk] > board[ci].card[def]) {
+      events.push({ index: ci, dir, chain: true, attackerIndex: ni });
+    }
   }
-  if (n.down !== undefined && board[n.down] && board[n.down].owner !== owner && card.bottom > board[n.down].card.top) {
-    captured.push(n.down);
-  }
-  if (n.left !== undefined && board[n.left] && board[n.left].owner !== owner && card.left > board[n.left].card.right) {
-    captured.push(n.left);
-  }
-  if (n.right !== undefined && board[n.right] && board[n.right].owner !== owner && card.right > board[n.right].card.left) {
-    captured.push(n.right);
-  }
-  return captured;
+  return events;
 }
 
 function spawnParticles(cellEl, owner) {
@@ -304,33 +314,12 @@ const CAPTURE_HL_MS = 900;
 const CAPTURE_SWEEP_MS = 900;
 let captureHlEls = [];
 
-function captureDir(index, ni) {
-  const n = neighborsOf(index);
-  if (ni === n.up) return 'up';
-  if (ni === n.down) return 'down';
-  if (ni === n.left) return 'left';
-  if (ni === n.right) return 'right';
-  return null;
-}
-
-// side-number pair highlighted for a capture: [attacker side, defender side]
-const CAPTURE_SIDE_MAP = {
-  up: ['num-top', 'num-bottom'],
-  down: ['num-bottom', 'num-top'],
-  left: ['num-left', 'num-right'],
-  right: ['num-right', 'num-left'],
-};
-
-function highlightCaptureNumbers(index, captured) {
+function highlightCaptureNumbers(events) {
   captureHlEls = [];
-  const placedCardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
-  captured.forEach((ni) => {
-    const dir = captureDir(index, ni);
-    const neighborCardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
-    if (!dir || !placedCardEl || !neighborCardEl) return;
-    const [aSel, dSel] = CAPTURE_SIDE_MAP[dir];
-    const aEl = placedCardEl.querySelector(`.${aSel}`);
-    const dEl = neighborCardEl.querySelector(`.${dSel}`);
+  events.forEach((ev) => {
+    const [atk, def] = CAPTURE_EDGE[ev.dir];
+    const aEl = boardEl.querySelector(`.cell[data-index="${ev.attackerIndex}"] .card .num-${atk}`);
+    const dEl = boardEl.querySelector(`.cell[data-index="${ev.index}"] .card .num-${def}`);
     [aEl, dEl].forEach((el) => {
       if (el) {
         el.classList.add('num-capture-hl');
@@ -347,14 +336,13 @@ function clearCaptureHighlights() {
 
 // directional clip-path wipe of a same-card overlay in the new owner colour,
 // so the colour "floods" the captured card from the attacking edge
-function sweepRecolor(ni, index, owner) {
+function sweepRecolor(ni, dir, owner) {
   return new Promise((resolve) => {
     const cardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
     if (!cardEl || !state.board[ni]) {
       resolve();
       return;
     }
-    const dir = captureDir(index, ni);
     const overlay = document.createElement('div');
     overlay.className = `card owner-${owner} capture-sweep`;
     overlay.innerHTML = cardInnerHTML(state.board[ni].card);
@@ -384,19 +372,30 @@ function sweepRecolor(ni, index, owner) {
   });
 }
 
-async function resolveCaptures(index, card, captured, owner) {
-  if (!captured || !captured.length) return;
-  highlightCaptureNumbers(index, captured);
+async function resolveCaptures(index, card, events, owner) {
+  if (!events || !events.length) return;
+  highlightCaptureNumbers(events);
   await wait(CAPTURE_HL_MS);
   clearCaptureHighlights();
-  await Promise.all(captured.map((ni) => sweepRecolor(ni, index, owner)));
-  captured.forEach((ni) => {
-    if (state.board[ni]) state.board[ni].owner = owner;
-  });
+  // directions run in parallel; within a direction the прострел sweep follows
+  // the direct one so the colour visibly travels down the line
+  await Promise.all(
+    events
+      .filter((ev) => !ev.chain)
+      .map(async (ev) => {
+        await sweepRecolor(ev.index, ev.dir, owner);
+        if (state.board[ev.index]) state.board[ev.index].owner = owner;
+        const chain = events.find((c) => c.chain && c.attackerIndex === ev.index);
+        if (chain) {
+          await sweepRecolor(chain.index, chain.dir, owner);
+          if (state.board[chain.index]) state.board[chain.index].owner = owner;
+        }
+      })
+  );
   recomputeScore();
   renderScore();
-  captured.forEach((ni) => {
-    const cellEl = boardEl.querySelector(`.cell[data-index="${ni}"]`);
+  events.forEach((ev) => {
+    const cellEl = boardEl.querySelector(`.cell[data-index="${ev.index}"]`);
     if (cellEl) spawnParticles(cellEl, owner);
   });
 }

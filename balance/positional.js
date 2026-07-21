@@ -9,12 +9,26 @@ function neighborsOf(index) {
   if (col < 2) r.right = index + 1;
   return r;
 }
+const CAPTURE_EDGE = {
+  up: ['top', 'bottom'],
+  down: ['bottom', 'top'],
+  left: ['left', 'right'],
+  right: ['right', 'left'],
+};
+
+// direct captures + прострел: a captured card's far edge attacks the next
+// enemy card one cell further along the same line
 function capturesFor(board, index, card, owner) {
   const n = neighborsOf(index), cap = [];
-  if (n.up !== undefined && board[n.up] && board[n.up].owner !== owner && card.top > board[n.up].card.bottom) cap.push(n.up);
-  if (n.down !== undefined && board[n.down] && board[n.down].owner !== owner && card.bottom > board[n.down].card.top) cap.push(n.down);
-  if (n.left !== undefined && board[n.left] && board[n.left].owner !== owner && card.left > board[n.left].card.right) cap.push(n.left);
-  if (n.right !== undefined && board[n.right] && board[n.right].owner !== owner && card.right > board[n.right].card.left) cap.push(n.right);
+  for (const dir of ['up', 'down', 'left', 'right']) {
+    const ni = n[dir];
+    if (ni === undefined || !board[ni] || board[ni].owner === owner) continue;
+    const [atk, def] = CAPTURE_EDGE[dir];
+    if (card[atk] <= board[ni].card[def]) continue;
+    cap.push(ni);
+    const ci = neighborsOf(ni)[dir];
+    if (ci !== undefined && board[ci] && board[ci].owner !== owner && board[ni].card[atk] > board[ci].card[def]) cap.push(ci);
+  }
   return cap;
 }
 function vulnerability(board, index, card) {

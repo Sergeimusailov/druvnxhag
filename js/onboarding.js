@@ -55,22 +55,32 @@ function neighborsOf(index) {
   return result;
 }
 
+// [attacking edge of the card facing dir, defending edge of the neighbor]
+const CAPTURE_EDGE = {
+  up: ['top', 'bottom'],
+  down: ['bottom', 'top'],
+  left: ['left', 'right'],
+  right: ['right', 'left'],
+};
+
+// Returns capture events { index, dir, chain, attackerIndex }. A direct win can
+// "прострелить" one cell further along the same line: the captured card's far
+// edge is compared against the enemy card right behind it.
 function capturesForPlacement(board, index, card, owner) {
+  const events = [];
   const n = neighborsOf(index);
-  const captured = [];
-  if (n.up !== undefined && board[n.up] && board[n.up].owner !== owner && card.top > board[n.up].card.bottom) {
-    captured.push(n.up);
+  for (const dir of ['up', 'down', 'left', 'right']) {
+    const ni = n[dir];
+    if (ni === undefined || !board[ni] || board[ni].owner === owner) continue;
+    const [atk, def] = CAPTURE_EDGE[dir];
+    if (card[atk] <= board[ni].card[def]) continue;
+    events.push({ index: ni, dir, chain: false, attackerIndex: index });
+    const ci = neighborsOf(ni)[dir];
+    if (ci !== undefined && board[ci] && board[ci].owner !== owner && board[ni].card[atk] > board[ci].card[def]) {
+      events.push({ index: ci, dir, chain: true, attackerIndex: ni });
+    }
   }
-  if (n.down !== undefined && board[n.down] && board[n.down].owner !== owner && card.bottom > board[n.down].card.top) {
-    captured.push(n.down);
-  }
-  if (n.left !== undefined && board[n.left] && board[n.left].owner !== owner && card.left > board[n.left].card.right) {
-    captured.push(n.left);
-  }
-  if (n.right !== undefined && board[n.right] && board[n.right].owner !== owner && card.right > board[n.right].card.left) {
-    captured.push(n.right);
-  }
-  return captured;
+  return events;
 }
 
 function spawnParticles(cellEl, owner) {
@@ -306,32 +316,12 @@ const CAPTURE_HL_MS = 900;
 const CAPTURE_SWEEP_MS = 900;
 let captureHlEls = [];
 
-function captureDir(index, ni) {
-  const n = neighborsOf(index);
-  if (ni === n.up) return 'up';
-  if (ni === n.down) return 'down';
-  if (ni === n.left) return 'left';
-  if (ni === n.right) return 'right';
-  return null;
-}
-
-const CAPTURE_SIDE_MAP = {
-  up: ['num-top', 'num-bottom'],
-  down: ['num-bottom', 'num-top'],
-  left: ['num-left', 'num-right'],
-  right: ['num-right', 'num-left'],
-};
-
-function highlightCaptureNumbers(index, captured) {
+function highlightCaptureNumbers(events) {
   captureHlEls = [];
-  const placedCardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
-  captured.forEach((ni) => {
-    const dir = captureDir(index, ni);
-    const neighborCardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
-    if (!dir || !placedCardEl || !neighborCardEl) return;
-    const [aSel, dSel] = CAPTURE_SIDE_MAP[dir];
-    const aEl = placedCardEl.querySelector(`.${aSel}`);
-    const dEl = neighborCardEl.querySelector(`.${dSel}`);
+  events.forEach((ev) => {
+    const [atk, def] = CAPTURE_EDGE[ev.dir];
+    const aEl = boardEl.querySelector(`.cell[data-index="${ev.attackerIndex}"] .card .num-${atk}`);
+    const dEl = boardEl.querySelector(`.cell[data-index="${ev.index}"] .card .num-${def}`);
     [aEl, dEl].forEach((el) => {
       if (el) {
         el.classList.add('num-capture-hl');
@@ -346,14 +336,13 @@ function clearCaptureHighlights() {
   captureHlEls = [];
 }
 
-function sweepRecolor(ni, index, owner) {
+function sweepRecolor(ni, dir, owner) {
   return new Promise((resolve) => {
     const cardEl = boardEl.querySelector(`.cell[data-index="${ni}"] .card`);
     if (!cardEl || !state.board[ni]) {
       resolve();
       return;
     }
-    const dir = captureDir(index, ni);
     const overlay = document.createElement('div');
     overlay.className = `card owner-${owner} capture-sweep`;
     overlay.innerHTML = cardInnerHTML(state.board[ni].card);
@@ -383,19 +372,30 @@ function sweepRecolor(ni, index, owner) {
   });
 }
 
-async function resolveCaptures(index, card, captured, owner) {
-  if (!captured || !captured.length) return;
-  highlightCaptureNumbers(index, captured);
+async function resolveCaptures(index, card, events, owner) {
+  if (!events || !events.length) return;
+  highlightCaptureNumbers(events);
   await wait(CAPTURE_HL_MS);
   clearCaptureHighlights();
-  await Promise.all(captured.map((ni) => sweepRecolor(ni, index, owner)));
-  captured.forEach((ni) => {
-    if (state.board[ni]) state.board[ni].owner = owner;
-  });
+  // directions run in parallel; within a direction the прострел sweep follows
+  // the direct one so the colour visibly travels down the line
+  await Promise.all(
+    events
+      .filter((ev) => !ev.chain)
+      .map(async (ev) => {
+        await sweepRecolor(ev.index, ev.dir, owner);
+        if (state.board[ev.index]) state.board[ev.index].owner = owner;
+        const chain = events.find((c) => c.chain && c.attackerIndex === ev.index);
+        if (chain) {
+          await sweepRecolor(chain.index, chain.dir, owner);
+          if (state.board[chain.index]) state.board[chain.index].owner = owner;
+        }
+      })
+  );
   recomputeScore();
   renderScore();
-  captured.forEach((ni) => {
-    const cellEl = boardEl.querySelector(`.cell[data-index="${ni}"]`);
+  events.forEach((ev) => {
+    const cellEl = boardEl.querySelector(`.cell[data-index="${ev.index}"]`);
     if (cellEl) spawnParticles(cellEl, owner);
   });
 }
@@ -727,10 +727,22 @@ function clearNumberHighlights() {
   numHighlightEls = [];
 }
 
+function handCardElByName(name) {
+  const card = state.yourHand.find((c) => c.name === name);
+  return card ? handEl.querySelector(`.card[data-id="${card.instanceId}"]`) : null;
+}
+
+// compare entries: { index, side } for a board cell, { hand: 'Имя', side } for a hand card
 function applyNumberHighlights(compare) {
   if (!compare) return;
-  compare.forEach(({ index, side }) => {
-    const el = boardEl.querySelector(`.cell[data-index="${index}"] .num-${side}`);
+  compare.forEach((spec) => {
+    let el = null;
+    if (spec.hand) {
+      const cardEl = handCardElByName(spec.hand);
+      el = cardEl && cardEl.querySelector(`.num-${spec.side}`);
+    } else {
+      el = boardEl.querySelector(`.cell[data-index="${spec.index}"] .num-${spec.side}`);
+    }
     if (el) {
       el.classList.add('onb-num-highlight');
       numHighlightEls.push(el);
@@ -896,14 +908,18 @@ const STEPS = [
   { kind: 'info', text: 'На каждый ход даётся 20 секунд — следите за таймером.', target: '.timer-wrap' },
   { kind: 'info', text: 'Поле состоит из 9 клеток. Цель — занять клеток больше, чем соперник.', target: '#board' },
   { kind: 'info', text: 'Это ваши карты, которыми можно ходить. У каждой карты есть числа — это сила.', target: '#hand' },
-  { kind: 'drag', text: 'Сделайте первый ход, покажем как работают силы у карт.', cardName: 'Росток', targetIndex: 4 },
-  { kind: 'info', text: 'Отлично! Карта расставлена. Теперь ход соперника.', target: '#board' },
-  { kind: 'auto-opp-move', cardName: 'Лейка', index: 5 },
-  { kind: 'info', text: 'Соперник поставил карту рядом, но не смог захватить вашу: его 0 меньше вашей 4.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }] },
-  { kind: 'drag', text: 'Теперь ваш шанс на захват. Перетащите карту в эту клетку.', cardName: 'Ромашка', targetIndex: 2, avoidIndex: 5 },
-  { kind: 'info', text: 'Захват! Ваша нижняя сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }] },
+  { kind: 'drag', text: 'Сделайте первый ход, покажем как работают силы у карт.', cardName: 'Кувшинка', targetIndex: 4 },
+  { kind: 'auto-opp-move', cardName: 'Лейка', index: 8 },
+  { kind: 'info', text: 'Соперник поставил карту в угол — там её сложнее захватить.', target: '.cell[data-index="8"]' },
+  { kind: 'drag', text: 'Теперь ваш шанс на захват. Перетащите карту в эту клетку.', cardName: 'Ромашка', targetIndex: 7, avoidIndexes: [8], compare: [{ hand: 'Ромашка', side: 'right' }, { index: 8, side: 'left' }] },
+  { kind: 'info', text: 'Захват! Ваша правая сторона сильнее — клетка соперника перешла к вам.', targets: ['.cell[data-index="7"]', '.cell[data-index="8"]'], compare: [{ index: 7, side: 'right' }, { index: 8, side: 'left' }] },
   { kind: 'info', text: 'Здесь виден счёт: сколько клеток занято вами и соперником.', target: '.score-panel' },
-  { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 0 },
+  { kind: 'auto-opp-move', cardName: 'Шип', index: 5 },
+  { kind: 'info', text: 'Соперник захватил сразу две карты! Каждая выигравшая сторона забирает свою клетку.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'info', text: 'Прострел! Если сразу за захваченной картой стоит ещё одна карта соперника, они тоже сравниваются — можно забрать обе.', targets: ['.cell[data-index="5"]', '.cell[data-index="8"]'], targetHand: 'Цунами', compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'drag', text: 'Перетащите карту в эту клетку, чтобы сделать прострел.', cardName: 'Цунами', targetIndex: 2, avoidIndexes: [5], compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'info', text: 'Прострел удался! Вы вернули обе клетки одним ходом.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 3 },
   { kind: 'final', text: 'Теперь вы знаете основы! Доиграйте матч до конца чтобы получить вашу первую награду.' },
 ];
 
@@ -916,11 +932,16 @@ async function runStep(i) {
   if (step.kind === 'info') {
     stopDragHint();
     onbBlockerEl.classList.add('active');
-    const targetEl = step.targets
-      ? step.targets.map((sel) => document.querySelector(sel)).filter(Boolean)
-      : step.target
-        ? document.querySelector(step.target)
-        : null;
+    let targetEl = null;
+    if (step.targets) {
+      targetEl = step.targets.map((sel) => document.querySelector(sel)).filter(Boolean);
+      if (step.targetHand) {
+        const handCardEl = handCardElByName(step.targetHand);
+        if (handCardEl) targetEl.push(handCardEl);
+      }
+    } else if (step.target) {
+      targetEl = document.querySelector(step.target);
+    }
     positionSpotlight(targetEl);
     showTooltip(step, i + 1, targetEl);
     applyNumberHighlights(step.compare);
@@ -934,8 +955,12 @@ async function runStep(i) {
     const cellEl = boardEl.querySelector(`.cell[data-index="${step.targetIndex}"]`);
     const cardEl = card ? handEl.querySelector(`.card[data-id="${card.instanceId}"]`) : null;
     if (cardEl && cellEl) startDragHint(cardEl, cellEl);
-    const avoidEl = step.avoidIndex !== undefined ? boardEl.querySelector(`.cell[data-index="${step.avoidIndex}"]`) : null;
-    showTooltip(step, i + 1, avoidEl ? [cellEl, avoidEl] : cellEl);
+    const anchorEls = [
+      cellEl,
+      ...(step.avoidIndexes || []).map((idx) => boardEl.querySelector(`.cell[data-index="${idx}"]`)),
+    ].filter(Boolean);
+    showTooltip(step, i + 1, anchorEls.length > 1 ? anchorEls : cellEl);
+    applyNumberHighlights(step.compare);
   } else if (step.kind === 'auto-opp-move') {
     stopDragHint();
     hideTooltip();
@@ -987,9 +1012,9 @@ function finishScript() {
 }
 
 function initGame() {
-  const yourNames = ['Росток', 'Ромашка', 'Кувшинка'];
+  const yourNames = ['Кувшинка', 'Ромашка', 'Цунами'];
   const yourDeckNames = ['Гроза', 'Молния', 'Тайфун', 'Туман', 'Солнце'];
-  const oppNames = ['Лейка', 'Подсолнух', 'Шип'];
+  const oppNames = ['Лейка', 'Шип', 'Подсолнух'];
   const oppDeckNames = ['Луч', 'Жемчужина', 'Медуза', 'Спираль', 'Коралл'];
 
   state.yourHand = withInstanceIds(yourNames.map(findCard), 'you');
