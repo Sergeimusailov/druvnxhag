@@ -907,7 +907,7 @@ function stopDragHint() {
 
 const STEPS = [
   { kind: 'info', text: 'Добро пожаловать в Арену Карт! Покажем, как проходит матч.' },
-  { kind: 'info', text: 'Вы играете против ИИ-соперника — Константина. У него тоже есть своя колода карт.', target: '.player-opponent' },
+  { kind: 'info', text: 'Вы играете против соперника. Цель матча: занять больше клеток в поле чем соперник.', target: '.player-opponent' },
   { kind: 'info', text: 'На каждый ход даётся 20 секунд — следите за таймером.', target: '.timer-wrap' },
   { kind: 'info', text: 'Поле состоит из 9 клеток. Цель — занять клеток больше, чем соперник.', target: '#board' },
   { kind: 'drag', text: 'Сделайте первый ход.', cardName: 'Кувшинка', targetIndex: 4 },
