@@ -908,8 +908,8 @@ function stopDragHint() {
 const STEPS = [
   { kind: 'info', text: 'Добро пожаловать в Арену Карт! Покажем, как проходит матч.' },
   { kind: 'info', text: 'Вы играете против соперника. Цель матча: занять больше клеток в поле чем соперник.', target: '.player-opponent' },
-  { kind: 'info', text: 'На каждый ход даётся 20 секунд — следите за таймером.', target: '.timer-wrap' },
-  { kind: 'info', text: 'Поле состоит из 9 клеток. Цель — занять клеток больше, чем соперник.', target: '#board' },
+  { kind: 'info', text: 'На каждый ход даётся 20 секунд.', target: '.timer-wrap' },
+  { kind: 'info', text: 'Поле состоит из 9 клеток. Цель: занять больше клеток, чем соперник.', target: '#board' },
   { kind: 'drag', text: 'Сделайте первый ход.', cardName: 'Кувшинка', targetIndex: 4 },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 8 },
   { kind: 'drag', text: 'Чтобы захватить карту соперника, перетащите карту сюда.', cardName: 'Ромашка', targetIndex: 7, avoidIndexes: [8], compare: [{ hand: 'Ромашка', side: 'right' }, { index: 8, side: 'left' }] },
@@ -917,7 +917,7 @@ const STEPS = [
   { kind: 'auto-opp-move', cardName: 'Шип', index: 5 },
   { kind: 'info', text: 'Соперник захватил сразу две карты! Каждая выигравшая сторона забирает свою клетку.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
   { kind: 'drag', text: 'Ещё можно захватить сразу 2 карты соперника. Перетащите карту сюда.', cardName: 'Цунами', targetIndex: 2, tooltipAbove: true, compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
-  { kind: 'info', text: 'Прострел удался! Вы вернули обе клетки одним ходом.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'info', text: 'Это прострел. Он работает только по 1 линии: вертикальной или горизонтальной.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
   { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 3 },
   { kind: 'final', text: 'Теперь вы знаете основы! Доиграйте матч до конца чтобы получить вашу первую награду.' },
 ];
