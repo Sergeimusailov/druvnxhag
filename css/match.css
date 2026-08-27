@@ -561,3 +561,10 @@ a {
   width: 88px;
   opacity: 0.95;
 }
+
+/* flyGhost() resizes real width/height (not transform), so a percentage
+   background-size makes the card-back tile scale smoothly with the card
+   instead of staying pinned at a fixed pixel size */
+.card.drag-ghost.face-back {
+  background-size: 29% 29%;
+}
