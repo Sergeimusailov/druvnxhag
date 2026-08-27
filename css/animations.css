@@ -1,0 +1,94 @@
+/* Анимации: изолированная демо-страница для анимации захвата карты */
+
+.anim-page {
+  align-items: center;
+}
+
+.anim-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 56px;
+}
+
+.anim-deck-badge {
+  flex-shrink: 0;
+  width: 44px;
+  height: 62px;
+  border-radius: 10px;
+  background-color: #1c1c1e;
+  background-image: url('../assets/beckcard.svg');
+  background-repeat: repeat;
+  background-size: 20px 20px;
+  background-position: center;
+  border: 2px solid #000;
+}
+
+.anim-board {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid #343434;
+  border-radius: 20px;
+}
+
+.anim-board .cell {
+  width: 118px;
+}
+
+.anim-repeat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 24px auto 0;
+  padding: 9px 18px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anim-repeat-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.anim-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  margin: 28px auto 0;
+}
+
+.anim-toggle {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.anim-toggle.active {
+  background: rgba(66, 139, 249, 0.16);
+  border-color: #428bf9;
+  color: #f6f7f8;
+  font-weight: 600;
+}
+
+.anim-toggle-group.disabled .anim-toggle {
+  pointer-events: none;
+  opacity: 0.6;
+}
