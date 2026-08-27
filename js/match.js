@@ -409,6 +409,8 @@ function flyGhost(fromRect, toRect, innerHTML, faceDown) {
     });
     document.body.appendChild(ghost);
 
+    // animate real layout size, not transform: scale — scaling would stretch
+    // the tiled card-back pattern along with the element
     anime.animate(ghost, {
       left: `${toRect.left}px`,
       top: `${toRect.top}px`,
