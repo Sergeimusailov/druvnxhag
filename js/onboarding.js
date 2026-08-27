@@ -94,46 +94,42 @@ function spawnParticles(cellEl, owner) {
 
     const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.5 - 0.25);
     const dist = 26 + Math.random() * 20;
-    anime({
-      targets: p,
+    anime.animate(p, {
       translateX: Math.cos(angle) * dist,
       translateY: Math.sin(angle) * dist,
       scale: [1, 0.3],
       opacity: [1, 0],
       duration: 500,
-      easing: 'easeOutQuad',
-      complete: () => p.remove(),
+      ease: 'outQuad',
+      onComplete: () => p.remove(),
     });
   }
 }
 
 function playLandAnimation(cardEl) {
-  anime({
-    targets: cardEl,
+  anime.animate(cardEl, {
     scaleX: [0.5, 1.15, 0.92, 1.03, 1],
     scaleY: [0.5, 0.85, 1.08, 0.98, 1],
     opacity: [0, 1],
     duration: 420,
-    easing: 'easeOutElastic(1, 0.6)',
+    ease: 'outElastic(1, 0.6)',
   });
 }
 
 function flipCardToFront(cardEl, card) {
   return new Promise((resolve) => {
-    anime({
-      targets: cardEl,
+    anime.animate(cardEl, {
       scaleX: [1, 0],
       duration: 150,
-      easing: 'easeInQuad',
-      complete: () => {
+      ease: 'inQuad',
+      onComplete: () => {
         cardEl.classList.remove('face-back');
         cardEl.innerHTML = cardInnerHTML(card);
-        anime({
-          targets: cardEl,
+        anime.animate(cardEl, {
           scaleX: [0, 1],
           duration: 150,
-          easing: 'easeOutQuad',
-          complete: resolve,
+          ease: 'outQuad',
+          onComplete: resolve,
         });
       },
     });
@@ -229,12 +225,11 @@ function startTimer() {
   timerProgressEl.classList.remove('timer-warn', 'timer-danger');
   const prog = { len: RING_ARC };
   timerProgressEl.style.strokeDasharray = `${RING_ARC} ${RING_C}`;
-  timerAnim = anime({
-    targets: prog,
+  timerAnim = anime.animate(prog, {
     len: 0,
     duration: TURN_SECONDS * 1000,
-    easing: 'linear',
-    update: () => {
+    ease: 'linear',
+    onUpdate: () => {
       timerProgressEl.style.strokeDasharray = `${prog.len} ${RING_C}`;
       const remaining = prog.len / RING_ARC;
       if (remaining <= 0.15) {
@@ -244,7 +239,7 @@ function startTimer() {
         timerProgressEl.classList.add('timer-warn');
       }
     },
-    complete: onYourTimeout,
+    onComplete: onYourTimeout,
   });
 }
 
@@ -259,19 +254,17 @@ function onYourTimeout() {
 function showTurnOverlay(text, ms) {
   turnOverlayTextEl.textContent = text;
   return new Promise((resolve) => {
-    anime({
-      targets: turnOverlayEl,
+    anime.animate(turnOverlayEl, {
       opacity: [0, 1],
       duration: 250,
-      easing: 'easeOutQuad',
+      ease: 'outQuad',
     });
     setTimeout(() => {
-      anime({
-        targets: turnOverlayEl,
+      anime.animate(turnOverlayEl, {
         opacity: [1, 0],
         duration: 250,
-        easing: 'easeInQuad',
-        complete: resolve,
+        ease: 'inQuad',
+        onComplete: resolve,
       });
     }, ms);
   });
@@ -355,15 +348,14 @@ function sweepRecolor(ni, dir, owner) {
     }[dir] || ((p) => `inset(0 0 ${p}% 0)`);
     const proxy = { p: 100 };
     overlay.style.clipPath = clipAt(100);
-    anime({
-      targets: proxy,
+    anime.animate(proxy, {
       p: 0,
       duration: CAPTURE_SWEEP_MS,
-      easing: 'cubicBezier(0.55, 0.06, 0.68, 0.19)',
-      update: () => {
+      ease: 'cubicBezier(0.55, 0.06, 0.68, 0.19)',
+      onUpdate: () => {
         overlay.style.clipPath = clipAt(proxy.p);
       },
-      complete: () => {
+      onComplete: () => {
         cardEl.className = `card owner-${owner}`;
         overlay.remove();
         resolve();
@@ -423,15 +415,14 @@ function flyGhost(fromRect, toRect, innerHTML, faceDown) {
     const sx = toRect.width / fromRect.width;
     const sy = toRect.height / fromRect.height;
 
-    anime({
-      targets: ghost,
+    anime.animate(ghost, {
       translateX: dx,
       translateY: dy,
       scaleX: sx,
       scaleY: sy,
       duration: FLIGHT_DURATION,
-      easing: 'cubicBezier(.32,.72,.35,1)',
-      complete: () => {
+      ease: 'cubicBezier(.32,.72,.35,1)',
+      onComplete: () => {
         ghost.remove();
         resolve();
       },
@@ -557,11 +548,10 @@ function endGame() {
   turnStatusEl.textContent = 'Матч завершён';
   turnOverlayTextEl.textContent = `${text}\n${state.scoreYou} : ${state.scoreOpp}`;
   turnOverlayTextEl.style.whiteSpace = 'pre-line';
-  anime({
-    targets: turnOverlayEl,
+  anime.animate(turnOverlayEl, {
     opacity: [0, 1],
     duration: 400,
-    easing: 'easeOutQuad',
+    ease: 'outQuad',
   });
 }
 
@@ -872,16 +862,15 @@ function startDragHint(cardEl, cellEl) {
 
       const obj = { len: distance };
       await new Promise((resolve) => {
-        anime({
-          targets: obj,
+        anime.animate(obj, {
           len: size,
           duration: 650,
-          easing: 'easeInOutQuad',
-          update: () => {
+          ease: 'inOutQuad',
+          onUpdate: () => {
             trailEl.style.width = `${obj.len}px`;
             trailEl.style.left = `${to.x - obj.len}px`;
           },
-          complete: resolve,
+          onComplete: resolve,
         });
       });
       if (cancelled) break;
