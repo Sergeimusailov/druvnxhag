@@ -1,0 +1,209 @@
+/* Итог матча: изолированная демо-страница для анимации подсчёта карт + экрана результата */
+
+.mr-page {
+  align-items: center;
+}
+
+.mr-page .field-panel {
+  margin-top: 32px;
+}
+
+.mr-page .card {
+  transition: opacity 0.4s ease;
+}
+
+/* Проигравший: затемняем карточки */
+.mr-page .card.mr-dim {
+  opacity: 0.32;
+}
+
+/* Победитель: короткий импульс тени позади карточки */
+.mr-page .card.mr-glow {
+  animation: mrGlow 0.7s ease-in-out;
+}
+
+@keyframes mrGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--mr-glow-color, transparent);
+  }
+  50% {
+    box-shadow: 0 0 22px 9px var(--mr-glow-color, transparent);
+  }
+}
+
+.anim-repeat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 24px auto 0;
+  padding: 9px 18px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mr-section-label {
+  width: 100%;
+  max-width: 320px;
+  margin: 20px auto 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mr-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  margin: 8px auto 0;
+}
+
+.mr-toggle {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.mr-toggle.active {
+  background: rgba(66, 139, 249, 0.16);
+  border-color: #428bf9;
+  color: #f6f7f8;
+  font-weight: 600;
+}
+
+.mr-toggle-group.disabled .mr-toggle,
+.anim-repeat-btn:disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Экран результата */
+
+.mr-result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 28px;
+  text-align: center;
+  background: rgba(5, 8, 10, 0.94);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mr-result-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mr-result-star {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 224, 102, 0.55) 0%, rgba(255, 224, 102, 0) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mr-result-star::before {
+  content: '';
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffe066, #f6cf3c);
+}
+
+.mr-result-overlay.outcome-loss .mr-result-star {
+  background: radial-gradient(circle, rgba(227, 45, 45, 0.4) 0%, rgba(227, 45, 45, 0) 70%);
+}
+
+.mr-result-overlay.outcome-loss .mr-result-star::before {
+  background: linear-gradient(180deg, #ff7a7a, #e32d2d);
+}
+
+.mr-result-overlay.outcome-draw .mr-result-star {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.mr-result-overlay.outcome-draw .mr-result-star::before {
+  background: linear-gradient(180deg, #d8dde3, #9aa3ad);
+}
+
+.mr-result-title {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.mr-result-subtitle {
+  max-width: 260px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mr-cards-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.mr-cards-row .card {
+  width: 66px;
+}
+
+.mr-reward-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.mr-coin-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #f2b53c 60%, #c98a1e);
+  display: inline-block;
+}
+
+.mr-claim-btn {
+  width: 100%;
+  max-width: 260px;
+  margin-top: 10px;
+  padding: 15px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe066, #f6cf3c);
+  color: #1a1400;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.mr-claim-btn:active {
+  transform: scale(0.97);
+}
