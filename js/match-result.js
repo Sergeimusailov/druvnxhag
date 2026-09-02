@@ -162,6 +162,10 @@ outcomeBtnEls.forEach((btn) => {
 
 claimBtnEl.addEventListener('click', () => {
   resultOverlayEl.classList.remove('visible');
+  // возврат к полю: все карты видны как обычно, без затемнения/подсветки —
+  // дизейбл и анимация подсчёта запускаются заново только по клику на кнопку
+  renderBoard(OUTCOMES[currentOutcome].owners);
+  statusEl.textContent = 'Матч завершён';
 });
 
 setOutcome(currentOutcome);
