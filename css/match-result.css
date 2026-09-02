@@ -125,14 +125,6 @@
   background: linear-gradient(180deg, #ff7a7a, #e32d2d);
 }
 
-.mr-result-overlay.outcome-draw .mr-result-star {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
-}
-
-.mr-result-overlay.outcome-draw .mr-result-star::before {
-  background: linear-gradient(180deg, #d8dde3, #9aa3ad);
-}
-
 .mr-result-title {
   font-size: 26px;
   font-weight: 800;
