@@ -1,6 +1,7 @@
 // Итог матча: демо анимации подсчёта карт + экрана результата.
 // Мок-состояние доски фиксировано на исход — здесь не разыгрывается сам матч.
 
+const DIM_MS = 400;
 const GLOW_MS = 700;
 const AFTER_COUNT_PAUSE_MS = 400;
 
@@ -113,6 +114,7 @@ async function playCounting(outcome) {
   const owners = outcome.owners;
   const loserOwner = outcome.winner === 'you' ? 'opp' : 'you';
   dimLoser(cellsOf(loserOwner, owners));
+  await wait(DIM_MS);
   cellsOf(outcome.winner, owners).forEach((index) => glowCard(index, outcome.winner));
   await wait(GLOW_MS);
   await wait(AFTER_COUNT_PAUSE_MS);
