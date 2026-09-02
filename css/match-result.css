@@ -1,9 +1,5 @@
 /* Итог матча: изолированная демо-страница для анимации подсчёта карт + экрана результата */
 
-.mr-page {
-  align-items: center;
-}
-
 .mr-page .card {
   transition: filter 0.4s ease;
 }
