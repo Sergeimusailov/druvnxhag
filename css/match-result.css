@@ -4,17 +4,13 @@
   align-items: center;
 }
 
-.mr-page .field-panel {
-  margin-top: 32px;
-}
-
 .mr-page .card {
-  transition: opacity 0.4s ease;
+  transition: filter 0.4s ease;
 }
 
-/* Проигравший: затемняем карточки */
+/* Проигравший: затемняем карточки, но не теряем цвет рамки/фона, как в основном матче */
 .mr-page .card.mr-dim {
-  opacity: 0.32;
+  filter: brightness(0.55) saturate(0.75);
 }
 
 /* Победитель: короткий импульс тени позади карточки */
@@ -31,64 +27,54 @@
   }
 }
 
-.anim-repeat-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 24px auto 0;
-  padding: 9px 18px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #f6f7f8;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.mr-section-label {
-  width: 100%;
-  max-width: 320px;
-  margin: 20px auto 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.mr-toggle-group {
+.mr-controls {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
-  width: 100%;
-  max-width: 320px;
-  margin: 8px auto 0;
+  margin-top: 20px;
 }
 
-.mr-toggle {
-  width: 100%;
-  padding: 13px 16px;
-  border-radius: 14px;
+.mr-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mr-sqbtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.75);
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.mr-toggle.active {
+.mr-play-ic {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mr-sqbtn.active {
   background: rgba(66, 139, 249, 0.16);
   border-color: #428bf9;
   color: #f6f7f8;
-  font-weight: 600;
 }
 
-.mr-toggle-group.disabled .mr-toggle,
-.anim-repeat-btn:disabled {
+.mr-sqbtn.active .mr-play-ic {
+  color: #428bf9;
+}
+
+.mr-btn-group.disabled .mr-sqbtn {
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* Экран результата */

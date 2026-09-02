@@ -41,11 +41,10 @@ const scoreYouEl = document.getElementById('mrScoreYou');
 const scoreOppEl = document.getElementById('mrScoreOpp');
 const scoreBarEl = document.getElementById('mrScoreBar');
 const statusEl = document.getElementById('mrStatus');
-const repeatBtnEl = document.getElementById('mrRepeatBtn');
 const outcomeGroupEl = document.getElementById('mrOutcomeGroup');
 const modeGroupEl = document.getElementById('mrModeGroup');
-const outcomeBtnEls = Array.from(outcomeGroupEl.querySelectorAll('.mr-toggle'));
-const modeBtnEls = Array.from(modeGroupEl.querySelectorAll('.mr-toggle'));
+const outcomeBtnEls = Array.from(outcomeGroupEl.querySelectorAll('.mr-sqbtn'));
+const modeBtnEls = Array.from(modeGroupEl.querySelectorAll('.mr-sqbtn'));
 const resultOverlayEl = document.getElementById('mrResultOverlay');
 const resultTitleEl = document.getElementById('mrResultTitle');
 const resultSubtitleEl = document.getElementById('mrResultSubtitle');
@@ -62,7 +61,6 @@ function wait(ms) {
 }
 
 function setControlsDisabled(disabled) {
-  repeatBtnEl.disabled = disabled;
   outcomeGroupEl.classList.toggle('disabled', disabled);
   modeGroupEl.classList.toggle('disabled', disabled);
 }
@@ -203,7 +201,6 @@ modeBtnEls.forEach((btn) => {
   });
 });
 
-repeatBtnEl.addEventListener('click', () => runDemo());
 claimBtnEl.addEventListener('click', () => {
   resultOverlayEl.classList.remove('visible');
 });
