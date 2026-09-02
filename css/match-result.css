@@ -19,7 +19,7 @@
     box-shadow: 0 0 0 0 var(--mr-glow-color, transparent);
   }
   50% {
-    box-shadow: 0 0 22px 9px var(--mr-glow-color, transparent);
+    box-shadow: 0 0 15px 6px var(--mr-glow-color, transparent);
   }
 }
 
