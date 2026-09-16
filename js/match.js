@@ -43,6 +43,12 @@ const turnOverlayTextEl = document.getElementById('turnOverlayText');
 const timerProgressEl = document.querySelector('.timer-progress');
 const oppStatusEl = document.getElementById('oppStatus');
 const oppStatusTextEl = document.getElementById('oppStatusText');
+const resultOverlayEl = document.getElementById('mrResultOverlay');
+const resultTitleEl = document.getElementById('mrResultTitle');
+const resultSubtitleEl = document.getElementById('mrResultSubtitle');
+const resultCardsRowEl = document.getElementById('mrCardsRow');
+const resultRewardValueEl = document.getElementById('mrRewardValue');
+const resultClaimBtnEl = document.getElementById('mrClaimBtn');
 
 function neighborsOf(index) {
   const row = Math.floor(index / 3);
@@ -535,21 +541,88 @@ async function turnTransition(justMovedOwner) {
   }
 }
 
-function endGame() {
-  state.gameOver = true;
-  stopTimer();
-  let text = 'Ничья';
-  if (state.scoreYou > state.scoreOpp) text = 'Победа!';
-  else if (state.scoreOpp > state.scoreYou) text = 'Поражение';
-  turnStatusEl.textContent = 'Матч завершён';
-  turnOverlayTextEl.textContent = `${text}\n${state.scoreYou} : ${state.scoreOpp}`;
-  turnOverlayTextEl.style.whiteSpace = 'pre-line';
-  anime.animate(turnOverlayEl, {
-    opacity: [0, 1],
-    duration: 400,
-    ease: 'outQuad',
+const RESULT_DIM_MS = 400;
+const RESULT_GLOW_MS = 700;
+const RESULT_AFTER_COUNT_PAUSE_MS = 400;
+const RESULT_OWNER_COLOR = { you: '#2265d3', opp: '#e32d2d' };
+const RESULT_COPY = {
+  win: { title: 'Победа!', subtitle: 'Вы захватили больше карт на поле', reward: 170 },
+  loss: { title: 'Поражение', subtitle: 'Соперник оказался сильнее в этот раз', reward: 30 },
+};
+
+function dimLoserCards(loserOwner) {
+  state.board.forEach((cell, index) => {
+    if (!cell || cell.owner !== loserOwner) return;
+    const cardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
+    if (cardEl) cardEl.classList.add('mr-dim');
   });
 }
+
+function glowWinnerCards(winnerOwner) {
+  state.board.forEach((cell, index) => {
+    if (!cell || cell.owner !== winnerOwner) return;
+    const cardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
+    if (!cardEl) return;
+    cardEl.style.setProperty('--mr-glow-color', RESULT_OWNER_COLOR[winnerOwner]);
+    cardEl.classList.add('mr-glow');
+  });
+}
+
+// сначала гаснут карты проигравшего, и только потом стартует подсветка
+// победителя — шаги идут последовательно, не одновременно
+async function playCountingAnimation(winnerOwner) {
+  const loserOwner = winnerOwner === 'you' ? 'opp' : 'you';
+  dimLoserCards(loserOwner);
+  await wait(RESULT_DIM_MS);
+  glowWinnerCards(winnerOwner);
+  await wait(RESULT_GLOW_MS);
+  await wait(RESULT_AFTER_COUNT_PAUSE_MS);
+}
+
+function showResultScreen(winnerOwner) {
+  const isWin = winnerOwner === 'you';
+  const copy = isWin ? RESULT_COPY.win : RESULT_COPY.loss;
+  resultOverlayEl.classList.add('visible', isWin ? 'outcome-win' : 'outcome-loss');
+  resultTitleEl.textContent = copy.title;
+  resultSubtitleEl.textContent = copy.subtitle;
+  resultRewardValueEl.textContent = copy.reward;
+  resultCardsRowEl.innerHTML = '';
+  if (isWin) {
+    [0, 1].forEach((i) => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card owner-you';
+      cardEl.innerHTML = cardInnerHTML(CARD_ROSTER[i]);
+      resultCardsRowEl.appendChild(cardEl);
+    });
+  }
+}
+
+async function endGame() {
+  state.gameOver = true;
+  stopTimer();
+  turnStatusEl.textContent = 'Матч завершён';
+
+  // численная ничья невозможна на нечётном поле 3x3 (9 клеток), но на
+  // всякий случай оставляем текстовый оверлей без анимации подсчёта
+  if (state.scoreYou === state.scoreOpp) {
+    turnOverlayTextEl.textContent = `Ничья\n${state.scoreYou} : ${state.scoreOpp}`;
+    turnOverlayTextEl.style.whiteSpace = 'pre-line';
+    anime.animate(turnOverlayEl, {
+      opacity: [0, 1],
+      duration: 400,
+      ease: 'outQuad',
+    });
+    return;
+  }
+
+  const winnerOwner = state.scoreYou > state.scoreOpp ? 'you' : 'opp';
+  await playCountingAnimation(winnerOwner);
+  showResultScreen(winnerOwner);
+}
+
+resultClaimBtnEl.addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
 
 function makeDraggable(cardEl, card) {
   cardEl.addEventListener('pointerdown', (e) => {
