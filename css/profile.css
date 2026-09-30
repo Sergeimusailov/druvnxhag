@@ -1,27 +1,8 @@
-/* Профиль: поверх v2.css — переопределяем аппбар под заголовок по центру */
+/* Профиль (экран внутри v2.html). Затемнение фона — фон самого экрана,
+   поэтому оно уезжает вместе с экраном при слайде по нижней навигации */
 
-/* composited background (a second dark layer, not a ::before) so the
-   overlay paints behind normal-flow content instead of on top of it —
-   positioned pseudo-elements paint AFTER static in-flow text */
-.v2-app.profile-app {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url('../assets/v2-bg.png') center / cover no-repeat;
-}
-
-.profile-app .v2-appbar {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  justify-content: initial;
-}
-
-.v2-appbar-title {
-  text-align: center;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
+.v2-screen-profile {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* Хедер профиля */
@@ -31,53 +12,41 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 8px 24px 0;
+  padding: 24px 24px 0;
   text-align: center;
 }
 
 .profile-avatar-wrap {
   position: relative;
-  width: 127px;
+  width: 100%;
   height: 125px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.profile-avatar-wrap img {
+  position: absolute;
+  display: block;
 }
 
 .profile-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  left: calc(50% - 63.5px);
+  top: -1px;
   width: 127px;
   height: 127px;
-  transform: translate(-50%, -50%);
-  mix-blend-mode: screen;
-  pointer-events: none;
 }
 
 .profile-avatar {
-  position: relative;
+  left: calc(50% - 52px);
+  top: 10.5px;
   width: 104px;
   height: 104px;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .profile-deck-flair {
-  position: absolute;
-  right: 14px;
-  bottom: 6px;
-  width: 34px;
-  height: 46px;
-  border-radius: 8px;
-  background-color: #1c1c1e;
-  background-image: url('../assets/beckcard.svg');
-  background-repeat: repeat;
-  background-size: 16px 16px;
-  background-position: center;
-  border: 2px solid #7f7f7f;
-  transform: rotate(10deg);
+  left: calc(50% + 46.5px);
+  top: 16px;
+  width: 86.7px;
+  height: 110.3px;
 }
 
 .profile-rank-row {
@@ -93,6 +62,7 @@
 
 .profile-name {
   font-size: 30px;
+  line-height: 36px;
   font-weight: 700;
   letter-spacing: 0.36px;
   color: #f6f7f8;
@@ -115,9 +85,11 @@
   display: flex;
   justify-content: center;
   gap: 8px;
+  margin-top: 24px;
   padding: 20px 20px 16px;
 }
 
+/* позиция задаётся из JS через transform по offsetLeft/offsetTop чипса */
 .profile-chip-indicator {
   position: absolute;
   top: 0;
@@ -126,15 +98,16 @@
   width: 0;
   border-radius: 30px;
   background: #428bf9;
-  transition: transform 0.38s cubic-bezier(0.34, 1.32, 0.42, 1), width 0.38s cubic-bezier(0.34, 1.32, 0.42, 1);
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.32, 0.42, 1),
+    width 0.38s cubic-bezier(0.34, 1.32, 0.42, 1);
   pointer-events: none;
-  z-index: 0;
 }
 
 .profile-chip {
   position: relative;
-  z-index: 1;
-  padding: 10px 14px;
+  height: 36px;
+  padding: 0 14px;
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.1);
   color: #f6f7f8;
@@ -142,7 +115,7 @@
   font-weight: 600;
   letter-spacing: -0.08px;
   white-space: nowrap;
-  transition: background 0.15s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+  transition: background 0.2s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 .profile-chip:active {
@@ -156,22 +129,19 @@
 /* Содержимое вкладок: горизонтальный слайд-трек на 3 панели */
 
 .profile-tab-content {
-  flex: 1;
   overflow: hidden;
-  padding-bottom: 8px;
+  padding-top: 4px;
 }
 
 .profile-tab-track {
   display: flex;
-  width: 300%;
-  height: 100%;
+  align-items: flex-start;
   transition: transform 0.4s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 .profile-tab-panel {
-  width: 33.3333%;
-  flex-shrink: 0;
-  overflow-y: auto;
+  flex: 0 0 100%;
+  min-width: 0;
 }
 
 /* Ачивки */
@@ -279,7 +249,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  padding: 0 16px;
+  padding: 20px 16px 0;
 }
 
 .deck-grid .card {

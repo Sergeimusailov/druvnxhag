@@ -37,16 +37,15 @@ function renderFavoriteDeck() {
 const chipEls = Array.from(document.querySelectorAll('.profile-chip'));
 const TAB_ORDER = ['achievements', 'stats', 'deck'];
 const indicatorEl = document.getElementById('profileChipIndicator');
-const trackEl = document.getElementById('profileTabTrack');
+const tabTrackEl = document.getElementById('profileTabTrack');
 let currentTab = 'achievements';
 
 function moveIndicatorTo(chipEl, animate) {
   if (!animate) indicatorEl.style.transition = 'none';
   indicatorEl.style.width = `${chipEl.offsetWidth}px`;
-  indicatorEl.style.transform = `translateX(${chipEl.offsetLeft}px)`;
+  indicatorEl.style.transform = `translate(${chipEl.offsetLeft}px, ${chipEl.offsetTop}px)`;
   if (!animate) {
-    // force a reflow so the next transition re-enables cleanly, without
-    // animating this initial (non-interactive) placement
+    // reflow so this non-interactive placement isn't animated
     indicatorEl.getBoundingClientRect();
     indicatorEl.style.transition = '';
   }
@@ -54,12 +53,11 @@ function moveIndicatorTo(chipEl, animate) {
 
 function setTab(tab) {
   if (tab === currentTab) return;
-  const chipEl = chipEls.find((chip) => chip.dataset.tab === tab);
   currentTab = tab;
-  chipEls.forEach((chip) => chip.classList.toggle('profile-chip-active', chip.dataset.tab === tab));
+  const chipEl = chipEls.find((chip) => chip.dataset.tab === tab);
+  chipEls.forEach((chip) => chip.classList.toggle('profile-chip-active', chip === chipEl));
   moveIndicatorTo(chipEl, true);
-  const index = TAB_ORDER.indexOf(tab);
-  trackEl.style.transform = `translateX(-${index * (100 / TAB_ORDER.length)}%)`;
+  tabTrackEl.style.transform = `translateX(-${TAB_ORDER.indexOf(tab) * 100}%)`;
 }
 
 chipEls.forEach((chip) => {
@@ -67,10 +65,14 @@ chipEls.forEach((chip) => {
 });
 
 document.getElementById('profileSettingsBtn').addEventListener('click', () => {});
-document.getElementById('v2TasksBtn').addEventListener('click', () => {});
-document.getElementById('v2GiftsBtn').addEventListener('click', () => {});
-document.getElementById('v2LeaguesBtn').addEventListener('click', () => {});
+
+function syncProfileIndicator() {
+  moveIndicatorTo(chipEls.find((chip) => chip.dataset.tab === currentTab), false);
+}
 
 renderAchievements();
 renderFavoriteDeck();
-moveIndicatorTo(chipEls[0], false);
+syncProfileIndicator();
+// web fonts/emoji metrics can shift chip widths after first paint
+window.addEventListener('load', syncProfileIndicator);
+window.addEventListener('resize', syncProfileIndicator);

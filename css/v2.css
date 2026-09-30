@@ -10,9 +10,10 @@ html, body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   display: flex;
   justify-content: center;
+  -webkit-font-smoothing: antialiased;
 }
 
 button {
@@ -21,32 +22,87 @@ button {
   cursor: pointer;
   color: inherit;
   background: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .v2-app {
   position: relative;
   width: 100%;
   max-width: 393px;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+  color: #fff;
+}
+
+/* Разделы нижней навигации: экраны лежат стопкой, в переходе участвуют
+   только уходящий и приходящий — уходящий уезжает, новый въезжает с той
+   стороны, куда нажали в таб-баре */
+
+.v2-track {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.v2-screen {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 82px;
+  visibility: hidden;
+  scrollbar-width: none;
+}
+
+.v2-screen.is-sliding {
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.v2-screen::-webkit-scrollbar {
+  display: none;
+}
+
+/* Жидкое стекло (system-liquid-glass / small): блюр фона, еле заметная
+   заливка и светлый диагональный обод */
+
+.v2-glass {
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    inset 1px 1px 0.5px rgba(255, 255, 255, 0.3),
+    inset -1px -1px 0.5px rgba(255, 255, 255, 0.14),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
 }
 
 /* App bar */
 
 .v2-appbar {
-  display: flex;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
   align-items: center;
-  justify-content: space-between;
+  min-height: 44px;
   padding: 16px 16px 10px;
+  box-sizing: content-box;
+}
+
+.v2-appbar-title {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
 }
 
 .v2-icon-btn {
@@ -56,13 +112,15 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f6f7f8;
+  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
-/* Hero */
+.v2-icon-btn:active {
+  transform: scale(0.9);
+}
+
+/* Главная */
 
 .v2-hero {
   flex: 1;
@@ -71,32 +129,32 @@ a {
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 16px;
-  padding: 20px 40px;
+  padding: 20px 36px;
 }
 
 .v2-logo {
+  display: block;
   width: 300px;
-  max-width: 100%;
   height: auto;
-  mix-blend-mode: screen;
+  max-width: 100%;
 }
 
 .v2-subtitle {
-  color: #fff;
+  margin-top: 12px;
+  width: 311px;
+  max-width: 100%;
   font-size: 15px;
-  line-height: 1.3;
+  line-height: 18px;
   letter-spacing: -0.24px;
-  max-width: 300px;
+  color: #fff;
 }
 
 .v2-btn-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
-  max-width: 240px;
-  margin-top: 4px;
+  width: 192px;
+  margin-top: 16px;
 }
 
 .v2-btn {
@@ -107,12 +165,11 @@ a {
   border-radius: 12px;
   font-size: 15px;
   letter-spacing: -0.24px;
-  text-align: center;
-  transition: transform 0.1s ease;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 .v2-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .v2-btn-primary {
@@ -125,52 +182,126 @@ a {
   color: #428bf9;
 }
 
-/* Tab bar */
+/* Заглушки разделов */
 
-.v2-tabbar {
-  display: flex;
-  align-items: stretch;
-  gap: 2px;
-  margin: 0 16px 16px;
-  padding: 6px 8px;
-  border-radius: 30px;
-  background: rgba(20, 20, 24, 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.v2-tab {
-  position: relative;
+.v2-stub {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 6px 4px 7px;
-  border-radius: 20px;
-  color: rgba(246, 247, 248, 0.85);
+  gap: 8px;
+  padding: 0 40px;
+  text-align: center;
 }
 
-.v2-tab-icon {
-  color: inherit;
-}
-
-.v2-tab-label {
-  font-size: 10px;
+.v2-stub-title {
+  font-size: 17px;
   font-weight: 600;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.v2-stub-text {
+  font-size: 15px;
+  letter-spacing: -0.24px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* Затемнение снизу под таб-баром (system-scroll-edge-effect-tabbar) */
+
+.v2-edge-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 150px;
+  opacity: 0.8;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.04) 13%,
+    rgba(0, 0, 0, 0.15) 27%,
+    rgba(0, 0, 0, 0.33) 40%,
+    rgba(0, 0, 0, 0.56) 53%,
+    rgba(0, 0, 0, 0.77) 67%,
+    rgba(0, 0, 0, 0.92) 80%,
+    rgba(0, 0, 0, 0.99) 93%,
+    #000 100%
+  );
+}
+
+/* Таб-бар */
+
+.v2-tabbar {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  padding: 4px;
+  border-radius: 999px;
+  /* clip the highlight's elastic overshoot to the pill shape */
+  overflow: hidden;
 }
 
 .v2-tab-highlight {
   position: absolute;
-  inset: 0 -2px;
+  top: 4px;
+  left: 0;
+  width: 0;
+  height: 54px;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.15);
-  z-index: -1;
+  pointer-events: none;
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.32, 0.42, 1),
+    width 0.45s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+.v2-tab {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 8px 7px;
+  color: #f6f7f8;
+  transition: color 0.25s ease;
+}
+
+.v2-tab-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.v2-tab-icon svg {
+  display: block;
+}
+
+.v2-tab:active .v2-tab-icon {
+  transform: scale(0.85);
+}
+
+.v2-tab-label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .v2-tab-active {
   color: #66a3ff;
+}
+
+.v2-tab-active .v2-tab-label {
+  font-weight: 600;
+  letter-spacing: -0.1px;
 }
