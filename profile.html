@@ -48,33 +48,36 @@
       </div>
     </section>
 
-    <div class="profile-chip-row">
+    <div class="profile-chip-row" id="profileChipRow">
+      <span class="profile-chip-indicator" id="profileChipIndicator"></span>
       <button class="profile-chip profile-chip-active" data-tab="achievements">Ачивки</button>
       <button class="profile-chip" data-tab="stats">Статистика</button>
       <button class="profile-chip" data-tab="deck">Любимая колода</button>
     </div>
 
     <section class="profile-tab-content">
-      <div class="profile-tab-panel profile-tab-panel-active" id="tabAchievements">
-        <div class="achievements-grid" id="achievementsGrid"></div>
-      </div>
-
-      <div class="profile-tab-panel" id="tabStats">
-        <p class="stats-percent">83%</p>
-        <div class="stats-percent-label">
-          <span>Побед</span>
-          <span class="stats-tooltip-ic" aria-hidden="true">i</span>
+      <div class="profile-tab-track" id="profileTabTrack">
+        <div class="profile-tab-panel" id="tabAchievements">
+          <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
-        <div class="stats-cells">
-          <div class="stats-cell"><span>Победы</span><strong>25</strong></div>
-          <div class="stats-cell"><span>Поражения</span><strong>3</strong></div>
-          <div class="stats-cell"><span>Ничьи</span><strong>2</strong></div>
-          <div class="stats-cell"><span>Собрано карт</span><strong id="statsCollectedCount">2</strong></div>
-        </div>
-      </div>
 
-      <div class="profile-tab-panel" id="tabDeck">
-        <div class="deck-grid" id="favoriteDeckGrid"></div>
+        <div class="profile-tab-panel" id="tabStats">
+          <p class="stats-percent">83%</p>
+          <div class="stats-percent-label">
+            <span>Побед</span>
+            <span class="stats-tooltip-ic" aria-hidden="true">i</span>
+          </div>
+          <div class="stats-cells">
+            <div class="stats-cell"><span>Победы</span><strong>25</strong></div>
+            <div class="stats-cell"><span>Поражения</span><strong>3</strong></div>
+            <div class="stats-cell"><span>Ничьи</span><strong>2</strong></div>
+            <div class="stats-cell"><span>Собрано карт</span><strong id="statsCollectedCount">2</strong></div>
+          </div>
+        </div>
+
+        <div class="profile-tab-panel" id="tabDeck">
+          <div class="deck-grid" id="favoriteDeckGrid"></div>
+        </div>
       </div>
     </section>
 

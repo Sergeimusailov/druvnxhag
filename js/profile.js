@@ -35,17 +35,31 @@ function renderFavoriteDeck() {
 }
 
 const chipEls = Array.from(document.querySelectorAll('.profile-chip'));
-const panels = {
-  achievements: document.getElementById('tabAchievements'),
-  stats: document.getElementById('tabStats'),
-  deck: document.getElementById('tabDeck'),
-};
+const TAB_ORDER = ['achievements', 'stats', 'deck'];
+const indicatorEl = document.getElementById('profileChipIndicator');
+const trackEl = document.getElementById('profileTabTrack');
+let currentTab = 'achievements';
+
+function moveIndicatorTo(chipEl, animate) {
+  if (!animate) indicatorEl.style.transition = 'none';
+  indicatorEl.style.width = `${chipEl.offsetWidth}px`;
+  indicatorEl.style.transform = `translateX(${chipEl.offsetLeft}px)`;
+  if (!animate) {
+    // force a reflow so the next transition re-enables cleanly, without
+    // animating this initial (non-interactive) placement
+    indicatorEl.getBoundingClientRect();
+    indicatorEl.style.transition = '';
+  }
+}
 
 function setTab(tab) {
+  if (tab === currentTab) return;
+  const chipEl = chipEls.find((chip) => chip.dataset.tab === tab);
+  currentTab = tab;
   chipEls.forEach((chip) => chip.classList.toggle('profile-chip-active', chip.dataset.tab === tab));
-  Object.entries(panels).forEach(([key, panel]) => {
-    panel.classList.toggle('profile-tab-panel-active', key === tab);
-  });
+  moveIndicatorTo(chipEl, true);
+  const index = TAB_ORDER.indexOf(tab);
+  trackEl.style.transform = `translateX(-${index * (100 / TAB_ORDER.length)}%)`;
 }
 
 chipEls.forEach((chip) => {
@@ -59,3 +73,4 @@ document.getElementById('v2LeaguesBtn').addEventListener('click', () => {});
 
 renderAchievements();
 renderFavoriteDeck();
+moveIndicatorTo(chipEls[0], false);

@@ -111,13 +111,29 @@
 /* Чипсы-вкладки */
 
 .profile-chip-row {
+  position: relative;
   display: flex;
   justify-content: center;
   gap: 8px;
   padding: 20px 20px 16px;
 }
 
+.profile-chip-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 36px;
+  width: 0;
+  border-radius: 30px;
+  background: #428bf9;
+  transition: transform 0.38s cubic-bezier(0.34, 1.32, 0.42, 1), width 0.38s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .profile-chip {
+  position: relative;
+  z-index: 1;
   padding: 10px 14px;
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.1);
@@ -126,27 +142,36 @@
   font-weight: 600;
   letter-spacing: -0.08px;
   white-space: nowrap;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.profile-chip:active {
+  transform: scale(0.94);
 }
 
 .profile-chip-active {
-  background: #428bf9;
+  background: transparent;
 }
 
-/* Содержимое вкладок */
+/* Содержимое вкладок: горизонтальный слайд-трек на 3 панели */
 
 .profile-tab-content {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   padding-bottom: 8px;
 }
 
-.profile-tab-panel {
-  display: none;
+.profile-tab-track {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
-.profile-tab-panel-active {
-  display: block;
+.profile-tab-panel {
+  width: 33.3333%;
+  flex-shrink: 0;
+  overflow-y: auto;
 }
 
 /* Ачивки */
