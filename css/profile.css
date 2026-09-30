@@ -1,0 +1,262 @@
+/* Профиль: поверх v2.css — переопределяем аппбар под заголовок по центру */
+
+/* composited background (a second dark layer, not a ::before) so the
+   overlay paints behind normal-flow content instead of on top of it —
+   positioned pseudo-elements paint AFTER static in-flow text */
+.v2-app.profile-app {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('../assets/v2-bg.png') center / cover no-repeat;
+}
+
+.profile-app .v2-appbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  justify-content: initial;
+}
+
+.v2-appbar-title {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+/* Хедер профиля */
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 24px 0;
+  text-align: center;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  width: 127px;
+  height: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.profile-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 127px;
+  height: 127px;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.profile-avatar {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-deck-flair {
+  position: absolute;
+  right: 14px;
+  bottom: 6px;
+  width: 34px;
+  height: 46px;
+  border-radius: 8px;
+  background-color: #1c1c1e;
+  background-image: url('../assets/beckcard.svg');
+  background-repeat: repeat;
+  background-size: 16px 16px;
+  background-position: center;
+  border: 2px solid #7f7f7f;
+  transform: rotate(10deg);
+}
+
+.profile-rank-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
+}
+
+.profile-name {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.36px;
+  color: #f6f7f8;
+}
+
+.profile-clan-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 17px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+/* Чипсы-вкладки */
+
+.profile-chip-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px 16px;
+}
+
+.profile-chip {
+  padding: 10px 14px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.profile-chip-active {
+  background: #428bf9;
+}
+
+/* Содержимое вкладок */
+
+.profile-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.profile-tab-panel {
+  display: none;
+}
+
+.profile-tab-panel-active {
+  display: block;
+}
+
+/* Ачивки */
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 17px;
+  width: 335px;
+  margin: 0 auto;
+}
+
+.achievement-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.achievement-badge {
+  width: 128px;
+  height: 110px;
+  object-fit: contain;
+}
+
+.achievement-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.achievement-subtitle {
+  font-size: 11px;
+  color: #f6f7f8;
+}
+
+/* Статистика */
+
+.stats-percent {
+  margin-top: 24px;
+  font-size: 68px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 0.9;
+  background: linear-gradient(180deg, #fff 43%, #c6c6c6 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stats-percent-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 17px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.stats-tooltip-ic {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stats-cells {
+  margin: 24px 24px 0;
+}
+
+.stats-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  font-size: 17px;
+  letter-spacing: -0.41px;
+}
+
+.stats-cell span {
+  color: #f6f7f8;
+}
+
+.stats-cell strong {
+  color: #ffdd2d;
+  font-weight: 700;
+}
+
+/* Любимая колода */
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 0 16px;
+}
+
+.deck-grid .card {
+  width: 100%;
+}
