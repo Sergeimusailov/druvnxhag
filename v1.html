@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Арена Карт</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <button class="link-btn" id="closeBtn">Закрыть</button>
+      <div class="coins-pill">
+        <span class="coin-icon"></span>
+        <span>320</span>
+      </div>
+    </div>
+
+    <div class="secondrow">
+      <button class="pill pill-bug" id="bugBtn">
+        <span class="bug-icon">🐛</span>
+        <span>Сообщить о баге</span>
+      </button>
+      <button class="circle-btn" id="helpBtn">?</button>
+    </div>
+
+    <section class="hero">
+      <img class="logo-img" src="assets/logo.png" alt="Арена Карт">
+      <p class="subtitle">Собирайте колоду и сражайтесь<br>с другими игроками</p>
+
+      <a class="btn btn-primary" id="findMatchBtn" href="match.html">Найти матч</a>
+      <a class="btn btn-secondary" id="trainBtn" href="onboarding.html">Онбординг</a>
+    </section>
+
+    <section class="bottom-grid">
+      <button class="card card-shop" id="shopBtn">
+        <span class="badge-dot"></span>
+        <span class="card-title">Магазин<br>карт</span>
+        <img class="card-icon-img" src="assets/icon-shop.png" alt="" aria-hidden="true">
+      </button>
+
+      <a class="card card-collection" id="collectionBtn" href="collection.html">
+        <span class="card-title">Коллекция<br>карт</span>
+        <img class="card-icon-img" src="assets/icon-collection.png" alt="" aria-hidden="true">
+      </a>
+
+      <button class="card card-stats" id="statsBtn">
+        <span class="card-title">Статистика</span>
+        <img class="card-icon-img" src="assets/icon-stats.png" alt="" aria-hidden="true">
+      </button>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
