@@ -145,6 +145,12 @@ function formatLeft(ms) {
   return days > 0 ? `${days} ${pluralDays(days)} ${clock}` : clock;
 }
 
+// неделе точное время не нужно — только дни; в последний день тикают часы
+function formatWeeklyLeft(ms) {
+  const days = Math.floor(Math.max(0, ms) / 86400000);
+  return days > 0 ? `${days} ${pluralDays(days)}` : formatLeft(ms);
+}
+
 function resetTimes(now) {
   const midnight = new Date(now);
   midnight.setHours(24, 0, 0, 0);
@@ -159,7 +165,8 @@ function updateTimers() {
   const now = new Date();
   const ends = resetTimes(now);
   document.querySelectorAll('[data-timer]').forEach((el) => {
-    el.textContent = `Обновим через ${formatLeft(ends[el.dataset.timer] - now)}`;
+    const left = ends[el.dataset.timer] - now;
+    el.textContent = `Обновим через ${el.dataset.timer === 'weekly' ? formatWeeklyLeft(left) : formatLeft(left)}`;
   });
 }
 
