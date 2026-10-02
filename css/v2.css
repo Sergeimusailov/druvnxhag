@@ -112,6 +112,38 @@ a {
   box-sizing: content-box;
 }
 
+/* Шапка раздела закреплена: контент скроллится под ней. Под шапкой —
+   system-scroll-edge-effect: блюр фона, сходящий на нет книзу, плюс лёгкое
+   затемнение. Появляется, только когда экран прокручен (.is-scrolled). */
+
+.v2-screen > .v2-appbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.v2-screen > .v2-appbar::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% + 50px);
+  background: linear-gradient(rgba(12, 10, 24, 0.75), rgba(12, 10, 24, 0));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(#000 40%, transparent);
+  mask-image: linear-gradient(#000 40%, transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.v2-screen.is-scrolled > .v2-appbar::before {
+  opacity: 1;
+}
+
 .v2-appbar-title {
   text-align: center;
   font-size: 17px;

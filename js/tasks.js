@@ -326,8 +326,8 @@ async function claimTask(tab, taskId) {
   const card = panel.querySelector('.tasks-progress');
   const screenRect = tasksScreenEl.getBoundingClientRect();
   const cardRect = card.getBoundingClientRect();
-  if (cardRect.top < screenRect.top + 70 || cardRect.bottom > screenRect.bottom - 90) {
-    tasksScreenEl.scrollTo({ top: tasksScreenEl.scrollTop + cardRect.top - screenRect.top - 80, behavior: 'smooth' });
+  if (cardRect.top < screenRect.top + 100 || cardRect.bottom > screenRect.bottom - 90) {
+    tasksScreenEl.scrollTo({ top: tasksScreenEl.scrollTop + cardRect.top - screenRect.top - 110, behavior: 'smooth' });
     await wait(420);
   }
 

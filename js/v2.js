@@ -142,6 +142,11 @@ function showScreen(screen, animate = true) {
   document.dispatchEvent(new CustomEvent('v2:screen', { detail: { screen, animate } }));
 }
 
+// эффект под закреплённой шапкой включается, как только контент уехал под неё
+Object.values(screenEls).forEach((el) => {
+  el.addEventListener('scroll', () => el.classList.toggle('is-scrolled', el.scrollTop > 2), { passive: true });
+});
+
 document.querySelectorAll('[data-nav]').forEach((el) => {
   el.addEventListener('click', () => showScreen(el.dataset.nav));
 });
