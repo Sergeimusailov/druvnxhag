@@ -139,6 +139,7 @@ function showScreen(screen, animate = true) {
   }
 
   history.replaceState(null, '', screen === 'game' ? location.pathname : `#${screen}`);
+  document.dispatchEvent(new CustomEvent('v2:screen', { detail: { screen, animate } }));
 }
 
 document.querySelectorAll('[data-nav]').forEach((el) => {

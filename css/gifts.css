@@ -1,0 +1,186 @@
+/* Раздел «Подарки» (Figma 15803:39165) */
+
+.gifts-seg-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 14px 16px 38px;
+}
+
+/* tui-segmented: 296×44, подложка white/10, белая пилюля под выбранным пунктом */
+.v2-segmented {
+  position: relative;
+  display: flex;
+  padding: 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.v2-segmented .v2-chip-indicator {
+  border-radius: 48px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+}
+
+.v2-segmented .v2-chip {
+  width: 144px;
+  padding: 0 12px;
+  background: transparent;
+  color: #f6f7f8;
+  transition: color 0.25s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.v2-segmented .v2-chip-active {
+  color: #333;
+}
+
+/* «Можно выиграть» — пока драфт */
+
+.gifts-draft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 40px 40px;
+  text-align: center;
+}
+
+.gifts-draft-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  animation: giftsDraftFloat 3s ease-in-out infinite;
+}
+
+@keyframes giftsDraftFloat {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+/* «Уже у вас» — офферы (tmXSell / TmCombo) */
+
+.offers {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0 16px 24px;
+}
+
+.offer {
+  position: relative;
+  height: 122px;
+  padding: 16px 20px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.offer:active {
+  transform: scale(0.97);
+}
+
+.offer-text {
+  position: relative;
+  z-index: 1;
+  width: 221px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.offer-btn {
+  position: relative;
+  z-index: 1;
+  height: 30px;
+  margin-top: 16px;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.offer-btn:active {
+  transform: scale(0.92);
+}
+
+.offer-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 122px;
+  pointer-events: none;
+}
+
+/* Промо-карточка с лигалом */
+
+.offer-promo {
+  height: 147px;
+  background: linear-gradient(225deg, #275417 0%, #223f17 100%);
+}
+
+.offer-promo .offer-text {
+  width: 245px;
+  color: #fff;
+}
+
+.offer-promo .offer-btn {
+  background: #fff;
+  color: #333;
+}
+
+.offer-promo-img {
+  position: absolute;
+  top: 0;
+  left: 135px;
+  width: 226px;
+  height: 140px;
+  pointer-events: none;
+}
+
+.offer-legal {
+  position: relative;
+  z-index: 1;
+  width: 245px;
+  margin-top: 8px;
+  font-size: 6px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.offer-promo-badge {
+  position: absolute;
+  left: 311px;
+  top: 97px;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+}
+
+/* Появление карточек при входе в раздел */
+
+.offers.is-entering .offer {
+  animation: offerIn 0.5s cubic-bezier(0.34, 1.32, 0.42, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.offers.is-entering .offer .offer-img,
+.offers.is-entering .offer .offer-promo-img {
+  animation: offerImgIn 0.6s cubic-bezier(0.34, 1.32, 0.42, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms + 120ms);
+}
+
+@keyframes offerIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+}
+
+@keyframes offerImgIn {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+}
