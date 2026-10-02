@@ -1,4 +1,76 @@
 const SCREENS = ['game', 'tasks', 'gifts', 'leagues', 'profile'];
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Чипсы-вкладки внутри раздела: пилюля перетекает к нажатому чипсу, панели
+// едут треком, а высота контейнера подстраивается под активную панель —
+// иначе экран скроллился бы на высоту самой длинной из них.
+function createChipTabs(rowEl, trackEl, onChange) {
+  const chips = Array.from(rowEl.querySelectorAll('.v2-chip'));
+  const indicator = rowEl.querySelector('.v2-chip-indicator');
+  const contentEl = trackEl.parentElement;
+  const panels = Array.from(trackEl.children);
+  let index = Math.max(0, chips.findIndex((c) => c.classList.contains('v2-chip-active')));
+  let switchTimer = null;
+
+  function placeIndicator(animate) {
+    const chip = chips[index];
+    if (!animate) indicator.style.transition = 'none';
+    indicator.style.width = `${chip.offsetWidth}px`;
+    indicator.style.transform = `translate(${chip.offsetLeft}px, ${chip.offsetTop}px)`;
+    if (!animate) {
+      indicator.getBoundingClientRect();
+      indicator.style.transition = '';
+    }
+  }
+
+  function fitHeight() {
+    contentEl.style.height = `${panels[index].offsetHeight}px`;
+  }
+
+  function select(i, animate = true) {
+    if (i < 0 || (i === index && animate)) return;
+    index = i;
+    chips.forEach((c, j) => c.classList.toggle('v2-chip-active', j === i));
+    placeIndicator(animate);
+    if (animate) {
+      // height animates only during a switch; content changes inside a panel
+      // (a task collapsing, say) resize the container instantly
+      contentEl.classList.add('is-switching');
+      clearTimeout(switchTimer);
+      switchTimer = setTimeout(() => contentEl.classList.remove('is-switching'), 420);
+    } else {
+      trackEl.style.transition = 'none';
+    }
+    trackEl.style.transform = `translateX(-${i * 100}%)`;
+    fitHeight();
+    if (!animate) {
+      trackEl.getBoundingClientRect();
+      trackEl.style.transition = '';
+    }
+    if (onChange) onChange(chips[i].dataset.tab);
+  }
+
+  chips.forEach((c, i) => c.addEventListener('click', () => select(i)));
+  const observer = new ResizeObserver(fitHeight);
+  panels.forEach((p) => observer.observe(p));
+  const resync = () => {
+    placeIndicator(false);
+    fitHeight();
+  };
+  window.addEventListener('load', resync);
+  window.addEventListener('resize', resync);
+  select(index, false);
+
+  return {
+    select: (tab) => select(chips.findIndex((c) => c.dataset.tab === tab)),
+    get tab() {
+      return chips[index].dataset.tab;
+    },
+  };
+}
 const tabHighlightEl = document.getElementById('v2TabHighlight');
 const tabEls = Array.from(document.querySelectorAll('.v2-tab'));
 let currentScreen = null;

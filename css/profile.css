@@ -1,10 +1,3 @@
-/* Профиль (экран внутри v2.html). Затемнение фона — фон самого экрана,
-   поэтому оно уезжает вместе с экраном при слайде по нижней навигации */
-
-.v2-screen-profile {
-  background: rgba(0, 0, 0, 0.7);
-}
-
 /* Хедер профиля */
 
 .profile-header {
@@ -78,70 +71,15 @@
   color: #f6f7f8;
 }
 
-/* Чипсы-вкладки */
+/* Чипсы-вкладки — общие .v2-chip* из v2.css, тут только отступы */
 
 .profile-chip-row {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
   margin-top: 24px;
   padding: 20px 20px 16px;
 }
 
-/* позиция задаётся из JS через transform по offsetLeft/offsetTop чипса */
-.profile-chip-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 36px;
-  width: 0;
-  border-radius: 30px;
-  background: #428bf9;
-  transition:
-    transform 0.38s cubic-bezier(0.34, 1.32, 0.42, 1),
-    width 0.38s cubic-bezier(0.34, 1.32, 0.42, 1);
-  pointer-events: none;
-}
-
-.profile-chip {
-  position: relative;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #f6f7f8;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.08px;
-  white-space: nowrap;
-  transition: background 0.2s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
-}
-
-.profile-chip:active {
-  transform: scale(0.94);
-}
-
-.profile-chip-active {
-  background: transparent;
-}
-
-/* Содержимое вкладок: горизонтальный слайд-трек на 3 панели */
-
-.profile-tab-content {
-  overflow: hidden;
+.profile-chip-row + .v2-tab-content .v2-tab-panel {
   padding-top: 4px;
-}
-
-.profile-tab-track {
-  display: flex;
-  align-items: flex-start;
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0.35, 1);
-}
-
-.profile-tab-panel {
-  flex: 0 0 100%;
-  min-width: 0;
 }
 
 /* Ачивки */

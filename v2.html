@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/match.css">
   <link rel="stylesheet" href="css/v2.css">
   <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/tasks.css">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -17,6 +18,8 @@
       </mask>
     </defs>
   </svg>
+
+  <div class="v2-bg-fixed" aria-hidden="true"></div>
 
   <main class="v2-app">
     <div class="v2-track" id="v2Track">
@@ -44,11 +47,26 @@
       </section>
 
       <!-- Задания -->
-      <section class="v2-screen" data-screen="tasks">
-        <div class="v2-appbar"><span></span><div class="v2-appbar-title">Задания</div><span></span></div>
-        <div class="v2-stub">
-          <p class="v2-stub-title">Скоро здесь появятся задания</p>
-          <p class="v2-stub-text">Раздел в разработке</p>
+      <section class="v2-screen" data-screen="tasks" id="tasksScreen">
+        <div class="v2-appbar v2-appbar-wide">
+          <button class="v2-icon-btn v2-glass" data-nav="game" aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
+          <div class="v2-appbar-title">Задания</div>
+          <div class="v2-balance v2-glass"><img src="assets/v2-coin.png" alt="" width="28" height="28"><span id="v2CoinBalance">2500</span></div>
+        </div>
+
+        <p class="tasks-intro">Выполняйте задания чтобы получить ещё больше подарков</p>
+
+        <div class="v2-chip-row tasks-chip-row" id="tasksChipRow">
+          <span class="v2-chip-indicator"></span>
+          <button class="v2-chip v2-chip-active" data-tab="daily">Задания дня</button>
+          <button class="v2-chip" data-tab="weekly">Еженедельные</button>
+        </div>
+
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="tasksTabTrack">
+            <div class="v2-tab-panel tasks-panel" data-panel="daily"></div>
+            <div class="v2-tab-panel tasks-panel" data-panel="weekly"></div>
+          </div>
         </div>
       </section>
 
@@ -100,20 +118,20 @@
           </div>
         </div>
 
-        <div class="profile-chip-row" id="profileChipRow">
-          <span class="profile-chip-indicator" id="profileChipIndicator"></span>
-          <button class="profile-chip profile-chip-active" data-tab="achievements">Ачивки</button>
-          <button class="profile-chip" data-tab="stats">Статистика</button>
-          <button class="profile-chip" data-tab="deck">Любимая колода</button>
+        <div class="v2-chip-row profile-chip-row" id="profileChipRow">
+          <span class="v2-chip-indicator"></span>
+          <button class="v2-chip v2-chip-active" data-tab="achievements">Ачивки</button>
+          <button class="v2-chip" data-tab="stats">Статистика</button>
+          <button class="v2-chip" data-tab="deck">Любимая колода</button>
         </div>
 
-        <div class="profile-tab-content">
-          <div class="profile-tab-track" id="profileTabTrack">
-            <div class="profile-tab-panel" id="tabAchievements">
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="profileTabTrack">
+            <div class="v2-tab-panel" id="tabAchievements">
               <div class="achievements-grid" id="achievementsGrid"></div>
             </div>
 
-            <div class="profile-tab-panel" id="tabStats">
+            <div class="v2-tab-panel" id="tabStats">
               <p class="stats-percent">83%</p>
               <div class="stats-percent-label">
                 <span>Побед</span>
@@ -127,7 +145,7 @@
               </div>
             </div>
 
-            <div class="profile-tab-panel" id="tabDeck">
+            <div class="v2-tab-panel" id="tabDeck">
               <div class="deck-grid" id="favoriteDeckGrid"></div>
             </div>
           </div>
@@ -170,10 +188,52 @@
         <span class="v2-tab-label">Профиль</span>
       </button>
     </nav>
+
+    <div class="v2-fx-layer" id="v2FxLayer" aria-hidden="true"></div>
+
+    <!-- Экран открытия подарка (поверх всего, включая таб-бар) -->
+    <div class="gift-overlay" id="giftOverlay" aria-hidden="true">
+      <div class="gift-overlay-bg"></div>
+      <div class="v2-appbar gift-overlay-appbar">
+        <button class="v2-icon-btn v2-glass" id="giftOverlayClose" aria-label="Закрыть"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg></button>
+        <span></span><span></span>
+      </div>
+      <div class="gift-stage" id="giftStage">
+        <img class="gift-burst gift-burst-1" src="assets/v2-burst-1.svg" alt="">
+        <img class="gift-burst gift-burst-2" src="assets/v2-burst-2.svg" alt="">
+        <img class="gift-overlay-gift" id="giftOverlayGift" src="assets/v2-gift-big.png" alt="Подарок" width="264" height="264">
+        <div class="gift-flash"></div>
+      </div>
+      <p class="gift-overlay-hint" id="giftOverlayHint">Нажмите, чтобы открыть</p>
+      <h2 class="gift-overlay-title" id="giftOverlayTitle">Награды</h2>
+      <div class="gift-rewards" id="giftRewards">
+          <img src="assets/v2-reward-arrows.png" alt="Перезапуск ×3" width="127" height="127">
+          <img src="assets/v2-reward-snow.png" alt="Заморозка ×3" width="127" height="127">
+          <img src="assets/v2-reward-chip.png" alt="Блок ×3" width="127" height="127">
+          <img src="assets/v2-reward-energy.png" alt="Энергия ×8" width="127" height="127">
+      </div>
+      <button class="v2-cta gift-claim-btn" id="giftClaimBtn">Забрать</button>
+    </div>
+
+    <!-- Шторка «что внутри подарка» -->
+    <div class="v2-sheet-backdrop" id="rewardsSheetBackdrop"></div>
+    <div class="v2-sheet" id="rewardsSheet" role="dialog" aria-label="Награды">
+      <div class="v2-sheet-glow"></div>
+      <div class="v2-sheet-grab"><span></span></div>
+      <button class="v2-sheet-close" id="rewardsSheetClose" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.58579 8L3.29289 4.70711C2.90237 4.31658 2.90237 3.68342 3.29289 3.29289C3.68342 2.90237 4.31658 2.90237 4.70711 3.29289L8 6.58579L11.2929 3.29289C11.6834 2.90237 12.3166 2.90237 12.7071 3.29289C13.0976 3.68342 13.0976 4.31658 12.7071 4.70711L9.41421 8L12.7071 11.2929C13.0976 11.6834 13.0976 12.3166 12.7071 12.7071C12.3166 13.0976 11.6834 13.0976 11.2929 12.7071L8 9.41421L4.70711 12.7071C4.31658 13.0976 3.68342 13.0976 3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929L6.58579 8Z" fill="currentColor"/></svg></button>
+      <h2 class="v2-sheet-title">Награды</h2>
+      <div class="v2-sheet-rewards">
+          <img src="assets/v2-reward-arrows.png" alt="Перезапуск ×3" width="127" height="127">
+          <img src="assets/v2-reward-snow.png" alt="Заморозка ×3" width="127" height="127">
+          <img src="assets/v2-reward-chip.png" alt="Блок ×3" width="127" height="127">
+          <img src="assets/v2-reward-energy.png" alt="Энергия ×8" width="127" height="127">
+      </div>
+    </div>
   </main>
 
   <script src="js/cards.js"></script>
-  <script src="js/profile.js"></script>
   <script src="js/v2.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/tasks.js"></script>
 </body>
 </html>

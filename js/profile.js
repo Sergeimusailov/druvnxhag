@@ -34,45 +34,8 @@ function renderFavoriteDeck() {
   document.getElementById('statsCollectedCount').textContent = getSavedDeckCards().length || cards.length;
 }
 
-const chipEls = Array.from(document.querySelectorAll('.profile-chip'));
-const TAB_ORDER = ['achievements', 'stats', 'deck'];
-const indicatorEl = document.getElementById('profileChipIndicator');
-const tabTrackEl = document.getElementById('profileTabTrack');
-let currentTab = 'achievements';
-
-function moveIndicatorTo(chipEl, animate) {
-  if (!animate) indicatorEl.style.transition = 'none';
-  indicatorEl.style.width = `${chipEl.offsetWidth}px`;
-  indicatorEl.style.transform = `translate(${chipEl.offsetLeft}px, ${chipEl.offsetTop}px)`;
-  if (!animate) {
-    // reflow so this non-interactive placement isn't animated
-    indicatorEl.getBoundingClientRect();
-    indicatorEl.style.transition = '';
-  }
-}
-
-function setTab(tab) {
-  if (tab === currentTab) return;
-  currentTab = tab;
-  const chipEl = chipEls.find((chip) => chip.dataset.tab === tab);
-  chipEls.forEach((chip) => chip.classList.toggle('profile-chip-active', chip === chipEl));
-  moveIndicatorTo(chipEl, true);
-  tabTrackEl.style.transform = `translateX(-${TAB_ORDER.indexOf(tab) * 100}%)`;
-}
-
-chipEls.forEach((chip) => {
-  chip.addEventListener('click', () => setTab(chip.dataset.tab));
-});
-
 document.getElementById('profileSettingsBtn').addEventListener('click', () => {});
-
-function syncProfileIndicator() {
-  moveIndicatorTo(chipEls.find((chip) => chip.dataset.tab === currentTab), false);
-}
 
 renderAchievements();
 renderFavoriteDeck();
-syncProfileIndicator();
-// web fonts/emoji metrics can shift chip widths after first paint
-window.addEventListener('load', syncProfileIndicator);
-window.addEventListener('resize', syncProfileIndicator);
+createChipTabs(document.getElementById('profileChipRow'), document.getElementById('profileTabTrack'));

@@ -1,0 +1,611 @@
+/* Раздел «Задания» (v2.html#tasks) */
+
+.tasks-intro {
+  padding: 24px 24px 8px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.tasks-chip-row {
+  padding: 24px 16px;
+}
+
+/* Таймер до обновления */
+
+.tasks-timer {
+  display: flex;
+  justify-content: center;
+  height: 48px;
+}
+
+.tasks-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px 0 6px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  font-size: 13px;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tasks-timer-badge svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Карточка прогресса по очкам */
+
+.tasks-progress {
+  position: relative;
+  height: 152px;
+  margin: 0 16px;
+  border-radius: 24px;
+  background: linear-gradient(236deg, #6d21b4 8%, #3b165e 83%);
+}
+
+.tasks-progress-weekly {
+  background: linear-gradient(236deg, #00a365 8%, #376101 83%);
+}
+
+.tasks-progress-tag {
+  position: absolute;
+  left: 25px;
+  top: 89px;
+  width: 49.5px;
+  height: 34px;
+  z-index: 2;
+}
+
+/* Внутренняя система координат шкалы: от начала дорожки до её конца */
+.tasks-progress-area {
+  position: absolute;
+  left: 66px;
+  right: 54px;
+  top: 0;
+  bottom: 0;
+}
+
+.tasks-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 102px;
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.tasks-fill {
+  position: relative;
+  height: 100%;
+  width: 0;
+  border-radius: 20px;
+  background: #ffdd2d;
+  overflow: hidden;
+}
+
+.tasks-fill.is-filling {
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* блик, пробегающий по заполняющейся шкале */
+.tasks-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+  opacity: 0;
+}
+
+.tasks-fill.is-filling::after {
+  animation: tasksFillShine 0.9s ease-out;
+}
+
+@keyframes tasksFillShine {
+  0% { left: -60%; opacity: 1; }
+  100% { left: 110%; opacity: 0; }
+}
+
+.tasks-dot {
+  position: absolute;
+  top: 103px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #ffe600;
+  box-shadow: 0 0 0 1px #000;
+  transition: background 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tasks-dot.is-passed {
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.tasks-progress-labels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 118px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: -0.08px;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Подарки-вехи над шкалой */
+
+.tasks-milestone {
+  position: absolute;
+  bottom: 68.3px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tasks-milestone-btn {
+  position: relative;
+  display: block;
+  width: 30.6px;
+  height: 30.6px;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.tasks-milestone-btn:active {
+  transform: scale(0.88);
+}
+
+.tasks-milestone-big .tasks-milestone-btn {
+  width: 54.7px;
+  height: 54.7px;
+}
+
+.tasks-milestone-gift {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tasks-milestone-lock {
+  position: absolute;
+  left: 27.8%;
+  top: 36.1%;
+  width: 44.4%;
+  height: 44.4%;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+.tasks-milestone.is-ready .tasks-milestone-lock {
+  transform: scale(0) rotate(-30deg);
+  opacity: 0;
+}
+
+.tasks-milestone.is-ready .tasks-milestone-btn {
+  animation: tasksMilestoneReady 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate;
+}
+
+@keyframes tasksMilestoneReady {
+  from { transform: scale(1) rotate(-6deg); }
+  to { transform: scale(1.22) rotate(6deg); }
+}
+
+.tasks-milestone-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 104px;
+  height: 96px;
+  margin: -45px 0 0 -46px;
+  pointer-events: none;
+  animation: tasksGlowPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes tasksGlowPulse {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.9; }
+  50% { transform: rotate(12deg) scale(1.1); opacity: 1; }
+}
+
+.tasks-milestone-check {
+  display: block;
+  width: 20.4px;
+  height: 20.4px;
+}
+
+.tasks-milestone.is-claimed-now .tasks-milestone-check {
+  animation: tasksCheckIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tasksCheckIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* Задания */
+
+.tasks-list {
+  margin-top: 16px;
+}
+
+.task {
+  display: flex;
+  gap: 8px;
+  min-height: 60px;
+  margin: 0 16px 16px;
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 60px;
+  padding: 20px 20px 18px;
+  border-radius: 24px;
+  background: #2c2c2e;
+}
+
+.task-title {
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #f6f7f8;
+}
+
+.task-progress {
+  margin-top: 16px;
+}
+
+.task-progress-track {
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.task-progress-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: #ffdd2d;
+}
+
+.task-progress-label,
+.task-status {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.08px;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-status {
+  margin-top: 16px;
+}
+
+.task-claim {
+  align-self: flex-start;
+  margin-top: 14px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease;
+}
+
+.task-claim:active {
+  transform: scale(0.94);
+}
+
+.task-claim:disabled {
+  opacity: 0.5;
+}
+
+.task-reward {
+  flex: 0 0 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: 24px;
+  background: #2c2c2e;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.task.is-claimable .task-reward {
+  background: #ffdd2d;
+  box-shadow: 0 0 8px rgba(255, 221, 45, 0.35);
+  animation: tasksRewardIdle 1.6s ease-in-out infinite;
+}
+
+@keyframes tasksRewardIdle {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 221, 45, 0.35); }
+  50% { box-shadow: 0 0 18px rgba(255, 221, 45, 0.6); }
+}
+
+.task-reward img {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+/* число поверх нижней части молнии с тёмной обводкой 2px, как в макете */
+.task-reward span {
+  margin-top: -8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #fff;
+  -webkit-text-stroke: 4px #2c2c2e;
+  paint-order: stroke fill;
+}
+
+.tasks-done-title {
+  padding: 24px 24px 8px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
+  text-align: center;
+}
+
+.tasks-done-title[hidden] {
+  display: none;
+}
+
+/* Эффекты: летящие молнии и вспышка в бирке шкалы */
+
+.fx-bolt {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  will-change: transform, opacity;
+}
+
+.fx-ring {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  border: 3px solid #ffe600;
+  box-shadow: 0 0 12px rgba(255, 230, 0, 0.8);
+}
+
+.fx-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #ffe600;
+  box-shadow: 0 0 6px rgba(255, 230, 0, 0.9);
+}
+
+/* Экран открытия подарка */
+
+.gift-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gift-overlay.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.gift-overlay-bg {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.gift-overlay.is-open .gift-overlay-bg {
+  opacity: 1;
+}
+
+.gift-overlay-appbar {
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.2s;
+}
+
+.gift-overlay.is-open .gift-overlay-appbar {
+  opacity: 1;
+}
+
+.gift-stage {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 264px;
+  height: 264px;
+  margin: -132px 0 0 -132px;
+  cursor: pointer;
+}
+
+.gift-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.gift-burst-1 {
+  width: 596px;
+  height: 529px;
+  margin: -246px 0 0 -298px;
+}
+
+.gift-burst-2 {
+  width: 566px;
+  height: 555px;
+  margin: -259px 0 0 -283px;
+}
+
+.gift-overlay.is-open .gift-burst {
+  opacity: 1;
+  transition: opacity 0.5s ease 0.15s;
+}
+
+.gift-overlay.is-open .gift-burst-1 {
+  animation: giftBurstSpin 14s linear infinite;
+}
+
+.gift-overlay.is-open .gift-burst-2 {
+  animation: giftBurstSpin 9s linear infinite reverse;
+}
+
+@keyframes giftBurstSpin {
+  from { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.08); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+.gift-overlay-gift {
+  position: relative;
+  display: block;
+  width: 264px;
+  height: 264px;
+}
+
+.gift-overlay-gift.is-idle {
+  animation: giftIdle 1.2s ease-in-out infinite;
+}
+
+@keyframes giftIdle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(-3deg); }
+  75% { transform: translateY(-6px) rotate(3deg); }
+}
+
+.gift-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 240, 180, 0.9) 35%, rgba(255, 200, 60, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gift-overlay-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(45% + 160px);
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: -0.24px;
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gift-overlay-hint.is-visible {
+  opacity: 1;
+  animation: giftHintPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes giftHintPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.gift-overlay-title {
+  position: relative;
+  margin-top: 26px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.36px;
+  color: #f6f7f8;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.gift-overlay-title.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* декоративные слои не должны перехватывать тап по подарку */
+.gift-rewards,
+.gift-overlay-title,
+.gift-overlay-hint {
+  pointer-events: none;
+}
+
+.gift-rewards {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 126.6px);
+  justify-content: center;
+  gap: 16px 12px;
+  margin-top: 40px;
+}
+
+.gift-rewards img {
+  display: block;
+  width: 126.6px;
+  height: auto;
+  opacity: 0;
+}
+
+.gift-claim-btn {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+.gift-claim-btn.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
