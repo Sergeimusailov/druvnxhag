@@ -1,8 +1,10 @@
 const giftsOffersEl = document.querySelector('#giftsScreen .offers');
-Array.from(giftsOffersEl.children).forEach((el, i) => el.style.setProperty('--i', i));
+// лесенка только для первых карточек, иначе нижние ждали бы слишком долго
+Array.from(giftsOffersEl.children).forEach((el, i) => el.style.setProperty('--i', Math.min(i, 6)));
 
-// карточки «выезжают» лесенкой каждый раз, когда список становится видимым
 let offersEnterTimer = null;
+
+// при входе в раздел карточки подъезжают снизу из фейда по очереди
 function playOffersEnter() {
   giftsOffersEl.classList.remove('is-entering');
   giftsOffersEl.getBoundingClientRect();
@@ -11,16 +13,13 @@ function playOffersEnter() {
   offersEnterTimer = setTimeout(() => giftsOffersEl.classList.remove('is-entering'), 1200);
 }
 
-const giftsTabs = createChipTabs(
-  document.getElementById('giftsSegRow'),
-  document.getElementById('giftsTabTrack'),
-  (tab) => {
-    if (tab === 'owned') playOffersEnter();
-  }
-);
+createChipTabs(document.getElementById('giftsSegRow'), document.getElementById('giftsTabTrack'));
 
 document.addEventListener('v2:screen', (e) => {
-  if (e.detail.screen === 'gifts' && giftsTabs.tab === 'owned') playOffersEnter();
+  if (e.detail.screen === 'gifts') playOffersEnter();
 });
 
 document.getElementById('giftsHelpBtn').addEventListener('click', () => {});
+
+// v2.js показал стартовый экран раньше, чем подписались на событие
+if (currentScreen === 'gifts') playOffersEnter();

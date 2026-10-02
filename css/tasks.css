@@ -1,18 +1,5 @@
 /* Раздел «Задания» (v2.html#tasks) */
 
-.tasks-intro {
-  padding: 24px 24px 8px;
-  text-align: center;
-  font-size: 17px;
-  line-height: 20px;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
-}
-
-.tasks-chip-row {
-  padding: 24px 16px;
-}
-
 /* Таймер до обновления */
 
 .tasks-timer {

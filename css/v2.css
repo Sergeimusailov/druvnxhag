@@ -112,29 +112,6 @@ a {
   box-sizing: content-box;
 }
 
-.v2-appbar-wide {
-  grid-template-columns: 94px 1fr 94px;
-}
-
-.v2-balance {
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 44px;
-  padding: 0 14px 0 8px;
-  border-radius: 999px;
-  font-size: 17px;
-  font-weight: 500;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
-  font-variant-numeric: tabular-nums;
-}
-
-.v2-balance img {
-  display: block;
-}
-
 .v2-appbar-title {
   text-align: center;
   font-size: 17px;
@@ -390,6 +367,43 @@ a {
 
 .v2-chip-active {
   background: transparent;
+}
+
+/* tui-segmented: подложка white/10, белая пилюля под выбранным пунктом,
+   пункты одинаковой ширины (по самому длинному, минимум 144px) */
+
+.v2-seg-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 14px 16px 20px;
+}
+
+.v2-segmented {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.v2-segmented .v2-chip-indicator {
+  border-radius: 48px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+}
+
+.v2-segmented .v2-chip {
+  min-width: 144px;
+  padding: 0 12px;
+  background: transparent;
+  color: #f6f7f8;
+  transition: color 0.25s ease, transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.v2-segmented .v2-chip-active {
+  color: #333;
 }
 
 .v2-tab-content {

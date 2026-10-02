@@ -526,7 +526,7 @@ sheetEl.addEventListener('pointercancel', endDrag);
 /* ---------- Запуск ---------- */
 
 Object.keys(TASK_TABS).forEach(renderPanel);
-createChipTabs(document.getElementById('tasksChipRow'), document.getElementById('tasksTabTrack'));
+createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'));
 setInterval(updateTimers, 1000);
 
 tasksScreenEl.addEventListener('click', (e) => {
@@ -538,3 +538,5 @@ tasksScreenEl.addEventListener('click', (e) => {
   }
   if (e.target.closest('.tasks-milestone-btn')) openSheet();
 });
+
+document.getElementById('tasksHelpBtn').addEventListener('click', () => {});
