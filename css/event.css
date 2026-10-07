@@ -183,7 +183,8 @@
 .ev-seg-wrap {
   position: relative;
   z-index: 1;
-  padding: 8px 16px 24px;
+  /* от описания до табов 22px, как в макете */
+  padding: 22px 16px 24px;
 }
 
 .ev-scroll > * {
@@ -413,7 +414,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 214px;
+  top: 228px;
   bottom: 0;
   z-index: 20;
   display: flex;

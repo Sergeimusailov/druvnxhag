@@ -31,7 +31,8 @@ const REWARD_ITEMS = {
 // шаг 90px, карточка 140px; «клюв» шапки заходит в панель на 105px
 const TRACK_FIRST = 154;
 const TRACK_STEP = 90;
-const TRACK_LINE_TOP = 66;
+// линия начинается от кончика «клюва», чтобы не лежать поверх фиолетовой шапки
+const TRACK_LINE_TOP = 105;
 const HEAD_V_HEIGHT = 370;
 const HEAD_V_TIP = 105;
 
