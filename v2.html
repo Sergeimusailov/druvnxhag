@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/profile.css">
   <link rel="stylesheet" href="css/tasks.css">
   <link rel="stylesheet" href="css/gifts.css">
+  <link rel="stylesheet" href="css/event.css">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -44,6 +45,13 @@
             <a class="v2-btn v2-btn-primary" href="match.html">Найти матч</a>
             <a class="v2-btn v2-btn-secondary" href="onboarding.html">Тренироваться</a>
           </div>
+        </div>
+        <div class="ev-banner" id="eventBanner" role="button" tabindex="0" aria-label="Новогодний ивент">
+          <span class="ev-banner-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>До 1 января</span>
+          <p class="ev-banner-title">Новогодний ивент</p>
+          <p class="ev-banner-text">Делай задания, копи очки и получай билеты на розыгрыш</p>
+          <span class="ev-banner-btn">К розыгрышу</span>
+          <img class="ev-banner-img" src="assets/v2-event-duck.png" alt="">
         </div>
       </section>
 
@@ -275,6 +283,56 @@
 
     <div class="v2-fx-layer" id="v2FxLayer" aria-hidden="true"></div>
 
+    <!-- Новогодний ивент: открывается с баннера на главной, поверх таб-бара -->
+    <section class="ev" id="eventScreen" aria-hidden="true">
+      <div class="ev-scroll" id="eventScroll">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" id="eventCloseBtn" aria-label="Закрыть">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
+          </button>
+          <div class="v2-appbar-title">Новогодний ивент</div>
+          <button class="v2-icon-btn v2-glass" id="eventInfoBtn" aria-label="Об ивенте" style="color: #e8e8e8">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM10.75 10.5H13.25V17H10.75V10.5ZM12 6C12.828 6 13.5 6.672 13.5 7.5C13.5 8.328 12.828 9 12 9C11.172 9 10.5 8.328 10.5 7.5C10.5 6.672 11.172 6 12 6Z" fill="currentColor"/></svg>
+          </button>
+        </div>
+
+        <div class="v2-seg-wrap">
+          <div class="v2-segmented" id="eventSegRow">
+            <span class="v2-chip-indicator"></span>
+            <button class="v2-chip v2-chip-active" data-tab="tasks">Задания</button>
+            <button class="v2-chip" data-tab="rewards">Награды<span class="ev-dot" id="eventRewardsDot" hidden></span></button>
+          </div>
+        </div>
+
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="eventTabTrack">
+            <div class="v2-tab-panel" data-panel="tasks" id="eventTasksPanel"></div>
+            <div class="v2-tab-panel" data-panel="rewards" id="eventRewardsPanel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Шторка с описанием ивента: сама при первом входе, потом по кнопке «i» -->
+      <div class="ev-sheet" id="eventSheet" role="dialog" aria-label="Новогодний ивент">
+        <button class="ev-sheet-close v2-glass" id="eventSheetClose" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
+        </button>
+        <div class="ev-sheet-art">
+          <img class="ev-sheet-glow" src="assets/v2-gift-glow.svg" alt="">
+          <img class="ev-sheet-chest" src="assets/v2-event-chest.png" alt="">
+          <img class="ev-sheet-gift" src="assets/v2-gift-big.png" alt="">
+          <img class="ev-sheet-ticket" src="assets/v2-event-ticket.png" alt="">
+        </div>
+        <div class="ev-sheet-content">
+          <h2 class="ev-sheet-title">Новогодний ивент</h2>
+          <p class="ev-sheet-text">Выполняйте задания, копи очки и получай билеты на розыгрыш</p>
+        </div>
+        <div class="ev-sheet-footer">
+          <button class="v2-cta" id="eventSheetCta">К заданиям</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Экран открытия подарка (поверх всего, включая таб-бар) -->
     <div class="gift-overlay" id="giftOverlay" aria-hidden="true">
       <div class="gift-overlay-bg"></div>
@@ -320,5 +378,6 @@
   <script src="js/profile.js"></script>
   <script src="js/tasks.js"></script>
   <script src="js/gifts.js"></script>
+  <script src="js/event.js"></script>
 </body>
 </html>

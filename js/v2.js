@@ -1,4 +1,6 @@
 const SCREENS = ['game', 'tasks', 'gifts', 'leagues', 'profile'];
+// showScreen() перезаписывает хэш — запоминаем исходный (например, #event)
+const INITIAL_HASH = location.hash.slice(1);
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

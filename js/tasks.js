@@ -91,7 +91,7 @@ function taskHTML(task) {
     const [cur, total] = task.progress;
     extra = `<div class="task-progress">
       <div class="task-progress-track"><div class="task-progress-fill" style="width:${(cur / total) * 100}%"></div></div>
-      <p class="task-progress-label">${cur} / ${total}</p>
+      <p class="task-progress-label">${task.progressLabel || `${cur} / ${total}`}</p>
     </div>`;
   }
   return `<div class="task${claimable ? ' is-claimable' : ''}" data-task="${task.id}">
@@ -166,7 +166,7 @@ function updateTimers() {
   const ends = resetTimes(now);
   document.querySelectorAll('[data-timer]').forEach((el) => {
     const left = ends[el.dataset.timer] - now;
-    el.textContent = `Обновим через ${el.dataset.timer === 'weekly' ? formatWeeklyLeft(left) : formatLeft(left)}`;
+    el.textContent = `${el.dataset.timerLabel || 'Обновим через'} ${el.dataset.timer === 'weekly' ? formatWeeklyLeft(left) : formatLeft(left)}`;
   });
 }
 

@@ -1,0 +1,473 @@
+/* Новогодний ивент (Figma 15969:54523) */
+
+/* Баннер на главной (tmXSell 343×174) */
+
+.ev-banner {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 174px;
+  margin: 0 25px 38px;
+  padding: 16px 100px 20px 20px;
+  border-radius: 24px;
+  background: linear-gradient(66deg, #8321d9 0%, #e0a227 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.ev-banner:active {
+  transform: scale(0.97);
+}
+
+.ev-banner-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+}
+
+.ev-banner-title {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.ev-banner-text {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #f6f7f8;
+}
+
+.ev-banner-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  margin-top: 16px;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+}
+
+.ev-banner-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 174px;
+  pointer-events: none;
+}
+
+/* Экран ивента: лежит поверх разделов и таб-бара, въезжает справа */
+
+.ev {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  overflow: hidden;
+  background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1),
+    visibility 0s linear 0.45s;
+}
+
+.ev.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.ev-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 32px;
+  scrollbar-width: none;
+}
+
+.ev-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ev-scroll > * {
+  flex-shrink: 0;
+}
+
+/* точка на «Наградах», когда есть что забрать */
+.ev-dot {
+  position: absolute;
+  top: 6px;
+  right: 22px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+
+.ev-dot[hidden] {
+  display: none;
+}
+
+/* Вкладка «Задания» */
+
+.ev-intro {
+  padding: 4px 24px 16px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.ev-tasks-timer {
+  height: 40px;
+}
+
+.ev-tasks .task-reward span {
+  white-space: nowrap;
+}
+
+/* Вкладка «Награды»: вертикальный трек, награды слева и справа по очереди */
+
+.ev-track {
+  position: relative;
+  margin: 0 auto;
+  width: 393px;
+  max-width: 100%;
+}
+
+.ev-track-line,
+.ev-track-fill {
+  position: absolute;
+  left: 50%;
+  width: 6px;
+  margin-left: -3px;
+  border-radius: 40px;
+}
+
+.ev-track-line {
+  background: #2c2c2e;
+}
+
+.ev-track-fill {
+  background: #bca1ff;
+  transition: height 0.5s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.ev-track-start {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+}
+
+.ev-level {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 140px;
+  /* уровни идут внахлёст (шаг 90 при высоте 140) — кликается только кнопка */
+  pointer-events: none;
+}
+
+/* ромб с номером уровня */
+.ev-node {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ev-node::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  z-index: -1;
+  border-radius: 3px;
+  background: #565658;
+  box-shadow: 0 0 0 3px #2c2c2e;
+  transform: rotate(45deg);
+}
+
+.ev-level.is-reached .ev-node {
+  color: #000;
+}
+
+.ev-level.is-reached .ev-node::before {
+  background: #fff;
+  box-shadow: 0 0 0 2px #bca1ff, 0 0 8px rgba(188, 161, 255, 0.6);
+}
+
+/* перемычка от трека к карточке */
+.ev-link {
+  position: absolute;
+  top: 67px;
+  width: 47px;
+  height: 6px;
+  border-radius: 40px;
+  background: #2c2c2e;
+}
+
+.ev-level.is-reached .ev-link {
+  background: #bca1ff;
+}
+
+.ev-level.is-left .ev-link {
+  right: calc(50% + 1px);
+}
+
+.ev-level.is-right .ev-link {
+  left: calc(50% + 1px);
+}
+
+.ev-card {
+  position: absolute;
+  top: 0;
+  width: 140px;
+  height: 140px;
+}
+
+.ev-level.is-left .ev-card {
+  right: calc(50% + 32px);
+}
+
+.ev-level.is-right .ev-card {
+  left: calc(50% + 32px);
+}
+
+.ev-card-hex {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 144px;
+  height: 144px;
+}
+
+.ev-card-item {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  width: 80px;
+  height: 80px;
+}
+
+.ev-level.is-locked .ev-card-item {
+  opacity: 0.75;
+}
+
+.ev-card-taken {
+  position: absolute;
+  top: 112px;
+  left: 53px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #2c2c2e;
+  background: #42cf9b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.ev-card-claim {
+  position: absolute;
+  top: 112px;
+  left: 30px;
+  height: 34px;
+  padding: 0 11px;
+  border-radius: 100px;
+  border: 2px solid #2c2c2e;
+  background: #f6f7f8;
+  color: #000;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  pointer-events: auto;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.ev-card-claim:active {
+  transform: scale(0.92);
+}
+
+.ev-card.is-pop {
+  animation: evPop 0.4s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+@keyframes evPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Шторка с описанием ивента (tui-onboarding-flow) */
+
+.ev-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 148px;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px 24px 0 0;
+  background: #1c1c1e;
+  overflow: hidden;
+  transform: translateY(100%);
+  visibility: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1),
+    visibility 0s linear 0.45s;
+}
+
+.ev-sheet.is-open {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.ev-sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f6f7f8;
+}
+
+.ev-sheet-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* иллюстрация — пока собрана из ассетов игры (в макете плейсхолдер) */
+.ev-sheet-art {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(131, 33, 217, 0.55), rgba(28, 28, 30, 0) 70%);
+  overflow: hidden;
+}
+
+.ev-sheet-art::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 64px;
+  background: linear-gradient(rgba(28, 28, 30, 0), #1c1c1e);
+}
+
+.ev-sheet-art img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.ev-sheet-glow {
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  opacity: 0.8;
+}
+
+.ev-sheet-gift {
+  width: 190px;
+  height: 190px;
+  margin: -100px 0 0 -95px;
+}
+
+.ev-sheet-chest {
+  width: 96px;
+  height: 96px;
+  margin: -20px 0 0 -170px;
+  transform: rotate(-10deg);
+}
+
+.ev-sheet-ticket {
+  width: 96px;
+  height: 96px;
+  margin: -10px 0 0 74px;
+  transform: rotate(10deg);
+}
+
+.ev-sheet-content {
+  padding: 24px 16px 24px;
+  text-align: center;
+}
+
+.ev-sheet-title {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  letter-spacing: 0.36px;
+  color: #f6f7f8;
+}
+
+.ev-sheet-text {
+  margin-top: 16px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.ev-sheet-footer {
+  padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+.ev-sheet-footer .v2-cta {
+  width: 100%;
+}

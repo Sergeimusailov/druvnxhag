@@ -116,13 +116,15 @@ a {
    system-scroll-edge-effect: блюр фона, сходящий на нет книзу, плюс лёгкое
    затемнение. Появляется, только когда экран прокручен (.is-scrolled). */
 
-.v2-screen > .v2-appbar {
+.v2-screen > .v2-appbar,
+.ev-scroll > .v2-appbar {
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.v2-screen > .v2-appbar::before {
+.v2-screen > .v2-appbar::before,
+.ev-scroll > .v2-appbar::before {
   content: '';
   position: absolute;
   z-index: -1;
@@ -140,7 +142,8 @@ a {
   pointer-events: none;
 }
 
-.v2-screen.is-scrolled > .v2-appbar::before {
+.v2-screen.is-scrolled > .v2-appbar::before,
+.ev-scroll.is-scrolled > .v2-appbar::before {
   opacity: 1;
 }
 
