@@ -124,7 +124,9 @@
 
 .ev-head-v {
   position: absolute;
-  left: 0;
+  /* по центру экрана — иначе на узких телефонах кончик уехал бы от трека */
+  left: 50%;
+  margin-left: -196.5px;
   width: 393px;
   max-width: none;
   height: 370px;
@@ -236,9 +238,11 @@
 .ev-track-fill {
   position: absolute;
   left: 50%;
-  width: 6px;
-  margin-left: -3px;
-  border-radius: 40px;
+  /* ровно по хвостику «клюва»: 6.4px, центр на 0.5px левее середины */
+  width: 6.4px;
+  margin-left: -3.7px;
+  /* верхний край прячется под кончик шапки — скругление только снизу */
+  border-radius: 0 0 40px 40px;
 }
 
 .ev-track-line {
@@ -246,7 +250,8 @@
 }
 
 .ev-track-fill {
-  background: #bca1ff;
+  /* тот же фиолетовый, что у шапки возле кончика «клюва» */
+  background: #6e2cd0;
   transition: height 0.5s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
@@ -539,4 +544,15 @@
 .ev .v2-tab-content {
   position: relative;
   z-index: 1;
+}
+
+/* награда «включилась», когда до неё доехала полоска */
+.ev-card.is-activated .ev-card-hex {
+  animation: evGlow 1.1s ease-out;
+}
+
+@keyframes evGlow {
+  0% { filter: drop-shadow(0 0 0 rgba(188, 161, 255, 0)); }
+  30% { filter: drop-shadow(0 0 16px rgba(188, 161, 255, 0.95)); }
+  100% { filter: drop-shadow(0 0 0 rgba(188, 161, 255, 0)); }
 }

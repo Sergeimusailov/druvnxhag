@@ -6,6 +6,7 @@ const EVENT_INTRO_KEY = 'v2.eventIntroSeen';
 
 const EVENT = {
   points: 2,
+  shown: 2,
   claimed: new Set([1]),
   tasks: [
     { id: 'e-play5', title: 'Сыграйте ещё 5 матчей', reward: 1, state: 'claimable' },
@@ -31,8 +32,9 @@ const REWARD_ITEMS = {
 // шаг 90px, карточка 140px; «клюв» шапки заходит в панель на 105px
 const TRACK_FIRST = 154;
 const TRACK_STEP = 90;
-// линия начинается от кончика «клюва», чтобы не лежать поверх фиолетовой шапки
-const TRACK_LINE_TOP = 105;
+// линия начинается под самым кончиком «клюва» (на 5px заходит под него),
+// чтобы хвостик шапки и полоска слились в одну линию
+const TRACK_LINE_TOP = 100;
 const HEAD_V_HEIGHT = 370;
 const HEAD_V_TIP = 105;
 
@@ -66,43 +68,95 @@ function levelCenter(level) {
   return TRACK_FIRST + (level - 1) * TRACK_STEP;
 }
 
+function levelHTML(type, level, popLevel) {
+  const isReached = EVENT.shown >= level;
+  const isTaken = EVENT.claimed.has(level);
+  const side = level % 2 ? 'is-left' : 'is-right';
+  const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
+  const item = REWARD_ITEMS[type];
+  let action = '';
+  if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
+  else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
+  return `<div class="ev-level ${side} ${state}${isReached ? ' is-reached' : ''}" data-level="${level}" style="top:${levelCenter(level) - 70}px">
+    <span class="ev-link"></span>
+    <span class="ev-node">${level}</span>
+    <div class="ev-card${level === popLevel ? ' is-pop' : ''}">
+      <img class="ev-card-hex" src="assets/${isReached ? 'v2-event-hex-active.svg' : 'v2-event-hex.svg'}" alt="">
+      <img class="ev-card-item" src="${item.src}" alt="${item.alt}">
+      ${action}
+    </div>
+  </div>`;
+}
+
+function fillHeightFor(reached) {
+  return (reached ? levelCenter(reached) : TRACK_LINE_TOP) - TRACK_LINE_TOP;
+}
+
+// трек рисуется по EVENT.shown — уровням, которые игрок уже видел открытыми;
+// новые (EVENT.points > shown) открываются анимацией при входе на вкладку
 function renderEventTrack(popLevel) {
   const n = EVENT.rewards.length;
   const height = levelCenter(n) + 70 + 40;
-  const reached = Math.min(EVENT.points, n);
-  const fillTo = reached ? levelCenter(reached) : TRACK_LINE_TOP;
-
-  const levels = EVENT.rewards.map((type, i) => {
-    const level = i + 1;
-    const isReached = EVENT.points >= level;
-    const isTaken = EVENT.claimed.has(level);
-    const side = level % 2 ? 'is-left' : 'is-right';
-    const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
-    const item = REWARD_ITEMS[type];
-    let action = '';
-    if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
-    else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
-    return `<div class="ev-level ${side} ${state}${isReached ? ' is-reached' : ''}" style="top:${levelCenter(level) - 70}px">
-      <span class="ev-link"></span>
-      <span class="ev-node">${level}</span>
-      <div class="ev-card${level === popLevel ? ' is-pop' : ''}">
-        <img class="ev-card-hex" src="assets/${isReached ? 'v2-event-hex-active.svg' : 'v2-event-hex.svg'}" alt="">
-        <img class="ev-card-item" src="${item.src}" alt="${item.alt}">
-        ${action}
-      </div>
-    </div>`;
-  }).join('');
+  EVENT.shown = Math.min(EVENT.shown, n);
 
   eventRewardsPanel.innerHTML = `
     <div class="ev-track" style="height:${height}px">
       <span class="ev-track-line" style="top:${TRACK_LINE_TOP}px;height:${height - TRACK_LINE_TOP - 20}px"></span>
-      <span class="ev-track-fill" style="top:${TRACK_LINE_TOP}px;height:${fillTo - TRACK_LINE_TOP}px"></span>
+      <span class="ev-track-fill" style="top:${TRACK_LINE_TOP}px;height:${fillHeightFor(EVENT.shown)}px"></span>
       <img class="ev-track-start" src="assets/v2-event-bolt.png" alt="">
-      ${levels}
+      ${EVENT.rewards.map((type, i) => levelHTML(type, i + 1, popLevel)).join('')}
     </div>
   `;
   updateEventDot();
-  document.getElementById('eventWidgetFill').style.width = `${(reached / n) * 100}%`;
+  updateEventWidget();
+}
+
+function updateEventWidget() {
+  const n = EVENT.rewards.length;
+  document.getElementById('eventWidgetFill').style.width = `${(Math.min(EVENT.points, n) / n) * 100}%`;
+}
+
+// полоска едет от последнего показанного уровня к новому, по пути каждая
+// награда «включается»: короткий скейл и подсветка шестигранника
+let trackAnimating = false;
+
+async function animateTrackProgress() {
+  const target = Math.min(EVENT.points, EVENT.rewards.length);
+  if (trackAnimating || EVENT.shown >= target) return;
+  trackAnimating = true;
+  const fill = eventRewardsPanel.querySelector('.ev-track-fill');
+  while (EVENT.shown < target) {
+    const level = EVENT.shown + 1;
+    const levelEl = eventRewardsPanel.querySelector(`.ev-level[data-level="${level}"]`);
+    // держим новый уровень в кадре
+    const r = levelEl.getBoundingClientRect();
+    const box = eventScrollEl.getBoundingClientRect();
+    if (r.bottom > box.bottom - 24) {
+      eventScrollEl.scrollTo({ top: eventScrollEl.scrollTop + r.bottom - box.bottom + 80, behavior: 'smooth' });
+    }
+    await fill.animate(
+      [{ height: `${fillHeightFor(level - 1)}px` }, { height: `${fillHeightFor(level)}px` }],
+      { duration: 520, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' }
+    ).finished;
+    fill.style.height = `${fillHeightFor(level)}px`;
+    fill.getAnimations().forEach((a) => a.cancel());
+
+    EVENT.shown = level;
+    levelEl.outerHTML = levelHTML(EVENT.rewards[level - 1], level);
+    const fresh = eventRewardsPanel.querySelector(`.ev-level[data-level="${level}"]`);
+    const card = fresh.querySelector('.ev-card');
+    card.classList.add('is-activated');
+    card.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }],
+      { duration: 360, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' }
+    );
+    fresh.querySelector('.ev-node').animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.4)' }, { transform: 'scale(1)' }],
+      { duration: 320, easing: 'ease-out' }
+    );
+    await wait(260);
+  }
+  trackAnimating = false;
 }
 
 function updateEventDot() {
@@ -157,6 +211,7 @@ function openEvent(animate = true) {
   else setInstant(eventEl, show);
   eventEl.setAttribute('aria-hidden', 'false');
   history.replaceState(null, '', '#event');
+  if (eventTabs.tab === 'rewards') setTimeout(animateTrackProgress, animate ? 500 : 0);
   if (!introSeen() && !eventSheetEl.classList.contains('is-open')) {
     if (animate) setTimeout(openEventSheet, 300);
     else setInstant(eventSheetEl, openEventSheet);
@@ -173,6 +228,8 @@ function closeEvent() {
 
 const eventTabs = createChipTabs(document.getElementById('eventSegRow'), document.getElementById('eventTabTrack'), (tab) => {
   eventEl.classList.toggle('is-tab-tasks', tab === 'tasks');
+  // ждём, пока вкладка доедет, и только потом двигаем трек
+  if (tab === 'rewards') setTimeout(animateTrackProgress, 480);
 });
 
 // «клюв» шапки смотрит в молнию трека: его кончик на 105px ниже верха панелей
@@ -248,7 +305,8 @@ async function claimEventTask(taskId) {
 
   await Promise.all(flights);
   EVENT.points += task.reward;
-  renderEventTrack();
+  updateEventDot();
+  updateEventWidget();
   eventClaimBusy = false;
 }
 
@@ -260,7 +318,7 @@ eventTasksPanel.addEventListener('click', (e) => {
 // «Забрать» на треке: экран открытия подарка (как в «Заданиях»), после него —
 // снова трек, у награды галочка
 async function claimEventReward(level) {
-  if (eventClaimBusy || EVENT.claimed.has(level) || EVENT.points < level) return;
+  if (eventClaimBusy || trackAnimating || EVENT.claimed.has(level) || EVENT.shown < level) return;
   eventClaimBusy = true;
   const card = eventRewardsPanel.querySelector(`.ev-card-claim[data-level="${level}"]`).closest('.ev-card');
   await card.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }).finished;
