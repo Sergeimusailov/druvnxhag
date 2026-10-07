@@ -96,7 +96,7 @@ function taskHTML(task) {
   }
   return `<div class="task${claimable ? ' is-claimable' : ''}" data-task="${task.id}">
     <div class="task-body"><p class="task-title">${task.title}</p>${extra}</div>
-    <div class="task-reward"><img src="assets/v2-bolt.png" alt="Очки"><span>${claimable ? '+' : ''}${task.reward}</span></div>
+    <div class="task-reward"><img src="assets/v2-bolt.png" alt="Очки"><span>${claimable || task.showPlus ? '+' : ''}${task.reward}</span></div>
   </div>`;
 }
 

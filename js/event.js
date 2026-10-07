@@ -19,15 +19,21 @@ const EVENT = {
   rewards: ['chest', 'chest', 'ticket', 'chest', 'ticket', 'chest', 'ticket', 'chest', 'ticket', 'chest'],
 };
 
+// в ивенте у награды за задание всегда «+N», как в макете
+EVENT.tasks.forEach((t) => (t.showPlus = true));
+
 const REWARD_ITEMS = {
   chest: { src: 'assets/v2-event-chest.png', alt: 'Сундук ×1' },
   ticket: { src: 'assets/v2-event-ticket.png', alt: 'Билет на розыгрыш ×1' },
 };
 
-// геометрия трека из макета: первый ромб на 109px, шаг 90px, карточка 140px
-const TRACK_FIRST = 109;
+// геометрия трека из макета: молния 72px сверху, первый ромб на 154px,
+// шаг 90px, карточка 140px; «клюв» шапки заходит в панель на 105px
+const TRACK_FIRST = 154;
 const TRACK_STEP = 90;
-const TRACK_LINE_TOP = 21;
+const TRACK_LINE_TOP = 66;
+const HEAD_V_HEIGHT = 370;
+const HEAD_V_TIP = 105;
 
 const eventEl = document.getElementById('eventScreen');
 const eventScrollEl = document.getElementById('eventScroll');
@@ -45,15 +51,12 @@ function renderEventTasks() {
   active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable'));
   const done = EVENT.tasks.filter((t) => t.state === 'done');
   eventTasksPanel.innerHTML = `
-    <p class="ev-intro">Выполняй задания, зарабатывай очки,<br>получай награды</p>
-    <div class="tasks-timer ev-tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="daily" data-timer-label="Обновятся через"></span></span></div>
     <div class="ev-tasks">
       <div class="tasks-list" data-list="active">${active.map(taskHTML).join('')}</div>
       <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
       <div class="tasks-list" data-list="done">${done.map(taskHTML).join('')}</div>
     </div>
   `;
-  updateTimers();
 }
 
 /* ---------- Трек наград ---------- */
@@ -66,7 +69,7 @@ function renderEventTrack(popLevel) {
   const n = EVENT.rewards.length;
   const height = levelCenter(n) + 70 + 40;
   const reached = Math.min(EVENT.points, n);
-  const fillTo = reached ? levelCenter(reached) : TRACK_LINE_TOP + 2;
+  const fillTo = reached ? levelCenter(reached) : TRACK_LINE_TOP;
 
   const levels = EVENT.rewards.map((type, i) => {
     const level = i + 1;
@@ -98,6 +101,7 @@ function renderEventTrack(popLevel) {
     </div>
   `;
   updateEventDot();
+  document.getElementById('eventWidgetFill').style.width = `${(reached / n) * 100}%`;
 }
 
 function updateEventDot() {
@@ -166,7 +170,19 @@ function closeEvent() {
 
 /* ---------- События ---------- */
 
-const eventTabs = createChipTabs(document.getElementById('eventSegRow'), document.getElementById('eventTabTrack'));
+const eventTabs = createChipTabs(document.getElementById('eventSegRow'), document.getElementById('eventTabTrack'), (tab) => {
+  eventEl.classList.toggle('is-tab-tasks', tab === 'tasks');
+});
+
+// «клюв» шапки смотрит в молнию трека: его кончик на 105px ниже верха панелей
+const headVEl = document.getElementById('eventHeadV');
+const eventTabsContentEl = document.getElementById('eventTabTrack').parentElement;
+function placeHeadV() {
+  const panelsTop = eventTabsContentEl.offsetTop;
+  headVEl.style.top = `${panelsTop + HEAD_V_TIP - HEAD_V_HEIGHT}px`;
+}
+window.addEventListener('resize', placeHeadV);
+window.addEventListener('load', placeHeadV);
 
 const bannerEl = document.getElementById('eventBanner');
 bannerEl.addEventListener('click', () => openEvent());
@@ -260,4 +276,5 @@ eventRewardsPanel.addEventListener('click', (e) => {
 
 renderEventTasks();
 renderEventTrack();
+placeHeadV();
 if (INITIAL_HASH === 'event') openEvent(false);

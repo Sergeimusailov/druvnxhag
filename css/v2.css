@@ -441,6 +441,24 @@ a {
   color: #333;
 }
 
+/* компактный вариант (ивент): пункты по ширине текста, 40px, 15px */
+.v2-segmented-compact .v2-chip {
+  min-width: 0;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+}
+
+.v2-segmented-compact .v2-chip-indicator {
+  height: 40px;
+}
+
+.v2-segmented-compact .v2-chip-active {
+  font-weight: 500;
+}
+
 .v2-tab-content {
   overflow: hidden;
 }

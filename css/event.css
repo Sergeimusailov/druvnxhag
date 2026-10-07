@@ -1,88 +1,74 @@
-/* Новогодний ивент (Figma 15969:54523) */
+/* Новогодний ивент (Figma 15984:55879; шторка — 15969:54523) */
 
-/* Баннер на главной (tmXSell 343×174) */
+/* Виджет-точка входа на главной (Figma 15985:58699, 259×86) */
 
-.ev-banner {
-  position: relative;
+.ev-widget {
   flex-shrink: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  min-height: 174px;
-  margin: 0 25px 38px;
-  padding: 16px 100px 20px 20px;
+  gap: 12px;
+  width: 259px;
+  margin-bottom: 40px;
+  padding: 12px 16px 14px;
   border-radius: 24px;
-  background: linear-gradient(66deg, #8321d9 0%, #e0a227 100%);
+  background: linear-gradient(180deg, #763ce6 0%, #6e2dcf 100%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
-.ev-banner:active {
-  transform: scale(0.97);
+.ev-widget:active {
+  transform: scale(0.96);
 }
 
-.ev-banner-badge {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  height: 20px;
-  padding: 0 6px 0 4px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.3);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  font-size: 13px;
+.ev-widget-row {
+  display: flex;
+  gap: 6px;
+}
+
+.ev-widget-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.ev-widget-texts {
+  padding-top: 2px;
+}
+
+.ev-widget-title {
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
   color: #fff;
 }
 
-.ev-banner-title {
-  position: relative;
-  z-index: 1;
-  margin-top: 8px;
-  font-size: 17px;
-  line-height: 20px;
-  font-weight: 700;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
+.ev-widget-text {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 13px;
+  letter-spacing: 0.07px;
+  color: #fff;
 }
 
-.ev-banner-text {
-  position: relative;
-  z-index: 1;
-  margin-top: 8px;
-  font-size: 15px;
-  line-height: 18px;
-  letter-spacing: -0.24px;
-  color: #f6f7f8;
+/* tui-progress-bar: дорожка с отступом 20px по бокам */
+.ev-widget-bar {
+  height: 8px;
+  margin: 0 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
-.ev-banner-btn {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  height: 30px;
-  margin-top: 16px;
-  padding: 0 11px;
-  border-radius: 100px;
-  background: #ffdd2d;
-  color: #333;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.08px;
-}
-
-.ev-banner-img {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 120px;
-  height: 174px;
-  pointer-events: none;
+.ev-widget-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 20px;
+  background: #fff;
+  transition: width 0.5s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 /* Экран ивента: лежит поверх разделов и таб-бара, въезжает справа */
@@ -92,7 +78,7 @@
   inset: 0;
   z-index: 35;
   overflow: hidden;
-  background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+  background: #1c1c1e;
   transform: translateX(100%);
   visibility: hidden;
   transition:
@@ -121,6 +107,85 @@
   display: none;
 }
 
+/* На «Заданиях» весь фон фиолетовый, на «Наградах» фиолетовая только шапка
+   с «клювом» вниз к молнии трека — фон переливается при смене вкладки */
+.ev::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 75% at 50% 0%, #7c48f7 0%, #6e2cd0 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.ev.is-tab-tasks::before {
+  opacity: 1;
+}
+
+.ev-head-v {
+  position: absolute;
+  left: 0;
+  width: 393px;
+  max-width: none;
+  height: 370px;
+  pointer-events: none;  transition: opacity 0.35s ease;
+}
+
+/* на «Заданиях» фон и так весь фиолетовый — «клюв» не нужен */
+.ev.is-tab-tasks .ev-head-v {
+  opacity: 0;
+}
+
+.ev-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* бейдж стоит в одной строке с кнопками шапки */
+  margin-top: -40px;
+  padding: 0 64px;
+  text-align: center;
+}
+
+.ev-head-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+}
+
+.ev-head-title {
+  margin-top: 16px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #fff;
+}
+
+.ev-head-text {
+  margin-top: 8px;
+  width: 265px;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ev-seg-wrap {
+  position: relative;
+  z-index: 1;
+  padding: 8px 16px 24px;
+}
+
 .ev-scroll > * {
   flex-shrink: 0;
 }
@@ -137,23 +202,20 @@
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
 }
 
+.v2-segmented-compact .ev-dot {
+  top: 4px;
+  right: 2px;
+}
+
 .ev-dot[hidden] {
   display: none;
 }
 
 /* Вкладка «Задания» */
 
-.ev-intro {
-  padding: 4px 24px 16px;
-  text-align: center;
-  font-size: 17px;
-  line-height: 20px;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
-}
-
-.ev-tasks-timer {
-  height: 40px;
+.ev-tasks {
+  /* от сегмента до первой карточки 40px, как в макете */
+  padding-top: 0;
 }
 
 .ev-tasks .task-reward span {
@@ -189,11 +251,11 @@
 
 .ev-track-start {
   position: absolute;
-  top: 0;
+  top: 4px;
   left: 50%;
-  width: 46px;
-  height: 46px;
-  margin-left: -23px;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
 }
 
 .ev-level {
@@ -351,7 +413,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 148px;
+  top: 214px;
   bottom: 0;
   z-index: 20;
   display: flex;
@@ -470,4 +532,10 @@
 
 .ev-sheet-footer .v2-cta {
   width: 100%;
+}
+
+/* панели выше «клюва» шапки, иначе он перекрыл бы верх списка */
+.ev .v2-tab-content {
+  position: relative;
+  z-index: 1;
 }
