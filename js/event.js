@@ -48,9 +48,9 @@ function renderEventTasks() {
     <p class="ev-intro">Выполняй задания, зарабатывай очки,<br>получай награды</p>
     <div class="tasks-timer ev-tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="daily" data-timer-label="Обновятся через"></span></span></div>
     <div class="ev-tasks">
-      <div class="tasks-list">${active.map(taskHTML).join('')}</div>
+      <div class="tasks-list" data-list="active">${active.map(taskHTML).join('')}</div>
       <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
-      <div class="tasks-list">${done.map(taskHTML).join('')}</div>
+      <div class="tasks-list" data-list="done">${done.map(taskHTML).join('')}</div>
     </div>
   `;
   updateTimers();
@@ -104,7 +104,14 @@ function updateEventDot() {
   const n = Math.min(EVENT.points, EVENT.rewards.length);
   let claimable = false;
   for (let level = 1; level <= n; level++) if (!EVENT.claimed.has(level)) claimable = true;
+  const appeared = claimable && eventRewardsDot.hidden;
   eventRewardsDot.hidden = !claimable;
+  if (appeared) {
+    eventRewardsDot.animate(
+      [{ transform: 'scale(0)' }, { transform: 'scale(1.8)' }, { transform: 'scale(1)' }],
+      { duration: 420, easing: 'ease-out' }
+    );
+  }
 }
 
 /* ---------- Шторка с описанием ---------- */
@@ -185,23 +192,70 @@ eventScrollEl.addEventListener('scroll', () => {
   eventScrollEl.classList.toggle('is-scrolled', eventScrollEl.scrollTop > 2);
 }, { passive: true });
 
+// «Забрать» в задании: молнии улетают во вкладку «Награды» — трек сдвигается,
+// на вкладке загорается точка
+let eventClaimBusy = false;
+
+async function claimEventTask(taskId) {
+  const task = EVENT.tasks.find((t) => t.id === taskId);
+  if (!task || task.state !== 'claimable' || eventClaimBusy) return;
+  eventClaimBusy = true;
+  const row = eventTasksPanel.querySelector(`[data-task="${taskId}"]`);
+  row.querySelector('.task-claim').disabled = true;
+
+  const rewardTile = row.querySelector('.task-reward');
+  const rewardsChip = document.querySelector('#eventSegRow [data-tab="rewards"]');
+  const from = centerOf(rewardTile.querySelector('img'));
+  const to = centerOf(rewardsChip);
+  rewardTile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+
+  const flights = [];
+  for (let i = 0; i < 5; i++) {
+    flights.push(
+      flyBolt(from, to, i * 70, () => {
+        rewardsChip.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
+        burstAt(to);
+      })
+    );
+  }
+
+  // пока молнии летят, задание уезжает в «Выполненные»
+  task.state = 'done';
+  setTimeout(async () => {
+    await collapse(row);
+    eventTasksPanel.querySelector('.tasks-done-title').hidden = false;
+    const doneList = eventTasksPanel.querySelector('[data-list="done"]');
+    doneList.insertAdjacentHTML('afterbegin', taskHTML(task));
+    expandIn(doneList.firstElementChild);
+  }, 260);
+
+  await Promise.all(flights);
+  EVENT.points += task.reward;
+  renderEventTrack();
+  eventClaimBusy = false;
+}
+
 eventTasksPanel.addEventListener('click', (e) => {
   const btn = e.target.closest('.task-claim');
-  if (!btn) return;
-  const task = EVENT.tasks.find((t) => t.id === btn.closest('.task').dataset.task);
-  if (!task || task.state !== 'claimable') return;
-  task.state = 'done';
-  EVENT.points += task.reward;
-  renderEventTasks();
-  renderEventTrack();
+  if (btn) claimEventTask(btn.closest('.task').dataset.task);
 });
+
+// «Забрать» на треке: экран открытия подарка (как в «Заданиях»), после него —
+// снова трек, у награды галочка
+async function claimEventReward(level) {
+  if (eventClaimBusy || EVENT.claimed.has(level) || EVENT.points < level) return;
+  eventClaimBusy = true;
+  const card = eventRewardsPanel.querySelector(`.ev-card-claim[data-level="${level}"]`).closest('.ev-card');
+  await card.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }).finished;
+  await openGiftOverlay();
+  EVENT.claimed.add(level);
+  renderEventTrack(level);
+  eventClaimBusy = false;
+}
 
 eventRewardsPanel.addEventListener('click', (e) => {
   const btn = e.target.closest('.ev-card-claim');
-  if (!btn) return;
-  const level = Number(btn.dataset.level);
-  EVENT.claimed.add(level);
-  renderEventTrack(level);
+  if (btn) claimEventReward(Number(btn.dataset.level));
 });
 
 renderEventTasks();

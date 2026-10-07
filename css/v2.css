@@ -481,7 +481,8 @@ a {
 .v2-fx-layer {
   position: absolute;
   inset: 0;
-  z-index: 20;
+  /* выше экрана ивента (35), ниже экрана подарка (40) */
+  z-index: 38;
   pointer-events: none;
   overflow: hidden;
 }
