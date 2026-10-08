@@ -361,7 +361,14 @@ async function claimTask(tab, taskId) {
   rewards.forEach(([cur], ri) => {
     if (cur !== 'snow') return;
     const snowFrom = centerOf(row.querySelector('.t22-reward[data-cur="snow"] img'));
-    for (let i = 0; i < 4; i++) flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, snowFrom, centerOf(gameIcon), 150 + ri * 100 + i * 70));
+    const gameTo = centerOf(gameIcon);
+    for (let i = 0; i < 4; i++) {
+      // как в 2.2: на каждую долетевшую снежинку таб «Игра» подпрыгивает и искрит
+      flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, snowFrom, gameTo, 150 + ri * 100 + i * 70).then(() => {
+        gameIcon.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+        burstAt(gameTo);
+      }));
+    }
   });
   for (let i = 0; i < count; i++) {
     flights.push(
