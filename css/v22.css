@@ -474,3 +474,14 @@
   .nyi-hero { margin-top: 40px; height: 160px; }
   .nyi-steps { transform: scale(0.9); transform-origin: 50% 0; }
 }
+
+/* 2.1: счётчик наград на виджете «Новогоднее событие» */
+.ev-widget-badge {
+  top: -3px;
+  right: -6px;
+  z-index: 2;
+}
+
+.ev-widget-badge[hidden] {
+  display: none;
+}

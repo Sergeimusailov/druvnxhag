@@ -79,6 +79,17 @@ function renderEntries22(pulse) {
   const widgetFill = document.getElementById('eventWidgetFill');
   const nyEv = EVENTS22.list.ny;
   if (widgetFill) widgetFill.style.width = `${(EVENTS22.reached(nyEv) / nyEv.rewards.length) * 100}%`;
+  // счётчик наград, которые можно забрать (Figma 16029:68501)
+  const widgetBadge = document.getElementById('eventWidgetBadge');
+  if (widgetBadge) {
+    const n = EVENTS22.claimable(nyEv);
+    const grew = n && (widgetBadge.hidden || Number(widgetBadge.textContent) < n);
+    widgetBadge.textContent = n;
+    widgetBadge.hidden = !n;
+    if (grew && pulse) {
+      widgetBadge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 400, easing: 'ease-out', fill: 'backwards' });
+    }
+  }
   const ny = EVENTS22.list.ny;
   const daily = EVENTS22.list.daily;
   const prevNy = e22Entries.querySelector('[data-event="ny"] .e22-badge');
