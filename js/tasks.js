@@ -14,8 +14,10 @@ const TASK_TABS = {
     points: 34,
     claimed: new Set([20]),
     tasks: [
-      { id: 'd-win3', title: 'Выиграйте 3 матча подряд', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['coins', 10], ['bolt', 6]] },
-      { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'До 26 ноября', rewards: [['snow', 10], ['bolt', 6]] },
+      // демо: первым можно забрать задание со снежинками — видно, как энергия
+      // летит в шкалу, а снежинки — в таб «Игра» к «Новогоднему событию»
+      { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'd-win3', title: 'Выиграйте 3 матча подряд', status: 'До 26 ноября', rewards: [['coins', 10], ['bolt', 6]] },
       { id: 'd-capture', title: 'Захватите 20 карт соперника', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 10], ['bolt', 6]] },
       { id: 'd-combo', title: 'Сделайте 20 прострелов', status: 'До 26 ноября', progress: [10, 20], rewards: [['bolt', 6]] },
       { id: 'd-first', title: 'Сыграйте первый матч дня', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
