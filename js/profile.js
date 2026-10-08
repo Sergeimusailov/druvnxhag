@@ -1,4 +1,4 @@
-// Профиль v2: шапка с аватаром, статистика, уведомления, ссылка на игру.
+// Профиль v2: шапка с аватаром, статистика, уведомления.
 // «Настроить» открывает экран настроек: выбор аватарки (сохраняется в
 // localStorage), остальные вкладки — заглушки.
 
@@ -61,12 +61,6 @@ document.getElementById('psetAvatars').addEventListener('click', (e) => {
 const notifySwitch = document.getElementById('profileNotifySwitch');
 notifySwitch.checked = storageGet('v2.notifications') === '1';
 notifySwitch.addEventListener('change', () => storageSet('v2.notifications', notifySwitch.checked ? '1' : '0'));
-
-document.getElementById('profileCopyBtn').addEventListener('click', () => {
-  const url = 'https://tvizy.tinkoff.ru';
-  if (navigator.clipboard) navigator.clipboard.writeText(url).catch(() => {});
-  showProfileToast('Ссылка скопирована');
-});
 
 document.getElementById('profileShareBtn').addEventListener('click', () => {
   const data = { title: 'Арена Карт', url: 'https://tvizy.tinkoff.ru' };
