@@ -1,4 +1,4 @@
-const SCREENS = ['game', 'tasks', 'gifts', 'leagues', 'profile'];
+const SCREENS = ['game', 'tasks', 'gifts', 'profile'];
 // showScreen() перезаписывает хэш — запоминаем исходный (например, #event)
 const INITIAL_HASH = location.hash.slice(1);
 
