@@ -684,9 +684,10 @@
   font-weight: 600;
 }
 
-/* пометка «Новогоднее событие» на задании со снежинками */
-.t22-task.is-event .task-body {
-  box-shadow: inset 4px 0 0 #5ca8fe;
+/* пометка «Новогоднее событие»: голубоватый градиент на карточке задания */
+.t22-task.is-event .task-body,
+.t22-task.is-event:not(.is-claimable) .task-reward {
+  background: linear-gradient(135deg, #30487a 0%, #2c2c2e 75%);
 }
 
 .e23-tag {
@@ -707,4 +708,14 @@
 .e23-tag img {
   width: 18px;
   height: 18px;
+}
+
+/* две награды стопкой не сжимаются — карточка задания растёт под них,
+   а не выталкивает монету за край плитки */
+.t22-rewards {
+  padding: 12px 8px;
+}
+
+.t22-rewards > .t22-reward {
+  flex-shrink: 0;
 }
