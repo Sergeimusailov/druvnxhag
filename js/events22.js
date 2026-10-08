@@ -270,29 +270,19 @@ function renderPreview23() {
   const pack = snowPack23();
   const done = pack.filter((i) => i.task.state === 'done').length;
   const ready = pack.filter((i) => i.task.state === 'claimable').length;
-  const total = pack.reduce((sum, i) => sum + i.snow, 0);
   const finished = pack.length && done === pack.length;
   const segs = pack.map((i) => `<span class="e23-seg${i.task.state === 'done' ? ' is-done' : i.task.state === 'claimable' ? ' is-ready' : ''}"></span>`).join('');
   const rowSub = (t) => (t.state === 'claimable' ? 'Можно забрать' : t.state === 'done' ? 'Выполнено' : t.progress ? `${t.progress[0]} / ${t.progress[1]}` : 'В процессе');
 
+  // один таймер на весь блок: «Новые задания через …»
   const head = `
-    <div class="e23-head">
-      <span class="e23-title">Снежинки на сегодня</span>
-      <span class="e23-total"><img src="${CURRENCY_ICONS.snow}" alt="">${finished ? total : `+${total}`}</span>
-    </div>
-    <div class="e23-sub"><span>${finished ? 'Все задания выполнены' : `Выполнено ${done} из ${pack.length}`}</span><span class="e23-timer">${CLOCK_SVG}<span data-e23-timer>${packTimer23()}</span></span></div>
+    <div class="e23-head"><span class="e23-title">Задания на сегодня</span></div>
+    <div class="e23-sub"><span class="e23-timer">${CLOCK_SVG}<span>Новые задания через <span data-e23-timer>${packTimer23()}</span></span></span></div>
     <div class="e23-segs">${segs}</div>`;
 
   if (finished) {
-    // пачка закрыта — показываем, что следующая будет завтра
     e23Preview.innerHTML = `${head}
-      <div class="e23-next">
-        <div class="e23-next-cards">
-          ${[0, 1, 2].map(() => `<span class="e23-next-card"><img src="${CURRENCY_ICONS.snow}" alt=""><span>?</span></span>`).join('')}
-        </div>
-        <p class="e23-next-title">Новые задания через <span data-e23-timer>${packTimer23()}</span></p>
-        <p class="e23-next-text">Завтра ещё +${total} снежинок — заходите продолжить путь по треку</p>
-      </div>`;
+      <p class="e23-done">${CHECK_ICON}Все задания на сегодня выполнены</p>`;
     return;
   }
 
