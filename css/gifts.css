@@ -28,111 +28,77 @@
   50% { transform: translateY(-8px) rotate(3deg); }
 }
 
-/* «Уже у вас» — офферы (tmXSell / TmCombo) */
+/* «Уже у вас» — призы (tmCombo, Figma 15908:41094) */
 
 .offers {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
   padding: 0 16px 24px;
 }
 
-.offer {
+.prize {
   position: relative;
-  height: 122px;
-  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 112px;
+  padding: 16px 100px 18px 20px;
   border-radius: 24px;
   background: #1c1c1e;
   overflow: hidden;
   transition: transform 0.2s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
-.offer:active {
+.prize:active {
   transform: scale(0.97);
 }
 
-.offer-text {
+.prize-badge {
   position: relative;
   z-index: 1;
-  width: 221px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+}
+
+.prize.is-expired .prize-badge {
+  padding: 0 6px;
+}
+
+.prize-title {
+  position: relative;
+  z-index: 1;
+  width: 240px;
   font-size: 17px;
   line-height: 20px;
+  font-weight: 700;
   letter-spacing: -0.41px;
   color: #f6f7f8;
 }
 
-.offer-btn {
-  position: relative;
-  z-index: 1;
-  height: 30px;
-  margin-top: 16px;
-  padding: 0 11px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #f6f7f8;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.08px;
-  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0.35, 1);
-}
-
-.offer-btn:active {
-  transform: scale(0.92);
-}
-
-.offer-img {
+.prize-img {
   position: absolute;
-  top: 0;
   right: 0;
+  bottom: 0;
   width: 120px;
-  height: 122px;
+  height: 90px;
   pointer-events: none;
 }
 
-/* Промо-карточка с лигалом */
-
-.offer-promo {
-  height: 147px;
-  background: linear-gradient(225deg, #275417 0%, #223f17 100%);
-}
-
-.offer-promo .offer-text {
-  width: 245px;
-  color: #fff;
-}
-
-.offer-promo .offer-btn {
-  background: #fff;
-  color: #333;
-}
-
-.offer-promo-img {
-  position: absolute;
-  top: 0;
-  left: 135px;
-  width: 226px;
-  height: 140px;
-  pointer-events: none;
-}
-
-.offer-legal {
-  position: relative;
-  z-index: 1;
-  width: 245px;
-  margin-top: 8px;
-  font-size: 6px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.offer-promo-badge {
-  position: absolute;
-  left: 311px;
-  top: 97px;
-  width: 34px;
-  height: 34px;
-  pointer-events: none;
+/* истёкший приз — приглушено содержимое, фон карточки остаётся плотным,
+   чтобы сквозь него не просвечивал фиолетовый фон экрана */
+.prize.is-expired > * {
+  opacity: 0.5;
 }
 
 /* Появление карточек при входе в раздел: подъезжают снизу из фейда лесенкой */
