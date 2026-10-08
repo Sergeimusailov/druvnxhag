@@ -193,3 +193,8 @@
 .deck-grid .card {
   width: 100%;
 }
+
+/* таб-бар занимает нижние 82px — даём контенту ещё 40px воздуха над ним */
+.v2-screen.v2-screen-profile {
+  padding-bottom: 122px;
+}
