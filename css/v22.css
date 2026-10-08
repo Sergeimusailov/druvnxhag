@@ -887,3 +887,13 @@
   background: #42cf9b;
   color: #fff;
 }
+
+/* 2.3: заголовок и таймер по центру; таймер — тот же бейдж, что в «Заданиях» */
+.e23-head,
+.e23-sub {
+  justify-content: center;
+}
+
+.e23-sub {
+  margin: 8px 0 4px;
+}

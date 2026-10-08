@@ -277,7 +277,7 @@ function renderPreview23() {
   // один таймер на весь блок: «Новые задания через …»
   const head = `
     <div class="e23-head"><span class="e23-title">Задания на сегодня</span></div>
-    <div class="e23-sub"><span class="e23-timer">${CLOCK_SVG}<span>Новые задания через <span data-e23-timer>${packTimer23()}</span></span></span></div>
+    <div class="e23-sub"><span class="tasks-timer-badge">${CLOCK_SVG}<span>Новые задания через <span data-e23-timer>${packTimer23()}</span></span></span></div>
     <div class="e23-segs">${segs}</div>`;
 
   if (finished) {
