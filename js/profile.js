@@ -72,3 +72,24 @@ document.getElementById('profileShareBtn').addEventListener('click', () => {
 });
 
 applyAvatar(storageGet(AVATAR_KEY));
+
+// Версия прототипа: переключение перезагружает страницу на профиле, чтобы
+// все разделы собрались уже под выбранную ветку фич
+const versionRow = document.getElementById('profileVersionRow');
+const versionNote = document.getElementById('profileVersionNote');
+const currentVersion = getAppVersion();
+versionRow.querySelectorAll('.v2-chip').forEach((c) => c.classList.toggle('v2-chip-active', c.dataset.tab === currentVersion));
+versionNote.textContent = APP_VERSIONS.find((v) => v.id === currentVersion).title;
+// у переключателя нет панелей — createChipTabs получает пустой трек-заглушку
+const versionTrack = document.createElement('div');
+versionTrack.append(...APP_VERSIONS.map(() => document.createElement('div')));
+document.createElement('div').append(versionTrack);
+createChipTabs(versionRow, versionTrack, (tab) => {
+  if (tab === getAppVersion()) return;
+  versionNote.textContent = APP_VERSIONS.find((v) => v.id === tab).title;
+  setAppVersion(tab);
+  setTimeout(() => {
+    location.hash = 'profile';
+    location.reload();
+  }, 380);
+});

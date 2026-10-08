@@ -320,3 +320,27 @@
 .pset-stub {
   padding: 60px 40px;
 }
+
+/* Переключатель версий прототипа */
+
+.pf-version {
+  padding-bottom: 16px;
+}
+
+.pf-version-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pf-version-note {
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+  text-align: right;
+}
+
+.pf-version .v2-segmented {
+  display: grid;
+}
