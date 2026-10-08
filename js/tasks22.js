@@ -46,8 +46,11 @@ const TASKS22 = {
     }
     const statusTop = claimable ? `<p class="t22-status is-claim">${task.status}</p>` : '';
     const statusBottom = !claimable && !task.progress ? `<p class="t22-meta"><span>${task.status}</span></p>` : '';
-    return `<div class="task t22-task${claimable ? ' is-claimable' : ''}${done ? ' is-done' : ''}" data-task="${task.id}">
-      <div class="task-body">${statusTop}<p class="task-title">${task.title}</p>${foot}${statusBottom}</div>
+    // 2.3: задания, которые двигают «Новогоднее событие», помечены
+    const isEvent = isAppVersion('2.3') && task.rewards.some(([cur]) => cur === 'snow') && !done;
+    const eventTag = isEvent ? `<span class="e23-tag"><img src="${CURRENCY_ICONS.snow}" alt="">Новогоднее событие</span>` : '';
+    return `<div class="task t22-task${claimable ? ' is-claimable' : ''}${done ? ' is-done' : ''}${isEvent ? ' is-event' : ''}" data-task="${task.id}">
+      <div class="task-body">${eventTag}${statusTop}<p class="task-title">${task.title}</p>${foot}${statusBottom}</div>
       <div class="task-reward t22-rewards">${this.rewardsHTML(task)}</div>
     </div>`;
   },

@@ -236,6 +236,7 @@ function openEvent22(id) {
   if (tabbed) renderNyTasks22();
   e22Tabs.select(tabbed ? 'tasks' : 'rewards');
   if (tabbed) updateRewardsDot22();
+  if (isAppVersion('2.3') && ev.id === 'ny') renderPreview23();
   e22Scroll.scrollTop = 0;
   e22Screen.classList.add('is-open');
   e22Screen.setAttribute('aria-hidden', 'false');
@@ -248,6 +249,49 @@ function closeEvent22() {
   e22Screen.setAttribute('aria-hidden', 'true');
   renderEntries22();
 }
+
+/* ---------- 2.3: превью заданий со снежинками ---------- */
+
+const e23Preview = document.getElementById('e23Preview');
+
+function snowTasks23() {
+  const list = [];
+  Object.entries(TASK_TABS).forEach(([tab, data]) => data.tasks.forEach((t) => {
+    const snow = (t.rewards || []).find(([cur]) => cur === 'snow');
+    if (snow && t.state !== 'done') list.push({ tab, task: t, snow: snow[1] });
+  }));
+  list.sort((a, b) => (b.task.state === 'claimable') - (a.task.state === 'claimable'));
+  return list;
+}
+
+function renderPreview23() {
+  const items = snowTasks23();
+  const ready = items.filter((i) => i.task.state === 'claimable').length;
+  const total = items.reduce((sum, i) => sum + i.snow, 0);
+  e23Preview.innerHTML = `
+    <div class="e23-head">
+      <span class="e23-title">Задания со снежинками</span>
+      <span class="e23-total"><img src="${CURRENCY_ICONS.snow}" alt="">+${total}</span>
+    </div>
+    ${items.slice(0, 3).map((i) => `
+      <button class="e23-row" data-tab="${i.tab}">
+        <span class="e23-row-text">
+          <span class="e23-row-title">${i.task.title}</span>
+          <span class="e23-row-sub${i.task.state === 'claimable' ? ' is-ready' : ''}">${i.task.state === 'claimable' ? 'Можно забрать' : i.task.progress ? `${i.task.progress[0]} / ${i.task.progress[1]} · ${i.tab === 'daily' ? 'Ежедневное' : 'Еженедельное'}` : i.tab === 'daily' ? 'Ежедневное' : 'Еженедельное'}</span>
+        </span>
+        <span class="e23-row-snow"><img src="${CURRENCY_ICONS.snow}" alt="">+${i.snow}</span>
+      </button>`).join('')}
+    ${items.length ? '' : '<p class="e23-empty">Все задания со снежинками выполнены — новые появятся завтра</p>'}
+    <button class="e23-all" data-tab="${(items[0] && items[0].tab) || 'daily'}">${ready ? `Забрать награды · ${ready}` : 'Все задания'}</button>`;
+}
+
+e23Preview.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-tab]');
+  if (!btn) return;
+  closeEvent22();
+  showScreen('tasks');
+  tasksTabs.select(btn.dataset.tab);
+});
 
 /* ---------- 2.2: вкладки «Задания» / «Награды» ---------- */
 

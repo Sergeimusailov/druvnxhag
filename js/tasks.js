@@ -111,7 +111,9 @@ function taskHTML(task) {
 function renderPanel(tab) {
   const data = TASK_TABS[tab];
   const active = data.tasks.filter((t) => t.state !== 'done');
-  active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable'));
+  const hasSnow = (t) => (t.rewards || []).some(([cur]) => cur === 'snow');
+  // 2.3: после готовых к получению — задания со снежинками для события
+  active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable') || (isAppVersion('2.3') ? hasSnow(b) - hasSnow(a) : 0));
   const done = data.tasks.filter((t) => t.state === 'done');
   const fraction = pointsToFraction(data.points);
   panelEls[tab].innerHTML = `
@@ -566,7 +568,7 @@ sheetEl.addEventListener('pointercancel', endDrag);
 /* ---------- Запуск ---------- */
 
 Object.keys(TASK_TABS).forEach(renderPanel);
-createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'));
+const tasksTabs = createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'));
 setInterval(updateTimers, 1000);
 
 tasksScreenEl.addEventListener('click', (e) => {
