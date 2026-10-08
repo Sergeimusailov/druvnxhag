@@ -243,15 +243,27 @@ e22Track.addEventListener('click', async (e) => {
   const level = Number(btn.dataset.level);
   const card = btn.closest('.ev-card');
   await card.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }).finished;
-  await openGiftOverlay();
-  ev.claimed.add(level);
-  // билет с трека пополняет счётчик в шапке
-  if (ev.rewards[level - 1] === 'ticket' && ev.tickets !== undefined) {
+  const counter = document.getElementById('e22Tickets');
+  const isTicket = ev.rewards[level - 1] === 'ticket' && ev.tickets !== undefined && counter.offsetParent;
+  if (isTicket) {
+    // билет без экрана подарка: несколько билетиков улетают прямо в счётчик в шапке
+    const from = centerOf(card.querySelector('.ev-card-item'));
+    const to = centerOf(counter.querySelector('img'));
+    const flights = [];
+    for (let i = 0; i < 4; i++) {
+      flights.push(TASKS22.flyIcon('assets/v2-ticket-icon.png', from, to, i * 90).then(() => {
+        counter.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' });
+        burstAt(to);
+      }));
+    }
+    await Promise.all(flights);
     ev.tickets += 1;
-    const cnt = document.getElementById('e22TicketCount');
-    cnt.textContent = ev.tickets;
-    cnt.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+    document.getElementById('e22TicketCount').textContent = ev.tickets;
+  } else {
+    // сундук — как раньше, через экран подарка
+    await openGiftOverlay();
   }
+  ev.claimed.add(level);
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
   levelEl.outerHTML = e22LevelHTML(ev, level);
   e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`).classList.add('is-pop');
