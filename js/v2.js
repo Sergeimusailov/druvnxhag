@@ -1,4 +1,5 @@
-const SCREENS = ['game', 'tasks', 'gifts', 'profile'];
+// profile — без таба: открывается иконкой в шапке главной
+const SCREENS = ['game', 'tasks', 'cards', 'shop', 'gifts', 'profile'];
 // showScreen() перезаписывает хэш — запоминаем исходный (например, #event)
 const INITIAL_HASH = location.hash.slice(1);
 
@@ -78,6 +79,9 @@ const tabEls = Array.from(document.querySelectorAll('.v2-tab'));
 let currentScreen = null;
 
 function moveTabHighlight(tabEl, animate) {
+  // у раздела без таба (профиль) подсветка гаснет на месте
+  tabHighlightEl.classList.toggle('is-hidden', !tabEl);
+  if (!tabEl) return;
   if (!animate) tabHighlightEl.style.transition = 'none';
   // highlight is 4px wider than the tab on each side, as in the tui-tab-bar spec
   tabHighlightEl.style.width = `${tabEl.offsetWidth + 8}px`;
@@ -153,7 +157,6 @@ document.querySelectorAll('[data-nav]').forEach((el) => {
   el.addEventListener('click', () => showScreen(el.dataset.nav));
 });
 
-document.getElementById('v2HelpBtn').addEventListener('click', () => {});
 
 showScreen(location.hash.slice(1), false);
 window.addEventListener('load', () => moveTabHighlight(tabEls.find((t) => t.dataset.nav === currentScreen), false));

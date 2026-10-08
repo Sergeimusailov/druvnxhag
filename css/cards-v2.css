@@ -1,0 +1,154 @@
+/* Раздел «Карты»: колода и коллекция (логика как в версии 1, оформление v2) */
+
+.cards-title {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #f6f7f8;
+}
+
+.cards-deck {
+  margin: 8px 16px 0;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(28, 28, 30, 0.85);
+}
+
+.cards-deck-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.cards-deck-count {
+  font-size: 15px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.cards-deck-count.is-full {
+  color: #42cf9b;
+}
+
+.cards-deck-grid,
+.cards-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.cards-deck-grid {
+  margin-top: 12px;
+}
+
+.cards-deck-grid .card,
+.cards-collection-grid .card {
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease, filter 0.2s ease;
+}
+
+.cards-deck-grid .card:active,
+.cards-collection-grid .card:active {
+  transform: scale(0.94);
+}
+
+.cards-slot-empty {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.3);
+}
+
+.cards-deck-hint {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.cards-collection-title {
+  margin: 24px 16px 12px;
+}
+
+.cards-collection-grid {
+  padding: 0 16px 16px;
+}
+
+/* карта уже в колоде — приглушена */
+.cards-collection-grid .card.in-deck {
+  opacity: 0.35;
+  filter: grayscale(60%);
+}
+
+.cards-save {
+  position: sticky;
+  /* над таб-баром (он занимает нижние 82px) */
+  bottom: 96px;
+  z-index: 5;
+  margin: 8px 16px 0;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1), opacity 0.2s ease;
+}
+
+.cards-save.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* шторка карты */
+
+.card-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-sheet-card {
+  width: 160px;
+  margin-top: 16px;
+}
+
+.card-sheet-btn {
+  align-self: stretch;
+  margin: 24px 16px 0;
+}
+
+.card-sheet-btn.is-remove {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ff6b6b;
+}
+
+.card-sheet-btn:disabled {
+  opacity: 0.4;
+}
+
+.card-sheet-hint {
+  min-height: 18px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+  text-align: center;
+}
+
+.cards-toast {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 40;
+  padding: 10px 16px;
+  border-radius: 100px;
+  background: #42cf9b;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transform: translate(-50%, -80px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+}
+
+.cards-toast.is-visible {
+  transform: translate(-50%, 0);
+}

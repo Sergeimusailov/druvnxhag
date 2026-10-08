@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <link rel="stylesheet" href="css/match.css?v=202610080948">
-  <link rel="stylesheet" href="css/v2.css?v=202610080948">
-  <link rel="stylesheet" href="css/profile.css?v=202610080948">
-  <link rel="stylesheet" href="css/tasks.css?v=202610080948">
-  <link rel="stylesheet" href="css/gifts.css?v=202610080948">
-  <link rel="stylesheet" href="css/event.css?v=202610080948">
+  <link rel="stylesheet" href="css/match.css?v=202610081010">
+  <link rel="stylesheet" href="css/v2.css?v=202610081010">
+  <link rel="stylesheet" href="css/profile.css?v=202610081010">
+  <link rel="stylesheet" href="css/tasks.css?v=202610081010">
+  <link rel="stylesheet" href="css/gifts.css?v=202610081010">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610081010">
+  <link rel="stylesheet" href="css/event.css?v=202610081010">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -33,8 +34,8 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
           </a>
           <span></span>
-          <button class="v2-icon-btn v2-glass" id="v2HelpBtn" aria-label="Подсказки" style="color: #e8e8e8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33936 7.72565C5.54822 4.35296 8.44774 1.68005 11.994 1.68005C15.6759 1.68005 18.6606 4.56139 18.6606 8.11569C18.6606 11.3385 16.2067 14.008 13.0042 14.4779L13 16.5001H9L9.00421 13.5762C9.00421 11.9607 10.3205 10.651 11.994 10.6509C13.4445 10.6509 14.6203 9.51568 14.6203 8.1155C14.6203 6.71532 13.4445 5.58025 11.994 5.58025C10.6809 5.58025 9.59288 6.51055 9.39862 7.72565H5.33936ZM11.5859 22.5001H9L9.00421 19.8653C9.00421 19.1113 9.59694 18.5001 10.3779 18.5001H13.0042L13 21.135C13 21.8889 12.3669 22.5001 11.5859 22.5001Z" fill="currentColor"/></svg>
+          <button class="v2-icon-btn v2-glass" data-nav="profile" aria-label="Профиль" style="color: #e8e8e8">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-user-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path d="M3 19C3 15.6863 5.68629 13 9 13H15C18.3137 13 21 15.6863 21 19V22H3V19Z" fill="black"/><path opacity="0.35" fill-rule="evenodd" clip-rule="evenodd" d="M16.2231 2.95239C15.8135 3.73704 14.9922 4.27267 14.0458 4.27267H11.5913C10.2357 4.27267 9.13672 5.37161 9.13672 6.72722V10.6077C9.91476 11.2503 10.9125 11.6363 12.0004 11.6363C14.4856 11.6363 16.5004 9.62159 16.5004 7.13631V4.27267C16.5004 3.80289 16.4014 3.35622 16.2231 2.95239Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2228 2.95245C15.7152 1.80256 14.565 1 13.2273 1H7.5V7.13636C7.5 8.53377 8.13695 9.7824 9.13636 10.6078V6.72727C9.13636 5.37167 10.2353 4.27273 11.5909 4.27273H14.0455C14.9919 4.27273 15.8132 3.7371 16.2228 2.95245Z" fill="url(#ic-user-g0)"/></mask><g mask="url(#ic-user-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-user-g0" x1="10.5" y1="1" x2="10.5" y2="10.6078" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
           </button>
         </div>
 
@@ -48,13 +49,15 @@
         </div>
         <div class="ev-widget" id="eventBanner" role="button" tabindex="0" aria-label="Новогоднее событие">
           <div class="ev-widget-row">
-            <img class="ev-widget-icon" src="assets/v2-event-bolt.png" alt="" width="40" height="40">
+            <img class="ev-widget-icon" src="assets/v2-event-snowflake.png" alt="" width="45" height="45">
             <div class="ev-widget-texts">
               <p class="ev-widget-title">Новогоднее событие</p>
               <p class="ev-widget-text">Разыгрываем 10 000 000 ₽</p>
             </div>
           </div>
           <div class="ev-widget-bar"><span class="ev-widget-fill" id="eventWidgetFill"></span></div>
+          <img class="ev-widget-ball-small" src="assets/v2-event-ball-small.png" alt="">
+          <img class="ev-widget-ball" src="assets/v2-event-ball.png" alt="">
         </div>
       </section>
 
@@ -83,6 +86,46 @@
             <div class="v2-tab-panel tasks-panel" data-panel="daily"></div>
             <div class="v2-tab-panel tasks-panel" data-panel="weekly"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- Карты: колода и коллекция (как в версии 1) -->
+      <section class="v2-screen" data-screen="cards" id="cardsScreen">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" data-nav="game" aria-label="Закрыть">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
+          </button>
+          <div class="v2-appbar-title">Карты</div>
+          <span></span>
+        </div>
+
+        <div class="cards-deck">
+          <div class="cards-deck-head">
+            <h2 class="cards-title">Колода</h2>
+            <span class="cards-deck-count" id="cardsDeckCount"></span>
+          </div>
+          <div class="cards-deck-grid" id="cardsDeckGrid"></div>
+          <p class="cards-deck-hint" id="cardsDeckHint">Нажмите на карту в коллекции, чтобы добавить её в колоду</p>
+        </div>
+
+        <h2 class="cards-title cards-collection-title">Коллекция</h2>
+        <div class="cards-collection-grid" id="cardsCollectionGrid"></div>
+
+        <button class="v2-cta cards-save" id="cardsSaveBtn">Сохранить колоду</button>
+      </section>
+
+      <!-- Магазин: пока заглушка -->
+      <section class="v2-screen" data-screen="shop">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" data-nav="game" aria-label="Закрыть">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
+          </button>
+          <div class="v2-appbar-title">Магазин</div>
+          <span></span>
+        </div>
+        <div class="v2-stub">
+          <p class="v2-stub-title">Скоро здесь появится магазин карт</p>
+          <p class="v2-stub-text">Раздел в разработке</p>
         </div>
       </section>
 
@@ -255,17 +298,23 @@
         </span>
         <span class="v2-tab-label">Задания</span>
       </button>
+      <button class="v2-tab" data-nav="cards">
+        <span class="v2-tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-cards-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="1" y="1" width="22" height="22"><path fill-rule="evenodd" clip-rule="evenodd" d="M18 2H2V18H6V6H18V2Z" fill="url(#ic-cards-g0)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 17.8513L6.87106 18.5232C7.84115 19.2714 9.20806 19.1243 10.0066 18.1858L12.8461 14.8487C13.4586 14.1288 14.5462 14.1244 15.1642 14.8394L15.3446 15.048C16.2716 16.1205 17.903 16.1139 18.8218 15.0341L22 11.2989V18.9999C22 20.6567 20.6569 21.9999 19 21.9999L6 21.9999V17.8513Z" fill="url(#ic-cards-g1)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 17.8513V13.9066C6.04075 13.9197 6.08065 13.9403 6.11818 13.9693L8.01762 15.4342C8.34099 15.6836 8.79663 15.6346 9.0628 15.3218L12.9122 10.7977C13.5009 10.1058 14.5359 10.0704 15.1681 10.7205L16.5069 12.0972C16.8229 12.4223 17.3405 12.4045 17.6348 12.0586L21.8229 7.13648C21.8743 7.07608 21.9356 7.03707 22 7.01682V11.2988L18.8218 15.0341C17.903 16.1139 16.2716 16.1205 15.3446 15.048L15.1642 14.8394C14.5462 14.1244 13.4586 14.1288 12.8461 14.8487L10.0066 18.1858C9.20806 19.1243 7.84115 19.2714 6.87106 18.5231L6 17.8513Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M22 11.2988V5.99994L6 6V17.8513L6.87106 18.5231C7.84115 19.2714 9.20806 19.1243 10.0066 18.1858L12.8461 14.8487C13.4586 14.1288 14.5462 14.1244 15.1642 14.8394L15.3446 15.048C16.2716 16.1205 17.903 16.1139 18.8218 15.0341L22 11.2988Z" fill="url(#ic-cards-g2)"/></mask><g mask="url(#ic-cards-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-cards-g0" x1="13" y1="2" x2="10" y2="18" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.7"/></linearGradient><linearGradient id="ic-cards-g1" x1="5" y1="16" x2="22.4796" y2="18.215" gradientUnits="userSpaceOnUse"><stop stop-opacity="0.8"/><stop offset="1" stop-opacity="0.5"/></linearGradient><linearGradient id="ic-cards-g2" x1="6" y1="4.75588" x2="24.7078" y2="11.6176" gradientUnits="userSpaceOnUse"><stop stop-opacity="0.2"/><stop offset="1" stop-opacity="0.3"/></linearGradient></defs></svg>
+        </span>
+        <span class="v2-tab-label">Карты</span>
+      </button>
+      <button class="v2-tab" data-nav="shop">
+        <span class="v2-tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-cart-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="1" y="4" width="23" height="19"><path d="M7 7H22.447C23.1743 7 23.6583 7.7517 23.3574 8.4138L19.7994 16.2414C19.3125 17.3124 18.2447 18 17.0683 18H7V7Z" fill="url(#ic-cart-g0)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5 4H1C1 5.65685 2.34315 7 4 7V15C4 16.6569 5.34315 18 7 18V7V6C7 4.89543 6.10457 4 5 4ZM8 21C8 19.8954 7.10457 19 6 19H4V21C4 22.1046 4.89543 23 6 23C7.10457 23 8 22.1046 8 21ZM15 19H13V21C13 22.1046 13.8954 23 15 23C16.1046 23 17 22.1046 17 21C17 19.8954 16.1046 19 15 19Z" fill="black"/></mask><g mask="url(#ic-cart-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-cart-g0" x1="15" y1="8" x2="15" y2="18" gradientUnits="userSpaceOnUse"><stop stop-opacity="0.85"/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
+        </span>
+        <span class="v2-tab-label">Магазин</span>
+      </button>
       <button class="v2-tab" data-nav="gifts">
         <span class="v2-tab-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-gift-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="20" height="20"><path d="M2 7V11H22V7H2Z" fill="black"/><path opacity="0.7" fill-rule="evenodd" clip-rule="evenodd" d="M7.09091 2H6V4C6 5.65685 7.34315 7 9 7H12H15C16.6569 7 18 5.65685 18 4V2H15C13.3431 2 12 3.34315 12 5C12 3.34315 10.6569 2 9 2H7.09091Z" fill="black"/><path opacity="0.8" fill-rule="evenodd" clip-rule="evenodd" d="M10 11H3V22H10V11ZM14 11V19C14 20.6569 12.6569 22 11 22H17C19.2091 22 21 20.2091 21 18V11H14Z" fill="black"/><path opacity="0.3" d="M14 11H10V22H11C12.6569 22 14 20.6569 14 19V11Z" fill="black"/></mask><g mask="url(#ic-gift-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g></svg>
         </span>
         <span class="v2-tab-label">Призы</span>
-      </button>
-      <button class="v2-tab" data-nav="profile">
-        <span class="v2-tab-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-user-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path d="M3 19C3 15.6863 5.68629 13 9 13H15C18.3137 13 21 15.6863 21 19V22H3V19Z" fill="black"/><path opacity="0.35" fill-rule="evenodd" clip-rule="evenodd" d="M16.2231 2.95239C15.8135 3.73704 14.9922 4.27267 14.0458 4.27267H11.5913C10.2357 4.27267 9.13672 5.37161 9.13672 6.72722V10.6077C9.91476 11.2503 10.9125 11.6363 12.0004 11.6363C14.4856 11.6363 16.5004 9.62159 16.5004 7.13631V4.27267C16.5004 3.80289 16.4014 3.35622 16.2231 2.95239Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2228 2.95245C15.7152 1.80256 14.565 1 13.2273 1H7.5V7.13636C7.5 8.53377 8.13695 9.7824 9.13636 10.6078V6.72727C9.13636 5.37167 10.2353 4.27273 11.5909 4.27273H14.0455C14.9919 4.27273 15.8132 3.7371 16.2228 2.95245Z" fill="url(#ic-user-g0)"/></mask><g mask="url(#ic-user-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-user-g0" x1="10.5" y1="1" x2="10.5" y2="10.6078" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
-        </span>
-        <span class="v2-tab-label">Профиль</span>
       </button>
     </nav>
 
@@ -367,13 +416,25 @@
           <img src="assets/v2-reward-energy.png" alt="Энергия ×8" width="127" height="127">
       </div>
     </div>
+    <div class="v2-sheet-backdrop" id="cardSheetBackdrop"></div>
+    <div class="v2-sheet card-sheet" id="cardSheet" role="dialog" aria-label="Карта">
+      <div class="v2-sheet-grab"><span></span></div>
+      <button class="v2-sheet-close" id="cardSheetClose" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.58579 8L3.29289 4.70711C2.90237 4.31658 2.90237 3.68342 3.29289 3.29289C3.68342 2.90237 4.31658 2.90237 4.70711 3.29289L8 6.58579L11.2929 3.29289C11.6834 2.90237 12.3166 2.90237 12.7071 3.29289C13.0976 3.68342 13.0976 4.31658 12.7071 4.70711L9.41421 8L12.7071 11.2929C13.0976 11.6834 13.0976 12.3166 12.7071 12.7071C12.3166 13.0976 11.6834 13.0976 11.2929 12.7071L8 9.41421L4.70711 12.7071C4.31658 13.0976 3.68342 13.0976 3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929L6.58579 8Z" fill="currentColor"/></svg></button>
+      <h2 class="v2-sheet-title" id="cardSheetTitle"></h2>
+      <div class="card card-sheet-card owner-you" id="cardSheetCard"></div>
+      <button class="v2-cta card-sheet-btn" id="cardSheetBtn"></button>
+      <p class="card-sheet-hint" id="cardSheetHint"></p>
+    </div>
+
+    <div class="cards-toast" id="cardsToast">Колода сохранена</div>
   </main>
 
-  <script src="js/cards.js?v=202610080948"></script>
-  <script src="js/v2.js?v=202610080948"></script>
-  <script src="js/profile.js?v=202610080948"></script>
-  <script src="js/tasks.js?v=202610080948"></script>
-  <script src="js/gifts.js?v=202610080948"></script>
-  <script src="js/event.js?v=202610080948"></script>
+  <script src="js/cards.js?v=202610081010"></script>
+  <script src="js/v2.js?v=202610081010"></script>
+  <script src="js/profile.js?v=202610081010"></script>
+  <script src="js/tasks.js?v=202610081010"></script>
+  <script src="js/cards-v2.js?v=202610081010"></script>
+  <script src="js/gifts.js?v=202610081010"></script>
+  <script src="js/event.js?v=202610081010"></script>
 </body>
 </html>
