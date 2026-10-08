@@ -232,7 +232,9 @@ async function openLootbox(box) {
   lbOverlayEl.style.setProperty('--lb-color', box.colors[1]);
   lbOverlayEl.style.setProperty('--lb-light', box.colors[0]);
   lbBoxEl.innerHTML = boxSVG(box, 'lb-open');
-  lbBoxEl.style.opacity = '';
+  // анимации прошлого открытия (растворение сундука с fill: forwards) иначе
+  // продолжают действовать и прячут новый сундук
+  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
   lbRewardsEl.innerHTML = '';
   lbRewardsEl.style.setProperty('--n', rewards.length);
   lbTitleEl.classList.remove('is-visible');
@@ -321,7 +323,7 @@ async function openLootbox(box) {
   await lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished;
   lbOverlayEl.classList.remove('is-open');
   lbOverlayEl.setAttribute('aria-hidden', 'true');
-  lbOverlayEl.getAnimations().forEach((a) => a.cancel());
+  lbOverlayEl.getAnimations({ subtree: true }).forEach((a) => a.cancel());
   lbBusy = false;
   renderShop();
 }
