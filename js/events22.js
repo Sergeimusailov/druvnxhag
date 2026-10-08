@@ -39,6 +39,15 @@ const EVENTS22 = {
     },
   },
   byCurrency: { snow: 'ny', leaf: 'daily' },
+  // версия 2.2: свои задания внутри «Новогоднего события» — дают снежинки
+  nyTasks: [
+    { id: 'ny-play5', title: 'Сыграйте 5 матчей', status: 'Заберите до 1 января', state: 'claimable', rewards: [['snow', 10]] },
+    { id: 'ny-win3', title: 'Выиграйте 3 матча', status: 'Заберите до 1 января', state: 'claimable', rewards: [['snow', 10]] },
+    { id: 'ny-capture', title: 'Захватите 30 карт соперника', status: 'До 1 января', progress: [12, 30], progressLabel: '12 / 30', rewards: [['snow', 10]] },
+    { id: 'ny-combo', title: 'Сделайте 10 прострелов', status: 'До 1 января', progress: [3, 10], rewards: [['snow', 10]] },
+    { id: 'ny-deck', title: 'Соберите новую колоду', status: 'До 1 января', progress: [0, 1], rewards: [['snow', 10]] },
+    { id: 'ny-first', title: 'Сыграйте первый матч события', status: 'Выполнено', state: 'done', rewards: [['snow', 10]] },
+  ],
 
   reached(ev) {
     return Math.min(Math.floor(ev.points / ev.step), ev.rewards.length);
@@ -161,7 +170,7 @@ function renderTrack22(ev) {
   const height = e22LevelCenter(n) + 70 + 40;
   e22Track.innerHTML = `
     <div class="ev-track e22-track" style="height:${height}px">
-      <img class="e22-pin" src="assets/${isAppVersion('2.2') ? 'v2-event-pin.svg' : 'v2-event-pin-blue.svg'}" alt="">
+      <img class="e22-pin" src="assets/v2-event-pin-blue.svg" alt="">
       <img class="e22-pin-icon" src="${CURRENCY_ICONS[ev.currency]}" alt="">
       <span class="ev-track-line" style="top:${E22_LINE_TOP}px;height:${height - E22_LINE_TOP - 20}px"></span>
       <span class="ev-track-fill" style="top:${E22_LINE_TOP}px;height:${e22FillHeight(ev.shown)}px"></span>
@@ -197,6 +206,7 @@ async function animateTrack22(ev) {
     await wait(260);
   }
   e22Animating = false;
+  if (isAppVersion('2.2')) updateRewardsDot22();
 }
 
 /* ---------- Экран события ---------- */
@@ -210,21 +220,26 @@ function openEvent22(id) {
   const ev = EVENTS22.list[id];
   e22Current = ev;
   // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
-  e22Screen.classList.toggle('is-v21', !isAppVersion('2.2'));
+  e22Screen.classList.add('is-v21');
   e22Screen.style.setProperty('--c1', ev.colors[0]);
   e22Screen.style.setProperty('--c2', ev.colors[1]);
   document.getElementById('e22Title').textContent = ev.title;
   const heading = document.getElementById('e22Heading');
   heading.textContent = ev.heading;
   heading.hidden = !ev.heading;
-  document.getElementById('e22Desc').innerHTML = !isAppVersion('2.2') && ev.descV21 ? ev.descV21 : ev.desc;
+  document.getElementById('e22Desc').innerHTML = ev.descV21 || ev.desc;
   document.getElementById('e22TicketCount').textContent = ev.tickets || 0;
   document.getElementById('e22BadgeText').textContent = ev.badge || e22DailyTimer();
   renderTrack22(ev);
+  // 2.1 — только трек; 2.2 — сначала вкладка «Задания» события
+  const tabbed = isAppVersion('2.2') && ev.id === 'ny';
+  if (tabbed) renderNyTasks22();
+  e22Tabs.select(tabbed ? 'tasks' : 'rewards');
+  if (tabbed) updateRewardsDot22();
   e22Scroll.scrollTop = 0;
   e22Screen.classList.add('is-open');
   e22Screen.setAttribute('aria-hidden', 'false');
-  setTimeout(() => animateTrack22(ev), 520);
+  if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
 }
 
 function closeEvent22() {
@@ -233,6 +248,73 @@ function closeEvent22() {
   e22Screen.setAttribute('aria-hidden', 'true');
   renderEntries22();
 }
+
+/* ---------- 2.2: вкладки «Задания» / «Награды» ---------- */
+
+const e22TasksPanel = document.getElementById('e22TasksPanel');
+const e22RewardsDot = document.getElementById('e22RewardsDot');
+const e22RewardsChip = document.querySelector('#e22SegRow [data-tab="rewards"]');
+
+const e22Tabs = createChipTabs(document.getElementById('e22SegRow'), document.getElementById('e22TabTrack'), (tab) => {
+  // трек едет к новым наградам, когда открываешь вкладку «Награды»
+  if (tab === 'rewards' && e22Current) setTimeout(() => animateTrack22(e22Current), 480);
+});
+
+function renderNyTasks22() {
+  const tasks = EVENTS22.nyTasks;
+  const active = tasks.filter((t) => t.state !== 'done');
+  active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable'));
+  const done = tasks.filter((t) => t.state === 'done');
+  e22TasksPanel.innerHTML = `
+    <div class="tasks-list" data-list="active">${active.map((t) => TASKS22.taskHTML(t)).join('')}</div>
+    <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
+    <div class="tasks-list" data-list="done">${done.map((t) => TASKS22.taskHTML(t)).join('')}</div>`;
+}
+
+function updateRewardsDot22() {
+  const ev = EVENTS22.list.ny;
+  // точка — пока есть уровни, до которых трек ещё не доехал или что забрать
+  const n = EVENTS22.claimable(ev) + Math.max(0, EVENTS22.reached(ev) - ev.shown);
+  const appeared = n && e22RewardsDot.hidden;
+  e22RewardsDot.hidden = !n;
+  if (appeared) e22RewardsDot.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.8)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+}
+
+// «Забрать» в задании события: снежинки улетают во вкладку «Награды»
+let e22TaskBusy = false;
+e22TasksPanel.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.task-claim');
+  if (!btn || e22TaskBusy) return;
+  const row = btn.closest('.task');
+  const task = EVENTS22.nyTasks.find((t) => t.id === row.dataset.task);
+  if (!task || task.state !== 'claimable') return;
+  e22TaskBusy = true;
+  btn.disabled = true;
+  const tile = row.querySelector('.task-reward');
+  tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  const from = centerOf(row.querySelector('.t22-reward img'));
+  const to = centerOf(e22RewardsChip);
+  const flights = [];
+  for (let i = 0; i < 5; i++) {
+    flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, from, to, i * 70).then(() => {
+      e22RewardsChip.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
+      burstAt(to);
+    }));
+  }
+  task.state = 'done';
+  task.status = 'Выполнено';
+  setTimeout(async () => {
+    await collapse(row);
+    e22TasksPanel.querySelector('.tasks-done-title').hidden = false;
+    const doneList = e22TasksPanel.querySelector('[data-list="done"]');
+    doneList.insertAdjacentHTML('afterbegin', TASKS22.taskHTML(task));
+    expandIn(doneList.firstElementChild);
+  }, 260);
+  await Promise.all(flights);
+  task.rewards.forEach(([cur, n]) => EVENTS22.addCurrency(cur, n));
+  updateRewardsDot22();
+  e22TaskBusy = false;
+});
 
 let e22ClaimBusy = false;
 e22Track.addEventListener('click', async (e) => {
@@ -267,6 +349,7 @@ e22Track.addEventListener('click', async (e) => {
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
   levelEl.outerHTML = e22LevelHTML(ev, level);
   e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`).classList.add('is-pop');
+  if (isAppVersion('2.2')) updateRewardsDot22();
   e22ClaimBusy = false;
 });
 
@@ -335,4 +418,4 @@ setInterval(() => {
 }, 1000);
 
 renderEntries22();
-if (INITIAL_HASH === 'event' && !isAppVersion('2.2')) openNyFromHome();
+if (INITIAL_HASH === 'event') openNyFromHome();

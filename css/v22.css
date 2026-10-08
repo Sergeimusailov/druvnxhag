@@ -5,11 +5,9 @@
   display: none;
 }
 
-[data-version="2.2"] .ev-widget {
-  display: none;
-}
-
-[data-version="2.2"] .e22-entries {
+/* прежний вариант 2.2 (два события на главной) отключён — блок оставлен
+   на будущее под [data-version="2.2-events"] */
+[data-version="2.2-events"] .e22-entries {
   flex-shrink: 0;
   display: flex;
   gap: 20px;
@@ -548,4 +546,33 @@
 .e22-cta-ghost {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #f6f7f8 !important;
+}
+
+/* ---------- Версия 2.2: вкладки «Задания» / «Награды» внутри события ---------- */
+
+.e22-seg {
+  display: none;
+}
+
+[data-version="2.2"] .e22-seg {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  padding: 24px 16px 0;
+}
+
+/* в 2.2 задания внутри события — кнопка «К заданиям» не нужна */
+[data-version="2.2"] .e22.is-v21 #e22Cta {
+  display: none;
+}
+
+#e22TasksPanel {
+  position: relative;
+  z-index: 1;
+  padding-top: 24px;
+}
+
+.e22 .v2-tab-content {
+  position: relative;
+  z-index: 1;
 }

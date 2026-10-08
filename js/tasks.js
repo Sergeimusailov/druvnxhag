@@ -38,6 +38,14 @@ const TASK_TABS = {
   },
 };
 
+// версия 2.2: снежинки зарабатываются в заданиях внутри «Новогоднего
+// события», поэтому в обычных заданиях остаётся только энергия
+if (isAppVersion('2.2')) {
+  Object.values(TASK_TABS).forEach((tab) => tab.tasks.forEach((t) => {
+    if (t.rewards) t.rewards = t.rewards.filter(([cur]) => cur === 'bolt');
+  }));
+}
+
 const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>';
 
 const appEl = document.querySelector('.v2-app');
@@ -101,11 +109,6 @@ function taskHTML(task) {
 }
 
 function renderPanel(tab) {
-  // версия 2.2: задания с валютами событий вместо шкалы очков (js/tasks22.js)
-  if (isAppVersion('2.2')) {
-    TASKS22.renderPanel(tab, panelEls[tab]);
-    return;
-  }
   const data = TASK_TABS[tab];
   const active = data.tasks.filter((t) => t.state !== 'done');
   active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable'));
@@ -568,10 +571,6 @@ setInterval(updateTimers, 1000);
 
 tasksScreenEl.addEventListener('click', (e) => {
   const claimBtn = e.target.closest('.task-claim');
-  if (claimBtn && isAppVersion('2.2')) {
-    TASKS22.claim(claimBtn.closest('.tasks-panel').dataset.panel, claimBtn.closest('.task').dataset.task);
-    return;
-  }
   if (claimBtn) {
     const panel = claimBtn.closest('.tasks-panel');
     claimTask(panel.dataset.panel, claimBtn.closest('.task').dataset.task);

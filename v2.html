@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610081610"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610081610">
-  <link rel="stylesheet" href="css/v2.css?v=202610081610">
-  <link rel="stylesheet" href="css/profile.css?v=202610081610">
-  <link rel="stylesheet" href="css/tasks.css?v=202610081610">
-  <link rel="stylesheet" href="css/gifts.css?v=202610081610">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610081610">
-  <link rel="stylesheet" href="css/shop.css?v=202610081610">
-  <link rel="stylesheet" href="css/v22.css?v=202610081610">
-  <link rel="stylesheet" href="css/event.css?v=202610081610">
+  <script src="js/version.js?v=202610081619"></script>
+  <link rel="stylesheet" href="css/match.css?v=202610081619">
+  <link rel="stylesheet" href="css/v2.css?v=202610081619">
+  <link rel="stylesheet" href="css/profile.css?v=202610081619">
+  <link rel="stylesheet" href="css/tasks.css?v=202610081619">
+  <link rel="stylesheet" href="css/gifts.css?v=202610081619">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610081619">
+  <link rel="stylesheet" href="css/shop.css?v=202610081619">
+  <link rel="stylesheet" href="css/v22.css?v=202610081619">
+  <link rel="stylesheet" href="css/event.css?v=202610081619">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -375,7 +375,7 @@
       <button class="v2-cta nyi-cta" id="nyIntroCta">К наградам</button>
     </section>
 
-    <!-- Версия 2.2: экран события (общий скелет для «Новогоднего события» и «Дейликов») -->
+    <!-- Экран события (общий скелет для «Новогоднего события» и «Дейликов») -->
     <section class="ev e22" id="e22Screen" aria-hidden="true">
       <div class="e22-glow"></div>
       <div class="ev-scroll" id="e22Scroll">
@@ -396,7 +396,20 @@
             <button class="e22-cta e22-cta-ghost" id="e22About">О розыгрыше</button>
           </div>
         </div>
-        <div class="e22-panel" id="e22Track"></div>
+        <!-- версия 2.2: внутри события свои задания (вкладки «Задания» / «Награды») -->
+        <div class="v2-seg-wrap e22-seg" id="e22SegWrap">
+          <div class="v2-segmented v2-segmented-compact" id="e22SegRow">
+            <span class="v2-chip-indicator"></span>
+            <button class="v2-chip" data-tab="tasks">Задания</button>
+            <button class="v2-chip v2-chip-active" data-tab="rewards">Награды<span class="ev-dot" id="e22RewardsDot" hidden></span></button>
+          </div>
+        </div>
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="e22TabTrack">
+            <div class="v2-tab-panel" id="e22TasksPanel"></div>
+            <div class="v2-tab-panel"><div class="e22-panel" id="e22Track"></div></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -508,15 +521,15 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610081610"></script>
-  <script src="js/v2.js?v=202610081610"></script>
-  <script src="js/profile.js?v=202610081610"></script>
-  <script src="js/tasks22.js?v=202610081610"></script>
-  <script src="js/tasks.js?v=202610081610"></script>
-  <script src="js/cards-v2.js?v=202610081610"></script>
-  <script src="js/shop.js?v=202610081610"></script>
-  <script src="js/gifts.js?v=202610081610"></script>
-  <script src="js/event.js?v=202610081610"></script>
-  <script src="js/events22.js?v=202610081610"></script>
+  <script src="js/cards.js?v=202610081619"></script>
+  <script src="js/v2.js?v=202610081619"></script>
+  <script src="js/profile.js?v=202610081619"></script>
+  <script src="js/tasks22.js?v=202610081619"></script>
+  <script src="js/tasks.js?v=202610081619"></script>
+  <script src="js/cards-v2.js?v=202610081619"></script>
+  <script src="js/shop.js?v=202610081619"></script>
+  <script src="js/gifts.js?v=202610081619"></script>
+  <script src="js/event.js?v=202610081619"></script>
+  <script src="js/events22.js?v=202610081619"></script>
 </body>
 </html>

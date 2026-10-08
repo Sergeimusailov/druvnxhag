@@ -4,7 +4,7 @@
 // и в JS (isAppVersion('2.2')).
 const APP_VERSIONS = [
   { id: '2.1', title: 'Текущая версия' },
-  { id: '2.2', title: 'Новые ивенты и задания' },
+  { id: '2.2', title: 'Задания внутри события' },
 ];
 const APP_VERSION_KEY = 'v2.appVersion';
 const APP_VERSION_DEFAULT = '2.1';
