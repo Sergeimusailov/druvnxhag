@@ -83,8 +83,6 @@
     if (!sheetAction) return;
     sheetAction();
     saveDeckNames(deck);
-    // любимая колода в профиле — это сохранённая колода
-    if (typeof renderFavoriteDeck === 'function') renderFavoriteDeck();
     closeCard();
     render();
   });

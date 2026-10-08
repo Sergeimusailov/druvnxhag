@@ -1,41 +1,80 @@
-const ACHIEVEMENTS = [
-  { title: 'Тигры года', subtitle: 'Выиграл 100 матчей' },
-  { title: 'Тигры года', subtitle: 'Выиграл 100 матчей' },
-  { title: 'Тигры года', subtitle: 'Выиграл 100 матчей' },
-  { title: 'Тигры года', subtitle: 'Выиграл 100 матчей' },
-];
+// Профиль v2: шапка с аватаром, статистика, уведомления, ссылка на игру.
+// «Настроить» открывает экран настроек: выбор аватарки (сохраняется в
+// localStorage), остальные вкладки — заглушки.
 
-function renderAchievements() {
-  const grid = document.getElementById('achievementsGrid');
-  grid.innerHTML = '';
-  ACHIEVEMENTS.forEach((a) => {
-    const card = document.createElement('div');
-    card.className = 'achievement-card';
-    card.innerHTML = `
-      <img class="achievement-badge" src="assets/v2-badge-tiger.png" alt="">
-      <p class="achievement-title">${a.title}</p>
-      <p class="achievement-subtitle">${a.subtitle}</p>
-    `;
-    grid.appendChild(card);
-  });
+const AVATAR_KEY = 'v2.profileAvatar';
+const profileAvatarEl = document.getElementById('profileAvatarImg');
+const profileSettingsEl = document.getElementById('profileSettings');
+const profileToastEl = document.getElementById('profileToast');
+
+function storageGet(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    return null;
+  }
 }
 
-function renderFavoriteDeck() {
-  const grid = document.getElementById('favoriteDeckGrid');
-  grid.innerHTML = '';
-  const saved = getSavedDeckCards();
-  const cards = saved.length === DECK_SIZE ? saved : CARD_ROSTER.slice(0, DECK_SIZE);
-  cards.forEach((card) => {
-    const cardEl = document.createElement('div');
-    cardEl.className = 'card owner-you';
-    cardEl.innerHTML = cardInnerHTML(card);
-    grid.appendChild(cardEl);
-  });
-  document.getElementById('statsCollectedCount').textContent = getSavedDeckCards().length || cards.length;
+function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    /* без хранилища выбор живёт до перезагрузки */
+  }
 }
 
-document.getElementById('profileSettingsBtn').addEventListener('click', () => {});
+function applyAvatar(src) {
+  if (!src) return;
+  profileAvatarEl.src = src;
+  profileAvatarEl.parentElement.classList.add('is-round');
+  document.querySelectorAll('.pset-avatar').forEach((b) => b.classList.toggle('is-selected', b.dataset.avatar === src));
+}
 
-renderAchievements();
-renderFavoriteDeck();
-createChipTabs(document.getElementById('profileChipRow'), document.getElementById('profileTabTrack'));
+function showProfileToast(text) {
+  profileToastEl.textContent = text;
+  profileToastEl.classList.add('is-visible');
+  clearTimeout(showProfileToast.timer);
+  showProfileToast.timer = setTimeout(() => profileToastEl.classList.remove('is-visible'), 1800);
+}
+
+const psetTabs = createChipTabs(document.getElementById('psetChipRow'), document.getElementById('psetTabTrack'));
+
+document.getElementById('profileSettingsBtn').addEventListener('click', () => {
+  profileSettingsEl.classList.add('is-open');
+  profileSettingsEl.setAttribute('aria-hidden', 'false');
+  psetTabs.select('avatars');
+});
+
+document.getElementById('profileSettingsBack').addEventListener('click', () => {
+  profileSettingsEl.classList.remove('is-open');
+  profileSettingsEl.setAttribute('aria-hidden', 'true');
+});
+
+document.getElementById('psetAvatars').addEventListener('click', (e) => {
+  const btn = e.target.closest('.pset-avatar');
+  if (!btn) return;
+  applyAvatar(btn.dataset.avatar);
+  storageSet(AVATAR_KEY, btn.dataset.avatar);
+  btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+});
+
+const notifySwitch = document.getElementById('profileNotifySwitch');
+notifySwitch.checked = storageGet('v2.notifications') === '1';
+notifySwitch.addEventListener('change', () => storageSet('v2.notifications', notifySwitch.checked ? '1' : '0'));
+
+document.getElementById('profileCopyBtn').addEventListener('click', () => {
+  const url = 'https://tvizy.tinkoff.ru';
+  if (navigator.clipboard) navigator.clipboard.writeText(url).catch(() => {});
+  showProfileToast('Ссылка скопирована');
+});
+
+document.getElementById('profileShareBtn').addEventListener('click', () => {
+  const data = { title: 'Арена Карт', url: 'https://tvizy.tinkoff.ru' };
+  if (navigator.share) navigator.share(data).catch(() => {});
+  else {
+    if (navigator.clipboard) navigator.clipboard.writeText(data.url).catch(() => {});
+    showProfileToast('Ссылка скопирована');
+  }
+});
+
+applyAvatar(storageGet(AVATAR_KEY));

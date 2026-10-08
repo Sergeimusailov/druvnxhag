@@ -1,200 +1,349 @@
-/* Хедер профиля */
+/* Профиль v2 (Figma 15917:99965) */
 
-.profile-header {
+.v2-screen.v2-screen-profile {
+  /* таб-бар занимает нижние 82px — даём контенту ещё 40px воздуха над ним */
+  padding-bottom: 122px;
+}
+
+.pf-head {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 24px 24px 0;
+  padding-top: 22px;
   text-align: center;
 }
 
-.profile-avatar-wrap {
+/* аватар в белой рамке, за ним две рубашки карт веером */
+.pf-avatar-wrap {
   position: relative;
-  width: 100%;
-  height: 125px;
-  margin-bottom: 4px;
-}
-
-.profile-avatar-wrap img {
-  position: absolute;
-  display: block;
-}
-
-.profile-ring {
-  left: calc(50% - 63.5px);
-  top: -1px;
-  width: 127px;
-  height: 127px;
-}
-
-.profile-avatar {
-  left: calc(50% - 52px);
-  top: 10.5px;
   width: 104px;
   height: 104px;
 }
 
-.profile-deck-flair {
-  left: calc(50% + 46.5px);
-  top: 16px;
-  width: 86.7px;
-  height: 110.3px;
+.pf-cardback {
+  position: absolute;
+  top: 37px;
+  width: 69px;
+  height: 69px;
 }
 
-.profile-rank-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.08px;
-  color: #f6f7f8;
+.pf-cardback-right {
+  left: 79px;
 }
 
-.profile-name {
+.pf-cardback-left {
+  right: 79px;
+  transform: scaleX(-1);
+}
+
+.pf-avatar {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* у аватара по умолчанию белая рамка нарисована в самой картинке,
+   у выбранных в настройках — добавляем её сами */
+.pf-avatar.is-round {
+  border: 4px solid #fff;
+  background: #2c2c2e;
+}
+
+.pf-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* круглые аватарки из настроек растягиваем, чтобы закрыть углы квадрата */
+.pf-avatar.is-round img {
+  transform: scale(1.42);
+}
+
+.pf-name {
+  margin-top: 26px;
   font-size: 30px;
   line-height: 36px;
   font-weight: 700;
-  letter-spacing: 0.36px;
   color: #f6f7f8;
 }
 
-.profile-clan-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+.pf-status {
+  margin-top: 8px;
   font-size: 17px;
+  line-height: 20px;
   letter-spacing: -0.41px;
   color: #f6f7f8;
 }
 
-/* Чипсы-вкладки — общие .v2-chip* из v2.css, тут только отступы */
-
-.profile-chip-row {
-  margin-top: 24px;
-  padding: 20px 20px 16px;
+.pf-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 26px 0 24px;
 }
 
-.profile-chip-row + .v2-tab-content .v2-tab-panel {
-  padding-top: 4px;
-}
-
-/* Ачивки */
-
-.achievements-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px 17px;
-  width: 335px;
-  margin: 0 auto;
-}
-
-.achievement-card {
+.pf-action {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  text-align: center;
-}
-
-.achievement-badge {
-  width: 128px;
-  height: 110px;
-  object-fit: contain;
-}
-
-.achievement-title {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.41px;
+  width: 80px;
   color: #f6f7f8;
 }
 
-.achievement-subtitle {
-  font-size: 11px;
-  color: #f6f7f8;
-}
-
-/* Статистика */
-
-.stats-percent {
-  margin-top: 24px;
-  font-size: 68px;
-  font-weight: 700;
-  text-align: center;
-  line-height: 0.9;
-  background: linear-gradient(180deg, #fff 43%, #c6c6c6 80%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.stats-percent-label {
+.pf-action-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 17px;
-  letter-spacing: -0.41px;
-  color: #f6f7f8;
-}
-
-.stats-tooltip-ic {
-  width: 16px;
-  height: 16px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  font-size: 11px;
-  font-style: italic;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pf-action:active .pf-action-icon {
+  transform: scale(0.9);
+}
+
+.pf-action-label {
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.pf-card {
+  margin: 8px 16px 0;
+  padding: 16px 20px 12px;
+  border-radius: 24px;
+  background: #2c2c2e;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  color: #f6f7f8;
+}
+
+.pf-card-title {
+  display: block;
+  font-size: 20px;
+  line-height: 24px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: -0.3px;
+  color: #f6f7f8;
 }
 
-.stats-cells {
-  margin: 24px 24px 0;
+.pf-card > .pf-card-title {
+  margin-bottom: 12px;
 }
 
-.stats-cell {
+.pf-cell {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
-  padding: 0 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  height: 48px;
+  margin: 0 -4px;
+  padding: 0 4px;
   font-size: 17px;
   letter-spacing: -0.41px;
 }
 
-.stats-cell span {
+.pf-cell b {
+  font-weight: 400;
+  color: #ffdd2d;
+}
+
+.pf-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding-top: 12px;
+}
+
+.pf-card-row > .pf-card-title {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.pf-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* iOS-переключатель 51×31 */
+.pf-switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.pf-switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.pf-switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  background: rgba(120, 120, 128, 0.32);
+  transition: background 0.2s ease;
+}
+
+.pf-switch span::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+.pf-switch input:checked + span {
+  background: #34c759;
+}
+
+.pf-switch input:checked + span::after {
+  transform: translateX(20px);
+}
+
+.pf-share-card {
+  width: calc(100% - 32px);
+  padding-bottom: 16px;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pf-share-card:active {
+  transform: scale(0.98);
+}
+
+.pf-share-texts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pf-share-url {
+  font-size: 15px;
+  line-height: 18px;
+  color: #9299a2;
+}
+
+.pf-copy-icon {
   color: #f6f7f8;
 }
 
-.stats-cell strong {
-  color: #ffdd2d;
-  font-weight: 700;
+.pf-toast {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 45;
+  padding: 10px 16px;
+  border-radius: 100px;
+  background: #42cf9b;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, -90px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
 }
 
-/* Любимая колода */
+.pf-toast.is-visible {
+  transform: translate(-50%, 0);
+}
 
-.deck-grid {
+/* Настройки профиля — поверх разделов и таб-бара, въезжают справа */
+
+.pset {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1),
+    visibility 0s linear 0.45s;
+}
+
+.pset.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pset-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 40px;
+  scrollbar-width: none;
+}
+
+.pset-scroll > * {
+  flex-shrink: 0;
+}
+
+.pset-chip-row {
+  justify-content: flex-start;
+  padding: 20px 16px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pset-avatars {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-  padding: 20px 16px 0;
+  grid-template-columns: repeat(3, 95px);
+  justify-content: center;
+  gap: 19px 24px;
+  padding: 0 16px 16px;
 }
 
-.deck-grid .card {
+.pset-avatar {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), box-shadow 0.2s ease;
+}
+
+.pset-avatar img {
   width: 100%;
+  height: 100%;
+  display: block;
 }
 
-/* таб-бар занимает нижние 82px — даём контенту ещё 40px воздуха над ним */
-.v2-screen.v2-screen-profile {
-  padding-bottom: 122px;
+.pset-avatar:active {
+  transform: scale(0.92);
+}
+
+.pset-avatar.is-selected {
+  box-shadow: 0 0 0 3px #1c1c1e, 0 0 0 6px #428bf9;
+}
+
+.pset-stub {
+  padding: 60px 40px;
 }

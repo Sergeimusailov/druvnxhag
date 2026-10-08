@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <link rel="stylesheet" href="css/match.css?v=202610081019">
-  <link rel="stylesheet" href="css/v2.css?v=202610081019">
-  <link rel="stylesheet" href="css/profile.css?v=202610081019">
-  <link rel="stylesheet" href="css/tasks.css?v=202610081019">
-  <link rel="stylesheet" href="css/gifts.css?v=202610081019">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610081019">
-  <link rel="stylesheet" href="css/event.css?v=202610081019">
+  <link rel="stylesheet" href="css/match.css?v=202610081029">
+  <link rel="stylesheet" href="css/v2.css?v=202610081029">
+  <link rel="stylesheet" href="css/profile.css?v=202610081029">
+  <link rel="stylesheet" href="css/tasks.css?v=202610081029">
+  <link rel="stylesheet" href="css/gifts.css?v=202610081029">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610081029">
+  <link rel="stylesheet" href="css/event.css?v=202610081029">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -221,62 +221,45 @@
           <button class="v2-icon-btn v2-glass" data-nav="game" aria-label="Закрыть">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
           </button>
-          <div class="v2-appbar-title">Профиль</div>
-          <button class="v2-icon-btn v2-glass" id="profileSettingsBtn" aria-label="Настройки">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-settings-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="0" width="20" height="23"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.5281 6.49976V17.4998L12.0017 22.9998L2.47534 17.4998V6.49976L12.0017 0.999756L21.5281 6.49976ZM11.9958 8.02905C9.78678 8.02905 7.99597 9.82001 7.99585 12.0291C7.99585 14.2382 9.78671 16.0291 11.9958 16.0291C14.2048 16.0289 15.9958 14.2381 15.9958 12.0291C15.9957 9.82013 14.2048 8.02924 11.9958 8.02905Z" fill="url(#ic-settings-grad)"/></mask><g mask="url(#ic-settings-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-settings-grad" x1="6.37249" y1="3.25617" x2="21.2358" y2="15.6065" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.65"/></linearGradient></defs></svg>
-          </button>
+          <span></span>
+          <span></span>
         </div>
 
-        <div class="profile-header">
-          <div class="profile-avatar-wrap">
-            <img class="profile-ring" src="assets/v2-profile-ring.png" alt="" width="127" height="127">
-            <img class="profile-avatar" src="assets/v2-avatar-demo.png" alt="Александр" width="104" height="104">
-            <img class="profile-deck-flair" src="assets/v2-profile-deck.png" alt="" width="87" height="110">
+        <div class="pf-head">
+          <div class="pf-avatar-wrap">
+            <img class="pf-cardback pf-cardback-left" src="assets/v2-profile-cardback.png" alt="">
+            <img class="pf-cardback pf-cardback-right" src="assets/v2-profile-cardback.png" alt="">
+            <div class="pf-avatar"><img id="profileAvatarImg" src="assets/v2-avatar-square.png" alt="Аватар"></div>
           </div>
-          <div class="profile-rank-row">
-            <img src="assets/v2-laurel-left.png" alt="" width="9" height="20">
-            <span>Т-Ранжира</span>
-            <img src="assets/v2-laurel-right.png" alt="" width="9" height="20">
-          </div>
-          <h1 class="profile-name">Александр</h1>
-          <div class="profile-clan-row">
-            <svg width="26" height="28" viewBox="0 0 26 28" fill="none"><g filter="url(#lg-f0)"><path d="M12.3117 23.9435C4.20268 21.105 3.29933 14.4098 3.23193 9.51933C3.22647 9.12328 3.55299 8.81584 3.94155 8.73898C5.43895 8.44278 5.78305 7.17114 5.83991 5.79414C5.85237 5.49237 6.03705 5.22109 6.32523 5.13068C9.84248 4.02716 15.2586 4.02717 18.7759 5.13066C19.0641 5.22107 19.2473 5.49267 19.269 5.79392C19.3632 7.10218 19.8583 8.16632 21.161 8.44157C21.5485 8.52346 21.8748 8.83038 21.8656 9.22636C21.7506 14.1389 20.3555 21.0914 12.7869 23.9385C12.6361 23.9952 12.4638 23.9968 12.3117 23.9435Z" fill="url(#lg-p0)"/></g><mask id="lg-m0" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="4" width="19" height="20"><path d="M12.3117 23.9435C4.20268 21.105 3.29933 14.4098 3.23193 9.51933C3.22647 9.12328 3.55299 8.81584 3.94155 8.73898C5.43895 8.44278 5.78305 7.17114 5.83991 5.79414C5.85237 5.49237 6.03705 5.22109 6.32523 5.13068C9.84248 4.02716 15.2586 4.02717 18.7759 5.13066C19.0641 5.22107 19.2473 5.49267 19.269 5.79392C19.3632 7.10218 19.8583 8.16632 21.161 8.44157C21.5485 8.52345 21.8748 8.83038 21.8656 9.22636C21.7506 14.1389 20.3555 21.0914 12.7869 23.9385C12.6361 23.9952 12.4638 23.9968 12.3117 23.9435Z" fill="url(#lg-p0)"/></mask><g mask="url(#lg-m0)"><path d="M22.2324 10.0547L3.22729 16.495V7.88891C3.22729 6.70066 4.19056 5.73739 5.37881 5.73739H22.2324V10.0547Z" fill="url(#lg-p2)" fill-opacity="0.6"/><path d="M17.9297 6.84793C17.9297 8.10325 18.4269 9.36808 19.833 9.82449L20.0811 9.90555V10.1653C20.0811 12.0828 19.855 14.4257 18.8125 16.5813C17.7637 18.7497 15.8989 20.7063 12.6709 21.8528L12.5547 21.8948L12.4375 21.8557C8.98505 20.7113 7.11271 18.7539 6.11719 16.5745C5.13044 14.4143 5.02051 12.0666 5.02051 10.1653V9.94168L5.22168 9.84305C6.07227 9.42887 6.54671 8.97787 6.81543 8.50418C7.0858 8.02756 7.17188 7.4869 7.17188 6.84793V6.59598L7.40918 6.51102C8.85972 5.99172 10.7135 5.73755 12.5508 5.73758C14.388 5.73762 16.2409 5.99179 17.6914 6.51102L17.9297 6.59598V6.84793Z" fill="url(#lg-p3)" stroke="url(#lg-p4)" stroke-width="0.717174"/><path d="M8.41846 10.848C10.7409 11.1142 11.1114 12.1761 11.1167 12.1918L10.7583 12.9095L8.41846 10.848ZM14.3442 12.9095L13.9849 12.1918C13.988 12.1826 14.3536 11.1151 16.6831 10.848L14.3442 12.9095Z" fill="#794024"/><path d="M12.5506 8.60608C13.2676 8.60655 13.6258 10.5787 13.6258 10.5787L13.2674 10.9371L13.4471 11.6539C13.8057 11.654 14.3435 12.1919 14.3436 12.5504C14.3436 12.5504 15.2399 12.5505 15.2401 11.8336C15.2401 11.8336 16.6376 10.6133 16.8534 10.9371C17.2118 11.475 16.1366 13.268 16.1366 15.4196C16.1431 15.4392 16.4916 16.502 16.1366 17.2125H8.96469C8.60959 16.5025 8.95771 15.4407 8.96469 15.4196C8.96461 13.2682 7.88967 11.4745 8.2479 10.9371C8.46369 10.6138 9.86118 11.8336 9.86118 11.8336C9.86139 12.5505 10.7577 12.5504 10.7577 12.5504C10.7579 12.1918 11.2956 11.6539 11.6541 11.6539L11.8338 10.9371L11.4745 10.5787C11.7666 9.6225 11.8335 8.60608 12.5506 8.60608Z" fill="url(#lg-p5)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.8848 13.6263H13.216C13.3566 13.6263 13.4842 13.7085 13.5424 13.8365L14.0504 14.9539C15.0926 15.0604 15.7809 15.2644 16.1858 15.4237H16.3157V15.9608H16.0833L16.0344 15.9413C15.7204 15.8132 15.1538 15.6317 14.2728 15.5198C14.273 15.6133 14.2367 15.7053 14.1678 15.7743L13.7314 16.2107C13.6641 16.2779 13.5729 16.3157 13.4778 16.3157H11.6233C11.5282 16.3157 11.437 16.2779 11.3698 16.2107L10.9333 15.7742C10.8644 15.7053 10.8281 15.6132 10.8283 15.5197C9.94721 15.6316 9.38065 15.8131 9.06665 15.9413L9.01782 15.9608H8.7854V15.4237H8.91431C9.31908 15.2643 10.0076 15.0602 11.0507 14.9537L11.5584 13.8365C11.6165 13.7085 11.7442 13.6263 11.8848 13.6263Z" fill="#965B3E"/><path d="M12.0127 14.1642H13.0885L13.6264 15.4192L13.2678 15.7778H11.8334L11.4749 15.4192L12.0127 14.1642Z" fill="url(#lg-p6)"/><circle cx="4.30297" cy="7.17174" r="3.22728" fill="url(#lg-p7)" fill-opacity="0.6"/><circle cx="20.7981" cy="7.17174" r="3.22728" fill="url(#lg-p8)" fill-opacity="0.6"/></g><defs><filter id="lg-f0" x="0.00465155" y="1.07576" width="25.0884" height="26.1338" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.61364"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 0.866667 0 0 0 0 0.176471 0 0 0 0.4 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter><linearGradient id="lg-p0" x1="5.13433" y1="4.30304" x2="14.4877" y2="25.7666" gradientUnits="userSpaceOnUse"><stop stop-color="#ECEB39"/><stop offset="1" stop-color="#D96221"/></linearGradient><linearGradient id="lg-p2" x1="11.4495" y1="5.73739" x2="11.4495" y2="16.495" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0"/><stop offset="1" stop-color="white"/></linearGradient><linearGradient id="lg-p3" x1="18.9675" y1="23.2818" x2="11.2298" y2="5.71925" gradientUnits="userSpaceOnUse"><stop stop-color="#B5683C"/><stop offset="1" stop-color="#8C4A29"/></linearGradient><linearGradient id="lg-p4" x1="12.5506" y1="6.49907" x2="12.5506" y2="21.5152" gradientUnits="userSpaceOnUse"><stop stop-color="#F0DB38" stop-opacity="0"/><stop offset="0.6" stop-color="#F0DB38"/><stop offset="1" stop-color="#FFED5D"/></linearGradient><linearGradient id="lg-p5" x1="8.24764" y1="14.0829" x2="16.8532" y2="14.0829" gradientUnits="userSpaceOnUse"><stop stop-color="#E8C833"/><stop offset="0.14" stop-color="#F1DA8A"/><stop offset="0.355" stop-color="#FFF2D1"/><stop offset="0.53" stop-color="#F4E042"/><stop offset="0.77" stop-color="#F29C54"/><stop offset="1" stop-color="#F3DB9D"/></linearGradient><linearGradient id="lg-p6" x1="12.5506" y1="14.1642" x2="12.5506" y2="15.7778" gradientUnits="userSpaceOnUse"><stop stop-color="#F93C57"/><stop offset="1" stop-color="#FF7492"/></linearGradient><linearGradient id="lg-p7" x1="3.86814" y1="3.94446" x2="3.86814" y2="10.399" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0"/><stop offset="1" stop-color="white"/></linearGradient><linearGradient id="lg-p8" x1="20.3633" y1="3.94446" x2="20.3633" y2="10.399" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0"/><stop offset="1" stop-color="white"/></linearGradient></defs></svg>
-            <span>Клан капкан</span>
-          </div>
+          <h1 class="pf-name">Александр К.</h1>
+          <p class="pf-status">Т-Ранжира</p>
         </div>
 
-        <div class="v2-chip-row profile-chip-row" id="profileChipRow">
-          <span class="v2-chip-indicator"></span>
-          <button class="v2-chip v2-chip-active" data-tab="achievements">Ачивки</button>
-          <button class="v2-chip" data-tab="stats">Статистика</button>
-          <button class="v2-chip" data-tab="deck">Любимая колода</button>
+        <div class="pf-actions">
+          <button class="pf-action" id="profileShareBtn"><span class="pf-action-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><mask id="ic-share-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="1" width="24" height="24"><path d="M5.83334 17.5C5.83334 16.2113 4.78867 15.1667 3.50001 15.1667H2.33334V22.1667C2.33334 23.4553 3.37801 24.5 4.66668 24.5H23.3333C24.622 24.5 25.6667 23.4553 25.6667 22.1667V17.5C25.6667 16.2113 24.622 15.1667 23.3333 15.1667H22.1667V21H5.83334V17.5Z" fill="url(#ic-share-g0)"/><path d="M6.41669 9.33333L10.5 9.33333L10.5 17.5L12.8334 17.5C15.4107 17.5 17.5 15.4107 17.5 12.8333L17.5 9.33333L21.5834 9.33333L14 1.16667L6.41669 9.33333Z" fill="black"/></mask><g mask="url(#ic-share-mask)"><path d="M0 0H28V28H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-share-g0" x1="24.3704" y1="21" x2="3.62964" y2="21" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.75"/></linearGradient></defs></svg></span><span class="pf-action-label">Поделиться</span></button>
+          <button class="pf-action" id="profileSettingsBtn"><span class="pf-action-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><mask id="ic-gear-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="1" width="24" height="26"><path fill-rule="evenodd" clip-rule="evenodd" d="M25.1161 7.58305V20.4164L14.002 26.8331L2.88789 20.4164V7.58305L14.002 1.16638L25.1161 7.58305ZM13.9952 9.36723C11.4179 9.36723 9.32862 11.4567 9.32849 14.0339C9.32849 16.6112 11.4178 18.7006 13.9952 18.7006C16.5723 18.7003 18.6618 16.6111 18.6618 14.0339C18.6617 11.4568 16.5722 9.36744 13.9952 9.36723Z" fill="url(#ic-gear-g0)"/></mask><g mask="url(#ic-gear-mask)"><path d="M0 0H28V28H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-gear-g0" x1="7.43457" y1="3.79886" x2="24.7751" y2="18.2076" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.65"/></linearGradient></defs></svg></span><span class="pf-action-label">Настроить</span></button>
         </div>
 
-        <div class="v2-tab-content">
-          <div class="v2-tab-track" id="profileTabTrack">
-            <div class="v2-tab-panel" id="tabAchievements">
-              <div class="achievements-grid" id="achievementsGrid"></div>
-            </div>
-
-            <div class="v2-tab-panel" id="tabStats">
-              <p class="stats-percent">83%</p>
-              <div class="stats-percent-label">
-                <span>Побед</span>
-                <span class="stats-tooltip-ic" aria-hidden="true">i</span>
-              </div>
-              <div class="stats-cells">
-                <div class="stats-cell"><span>Победы</span><strong>25</strong></div>
-                <div class="stats-cell"><span>Поражения</span><strong>3</strong></div>
-                <div class="stats-cell"><span>Ничьи</span><strong>2</strong></div>
-                <div class="stats-cell"><span>Собрано карт</span><strong id="statsCollectedCount">2</strong></div>
-              </div>
-            </div>
-
-            <div class="v2-tab-panel" id="tabDeck">
-              <div class="deck-grid" id="favoriteDeckGrid"></div>
-            </div>
-          </div>
+        <div class="pf-card">
+          <h2 class="pf-card-title">Статистика</h2>
+          <div class="pf-cell"><span>Всего матчей</span><b>67</b></div>
+          <div class="pf-cell"><span>Победы</span><b>32</b></div>
+          <div class="pf-cell"><span>Поражения</span><b>12</b></div>
         </div>
+
+        <div class="pf-card pf-card-row">
+          <h2 class="pf-card-title">Уведомления</h2>
+          <span class="pf-hint" title="Напоминания о заданиях и ивентах">?</span>
+          <label class="pf-switch"><input type="checkbox" id="profileNotifySwitch"><span></span></label>
+        </div>
+
+        <button class="pf-card pf-card-row pf-share-card" id="profileCopyBtn">
+          <span class="pf-share-texts">
+            <span class="pf-card-title">Ссылка на игру</span>
+            <span class="pf-share-url">tvizy.tinkoff.ru</span>
+          </span>
+          <span class="pf-copy-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="3" fill="currentColor"/><path d="M5 15V7C5 5.89543 5.89543 5 7 5H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.6"/></svg></span>
+        </button>
       </section>
     </div>
 
@@ -317,6 +300,34 @@
     </nav>
 
     <div class="v2-fx-layer" id="v2FxLayer" aria-hidden="true"></div>
+
+    <!-- Настройки профиля: открываются кнопкой «Настроить», въезжают справа -->
+    <section class="pset" id="profileSettings" aria-hidden="true">
+      <div class="pset-scroll">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" id="profileSettingsBack" aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
+          <div class="v2-appbar-title">Настройки профиля</div>
+          <span></span>
+        </div>
+        <div class="v2-chip-row pset-chip-row" id="psetChipRow">
+          <span class="v2-chip-indicator"></span>
+          <button class="v2-chip v2-chip-active" data-tab="avatars">Аватарки</button>
+          <button class="v2-chip" data-tab="frames">Рамки</button>
+          <button class="v2-chip" data-tab="backs">Рубашка колоды</button>
+          <button class="v2-chip" data-tab="status">Статус</button>
+        </div>
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="psetTabTrack">
+            <div class="v2-tab-panel"><div class="pset-avatars" id="psetAvatars"><button class="pset-avatar" data-avatar="assets/avatars/av-01.png"><img src="assets/avatars/av-01.png" alt="Аватар 1"></button><button class="pset-avatar" data-avatar="assets/avatars/av-02.png"><img src="assets/avatars/av-02.png" alt="Аватар 2"></button><button class="pset-avatar" data-avatar="assets/avatars/av-03.png"><img src="assets/avatars/av-03.png" alt="Аватар 3"></button><button class="pset-avatar" data-avatar="assets/avatars/av-04.png"><img src="assets/avatars/av-04.png" alt="Аватар 4"></button><button class="pset-avatar" data-avatar="assets/avatars/av-05.png"><img src="assets/avatars/av-05.png" alt="Аватар 5"></button><button class="pset-avatar" data-avatar="assets/avatars/av-06.png"><img src="assets/avatars/av-06.png" alt="Аватар 6"></button><button class="pset-avatar" data-avatar="assets/avatars/av-07.png"><img src="assets/avatars/av-07.png" alt="Аватар 7"></button><button class="pset-avatar" data-avatar="assets/avatars/av-08.png"><img src="assets/avatars/av-08.png" alt="Аватар 8"></button><button class="pset-avatar" data-avatar="assets/avatars/av-09.png"><img src="assets/avatars/av-09.png" alt="Аватар 9"></button><button class="pset-avatar" data-avatar="assets/avatars/av-10.png"><img src="assets/avatars/av-10.png" alt="Аватар 10"></button><button class="pset-avatar" data-avatar="assets/avatars/av-11.png"><img src="assets/avatars/av-11.png" alt="Аватар 11"></button><button class="pset-avatar" data-avatar="assets/avatars/av-12.png"><img src="assets/avatars/av-12.png" alt="Аватар 12"></button><button class="pset-avatar" data-avatar="assets/avatars/av-13.png"><img src="assets/avatars/av-13.png" alt="Аватар 13"></button><button class="pset-avatar" data-avatar="assets/avatars/av-14.png"><img src="assets/avatars/av-14.png" alt="Аватар 14"></button></div></div>
+            <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Рамки скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
+            <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Рубашки колоды скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
+            <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Статусы скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="pf-toast" id="profileToast">Ссылка скопирована</div>
 
     <!-- Новогодний ивент: открывается с баннера на главной, поверх таб-бара -->
     <section class="ev is-tab-tasks" id="eventScreen" aria-hidden="true">
@@ -426,12 +437,12 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610081019"></script>
-  <script src="js/v2.js?v=202610081019"></script>
-  <script src="js/profile.js?v=202610081019"></script>
-  <script src="js/tasks.js?v=202610081019"></script>
-  <script src="js/cards-v2.js?v=202610081019"></script>
-  <script src="js/gifts.js?v=202610081019"></script>
-  <script src="js/event.js?v=202610081019"></script>
+  <script src="js/cards.js?v=202610081029"></script>
+  <script src="js/v2.js?v=202610081029"></script>
+  <script src="js/profile.js?v=202610081029"></script>
+  <script src="js/tasks.js?v=202610081029"></script>
+  <script src="js/cards-v2.js?v=202610081029"></script>
+  <script src="js/gifts.js?v=202610081029"></script>
+  <script src="js/event.js?v=202610081029"></script>
 </body>
 </html>

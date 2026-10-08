@@ -78,6 +78,11 @@ const tabHighlightEl = document.getElementById('v2TabHighlight');
 const tabEls = Array.from(document.querySelectorAll('.v2-tab'));
 let currentScreen = null;
 
+// у профиля нет своего таба — он открывается с главной, поэтому подсвечена «Игра»
+function tabForScreen(screen) {
+  return tabEls.find((t) => t.dataset.nav === screen) || tabEls.find((t) => t.dataset.nav === 'game');
+}
+
 function moveTabHighlight(tabEl, animate) {
   // у раздела без таба (профиль) подсветка гаснет на месте
   tabHighlightEl.classList.toggle('is-hidden', !tabEl);
@@ -103,7 +108,7 @@ function showScreen(screen, animate = true) {
   const prev = currentScreen;
   currentScreen = screen;
 
-  const tabEl = tabEls.find((t) => t.dataset.nav === screen);
+  const tabEl = tabForScreen(screen);
   tabEls.forEach((t) => t.classList.toggle('v2-tab-active', t === tabEl));
   moveTabHighlight(tabEl, animate);
 
@@ -159,5 +164,5 @@ document.querySelectorAll('[data-nav]').forEach((el) => {
 
 
 showScreen(location.hash.slice(1), false);
-window.addEventListener('load', () => moveTabHighlight(tabEls.find((t) => t.dataset.nav === currentScreen), false));
-window.addEventListener('resize', () => moveTabHighlight(tabEls.find((t) => t.dataset.nav === currentScreen), false));
+window.addEventListener('load', () => moveTabHighlight(tabForScreen(currentScreen), false));
+window.addEventListener('resize', () => moveTabHighlight(tabForScreen(currentScreen), false));
