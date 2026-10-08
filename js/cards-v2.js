@@ -1,12 +1,11 @@
 // Раздел «Карты»: колода из 8 карт и вся коллекция. Логика — как в
-// collection.js версии 1, колода хранится в том же localStorage.
+// collection.js версии 1, колода хранится в том же localStorage и
+// сохраняется сразу при каждом изменении (кнопки «Сохранить» нет).
 (() => {
   const deckGridEl = document.getElementById('cardsDeckGrid');
   const collectionEl = document.getElementById('cardsCollectionGrid');
   const countEl = document.getElementById('cardsDeckCount');
   const hintEl = document.getElementById('cardsDeckHint');
-  const saveBtn = document.getElementById('cardsSaveBtn');
-  const toastEl = document.getElementById('cardsToast');
   const sheet = document.getElementById('cardSheet');
   const backdrop = document.getElementById('cardSheetBackdrop');
   const sheetTitle = document.getElementById('cardSheetTitle');
@@ -15,11 +14,9 @@
   const sheetHint = document.getElementById('cardSheetHint');
 
   let deck = getSavedDeckNames().filter((name) => CARD_ROSTER.some((c) => c.name === name));
-  let saved = [...deck];
   let sheetAction = null;
 
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
-  const isDirty = () => deck.length !== saved.length || [...deck].sort().some((n, i) => n !== [...saved].sort()[i]);
 
   function cardEl(card, extra = '') {
     const el = document.createElement('div');
@@ -52,8 +49,6 @@
       el.addEventListener('click', () => openCard(card));
       collectionEl.appendChild(el);
     });
-
-    saveBtn.classList.toggle('is-visible', deck.length === DECK_SIZE && isDirty());
   }
 
   function openCard(card) {
@@ -87,22 +82,14 @@
   sheetBtn.addEventListener('click', () => {
     if (!sheetAction) return;
     sheetAction();
+    saveDeckNames(deck);
+    // любимая колода в профиле — это сохранённая колода
+    if (typeof renderFavoriteDeck === 'function') renderFavoriteDeck();
     closeCard();
     render();
   });
   document.getElementById('cardSheetClose').addEventListener('click', closeCard);
   backdrop.addEventListener('click', closeCard);
-
-  saveBtn.addEventListener('click', () => {
-    if (deck.length !== DECK_SIZE) return;
-    saveDeckNames(deck);
-    saved = [...deck];
-    render();
-    // любимая колода в профиле — это сохранённая колода
-    if (typeof renderFavoriteDeck === 'function') renderFavoriteDeck();
-    toastEl.classList.add('is-visible');
-    setTimeout(() => toastEl.classList.remove('is-visible'), 2000);
-  });
 
   render();
 })();

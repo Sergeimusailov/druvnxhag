@@ -80,24 +80,6 @@
   filter: grayscale(60%);
 }
 
-.cards-save {
-  position: sticky;
-  /* над таб-баром (он занимает нижние 82px) */
-  bottom: 96px;
-  z-index: 5;
-  margin: 8px 16px 0;
-  transform: translateY(20px);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1), opacity 0.2s ease;
-}
-
-.cards-save.is-visible {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
 /* шторка карты */
 
 .card-sheet {
@@ -131,24 +113,4 @@
   font-size: 13px;
   color: rgba(246, 247, 248, 0.6);
   text-align: center;
-}
-
-.cards-toast {
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  z-index: 40;
-  padding: 10px 16px;
-  border-radius: 100px;
-  background: #42cf9b;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  transform: translate(-50%, -80px);
-  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
-  pointer-events: none;
-}
-
-.cards-toast.is-visible {
-  transform: translate(-50%, 0);
 }
