@@ -295,3 +295,182 @@
 .t22-task.is-done {
   opacity: 0.85;
 }
+
+/* ---------- Версия 2.1: «Новогоднее событие» на общем скелете ---------- */
+
+.e22-cta {
+  display: none;
+}
+
+.e22.is-v21 .e22-head-badge {
+  order: -1;
+  margin: 0 0 16px;
+}
+
+.e22.is-v21 .e22-cta {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  margin-top: 16px;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.e22.is-v21 .e22-cta:active {
+  transform: scale(0.94);
+}
+
+/* синий трек: капля, пройденная линия, перемычки и ромбы */
+.e22.is-v21 .e22-track .ev-track-fill,
+.e22.is-v21 .e22-track .ev-level.is-reached .ev-link {
+  background: #5ca8fe;
+}
+
+.e22.is-v21 .e22-track .ev-level.is-reached .ev-node {
+  color: #fff;
+}
+
+.e22.is-v21 .e22-track .ev-level.is-reached .ev-node::before {
+  background: #5ca8fe;
+  box-shadow: 0 0 0 2px #fff, 0 0 8px rgba(92, 168, 254, 0.6);
+}
+
+/* ---------- Версия 2.1: правила события при первом входе ---------- */
+
+.nyi {
+  position: absolute;
+  inset: 0;
+  z-index: 39;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #151624;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.04);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1), visibility 0s linear 0.35s;
+}
+
+.nyi.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.nyi-glow {
+  position: absolute;
+  left: -46px;
+  top: -49px;
+  width: 466px;
+  height: 223px;
+  background: radial-gradient(60% 70% at 50% 35%, rgba(66, 82, 140, 0.95), rgba(21, 22, 36, 0));
+  pointer-events: none;
+}
+
+.nyi-hero {
+  position: relative;
+  width: 375px;
+  height: 186px;
+  margin-top: 66px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.nyi-hero img {
+  position: absolute;
+  left: 7px;
+  /* картинка уже обрезана по содержимому: верх шарика — у края блока */
+  top: -66px;
+  width: 362px;
+  height: auto;
+}
+
+.nyi-close {
+  position: absolute;
+  top: 72px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.nyi-title {
+  margin-top: 13px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.nyi-sub {
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 20px;
+  color: #f6f7f8;
+}
+
+/* три шага змейкой со стрелками, как в макете */
+.nyi-steps {
+  position: relative;
+  width: 375px;
+  height: 340px;
+  flex-shrink: 0;
+}
+
+.nyi-step {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 17px;
+  line-height: 20px;
+  color: #fff;
+}
+
+.nyi-step img {
+  object-fit: contain;
+}
+
+.nyi-step-1 { left: 30px; top: 32px; width: 150px; }
+.nyi-step-1 img { width: 84px; height: 84px; }
+.nyi-step-2 { left: 198px; top: 126px; width: 168px; }
+.nyi-step-2 img { width: 68px; height: 68px; margin-bottom: 12px; }
+.nyi-step-3 { left: 17px; top: 231px; width: 168px; }
+.nyi-step-3 img { width: 96px; height: 72px; margin-bottom: 10px; }
+
+.nyi-arrow {
+  position: absolute;
+  width: 59px;
+  height: 36px;
+}
+
+.nyi-arrow-1 { left: 191px; top: 100px; }
+.nyi-arrow-2 { left: 152px; top: 194px; }
+
+.nyi-cta {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: calc(48px + env(safe-area-inset-bottom));
+  height: 52px;
+}
+
+/* на невысоких экранах шаги ужимаются, кнопка остаётся внизу */
+@media (max-height: 760px) {
+  .nyi-hero { margin-top: 40px; height: 160px; }
+  .nyi-steps { transform: scale(0.9); transform-origin: 50% 0; }
+}

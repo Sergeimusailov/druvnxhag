@@ -596,3 +596,74 @@
   transform: none;
   pointer-events: auto;
 }
+
+/* Шапка карточки шкалы: «Ежедневные награды» и кнопка «i» с подсказкой */
+
+.tasks-progress {
+  background: linear-gradient(200deg, #5c2f0b 0%, #2c2c2e 100%);
+}
+
+.tasks-progress-weekly {
+  background: linear-gradient(200deg, #0b4a35 0%, #2c2c2e 100%);
+}
+
+.tasks-progress-title {
+  position: absolute;
+  left: 24px;
+  top: 16px;
+  z-index: 3;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.tasks-progress-info {
+  position: absolute;
+  top: 8px;
+  right: 13px;
+  z-index: 4;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(246, 247, 248, 0.85);
+  color: #2c2c2e;
+  font: 700 13px/20px Georgia, serif;
+  text-align: center;
+}
+
+.tasks-progress-tip {
+  position: absolute;
+  top: 36px;
+  right: 8px;
+  z-index: 5;
+  width: 200px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f6f7f8;
+  color: #1c1c1e;
+  font-size: 13px;
+  line-height: 17px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+  transform-origin: 90% 0;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+}
+
+.tasks-progress-tip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 9px;
+  border: 6px solid transparent;
+  border-top: 0;
+  border-bottom-color: #f6f7f8;
+}
+
+.tasks-progress.is-tip-open .tasks-progress-tip {
+  opacity: 1;
+  transform: none;
+}

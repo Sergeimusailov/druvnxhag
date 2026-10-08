@@ -75,6 +75,10 @@ function badgeHTML(n) {
 }
 
 function renderEntries22(pulse) {
+  // 2.1: на главной один виджет — его полоска тоже от снежинок
+  const widgetFill = document.getElementById('eventWidgetFill');
+  const nyEv = EVENTS22.list.ny;
+  if (widgetFill) widgetFill.style.width = `${(EVENTS22.reached(nyEv) / nyEv.rewards.length) * 100}%`;
   const ny = EVENTS22.list.ny;
   const daily = EVENTS22.list.daily;
   const prevNy = e22Entries.querySelector('[data-event="ny"] .e22-badge');
@@ -143,7 +147,7 @@ function renderTrack22(ev) {
   const height = e22LevelCenter(n) + 70 + 40;
   e22Track.innerHTML = `
     <div class="ev-track e22-track" style="height:${height}px">
-      <img class="e22-pin" src="assets/v2-event-pin.svg" alt="">
+      <img class="e22-pin" src="assets/${isAppVersion('2.2') ? 'v2-event-pin.svg' : 'v2-event-pin-blue.svg'}" alt="">
       <img class="e22-pin-icon" src="${CURRENCY_ICONS[ev.currency]}" alt="">
       <span class="ev-track-line" style="top:${E22_LINE_TOP}px;height:${height - E22_LINE_TOP - 20}px"></span>
       <span class="ev-track-fill" style="top:${E22_LINE_TOP}px;height:${e22FillHeight(ev.shown)}px"></span>
@@ -191,6 +195,8 @@ function e22DailyTimer() {
 function openEvent22(id) {
   const ev = EVENTS22.list[id];
   e22Current = ev;
+  // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
+  e22Screen.classList.toggle('is-v21', !isAppVersion('2.2'));
   e22Screen.style.setProperty('--c1', ev.colors[0]);
   e22Screen.style.setProperty('--c2', ev.colors[1]);
   document.getElementById('e22Title').textContent = ev.title;
@@ -238,11 +244,61 @@ e22Entries.addEventListener('click', (e) => {
 });
 
 document.getElementById('e22Back').addEventListener('click', closeEvent22);
-document.getElementById('e22Info').addEventListener('click', () => {});
+document.getElementById('e22Info').addEventListener('click', () => {
+  if (!isAppVersion('2.2')) openNyIntro();
+});
+
+// «К заданиям»: задания — единый источник снежинок
+document.getElementById('e22Cta').addEventListener('click', () => {
+  closeEvent22();
+  showScreen('tasks');
+});
+
+/* ---------- 2.1: правила при первом входе ---------- */
+
+const NY_INTRO_KEY = 'v2.nyIntroSeen';
+const nyIntroEl = document.getElementById('nyIntro');
+let nyIntroThen = null;
+
+function openNyIntro(then) {
+  nyIntroThen = then || null;
+  nyIntroEl.classList.add('is-open');
+  nyIntroEl.setAttribute('aria-hidden', 'false');
+}
+
+function closeNyIntro() {
+  nyIntroEl.classList.remove('is-open');
+  nyIntroEl.setAttribute('aria-hidden', 'true');
+  try {
+    localStorage.setItem(NY_INTRO_KEY, '1');
+  } catch (e) {
+    /* без хранилища правила просто покажутся снова */
+  }
+  if (nyIntroThen) setTimeout(nyIntroThen, 120);
+  nyIntroThen = null;
+}
+
+function nyIntroSeen() {
+  try {
+    return localStorage.getItem(NY_INTRO_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+// виджет на главной (2.1): первый раз — правила, затем событие
+function openNyFromHome() {
+  if (nyIntroSeen()) openEvent22('ny');
+  else openNyIntro(() => openEvent22('ny'));
+}
+
+document.getElementById('nyIntroClose').addEventListener('click', closeNyIntro);
+document.getElementById('nyIntroCta').addEventListener('click', closeNyIntro);
 e22Scroll.addEventListener('scroll', () => e22Scroll.classList.toggle('is-scrolled', e22Scroll.scrollTop > 2), { passive: true });
 
 setInterval(() => {
   if (e22Current && !e22Current.badge) document.getElementById('e22BadgeText').textContent = e22DailyTimer();
 }, 1000);
 
-if (isAppVersion('2.2')) renderEntries22();
+renderEntries22();
+if (INITIAL_HASH === 'event' && !isAppVersion('2.2')) openNyFromHome();

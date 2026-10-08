@@ -8,6 +8,7 @@ const CURRENCY_ICONS = {
   snow: 'assets/v2-cur-snow.png',
   leaf: 'assets/v2-cur-leaf.png',
   coins: 'assets/v2-coin.png',
+  bolt: 'assets/v2-bolt.png',
 };
 
 const TASKS22_DATA = {

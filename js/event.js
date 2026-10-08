@@ -243,11 +243,12 @@ window.addEventListener('resize', placeHeadV);
 window.addEventListener('load', placeHeadV);
 
 const bannerEl = document.getElementById('eventBanner');
-bannerEl.addEventListener('click', () => openEvent());
+// в 2.1 с главной открывается новое «Новогоднее событие» (js/events22.js)
+bannerEl.addEventListener('click', () => openNyFromHome());
 bannerEl.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
-    openEvent();
+    openNyFromHome();
   }
 });
 
@@ -336,4 +337,4 @@ eventRewardsPanel.addEventListener('click', (e) => {
 renderEventTasks();
 renderEventTrack();
 placeHeadV();
-if (INITIAL_HASH === 'event') openEvent(false);
+

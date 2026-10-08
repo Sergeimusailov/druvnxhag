@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610081343"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610081343">
-  <link rel="stylesheet" href="css/v2.css?v=202610081343">
-  <link rel="stylesheet" href="css/profile.css?v=202610081343">
-  <link rel="stylesheet" href="css/tasks.css?v=202610081343">
-  <link rel="stylesheet" href="css/gifts.css?v=202610081343">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610081343">
-  <link rel="stylesheet" href="css/shop.css?v=202610081343">
-  <link rel="stylesheet" href="css/v22.css?v=202610081343">
-  <link rel="stylesheet" href="css/event.css?v=202610081343">
+  <script src="js/version.js?v=202610081514"></script>
+  <link rel="stylesheet" href="css/match.css?v=202610081514">
+  <link rel="stylesheet" href="css/v2.css?v=202610081514">
+  <link rel="stylesheet" href="css/profile.css?v=202610081514">
+  <link rel="stylesheet" href="css/tasks.css?v=202610081514">
+  <link rel="stylesheet" href="css/gifts.css?v=202610081514">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610081514">
+  <link rel="stylesheet" href="css/shop.css?v=202610081514">
+  <link rel="stylesheet" href="css/v22.css?v=202610081514">
+  <link rel="stylesheet" href="css/event.css?v=202610081514">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -357,6 +357,23 @@
       <button class="v2-cta lb-claim" id="lbClaim">Забрать</button>
     </div>
 
+    <!-- Версия 2.1: правила «Новогоднего события» при первом входе с главной -->
+    <section class="nyi" id="nyIntro" aria-hidden="true">
+      <div class="nyi-glow"></div>
+      <div class="nyi-hero"><img src="assets/v2-ny-kv.png" alt=""></div>
+      <button class="nyi-close" id="nyIntroClose" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.58579 8L3.29289 4.70711C2.90237 4.31658 2.90237 3.68342 3.29289 3.29289C3.68342 2.90237 4.31658 2.90237 4.70711 3.29289L8 6.58579L11.2929 3.29289C11.6834 2.90237 12.3166 2.90237 12.7071 3.29289C13.0976 3.68342 13.0976 4.31658 12.7071 4.70711L9.41421 8L12.7071 11.2929C13.0976 11.6834 13.0976 12.3166 12.7071 12.7071C12.3166 13.0976 11.6834 13.0976 11.2929 12.7071L8 9.41421L4.70711 12.7071C4.31658 13.0976 3.68342 13.0976 3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929L6.58579 8Z" fill="currentColor"/></svg></button>
+      <h1 class="nyi-title">Новогоднее событие</h1>
+      <p class="nyi-sub">Разыгрываем 10 000 000 ₽</p>
+      <div class="nyi-steps">
+        <div class="nyi-step nyi-step-1"><img src="assets/v2-ny-tasks.png" alt=""><p>Выполняй задания</p></div>
+        <img class="nyi-arrow nyi-arrow-1" src="assets/v2-arrow-right.svg" alt="">
+        <div class="nyi-step nyi-step-2"><img src="assets/v2-bolt.png" alt=""><p>Получай очки и заполняй трек</p></div>
+        <img class="nyi-arrow nyi-arrow-2" src="assets/v2-arrow-left.svg" alt="">
+        <div class="nyi-step nyi-step-3"><img src="assets/v2-prize-gift.png" alt=""><p>Получай награды и участвуй в розыгрыше</p></div>
+      </div>
+      <button class="v2-cta nyi-cta" id="nyIntroCta">К наградам</button>
+    </section>
+
     <!-- Версия 2.2: экран события (общий скелет для «Новогоднего события» и «Дейликов») -->
     <section class="ev e22" id="e22Screen" aria-hidden="true">
       <div class="e22-glow"></div>
@@ -372,6 +389,7 @@
           <h1 class="e22-heading" id="e22Heading"></h1>
           <p class="e22-desc" id="e22Desc"></p>
           <span class="e22-head-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg><span id="e22BadgeText"></span></span>
+          <button class="e22-cta" id="e22Cta">К заданиям</button>
         </div>
         <div class="e22-panel" id="e22Track"></div>
       </div>
@@ -485,15 +503,15 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610081343"></script>
-  <script src="js/v2.js?v=202610081343"></script>
-  <script src="js/profile.js?v=202610081343"></script>
-  <script src="js/tasks22.js?v=202610081343"></script>
-  <script src="js/tasks.js?v=202610081343"></script>
-  <script src="js/cards-v2.js?v=202610081343"></script>
-  <script src="js/shop.js?v=202610081343"></script>
-  <script src="js/gifts.js?v=202610081343"></script>
-  <script src="js/event.js?v=202610081343"></script>
-  <script src="js/events22.js?v=202610081343"></script>
+  <script src="js/cards.js?v=202610081514"></script>
+  <script src="js/v2.js?v=202610081514"></script>
+  <script src="js/profile.js?v=202610081514"></script>
+  <script src="js/tasks22.js?v=202610081514"></script>
+  <script src="js/tasks.js?v=202610081514"></script>
+  <script src="js/cards-v2.js?v=202610081514"></script>
+  <script src="js/shop.js?v=202610081514"></script>
+  <script src="js/gifts.js?v=202610081514"></script>
+  <script src="js/event.js?v=202610081514"></script>
+  <script src="js/events22.js?v=202610081514"></script>
 </body>
 </html>

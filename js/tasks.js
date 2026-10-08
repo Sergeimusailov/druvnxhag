@@ -6,36 +6,32 @@ const MILESTONES = [20, 40, 60, 80, 100];
 // центры точек на дорожке шкалы (px из макета на ширине дорожки 241px)
 const DOT_FRACTIONS = [10, 65.5, 121, 176.5, 232].map((px) => px / 241);
 
+// Задания — единый источник наград: энергия (молнии) двигает шкалу
+// дейликов/недели, снежинки уходят в «Новогоднее событие», монеты — в магазин
 const TASK_TABS = {
   daily: {
-    points: 20,
+    title: 'Ежедневные награды',
+    points: 34,
     claimed: new Set([20]),
     tasks: [
-      { id: 'd-pvp', title: 'Победить в PvP', reward: 20, state: 'claimable' },
-      { id: 'd-capture', title: 'Захватить карты соперника', reward: 7 },
-      { id: 'd-new-cards', title: 'Получить новые карты', reward: 2 },
-      { id: 'd-chest', title: 'Купить сундук в магазине', reward: 1 },
-      { id: 'd-spend', title: 'Потратить монеты в магазине', reward: 100 },
-      { id: 'd-first', title: 'Сыграть первый матч дня', reward: 1 },
-      { id: 'd-play3', title: 'Сыграть 3 матча', reward: 10, progress: [1, 3] },
-      { id: 'd-win2', title: 'Выиграть 2 матча', reward: 10, progress: [0, 2] },
-      { id: 'd-done-1', title: 'Захватить карты соперника', reward: 10, state: 'done' },
-      { id: 'd-done-2', title: 'Получить новые карты', reward: 10, state: 'done' },
+      { id: 'd-win3', title: 'Выиграйте 3 матча подряд', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['coins', 10], ['bolt', 6]] },
+      { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'До 26 ноября', rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'd-capture', title: 'Захватите 20 карт соперника', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'd-combo', title: 'Сделайте 20 прострелов', status: 'До 26 ноября', progress: [10, 20], rewards: [['bolt', 6]] },
+      { id: 'd-first', title: 'Сыграйте первый матч дня', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
+      { id: 'd-deck', title: 'Соберите колоду из 8 карт', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
     ],
   },
   weekly: {
-    points: 20,
-    claimed: new Set([20]),
+    title: 'Еженедельные награды',
+    points: 14,
+    claimed: new Set(),
     tasks: [
-      { id: 'w-play10', title: 'Сыграть 10 матчей', reward: 20, state: 'claimable' },
-      { id: 'w-save', title: 'Накопить 100 монет', reward: 10, progress: [21, 100] },
-      { id: 'w-spend', title: 'Потратить 100 монет', reward: 10, progress: [21, 100] },
-      { id: 'w-chests', title: 'Купить 2 сундука', reward: 10, progress: [0, 2] },
-      { id: 'w-streak', title: 'Победить 5 матчей подряд', reward: 10, progress: [0, 5] },
-      { id: 'w-level', title: 'Повысить уровень игрока', reward: 1 },
-      { id: 'w-all-cells', title: 'Захватить все клетки поля в одном матче', reward: 1 },
-      { id: 'w-done-1', title: 'Захватить карты соперника', reward: 10, state: 'done' },
-      { id: 'w-done-2', title: 'Получить новые карты', reward: 10, state: 'done' },
+      { id: 'w-boxes', title: 'Откройте 2 лутбокса в магазине', status: 'Заберите до 30 ноября', state: 'claimable', rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'w-wins', title: 'Одержите 15 побед за неделю', status: 'До 30 ноября', progress: [6, 15], rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'w-streak', title: 'Победите 5 матчей подряд', status: 'До 30 ноября', progress: [2, 5], rewards: [['bolt', 10]] },
+      { id: 'w-play10', title: 'Сыграйте 10 матчей', status: 'До 30 ноября', progress: [4, 10], rewards: [['bolt', 6]] },
+      { id: 'w-done', title: 'Захватите все клетки поля в одном матче', status: 'Выполнено 22 ноября', state: 'done', rewards: [['bolt', 6]] },
     ],
   },
 };
@@ -80,6 +76,8 @@ function milestoneHTML(tab, i) {
 }
 
 function taskHTML(task) {
+  // карточка с несколькими наградами (валюты) — общая с версией 2.2
+  if (task.rewards) return TASKS22.taskHTML(task);
   const claimable = task.state === 'claimable';
   const done = task.state === 'done';
   let extra = '';
@@ -114,6 +112,9 @@ function renderPanel(tab) {
   panelEls[tab].innerHTML = `
     <div class="tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="${tab}"></span></span></div>
     <div class="tasks-progress tasks-progress-${tab}">
+      <h2 class="tasks-progress-title">${data.title}</h2>
+      <button class="tasks-progress-info" aria-label="Что это">i</button>
+      <p class="tasks-progress-tip">Выполняй задания, получай больше наград</p>
       <img class="tasks-progress-tag" src="assets/v2-progress-bolt-tag.png" alt="">
       <div class="tasks-progress-area">
         ${MILESTONES.map((_, i) => milestoneHTML(tab, i)).join('')}
@@ -338,7 +339,10 @@ async function claimTask(tab, taskId) {
 
   const rewardTile = row.querySelector('.task-reward');
   const tag = panel.querySelector('.tasks-progress-tag');
-  const from = centerOf(rewardTile.querySelector('img'));
+  const rewards = task.rewards || [['bolt', task.reward]];
+  const boltAmount = rewards.filter(([c]) => c === 'bolt').reduce((sum, [, n]) => sum + n, 0);
+  const boltImg = row.querySelector('.t22-reward[data-cur="bolt"] img') || rewardTile.querySelector('img');
+  const from = centerOf(boltImg);
   const tagRect = tag.getBoundingClientRect();
   const appRect = appEl.getBoundingClientRect();
   // молния внутри бирки: центр иконки 28px с отступом (3.5, 3)
@@ -348,8 +352,15 @@ async function claimTask(tab, taskId) {
   };
   rewardTile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
 
-  const count = Math.max(5, Math.min(10, Math.round(task.reward / 2)));
+  const count = boltAmount ? Math.max(5, Math.min(10, Math.round(boltAmount / 2))) : 0;
   const flights = [];
+  // снежинки улетают в таб «Игра» — там «Новогоднее событие»
+  const gameIcon = document.querySelector('.v2-tab[data-nav="game"] .v2-tab-icon');
+  rewards.forEach(([cur], ri) => {
+    if (cur !== 'snow') return;
+    const snowFrom = centerOf(row.querySelector('.t22-reward[data-cur="snow"] img'));
+    for (let i = 0; i < 4; i++) flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, snowFrom, centerOf(gameIcon), 150 + ri * 100 + i * 70));
+  });
   for (let i = 0; i < count; i++) {
     flights.push(
       flyBolt(from, to, i * 65, () => {
@@ -369,10 +380,15 @@ async function claimTask(tab, taskId) {
     expandIn(doneList.firstElementChild);
   }, 260);
 
+  task.status = 'Выполнено сегодня';
   await Promise.all(flights);
+  rewards.forEach(([cur, n]) => {
+    if (cur === 'coins') addCoins(n);
+    if (cur === 'snow') EVENTS22.addCurrency('snow', n);
+  });
 
   const fromPoints = data.points;
-  data.points = Math.min(100, data.points + task.reward);
+  data.points = Math.min(100, data.points + boltAmount);
   await fillProgress(panel, tab, fromPoints, data.points);
 
   const reached = MILESTONES.filter((m) => m > fromPoints && m <= data.points && !data.claimed.has(m));
@@ -550,6 +566,14 @@ tasksScreenEl.addEventListener('click', (e) => {
   if (claimBtn) {
     const panel = claimBtn.closest('.tasks-panel');
     claimTask(panel.dataset.panel, claimBtn.closest('.task').dataset.task);
+    return;
+  }
+  const info = e.target.closest('.tasks-progress-info');
+  tasksScreenEl.querySelectorAll('.tasks-progress.is-tip-open').forEach((c) => {
+    if (!info || c !== info.parentElement) c.classList.remove('is-tip-open');
+  });
+  if (info) {
+    info.parentElement.classList.toggle('is-tip-open');
     return;
   }
   if (e.target.closest('.tasks-milestone-btn')) openSheet();
