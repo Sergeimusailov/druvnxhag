@@ -46,6 +46,16 @@ if (isAppVersion('2.2')) {
   }));
 }
 
+// версия 2.3: снежинки — только из дневной пачки (3 задания по 10),
+// чтобы трек события проходили дозированно, а не за один вечер
+if (isAppVersion('2.3')) {
+  TASK_TABS.weekly.tasks.forEach((t) => {
+    if (t.rewards) t.rewards = t.rewards.filter(([cur]) => cur !== 'snow');
+  });
+  const combo = TASK_TABS.daily.tasks.find((t) => t.id === 'd-combo');
+  if (combo) combo.rewards = [['snow', 10], ['bolt', 6]];
+}
+
 const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>';
 
 const appEl = document.querySelector('.v2-app');
@@ -568,6 +578,11 @@ sheetEl.addEventListener('pointercancel', endDrag);
 /* ---------- Запуск ---------- */
 
 Object.keys(TASK_TABS).forEach(renderPanel);
+// перерисовка панелей заданий снаружи (демо в превью события 2.3)
+function TASKS22_RERENDER() {
+  Object.keys(TASK_TABS).forEach(renderPanel);
+}
+
 const tasksTabs = createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'));
 setInterval(updateTimers, 1000);
 

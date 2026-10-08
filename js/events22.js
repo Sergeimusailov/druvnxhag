@@ -254,38 +254,81 @@ function closeEvent22() {
 
 const e23Preview = document.getElementById('e23Preview');
 
-function snowTasks23() {
-  const list = [];
-  Object.entries(TASK_TABS).forEach(([tab, data]) => data.tasks.forEach((t) => {
-    const snow = (t.rewards || []).find(([cur]) => cur === 'snow');
-    if (snow && t.state !== 'done') list.push({ tab, task: t, snow: snow[1] });
-  }));
-  list.sort((a, b) => (b.task.state === 'claimable') - (a.task.state === 'claimable'));
-  return list;
+// дневная пачка снежинок: задания из дейликов, у которых в награде снежинки
+function snowPack23() {
+  return TASK_TABS.daily.tasks
+    .filter((t) => (t.rewards || []).some(([cur]) => cur === 'snow'))
+    .map((t) => ({ task: t, snow: t.rewards.find(([cur]) => cur === 'snow')[1] }));
+}
+
+function packTimer23() {
+  const now = new Date();
+  return formatLeft(resetTimes(now).daily - now);
 }
 
 function renderPreview23() {
-  const items = snowTasks23();
-  const ready = items.filter((i) => i.task.state === 'claimable').length;
-  const total = items.reduce((sum, i) => sum + i.snow, 0);
-  e23Preview.innerHTML = `
+  const pack = snowPack23();
+  const done = pack.filter((i) => i.task.state === 'done').length;
+  const ready = pack.filter((i) => i.task.state === 'claimable').length;
+  const total = pack.reduce((sum, i) => sum + i.snow, 0);
+  const finished = pack.length && done === pack.length;
+  const segs = pack.map((i) => `<span class="e23-seg${i.task.state === 'done' ? ' is-done' : i.task.state === 'claimable' ? ' is-ready' : ''}"></span>`).join('');
+  const rowSub = (t) => (t.state === 'claimable' ? 'Можно забрать' : t.state === 'done' ? 'Выполнено' : t.progress ? `${t.progress[0]} / ${t.progress[1]}` : 'В процессе');
+
+  const head = `
     <div class="e23-head">
-      <span class="e23-title">Задания со снежинками</span>
-      <span class="e23-total"><img src="${CURRENCY_ICONS.snow}" alt="">+${total}</span>
+      <span class="e23-title">Снежинки на сегодня</span>
+      <span class="e23-total"><img src="${CURRENCY_ICONS.snow}" alt="">${finished ? total : `+${total}`}</span>
     </div>
-    ${items.slice(0, 3).map((i) => `
-      <button class="e23-row" data-tab="${i.tab}">
+    <div class="e23-sub"><span>${finished ? 'Все задания выполнены' : `Выполнено ${done} из ${pack.length}`}</span><span class="e23-timer">${CLOCK_SVG}<span data-e23-timer>${packTimer23()}</span></span></div>
+    <div class="e23-segs">${segs}</div>`;
+
+  if (finished) {
+    // пачка закрыта — показываем, что следующая будет завтра
+    e23Preview.innerHTML = `${head}
+      <div class="e23-next">
+        <div class="e23-next-cards">
+          ${[0, 1, 2].map(() => `<span class="e23-next-card"><img src="${CURRENCY_ICONS.snow}" alt=""><span>?</span></span>`).join('')}
+        </div>
+        <p class="e23-next-title">Новые задания через <span data-e23-timer>${packTimer23()}</span></p>
+        <p class="e23-next-text">Завтра ещё +${total} снежинок — заходите продолжить путь по треку</p>
+      </div>`;
+    return;
+  }
+
+  e23Preview.innerHTML = `${head}
+    ${pack.map(({ task, snow }) => `
+      <button class="e23-row${task.state === 'done' ? ' is-done' : ''}" data-tab="daily">
+        <span class="e23-check">${task.state === 'done' ? CHECK_ICON : ''}</span>
         <span class="e23-row-text">
-          <span class="e23-row-title">${i.task.title}</span>
-          <span class="e23-row-sub${i.task.state === 'claimable' ? ' is-ready' : ''}">${i.task.state === 'claimable' ? 'Можно забрать' : i.task.progress ? `${i.task.progress[0]} / ${i.task.progress[1]} · ${i.tab === 'daily' ? 'Ежедневное' : 'Еженедельное'}` : i.tab === 'daily' ? 'Ежедневное' : 'Еженедельное'}</span>
+          <span class="e23-row-title">${task.title}</span>
+          <span class="e23-row-sub${task.state === 'claimable' ? ' is-ready' : ''}">${rowSub(task)}</span>
         </span>
-        <span class="e23-row-snow"><img src="${CURRENCY_ICONS.snow}" alt="">+${i.snow}</span>
+        <span class="e23-row-snow"><img src="${CURRENCY_ICONS.snow}" alt="">+${snow}</span>
       </button>`).join('')}
-    ${items.length ? '' : '<p class="e23-empty">Все задания со снежинками выполнены — новые появятся завтра</p>'}
-    <button class="e23-all" data-tab="${(items[0] && items[0].tab) || 'daily'}">${ready ? `Забрать награды · ${ready}` : 'Все задания'}</button>`;
+    <button class="e23-all" data-tab="daily">${ready ? `Забрать награды · ${ready}` : 'К заданиям'}</button>
+    <button class="e23-demo" id="e23Demo">Демо: выполнить пачку</button>`;
 }
 
+// таймер до новой пачки тикает, пока превью на экране
+setInterval(() => {
+  if (!e22Current || !isAppVersion('2.3')) return;
+  e23Preview.querySelectorAll('[data-e23-timer]').forEach((el) => { el.textContent = packTimer23(); });
+}, 1000);
+
 e23Preview.addEventListener('click', (e) => {
+  if (e.target.closest('#e23Demo')) {
+    // демо: закрываем дневную пачку, чтобы увидеть состояние «завтра»
+    snowPack23().forEach(({ task, snow }) => {
+      if (task.state !== 'done') EVENTS22.addCurrency('snow', snow);
+      task.state = 'done';
+      task.status = 'Выполнено сегодня';
+    });
+    renderPreview23();
+    TASKS22_RERENDER();
+    setTimeout(() => animateTrack22(EVENTS22.list.ny), 300);
+    return;
+  }
   const btn = e.target.closest('[data-tab]');
   if (!btn) return;
   closeEvent22();
