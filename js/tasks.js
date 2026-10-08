@@ -101,6 +101,11 @@ function taskHTML(task) {
 }
 
 function renderPanel(tab) {
+  // версия 2.2: задания с валютами событий вместо шкалы очков (js/tasks22.js)
+  if (isAppVersion('2.2')) {
+    TASKS22.renderPanel(tab, panelEls[tab]);
+    return;
+  }
   const data = TASK_TABS[tab];
   const active = data.tasks.filter((t) => t.state !== 'done');
   active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable'));
@@ -538,6 +543,10 @@ setInterval(updateTimers, 1000);
 
 tasksScreenEl.addEventListener('click', (e) => {
   const claimBtn = e.target.closest('.task-claim');
+  if (claimBtn && isAppVersion('2.2')) {
+    TASKS22.claim(claimBtn.closest('.tasks-panel').dataset.panel, claimBtn.closest('.task').dataset.task);
+    return;
+  }
   if (claimBtn) {
     const panel = claimBtn.closest('.tasks-panel');
     claimTask(panel.dataset.panel, claimBtn.closest('.task').dataset.task);

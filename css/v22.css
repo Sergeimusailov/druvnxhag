@@ -1,0 +1,297 @@
+/* Версия 2.2 (Figma 15997:61831): события с главной, валюты в заданиях.
+   Всё, что видно только в 2.2, включается через [data-version="2.2"]. */
+
+.e22-entries {
+  display: none;
+}
+
+[data-version="2.2"] .ev-widget {
+  display: none;
+}
+
+[data-version="2.2"] .e22-entries {
+  flex-shrink: 0;
+  display: flex;
+  gap: 20px;
+  margin: 0 20px 38px;
+}
+
+/* «Новогоднее событие» — широкая синяя карточка */
+.e22-widget {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 114px;
+  padding: 24px 16px;
+  border-radius: 24px;
+  background: linear-gradient(98deg, var(--c1) 0%, var(--c2) 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  text-align: left;
+  color: #fff;
+}
+
+.e22-widget-title {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+}
+
+.e22-widget-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 13px;
+}
+
+.e22-widget-icon {
+  position: absolute;
+  top: -15px;
+  right: -6px;
+  width: 63px;
+  height: 63px;
+  pointer-events: none;
+}
+
+.e22-bar {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: auto;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.e22-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 20px;
+  background: #fff;
+  transition: width 0.5s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+/* «Дейлики» — квадратная тёмная карточка с листиком */
+.e22-entry {
+  position: relative;
+  flex: 0 0 116px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 114px;
+  padding: 12px 0 14px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(249, 249, 249, 0.12), rgba(249, 249, 249, 0) 50%), #1c1c1e;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  overflow: visible;
+}
+
+.e22-entry-glow {
+  position: absolute;
+  left: 39px;
+  top: 17px;
+  width: 50px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(44, 44, 46, 0), #ff8a47);
+  opacity: 0.6;
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.e22-entry-label {
+  position: relative;
+  font-size: 10px;
+  line-height: 12px;
+  color: #fff;
+}
+
+.e22-entry-icon {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin-top: 6px;
+}
+
+.e22-bar-thin {
+  position: relative;
+  width: 76px;
+  height: 4px;
+}
+
+.e22-bar-thin > span {
+  background: linear-gradient(90deg, #dc5bd8, #b347db 23%, #dd7fda);
+}
+
+/* красный бейдж «есть что забрать» */
+.e22-badge {
+  position: absolute;
+  top: -3px;
+  right: -1px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 20px;
+  background: #f52222;
+  font-size: 15px;
+  line-height: 24px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Экран события */
+
+.e22 {
+  background: #1c1c1e;
+}
+
+.e22-glow {
+  position: absolute;
+  left: -188px;
+  top: -99px;
+  width: 770px;
+  height: 434px;
+  border-radius: 50%;
+  background: linear-gradient(98deg, var(--c1), var(--c2));
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.e22-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 32px 0;
+  text-align: center;
+}
+
+.e22-heading {
+  margin-bottom: 8px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.e22-heading[hidden] {
+  display: none;
+}
+
+.e22-desc {
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.e22-head-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  margin-top: 16px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.e22-panel {
+  position: relative;
+  z-index: 1;
+  padding-top: 29px;
+}
+
+/* трек: белая «капля» с валютой, пройденная часть белая, остальное серое */
+.e22-track .ev-track-line {
+  background: #414141;
+  border-radius: 0 0 40px 40px;
+}
+
+.e22-track .ev-track-fill {
+  background: #fff;
+  border-radius: 0 0 40px 40px;
+}
+
+.e22-pin {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 74px;
+  height: 251px;
+  margin-left: -37px;
+}
+
+.e22-pin-icon {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+}
+
+.e22-track .ev-level.is-reached .ev-link {
+  background: #fff;
+}
+
+/* Задания 2.2: в плитке награды — валюты стопкой */
+
+.t22-rewards {
+  gap: 10px;
+}
+
+.t22-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.t22-task .task-reward .t22-reward span {
+  margin-top: -8px;
+}
+
+.t22-status {
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.t22-status.is-claim {
+  color: #c79a00;
+}
+
+.t22-task.is-claimable .t22-status.is-claim {
+  color: #ffdd2d;
+}
+
+.t22-task .t22-claim {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+.t22-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.t22-task .task-progress-track {
+  margin-top: 16px;
+}
+
+.t22-task.is-done {
+  opacity: 0.85;
+}
