@@ -131,3 +131,43 @@ function cardInnerHTML(card) {
     <span class="num num-bottom">${card.bottom}</span>
   `;
 }
+
+// Редкость карты по сумме сторон: зелёная ≤ 16, синяя 17–20, фиолетовая ≥ 21
+const RARITIES = {
+  green: { name: 'Зелёная', color: '#4cd964' },
+  blue: { name: 'Синяя', color: '#4a9dff' },
+  purple: { name: 'Фиолетовая', color: '#b36bff' },
+};
+
+function cardRarity(card) {
+  const sum = card.top + card.left + card.right + card.bottom;
+  if (sum >= 21) return 'purple';
+  if (sum >= 17) return 'blue';
+  return 'green';
+}
+
+// Монеты: тратятся в магазине v2 (прототип; начисление за матчи — позже)
+const COINS_KEY = 'v2.coins';
+const COINS_START = 500;
+
+function getCoins() {
+  try {
+    const raw = localStorage.getItem(COINS_KEY);
+    return raw === null ? COINS_START : Math.max(0, parseInt(raw, 10) || 0);
+  } catch (e) {
+    return COINS_START;
+  }
+}
+
+function setCoins(value) {
+  try {
+    localStorage.setItem(COINS_KEY, String(Math.max(0, Math.round(value))));
+  } catch (e) {
+    /* без хранилища баланс живёт до перезагрузки */
+  }
+}
+
+function addCoins(delta) {
+  setCoins(getCoins() + delta);
+  return getCoins();
+}

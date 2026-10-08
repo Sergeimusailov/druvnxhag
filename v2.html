@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <link rel="stylesheet" href="css/match.css?v=202610081041">
-  <link rel="stylesheet" href="css/v2.css?v=202610081041">
-  <link rel="stylesheet" href="css/profile.css?v=202610081041">
-  <link rel="stylesheet" href="css/tasks.css?v=202610081041">
-  <link rel="stylesheet" href="css/gifts.css?v=202610081041">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610081041">
-  <link rel="stylesheet" href="css/event.css?v=202610081041">
+  <link rel="stylesheet" href="css/match.css?v=202610081051">
+  <link rel="stylesheet" href="css/v2.css?v=202610081051">
+  <link rel="stylesheet" href="css/profile.css?v=202610081051">
+  <link rel="stylesheet" href="css/tasks.css?v=202610081051">
+  <link rel="stylesheet" href="css/gifts.css?v=202610081051">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610081051">
+  <link rel="stylesheet" href="css/shop.css?v=202610081051">
+  <link rel="stylesheet" href="css/event.css?v=202610081051">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -112,8 +113,8 @@
         <div class="cards-collection-grid" id="cardsCollectionGrid"></div>
       </section>
 
-      <!-- Магазин: пока заглушка -->
-      <section class="v2-screen" data-screen="shop">
+      <!-- Магазин: лутбоксы за монеты (прототип) -->
+      <section class="v2-screen" data-screen="shop" id="shopScreen">
         <div class="v2-appbar">
           <button class="v2-icon-btn v2-glass" data-nav="game" aria-label="Закрыть">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
@@ -121,10 +122,17 @@
           <div class="v2-appbar-title">Магазин</div>
           <span></span>
         </div>
-        <div class="v2-stub">
-          <p class="v2-stub-title">Скоро здесь появится магазин карт</p>
-          <p class="v2-stub-text">Раздел в разработке</p>
+
+        <div class="shop-head">
+          <div class="shop-balance v2-glass"><img src="assets/v2-coin.png" alt="" width="28" height="28"><span id="shopCoins">0</span></div>
+          <h1 class="shop-title">Лутбоксы</h1>
+          <p class="shop-sub">Открывайте боксы за монеты — внутри карты, рамки, бустеры и монеты</p>
         </div>
+
+        <div class="shop-boxes" id="shopBoxes"></div>
+
+        <div class="shop-inventory" id="shopInventory"></div>
+        <button class="shop-demo" id="shopDemoCoins">Демо: начислить 500 монет</button>
       </section>
 
       <!-- Призы -->
@@ -320,6 +328,20 @@
 
     <div class="pf-toast" id="profileToast">Ссылка скопирована</div>
 
+    <!-- Открытие лутбокса (поверх всего) -->
+    <div class="lb-overlay" id="lbOverlay" aria-hidden="true">
+      <div class="lb-bg"></div>
+      <div class="lb-rays"></div>
+      <div class="lb-stage" id="lbStage">
+        <div class="lb-box" id="lbBox"></div>
+        <div class="lb-flash"></div>
+      </div>
+      <p class="lb-hint" id="lbHint">Нажмите, чтобы открыть</p>
+      <h2 class="lb-title" id="lbTitle">Награды</h2>
+      <div class="lb-rewards" id="lbRewards"></div>
+      <button class="v2-cta lb-claim" id="lbClaim">Забрать</button>
+    </div>
+
     <!-- Новогодний ивент: открывается с баннера на главной, поверх таб-бара -->
     <section class="ev is-tab-tasks" id="eventScreen" aria-hidden="true">
       <div class="ev-scroll" id="eventScroll">
@@ -428,12 +450,13 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610081041"></script>
-  <script src="js/v2.js?v=202610081041"></script>
-  <script src="js/profile.js?v=202610081041"></script>
-  <script src="js/tasks.js?v=202610081041"></script>
-  <script src="js/cards-v2.js?v=202610081041"></script>
-  <script src="js/gifts.js?v=202610081041"></script>
-  <script src="js/event.js?v=202610081041"></script>
+  <script src="js/cards.js?v=202610081051"></script>
+  <script src="js/v2.js?v=202610081051"></script>
+  <script src="js/profile.js?v=202610081051"></script>
+  <script src="js/tasks.js?v=202610081051"></script>
+  <script src="js/cards-v2.js?v=202610081051"></script>
+  <script src="js/shop.js?v=202610081051"></script>
+  <script src="js/gifts.js?v=202610081051"></script>
+  <script src="js/event.js?v=202610081051"></script>
 </body>
 </html>
