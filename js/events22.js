@@ -11,6 +11,9 @@ const EVENTS22 = {
       title: 'Новогоднее событие',
       heading: 'Делим 10 000 000 ₽',
       desc: 'Выполняйте задания, копи очки<br>и получай билеты на розыгрыш',
+      // 2.1: подзаголовок с описанием розыгрыша
+      descV21: 'Выполняйте задания, копите снежинки и получайте билеты на розыгрыш. Больше билетов — больше шансов на выигрыш',
+      tickets: 12,
       badge: 'До 1 января',
       colors: ['#3133c2', '#709dff'],
       currency: 'snow',
@@ -214,7 +217,8 @@ function openEvent22(id) {
   const heading = document.getElementById('e22Heading');
   heading.textContent = ev.heading;
   heading.hidden = !ev.heading;
-  document.getElementById('e22Desc').innerHTML = ev.desc;
+  document.getElementById('e22Desc').innerHTML = !isAppVersion('2.2') && ev.descV21 ? ev.descV21 : ev.desc;
+  document.getElementById('e22TicketCount').textContent = ev.tickets || 0;
   document.getElementById('e22BadgeText').textContent = ev.badge || e22DailyTimer();
   renderTrack22(ev);
   e22Scroll.scrollTop = 0;
@@ -241,6 +245,13 @@ e22Track.addEventListener('click', async (e) => {
   await card.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }).finished;
   await openGiftOverlay();
   ev.claimed.add(level);
+  // билет с трека пополняет счётчик в шапке
+  if (ev.rewards[level - 1] === 'ticket' && ev.tickets !== undefined) {
+    ev.tickets += 1;
+    const cnt = document.getElementById('e22TicketCount');
+    cnt.textContent = ev.tickets;
+    cnt.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  }
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
   levelEl.outerHTML = e22LevelHTML(ev, level);
   e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`).classList.add('is-pop');
@@ -255,9 +266,9 @@ e22Entries.addEventListener('click', (e) => {
 });
 
 document.getElementById('e22Back').addEventListener('click', closeEvent22);
-document.getElementById('e22Info').addEventListener('click', () => {
-  if (!isAppVersion('2.2')) openNyIntro();
-});
+document.getElementById('e22Info').addEventListener('click', () => {});
+// 2.1: правила розыгрыша — по кнопке «О розыгрыше»
+document.getElementById('e22About').addEventListener('click', () => openNyIntro());
 
 // «К заданиям»: задания — единый источник снежинок
 document.getElementById('e22Cta').addEventListener('click', () => {
