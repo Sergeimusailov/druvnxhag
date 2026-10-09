@@ -3,8 +3,6 @@
 // Состояние в памяти — после перезагрузки демо начинается заново.
 
 const MILESTONES = [20, 40, 60, 80, 100];
-// центры точек на дорожке шкалы (px из макета на ширине дорожки 241px)
-const DOT_FRACTIONS = [10, 65.5, 121, 176.5, 232].map((px) => px / 241);
 
 // Задания — единый источник наград: энергия (молнии) двигает шкалу
 // дейликов/недели, снежинки уходят в «Новогоднее событие», монеты — в магазин
@@ -68,31 +66,29 @@ let claimInProgress = false;
 
 /* ---------- Шкала ---------- */
 
+// Шкала (Figma 16047:43609): дорожка 313px внутри карточки 361px, сундуки
+// на 20/40/…/100 очков стоят над ней; доля дорожки = (12.5 + 2.875·очки) / 313
 function pointsToFraction(points) {
-  if (points <= MILESTONES[0]) return (points / MILESTONES[0]) * DOT_FRACTIONS[0];
-  for (let i = 1; i < MILESTONES.length; i++) {
-    if (points <= MILESTONES[i]) {
-      const t = (points - MILESTONES[i - 1]) / (MILESTONES[i] - MILESTONES[i - 1]);
-      return DOT_FRACTIONS[i - 1] + t * (DOT_FRACTIONS[i] - DOT_FRACTIONS[i - 1]);
-    }
-  }
-  return DOT_FRACTIONS[DOT_FRACTIONS.length - 1];
+  return Math.min(1, (12.5 + 2.875 * Math.max(0, points)) / 313);
+}
+
+// три состояния сундука: закрыт (статичен), готов к выдаче (свет + подпрыгивает),
+// открыт (уже получен)
+function milestoneState(tab, i) {
+  const data = TASK_TABS[tab];
+  if (data.claimed.has(MILESTONES[i])) return 'is-open';
+  return data.points >= MILESTONES[i] ? 'is-ready' : 'is-locked';
 }
 
 function milestoneHTML(tab, i) {
-  const big = i === MILESTONES.length - 1;
-  const left = `${DOT_FRACTIONS[i] * 100}%`;
-  const cls = `tasks-milestone${big ? ' tasks-milestone-big' : ''}`;
-  if (TASK_TABS[tab].claimed.has(MILESTONES[i])) {
-    return `<div class="${cls}" data-milestone="${i}" style="left:${left}"><img class="tasks-milestone-check" src="assets/v2-check.svg" alt="Получено"></div>`;
-  }
-  return `<div class="${cls}" data-milestone="${i}" style="left:${left}">
-    <button class="tasks-milestone-btn" aria-label="Что в подарке за ${MILESTONES[i]} очков">
-      ${big ? '<img class="tasks-milestone-glow" src="assets/v2-gift-glow.svg" alt="">' : ''}
-      <img class="tasks-milestone-gift" src="assets/v2-gift.png" alt="">
-      <img class="tasks-milestone-lock" src="assets/v2-lock.svg" alt="">
-    </button>
-  </div>`;
+  const state = milestoneState(tab, i);
+  const left = `${pointsToFraction(MILESTONES[i]) * 100}%`;
+  const src = state === 'is-open' ? 'assets/v2-chest-open.png' : 'assets/v2-chest-closed.png';
+  return `<button class="tchest ${state}" data-milestone="${i}" style="left:${left}" aria-label="Сундук за ${MILESTONES[i]} очков"${state === 'is-ready' ? '' : ' tabindex="-1"'}>
+    <span class="tchest-glow"></span>
+    <img class="tchest-img" src="${src}" alt="">
+    <span class="tchest-label">${MILESTONES[i]}</span>
+  </button>`;
 }
 
 function taskHTML(task) {
@@ -128,17 +124,12 @@ function renderPanel(tab) {
   const fraction = pointsToFraction(data.points);
   panelEls[tab].innerHTML = `
     <div class="tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="${tab}"></span></span></div>
-    <div class="tasks-progress tasks-progress-${tab}">
-      <h2 class="tasks-progress-title">${data.title}</h2>
-      <button class="tasks-progress-info" aria-label="Что это">i</button>
-      <p class="tasks-progress-tip">Выполняй задания, получай больше наград</p>
-      <img class="tasks-progress-tag" src="assets/v2-progress-bolt-tag.png" alt="">
-      <div class="tasks-progress-area">
+    <div class="tprog">
+      <div class="tprog-area">
+        <div class="tprog-track"><div class="tasks-fill" style="width:${fraction * 100}%"></div></div>
         ${MILESTONES.map((_, i) => milestoneHTML(tab, i)).join('')}
-        <div class="tasks-track"><div class="tasks-fill" style="width:${fraction * 100}%"></div></div>
-        ${DOT_FRACTIONS.map((f) => `<span class="tasks-dot${fraction >= f - 0.001 ? ' is-passed' : ''}" style="left:${f * 100}%"></span>`).join('')}
-        <div class="tasks-progress-labels"><span>Получено очков</span><span class="tasks-points">${data.points}/100</span></div>
       </div>
+      <div class="tprog-tag tasks-progress-tag"><img src="assets/v2-progress-bolt-tag.png" alt=""><span class="tasks-points">${data.points}</span></div>
     </div>
     <div class="tasks-list" data-list="active">${active.map(taskHTML).join('')}</div>
     <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
@@ -275,7 +266,6 @@ function easeOutCubic(t) {
 function fillProgress(panel, tab, fromPoints, toPoints) {
   const fill = panel.querySelector('.tasks-fill');
   const counter = panel.querySelector('.tasks-points');
-  const dots = Array.from(panel.querySelectorAll('.tasks-dot'));
   const fromF = pointsToFraction(fromPoints);
   const toF = pointsToFraction(toPoints);
   const duration = 900;
@@ -287,13 +277,16 @@ function fillProgress(panel, tab, fromPoints, toPoints) {
     function frame(now) {
       const t = Math.min(1, (now - start) / duration);
       const e = easeOutCubic(t);
-      const f = fromF + (toF - fromF) * e;
-      fill.style.width = `${f * 100}%`;
-      counter.textContent = `${Math.round(fromPoints + (toPoints - fromPoints) * e)}/100`;
-      dots.forEach((dot, i) => {
-        if (!dot.classList.contains('is-passed') && f >= DOT_FRACTIONS[i] - 0.001) {
-          dot.classList.add('is-passed');
-          dot.animate([{ transform: 'scale(1)' }, { transform: 'scale(2.2)' }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+      const pts = fromPoints + (toPoints - fromPoints) * e;
+      fill.style.width = `${(fromF + (toF - fromF) * e) * 100}%`;
+      counter.textContent = Math.round(pts);
+      // полоска дошла до сундука — он «просыпается»: свет и подпрыгивание
+      MILESTONES.forEach((m, i) => {
+        const el = panel.querySelector(`.tchest[data-milestone="${i}"]`);
+        if (el && el.classList.contains('is-locked') && pts >= m) {
+          el.classList.replace('is-locked', 'is-ready');
+          el.removeAttribute('tabindex');
+          el.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.35)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });
         }
       });
       if (t < 1) requestAnimationFrame(frame);
@@ -346,7 +339,7 @@ async function claimTask(tab, taskId) {
   row.querySelector('.task-claim').disabled = true;
 
   // шкала должна быть видна, чтобы молнии летели в неё на экране
-  const card = panel.querySelector('.tasks-progress');
+  const card = panel.querySelector('.tprog');
   const screenRect = tasksScreenEl.getBoundingClientRect();
   const cardRect = card.getBoundingClientRect();
   if (cardRect.top < screenRect.top + 100 || cardRect.bottom > screenRect.bottom - 90) {
@@ -360,13 +353,7 @@ async function claimTask(tab, taskId) {
   const boltAmount = rewards.filter(([c]) => c === 'bolt').reduce((sum, [, n]) => sum + n, 0);
   const boltImg = row.querySelector('.t22-reward[data-cur="bolt"] img') || rewardTile.querySelector('img');
   const from = centerOf(boltImg);
-  const tagRect = tag.getBoundingClientRect();
-  const appRect = appEl.getBoundingClientRect();
-  // молния внутри бирки: центр иконки 28px с отступом (3.5, 3)
-  const to = {
-    x: tagRect.left - appRect.left + (17.5 / 49.5) * tagRect.width,
-    y: tagRect.top - appRect.top + (17 / 34) * tagRect.height,
-  };
+  const to = centerOf(tag.querySelector('img'));
   rewardTile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
 
   const count = boltAmount ? Math.max(5, Math.min(10, Math.round(boltAmount / 2))) : 0;
@@ -415,16 +402,7 @@ async function claimTask(tab, taskId) {
   data.points = Math.min(100, data.points + boltAmount);
   await fillProgress(panel, tab, fromPoints, data.points);
 
-  const reached = MILESTONES.filter((m) => m > fromPoints && m <= data.points && !data.claimed.has(m));
-  for (const m of reached) {
-    const milestoneEl = panel.querySelector(`[data-milestone="${MILESTONES.indexOf(m)}"]`);
-    milestoneEl.classList.add('is-ready');
-    await wait(650);
-    await openGiftOverlay();
-    data.claimed.add(m);
-    milestoneEl.outerHTML = milestoneHTML(tab, MILESTONES.indexOf(m));
-    panel.querySelector(`[data-milestone="${MILESTONES.indexOf(m)}"]`).classList.add('is-claimed-now');
-  }
+  // открытие — по тапу на подсвеченный сундук
   claimInProgress = false;
 }
 
@@ -444,9 +422,13 @@ function once(el, type) {
   return new Promise((resolve) => el.addEventListener(type, resolve, { once: true }));
 }
 
-async function openGiftOverlay() {
+// opts.chest — вместо подарка сундук: падает закрытым, после тряски
+// открывается, и уже из открытого сундука вылетают призы
+async function openGiftOverlay(opts = {}) {
   giftEl.getAnimations().forEach((a) => a.cancel());
   giftEl.style.opacity = '';
+  giftEl.src = opts.chest ? 'assets/v2-chest-closed.png' : 'assets/v2-gift-big.png';
+  giftEl.classList.toggle('is-chest', !!opts.chest);
   giftRewardEls.forEach((r) => {
     r.getAnimations().forEach((a) => a.cancel());
     r.style.opacity = '0';
@@ -495,13 +477,34 @@ async function openGiftOverlay() {
     ],
     { duration: 800, easing: 'ease-out' }
   );
-  giftEl.animate(
-    [
-      { transform: 'scale(1.2)', opacity: 1 },
-      { transform: 'scale(1.6)', opacity: 0 },
-    ],
-    { duration: 300, easing: 'ease-in', fill: 'forwards' }
-  );
+  if (opts.chest) {
+    // крышка откинута: показываем открытый сундук, и только потом — призы
+    giftEl.src = 'assets/v2-chest-open.png';
+    await giftEl.animate(
+      [
+        { transform: 'scale(1.2)' },
+        { transform: 'scale(0.92, 1.08) translateY(-10px)', offset: 0.4 },
+        { transform: 'scale(1)' },
+      ],
+      { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' }
+    ).finished;
+    await wait(250);
+    giftEl.animate(
+      [
+        { transform: 'scale(1)', opacity: 1 },
+        { transform: 'scale(0.9) translateY(30px)', opacity: 0.12 },
+      ],
+      { duration: 600, delay: 250, easing: 'ease-in-out', fill: 'forwards' }
+    );
+  } else {
+    giftEl.animate(
+      [
+        { transform: 'scale(1.2)', opacity: 1 },
+        { transform: 'scale(1.6)', opacity: 0 },
+      ],
+      { duration: 300, easing: 'ease-in', fill: 'forwards' }
+    );
+  }
 
   // награды вылетают из центра подарка на свои места
   const giftCenter = centerOf(giftStageEl);
@@ -601,7 +604,26 @@ tasksScreenEl.addEventListener('click', (e) => {
     info.parentElement.classList.toggle('is-tip-open');
     return;
   }
-  if (e.target.closest('.tasks-milestone-btn')) openSheet();
+  const chest = e.target.closest('.tchest');
+  if (chest) openChest(chest);
 });
+
+let chestOpening = false;
+async function openChest(chestEl) {
+  if (!chestEl.classList.contains('is-ready')) {
+    openSheet();
+    return;
+  }
+  if (chestOpening || claimInProgress) return;
+  chestOpening = true;
+  const tab = chestEl.closest('.tasks-panel').dataset.panel;
+  const i = Number(chestEl.dataset.milestone);
+  await openGiftOverlay({ chest: true });
+  TASK_TABS[tab].claimed.add(MILESTONES[i]);
+  chestEl.outerHTML = milestoneHTML(tab, i);
+  const fresh = panelEls[tab].querySelector(`.tchest[data-milestone="${i}"]`);
+  fresh.animate([{ transform: 'translateX(-50%) scale(0.6)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });
+  chestOpening = false;
+}
 
 document.getElementById('tasksHelpBtn').addEventListener('click', () => {});

@@ -344,3 +344,7 @@
 .pf-version .v2-segmented {
   display: grid;
 }
+
+.pf-version[hidden] {
+  display: none;
+}

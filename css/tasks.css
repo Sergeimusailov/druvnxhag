@@ -667,3 +667,161 @@
   opacity: 1;
   transform: none;
 }
+
+/* ---------- Шкала наград с сундуками (Figma 16047:43609) ---------- */
+
+.tprog {
+  position: relative;
+  height: 74px;
+  margin: 20px 16px 16px;
+  border-radius: 24px;
+  background: #1c1c1e;
+}
+
+/* система координат дорожки: 24px от краёв карточки */
+.tprog-area {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 0;
+  bottom: 0;
+}
+
+.tprog-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 33px;
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.tprog-track .tasks-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: #ffdd2d;
+}
+
+/* бирка с энергией слева (та же, что была), число очков под ней */
+.tprog-tag {
+  position: absolute;
+  left: 17px;
+  top: 20px;
+  z-index: 3;
+  width: 49.5px;
+  height: 34px;
+}
+
+.tprog-tag img {
+  display: block;
+  width: 49.5px;
+  height: 34px;
+}
+
+.tprog-tag .tasks-points {
+  position: absolute;
+  left: 0;
+  right: 6px;
+  top: 23px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f6f7f8;
+  -webkit-text-stroke: 4px #333;
+  paint-order: stroke fill;
+  font-variant-numeric: tabular-nums;
+}
+
+/* сундук: 40×40 над дорожкой, подпись очков снизу */
+.tchest {
+  position: absolute;
+  top: 13px;
+  width: 40px;
+  height: 48px;
+  transform: translateX(-50%);
+  z-index: 2;
+  cursor: default;
+}
+
+.tchest-img {
+  position: absolute;
+  left: -4px;
+  top: -2px;
+  width: 48px;
+  height: 46px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.tchest-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #fff;
+  -webkit-text-stroke: 3px #222;
+  paint-order: stroke fill;
+}
+
+.tchest-glow {
+  position: absolute;
+  left: -24px;
+  top: -8px;
+  width: 88px;
+  height: 56px;
+  background: radial-gradient(closest-side, rgba(255, 208, 0, 0.95), rgba(202, 128, 0, 0.55) 45%, rgba(202, 128, 0, 0) 100%);
+  clip-path: polygon(50% 0, 60% 35%, 100% 50%, 60% 65%, 50% 100%, 40% 65%, 0 50%, 40% 35%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* готов к выдаче: свет и лёгкое подпрыгивание, кликабелен */
+.tchest.is-ready {
+  cursor: pointer;
+}
+
+.tchest.is-ready .tchest-glow {
+  opacity: 1;
+  animation: tchestGlow 2.4s ease-in-out infinite;
+}
+
+.tchest.is-ready .tchest-img {
+  animation: tchestHop 1.6s ease-in-out infinite;
+}
+
+@keyframes tchestHop {
+  0%, 55%, 100% { transform: translateY(0) rotate(0); }
+  65% { transform: translateY(-6px) rotate(-6deg); }
+  75% { transform: translateY(0) rotate(4deg); }
+  83% { transform: translateY(-2px) rotate(-2deg); }
+}
+
+@keyframes tchestGlow {
+  0%, 100% { transform: rotate(0) scale(1); opacity: 0.85; }
+  50% { transform: rotate(12deg) scale(1.1); opacity: 1; }
+}
+
+/* открытый (получен) — крупнее по макету: картинка выше */
+.tchest.is-open .tchest-img {
+  top: -4px;
+  height: 48px;
+}
+
+/* сундук на экране открытия */
+.gift-overlay-gift.is-chest {
+  object-fit: contain;
+}
+
+/* Задания: фон карточек по макету */
+.t22-task .task-body,
+.t22-task:not(.is-claimable) .task-reward {
+  background: #1c1c1e;
+}
+
+.t22-task {
+  margin-bottom: 16px;
+}
