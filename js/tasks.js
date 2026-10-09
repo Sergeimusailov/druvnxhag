@@ -370,8 +370,10 @@ async function claimTask(tab, taskId) {
 
   const count = boltAmount ? Math.max(5, Math.min(10, Math.round(boltAmount / 2))) : 0;
   const flights = [];
-  // снежинки улетают в таб «Игра» — там «Новогоднее событие»
-  const gameIcon = document.querySelector('.v2-tab[data-nav="game"] .v2-tab-icon');
+  // снежинки улетают в таб «Игра» — там «Новогоднее событие»;
+  // в 2.3 — в кнопку события в углу «Заданий», если она на экране
+  const fab = document.getElementById('eventFab');
+  const gameIcon = fab && !fab.hidden ? fab.querySelector('.ev-fab-ring') : document.querySelector('.v2-tab[data-nav="game"] .v2-tab-icon');
   rewards.forEach(([cur], ri) => {
     if (cur !== 'snow') return;
     const snowFrom = centerOf(row.querySelector('.t22-reward[data-cur="snow"] img'));
@@ -379,7 +381,7 @@ async function claimTask(tab, taskId) {
     for (let i = 0; i < 4; i++) {
       // как в 2.2: на каждую долетевшую снежинку таб «Игра» подпрыгивает и искрит
       flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, snowFrom, gameTo, 150 + ri * 100 + i * 70).then(() => {
-        gameIcon.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+        (gameIcon.closest('.ev-fab') || gameIcon.parentElement).animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
         burstAt(gameTo);
       }));
     }

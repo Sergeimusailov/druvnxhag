@@ -113,6 +113,7 @@ function renderEntries22(pulse) {
       widgetBadge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 400, easing: 'ease-out', fill: 'backwards' });
     }
   }
+  renderEventFab23();
   const ny = EVENTS22.list.ny;
   const daily = EVENTS22.list.daily;
   const prevNy = e22Entries.querySelector('[data-event="ny"] .e22-badge');
@@ -144,6 +145,60 @@ function renderEntries22(pulse) {
     });
   }
 }
+
+/* ---------- 2.3: кнопка события в углу «Заданий» ---------- */
+
+// ближайший приз трека и сколько снежинок до него; если приз уже можно
+// забрать — показываем его с «Забрать» и бейджем
+const eventFab = document.getElementById('eventFab');
+let eventFabFrac = null;
+
+function renderEventFab23() {
+  if (!eventFab) return;
+  const ev = EVENTS22.list.ny;
+  const reached = EVENTS22.reached(ev);
+  const claimable = EVENTS22.claimable(ev);
+  const firstUnclaimed = ev.rewards.findIndex((_, i) => i < reached && !ev.claimed.has(i + 1));
+  const level = claimable ? firstUnclaimed + 1 : Math.min(reached + 1, ev.rewards.length);
+  const [main, extra] = ev.rewards[level - 1].split('+').reverse();
+  document.getElementById('eventFabPrize').src = REWARD_ITEMS[main].src;
+  const extraEl = document.getElementById('eventFabExtra');
+  extraEl.hidden = !extra;
+  if (extra) extraEl.src = REWARD_ITEMS[extra].src;
+  const fill = document.getElementById('eventFabFill');
+  const text = document.getElementById('eventFabText');
+  let frac;
+  if (claimable) {
+    frac = 1;
+    text.textContent = 'Забрать';
+  } else {
+    const prev = level > 1 ? EVENTS22.threshold(ev, level - 1) : 0;
+    const next = EVENTS22.threshold(ev, level);
+    frac = Math.min(1, Math.max(0, (ev.points - prev) / (next - prev)));
+    text.textContent = `${ev.points}/${next}`;
+  }
+  // полоска доезжает плавно, когда снежинки пришли из заданий
+  fill.animate([{ width: `${(eventFabFrac ?? frac) * 100}%` }, { width: `${frac * 100}%` }], { duration: 700, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' });
+  eventFabFrac = frac;
+  eventFab.classList.toggle('is-claimable', !!claimable);
+  const badge = document.getElementById('eventFabBadge');
+  badge.hidden = !claimable;
+  badge.textContent = claimable;
+}
+
+function syncEventFab23(screen) {
+  if (!eventFab) return;
+  const show = isAppVersion('2.3') && screen === 'tasks';
+  if (show === !eventFab.hidden) return;
+  eventFab.hidden = !show;
+  if (show) eventFab.animate([{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+}
+
+document.addEventListener('v2:screen', (e) => syncEventFab23(e.detail.screen));
+eventFab?.addEventListener('click', () => {
+  eventFab.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
+  openEvent22('ny');
+});
 
 /* ---------- Трек ---------- */
 
@@ -531,3 +586,4 @@ setInterval(() => {
 
 renderEntries22();
 if (INITIAL_HASH === 'event') openNyFromHome();
+syncEventFab23(currentScreen);

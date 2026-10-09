@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610091625"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610091625">
-  <link rel="stylesheet" href="css/v2.css?v=202610091625">
-  <link rel="stylesheet" href="css/profile.css?v=202610091625">
-  <link rel="stylesheet" href="css/tasks.css?v=202610091625">
-  <link rel="stylesheet" href="css/gifts.css?v=202610091625">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610091625">
-  <link rel="stylesheet" href="css/shop.css?v=202610091625">
-  <link rel="stylesheet" href="css/v22.css?v=202610091625">
-  <link rel="stylesheet" href="css/event.css?v=202610091625">
+  <script src="js/version.js?v=202610091633"></script>
+  <link rel="stylesheet" href="css/match.css?v=202610091633">
+  <link rel="stylesheet" href="css/v2.css?v=202610091633">
+  <link rel="stylesheet" href="css/profile.css?v=202610091633">
+  <link rel="stylesheet" href="css/tasks.css?v=202610091633">
+  <link rel="stylesheet" href="css/gifts.css?v=202610091633">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610091633">
+  <link rel="stylesheet" href="css/shop.css?v=202610091633">
+  <link rel="stylesheet" href="css/v22.css?v=202610091633">
+  <link rel="stylesheet" href="css/event.css?v=202610091633">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -279,6 +279,13 @@
 
     <div class="v2-edge-fade"></div>
 
+    <!-- 2.3: вход в «Новогоднее событие» из «Заданий» — ближайший приз и снежинки до него -->
+    <button class="ev-fab" id="eventFab" aria-label="Вернуться в новогоднее событие" hidden>
+      <span class="ev-fab-ring"><img class="ev-fab-prize" id="eventFabPrize" src="" alt=""><img class="ev-fab-extra" id="eventFabExtra" src="" alt="" hidden></span>
+      <span class="ev-fab-bar"><span class="ev-fab-fill" id="eventFabFill"></span><span class="ev-fab-text" id="eventFabText"></span></span>
+      <span class="ev-fab-badge" id="eventFabBadge" hidden></span>
+    </button>
+
     <nav class="v2-tabbar v2-glass" id="v2Tabbar">
       <span class="v2-tab-highlight" id="v2TabHighlight"></span>
       <button class="v2-tab v2-tab-active" data-nav="game">
@@ -522,15 +529,15 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610091625"></script>
-  <script src="js/v2.js?v=202610091625"></script>
-  <script src="js/profile.js?v=202610091625"></script>
-  <script src="js/tasks22.js?v=202610091625"></script>
-  <script src="js/tasks.js?v=202610091625"></script>
-  <script src="js/cards-v2.js?v=202610091625"></script>
-  <script src="js/shop.js?v=202610091625"></script>
-  <script src="js/gifts.js?v=202610091625"></script>
-  <script src="js/event.js?v=202610091625"></script>
-  <script src="js/events22.js?v=202610091625"></script>
+  <script src="js/cards.js?v=202610091633"></script>
+  <script src="js/v2.js?v=202610091633"></script>
+  <script src="js/profile.js?v=202610091633"></script>
+  <script src="js/tasks22.js?v=202610091633"></script>
+  <script src="js/tasks.js?v=202610091633"></script>
+  <script src="js/cards-v2.js?v=202610091633"></script>
+  <script src="js/shop.js?v=202610091633"></script>
+  <script src="js/gifts.js?v=202610091633"></script>
+  <script src="js/event.js?v=202610091633"></script>
+  <script src="js/events22.js?v=202610091633"></script>
 </body>
 </html>
