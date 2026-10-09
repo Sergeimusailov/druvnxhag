@@ -164,13 +164,14 @@ function e22LevelHTML(ev, level) {
   const [main, extra] = type.split('+').reverse();
   const item = REWARD_ITEMS[main];
   const extraHTML = extra ? `<img class="ev-card-extra" src="${REWARD_ITEMS[extra].src}" alt="${REWARD_ITEMS[extra].alt}">` : '';
-  const cost = ev.thresholds ? `<span class="ev-cost"><img src="${CURRENCY_ICONS[ev.currency]}" alt="">${ev.thresholds[level - 1]}</span>` : '';
+  // в ромбе — не номер уровня, а сколько снежинок нужно набрать
+  const label = ev.thresholds ? ev.thresholds[level - 1] : level;
   let action = '';
   if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
   else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
   return `<div class="ev-level ${side} ${state}${isReached ? ' is-reached' : ''}" data-level="${level}" style="top:${e22LevelCenter(level) - 70}px">
     <span class="ev-link"></span>
-    <span class="ev-node">${level}</span>${cost}
+    <span class="ev-node${ev.thresholds ? ' is-cost' : ''}">${label}</span>
     <div class="ev-card">
       <img class="ev-card-hex" src="assets/${isReached ? 'v2-event-hex-active.svg' : 'v2-event-hex.svg'}" alt="">
       <img class="ev-card-item" src="${item.src}" alt="${item.alt}">${extraHTML}

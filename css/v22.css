@@ -1051,38 +1051,29 @@
   color: #f6f7f8;
 }
 
-/* трек по таблице вех: порог снежинок напротив карточки, составные награды */
-.ev-cost {
-  position: absolute;
-  top: 58px;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  height: 24px;
-  padding: 0 8px 0 3px;
-  border-radius: 100px;
-  background: rgba(28, 28, 30, 0.8);
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(246, 247, 248, 0.7);
+/* трек по таблице вех: в ромбе порог снежинок вместо номера уровня —
+   ромб вытягивается в шестигранник под 2–4 цифры */
+.ev-node.is-cost {
+  top: 57px;
+  width: auto;
+  min-width: 32px;
+  height: 26px;
+  margin-left: 0;
+  padding: 0 10px;
+  transform: translateX(-50%);
   font-variant-numeric: tabular-nums;
 }
 
-.ev-cost img {
-  width: 18px;
-  height: 18px;
+.ev-node.is-cost::before {
+  inset: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 9px 100%, 0 50%);
 }
 
-.ev-level.is-left .ev-cost {
-  left: calc(50% + 24px);
-}
-
-.ev-level.is-right .ev-cost {
-  right: calc(50% + 24px);
-}
-
-.ev-level.is-reached .ev-cost {
-  color: #f6f7f8;
+.ev-level.is-reached .ev-node.is-cost {
+  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 6px rgba(92, 168, 254, 0.8));
 }
 
 .ev-card-extra {
