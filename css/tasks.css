@@ -786,7 +786,7 @@
 
 .tchest.is-ready .tchest-glow {
   opacity: 1;
-  animation: tchestGlow 2.4s ease-in-out infinite;
+  animation: tchestGlow 3s ease-in-out infinite;
 }
 
 .tchest.is-ready .tchest-img {
@@ -800,9 +800,12 @@
   83% { transform: translateY(-2px) rotate(-2deg); }
 }
 
+/* подсветка покачивается из стороны в сторону и чуть «дышит» */
 @keyframes tchestGlow {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.08); opacity: 0.85; }
+  0%, 100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+  25% { transform: rotate(0deg) scale(1.06); opacity: 0.9; }
+  50% { transform: rotate(8deg) scale(1); opacity: 1; }
+  75% { transform: rotate(0deg) scale(1.06); opacity: 0.9; }
 }
 
 /* открытый (получен) — крупнее по макету: картинка выше */
