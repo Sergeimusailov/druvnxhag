@@ -85,7 +85,7 @@ function milestoneHTML(tab, i) {
   const left = `${pointsToFraction(MILESTONES[i]) * 100}%`;
   const src = state === 'is-open' ? 'assets/v2-chest-open.png' : 'assets/v2-chest-closed.png';
   return `<button class="tchest ${state}" data-milestone="${i}" style="left:${left}" aria-label="Сундук за ${MILESTONES[i]} очков"${state === 'is-ready' ? '' : ' tabindex="-1"'}>
-    <span class="tchest-glow"></span>
+    <img class="tchest-glow" src="assets/v2-chest-glow.svg" alt="">
     <img class="tchest-img" src="${src}" alt="">
     <span class="tchest-label">${MILESTONES[i]}</span>
   </button>`;

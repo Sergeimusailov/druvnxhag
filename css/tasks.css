@@ -767,14 +767,14 @@
   paint-order: stroke fill;
 }
 
+/* подсветка готового сундука — две размытые звезды из макета (92×62,
+   смещение −26/−7 от иконки 40×40) */
 .tchest-glow {
   position: absolute;
-  left: -24px;
-  top: -8px;
-  width: 88px;
-  height: 56px;
-  background: radial-gradient(closest-side, rgba(255, 208, 0, 0.95), rgba(202, 128, 0, 0.55) 45%, rgba(202, 128, 0, 0) 100%);
-  clip-path: polygon(50% 0, 60% 35%, 100% 50%, 60% 65%, 50% 100%, 40% 65%, 0 50%, 40% 35%);
+  left: -26px;
+  top: -7px;
+  width: 92px;
+  height: 62px;
   opacity: 0;
   pointer-events: none;
 }
@@ -801,8 +801,8 @@
 }
 
 @keyframes tchestGlow {
-  0%, 100% { transform: rotate(0) scale(1); opacity: 0.85; }
-  50% { transform: rotate(12deg) scale(1.1); opacity: 1; }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
 }
 
 /* открытый (получен) — крупнее по макету: картинка выше */
