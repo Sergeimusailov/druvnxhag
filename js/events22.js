@@ -181,9 +181,12 @@ function renderEventFab23() {
   fill.animate([{ width: `${(eventFabFrac ?? frac) * 100}%` }, { width: `${frac * 100}%` }], { duration: 700, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' });
   eventFabFrac = frac;
   eventFab.classList.toggle('is-claimable', !!claimable);
+  // красный счётчик — тот же, что на виджете события на главной, и так же «впрыгивает»
   const badge = document.getElementById('eventFabBadge');
+  const grew = claimable && (badge.hidden || Number(badge.textContent) < claimable);
   badge.hidden = !claimable;
   badge.textContent = claimable;
+  if (grew && !eventFab.hidden) badge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 300, easing: 'ease-out', fill: 'backwards' });
 }
 
 function syncEventFab23(screen) {

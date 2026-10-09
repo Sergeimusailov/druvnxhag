@@ -1422,19 +1422,14 @@
 }
 
 .ev-fab-badge {
-  position: absolute;
-  top: -2px;
-  right: 4px;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 100px;
-  background: #ff3b30;
-  box-shadow: 0 0 0 2px #fff;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 22px;
-  color: #fff;
+  /* вид — общий .e22-badge, как на виджете события на главной */
+  top: -3px;
+  right: 2px;
+  z-index: 2;
+}
+
+.ev-fab-badge[hidden] {
+  display: none;
 }
 
 /* под кнопкой события — запас, чтобы последнее задание можно было докрутить выше неё */
