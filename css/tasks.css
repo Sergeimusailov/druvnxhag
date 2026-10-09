@@ -828,3 +828,42 @@
 .t22-task {
   margin-bottom: 16px;
 }
+
+/* белый тултип к первому готовому сундуку */
+.tchest-tip {
+  position: absolute;
+  top: calc(100% + 10px);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 240px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tchest-tip b {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #000;
+}
+
+.tchest-tip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: calc(var(--arrow, 50%) - 7px);
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #fff;
+  transform: rotate(45deg);
+}

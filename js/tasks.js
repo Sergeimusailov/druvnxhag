@@ -44,17 +44,26 @@ if (isAppVersion('2.2')) {
   }));
 }
 
-// версия 2.3: снежинки — только из дневной пачки: 5 заданий по 20 (100 в
-// день), обновляется раз в сутки. Можно выполнять не все — но кто закрывает
-// все 5, быстрее доходит до финала трека (1600 из 2200 возможных за ивент)
+// версия 2.3: снежинки — только из дневной пачки: ровно 5 новогодних заданий
+// по 20 снежинок (100 в день), обновляется раз в сутки, плюс обычные задания
+// без снежинок. В задании не больше двух наград. Выполнять все не обязательно,
+// но кто закрывает все 5, быстрее доходит до финала трека (1600 из 2200)
 if (isAppVersion('2.3')) {
   TASK_TABS.weekly.tasks.forEach((t) => {
     if (t.rewards) t.rewards = t.rewards.filter(([cur]) => cur !== 'snow');
   });
-  ['d-win3', 'd-combo', 'd-first'].forEach((id) => {
-    const t = TASK_TABS.daily.tasks.find((x) => x.id === id);
-    if (t) t.rewards = [['snow', 20], ...t.rewards.filter(([cur]) => cur !== 'snow')];
-  });
+  TASK_TABS.daily.tasks = [
+    // новогодние: снежинки + энергия
+    { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['snow', 20], ['bolt', 6]] },
+    { id: 'd-capture', title: 'Захватите 20 карт соперника', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 20], ['bolt', 6]] },
+    { id: 'd-combo', title: 'Сделайте 20 прострелов', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 20], ['bolt', 6]] },
+    { id: 'd-win3', title: 'Выиграйте 3 матча подряд', status: 'До 26 ноября', progress: [1, 3], rewards: [['snow', 20], ['bolt', 6]] },
+    { id: 'd-first', title: 'Сыграйте первый матч дня', status: 'Выполнено сегодня', state: 'done', rewards: [['snow', 20], ['bolt', 6]] },
+    // обычные: энергия и монеты
+    { id: 'd-box', title: 'Откройте лутбокс в магазине', status: 'До 26 ноября', progress: [0, 1], rewards: [['coins', 10], ['bolt', 6]] },
+    { id: 'd-hard', title: 'Победите на сложном уровне', status: 'До 26 ноября', progress: [0, 1], rewards: [['bolt', 10]] },
+    { id: 'd-deck', title: 'Соберите колоду из 8 карт', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
+  ];
 }
 
 const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>';
@@ -407,7 +416,62 @@ async function claimTask(tab, taskId) {
 
   // открытие — по тапу на подсвеченный сундук
   claimInProgress = false;
+  showChestTip();
 }
+
+/* ---------- Подсказка к первому готовому сундуку ---------- */
+
+// анимацию «проснувшегося» сундука легко пропустить, поэтому в первый раз
+// рядом с ним появляется белый тултип; показываем один раз — до тапа
+const CHEST_TIP_KEY = 'v2.chestTipSeen';
+let chestTipEl = null;
+
+function chestTipSeen() {
+  try { return localStorage.getItem(CHEST_TIP_KEY) === '1'; } catch { return false; }
+}
+
+function hideChestTip(remember) {
+  if (chestTipEl) {
+    const el = chestTipEl;
+    chestTipEl = null;
+    el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160 }).finished.then(() => el.remove());
+  }
+  if (remember) {
+    try { localStorage.setItem(CHEST_TIP_KEY, '1'); } catch { /* приватный режим */ }
+  }
+}
+
+function showChestTip() {
+  if (chestTipEl || chestTipSeen() || currentScreen !== 'tasks' || e22Current) return;
+  // готовый сундук на видимой сейчас вкладке
+  const box = tasksScreenEl.getBoundingClientRect();
+  const chest = Array.from(tasksScreenEl.querySelectorAll('.tchest.is-ready')).find((c) => {
+    const r = c.getBoundingClientRect();
+    return r.left >= box.left && r.right <= box.right;
+  });
+  if (!chest) return;
+  const card = chest.closest('.tprog');
+  chestTipEl = document.createElement('div');
+  chestTipEl.className = 'tchest-tip';
+  chestTipEl.innerHTML = '<b>Вам доступен приз</b>Нажмите на сундук, чтобы открыть';
+  card.appendChild(chestTipEl);
+  // по горизонтали — под сундуком, но не вылезая за карточку; хвостик — на сундук
+  const cardRect = card.getBoundingClientRect();
+  const chestX = centerOf(chest.querySelector('.tchest-img')).x - cardRect.left;
+  const w = chestTipEl.offsetWidth;
+  const left = Math.max(0, Math.min(cardRect.width - w, chestX - w / 2));
+  chestTipEl.style.left = `${left}px`;
+  chestTipEl.style.setProperty('--arrow', `${chestX - left}px`);
+  chestTipEl.animate(
+    [{ opacity: 0, transform: 'translateY(-6px) scale(0.92)' }, { opacity: 1, transform: 'none' }],
+    { duration: 260, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' }
+  );
+}
+
+document.addEventListener('v2:screen', (e) => {
+  if (e.detail.screen === 'tasks') setTimeout(showChestTip, 450);
+  else hideChestTip(false);
+});
 
 /* ---------- Экран открытия подарка ---------- */
 
@@ -586,13 +650,19 @@ sheetEl.addEventListener('pointercancel', endDrag);
 Object.keys(TASK_TABS).forEach(renderPanel);
 // перерисовка панелей заданий снаружи (демо в превью события 2.3)
 function TASKS22_RERENDER() {
+  hideChestTip(false);
   Object.keys(TASK_TABS).forEach(renderPanel);
 }
 
-const tasksTabs = createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'));
+const tasksTabs = createChipTabs(document.getElementById('tasksSegRow'), document.getElementById('tasksTabTrack'), () => {
+  hideChestTip(false);
+  setTimeout(showChestTip, 380);
+});
 setInterval(updateTimers, 1000);
 
 tasksScreenEl.addEventListener('click', (e) => {
+  // любой тап прячет подсказку к сундуку; тап по сундуку — ещё и открывает
+  if (chestTipEl && !e.target.closest('.task-claim')) hideChestTip(true);
   const claimBtn = e.target.closest('.task-claim');
   if (claimBtn) {
     const panel = claimBtn.closest('.tasks-panel');
