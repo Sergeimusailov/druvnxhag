@@ -1123,3 +1123,42 @@
 .ev-card-item[src$="beckcard.svg"] {
   background: linear-gradient(160deg, #7b8cff, #3133c2);
 }
+
+/* 2.3: в дневной пачке 5 заданий — слоты компактнее, без перемычек */
+.e23-slots {
+  gap: 8px;
+}
+
+.e23-slot {
+  width: 56px;
+}
+
+.e23-slot-tile {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+}
+
+.e23-slot-tile img {
+  width: 34px;
+  height: 34px;
+}
+
+.e23-slot-check {
+  right: -5px;
+  top: -5px;
+  width: 20px;
+  height: 20px;
+}
+
+.e23-status-snow {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: #9fcbff !important;
+}
+
+.e23-status-snow img {
+  width: 18px;
+  height: 18px;
+}

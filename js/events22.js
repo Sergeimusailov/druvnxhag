@@ -18,9 +18,10 @@ const EVENTS22 = {
       colors: ['#3133c2', '#709dff'],
       currency: 'snow',
       step: 10,
-      // вехи и пороги в снежинках (таблица баланса): шаг 40 → 60 → 100 → 120;
-      // за одно задание — 20 снежинок
-      thresholds: [40, 80, 120, 160, 200, 260, 320, 380, 440, 500, 600, 700, 800, 900, 1000, 1120, 1240, 1360, 1480, 1600],
+      // вехи и пороги в снежинках (таблица баланса): шаг 40 → 60 → 100 → 160,
+      // финал — 1800. В день 5 заданий по 20 = 100; за ивент можно набрать 2200,
+      // так что до финала доходят и с пропусками
+      thresholds: [40, 80, 120, 160, 200, 260, 320, 380, 440, 500, 600, 700, 800, 900, 1000, 1160, 1320, 1480, 1640, 1800],
       points: 100,
       shown: 2,
       claimed: new Set([1]),
@@ -283,37 +284,37 @@ function packTimer23() {
 
 function renderPreview23() {
   const pack = snowPack23();
+  const total = pack.length;
   const done = pack.filter((i) => i.task.state === 'done').length;
   const ready = pack.filter((i) => i.task.state === 'claimable').length;
-  const finished = pack.length && done === pack.length;
+  const left = total - done;
+  const finished = total && !left;
   const ev = EVENTS22.list.ny;
+  const perTask = total ? pack[0].snow : 20;
 
-  // без текстов заданий: три слота-снежинки — сколько надо закрыть за день
-  const slots = pack.map(({ task, snow }) => {
+  // без текстов заданий: слот-снежинка на каждое задание дня
+  // слоты заполняются слева: выполненные → готовые к получению → доступные
+  const rank = (t) => (t.state === 'done' ? 0 : t.state === 'claimable' ? 1 : 2);
+  const slots = [...pack].sort((a, b) => rank(a.task) - rank(b.task)).map(({ task, snow }) => {
     const state = task.state === 'done' ? 'is-done' : task.state === 'claimable' ? 'is-ready' : '';
-    const label = task.state === 'done' ? 'Готово' : task.state === 'claimable' ? 'Забрать' : `+${snow}`;
+    const label = task.state === 'done' ? '' : task.state === 'claimable' ? 'Забрать' : `+${snow}`;
     return `<button class="e23-slot ${state}" data-tab="daily">
         <span class="e23-slot-tile"><img src="${CURRENCY_ICONS.snow}" alt="">${task.state === 'done' ? `<span class="e23-slot-check">${CHECK_ICON}</span>` : ''}</span>
-        <span class="e23-slot-label">${label}</span>
+        <span class="e23-slot-label">${label || 'Готово'}</span>
       </button>`;
-  }).join('<span class="e23-slot-link"></span>');
+  }).join('');
 
-  // сколько заданий до ближайшей награды на треке
-  const next = EVENTS22.reached(ev) + 1;
-  const perTask = pack.length ? pack[0].snow : 20;
-  const need = next <= ev.rewards.length ? Math.max(0, Math.ceil((EVENTS22.threshold(ev, next) - ev.points) / perTask)) : 0;
-  const plural = (n) => (n === 1 ? 'задание' : n < 5 ? 'задания' : 'заданий');
-
-  const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Новые задания через <span data-e23-timer>${packTimer23()}</span></span></span>`;
+  const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
+  const plural = (n, one, few, many) => (n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many);
   const status = finished
-    ? `<p class="e23-status is-finished">${CHECK_ICON}Все ${pack.length} задания на сегодня выполнены</p>`
-    : `<p class="e23-status"><b>${done} из ${pack.length}</b> сегодня${need ? ` · до награды ${need} ${plural(need)}` : ''}</p>`;
-  const cta = ready ? `Забрать снежинки · ${ready}` : 'К заданиям';
+    ? `<p class="e23-status is-finished">${CHECK_ICON}Все ${total} заданий выполнены</p>`
+    : `<p class="e23-status">Доступно ещё <b>${left} ${plural(left, 'задание', 'задания', 'заданий')}</b> · <b class="e23-status-snow"><img src="${CURRENCY_ICONS.snow}" alt="">+${left * perTask}</b></p>`;
+  const cta = ready ? `Забрать снежинки · ${ready}` : finished ? 'К заданиям' : 'Выполнить задания';
 
   e23Preview.classList.toggle('is-finished', !!finished);
   e23Preview.innerHTML = `
     <div class="e23-head"><span class="e23-title">Новогодние задания</span></div>
-    <p class="e23-hint">${pack.length} задания в день · каждое двигает трек к наградам</p>
+    <p class="e23-hint">Каждые 24 часа — ${total} новых заданий. Выполняйте все, чтобы быстрее дойти до финала</p>
     <div class="e23-slots">${slots}</div>
     ${status}
     <div class="e23-sub">${timer}</div>
