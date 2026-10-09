@@ -287,37 +287,34 @@ function renderPreview23() {
   const total = pack.length;
   const done = pack.filter((i) => i.task.state === 'done').length;
   const ready = pack.filter((i) => i.task.state === 'claimable').length;
-  const left = total - done;
-  const finished = total && !left;
-  const ev = EVENTS22.list.ny;
-  const perTask = total ? pack[0].snow : 20;
+  // выполненным считается и задание, награду за которое ещё не забрали
+  const completed = done + ready;
+  const finished = total && completed === total && !ready;
 
-  // без текстов заданий: слот-снежинка на каждое задание дня
-  // слоты заполняются слева: выполненные → готовые к получению → доступные
-  const rank = (t) => (t.state === 'done' ? 0 : t.state === 'claimable' ? 1 : 2);
-  const slots = [...pack].sort((a, b) => rank(a.task) - rank(b.task)).map(({ task, snow }) => {
-    const state = task.state === 'done' ? 'is-done' : task.state === 'claimable' ? 'is-ready' : '';
-    const label = task.state === 'done' ? '' : task.state === 'claimable' ? 'Забрать' : `+${snow}`;
-    return `<button class="e23-slot ${state}" data-tab="daily">
-        <span class="e23-slot-tile"><img src="${CURRENCY_ICONS.snow}" alt="">${task.state === 'done' ? `<span class="e23-slot-check">${CHECK_ICON}</span>` : ''}</span>
-        <span class="e23-slot-label">${label || 'Готово'}</span>
-      </button>`;
+  // игровая цепочка из ромбов: закрашенные — выполненные, пустые — доступные;
+  // линия между ними заполняется до последнего выполненного
+  const nodes = pack.map((_, i) => {
+    const state = i < done ? 'is-done' : i < completed ? 'is-ready' : '';
+    const inner = i < completed ? CHECK_ICON : `<span>${i + 1}</span>`;
+    return `<span class="e23-gem ${state}" style="--i:${i}"><span class="e23-gem-in">${inner}</span></span>`;
   }).join('');
+  const fill = total > 1 ? (Math.max(0, completed - 1) / (total - 1)) * 100 : 0;
 
   const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
-  const plural = (n, one, few, many) => (n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many);
-  const status = finished
-    ? `<p class="e23-status is-finished">${CHECK_ICON}Все ${total} заданий выполнены</p>`
-    : `<p class="e23-status">Доступно ещё <b>${left} ${plural(left, 'задание', 'задания', 'заданий')}</b> · <b class="e23-status-snow"><img src="${CURRENCY_ICONS.snow}" alt="">+${left * perTask}</b></p>`;
-  const cta = ready ? `Забрать снежинки · ${ready}` : finished ? 'К заданиям' : 'Выполнить задания';
+  const caption = finished
+    ? '<p class="e23-count is-finished">Все задания на сегодня выполнены</p>'
+    : `<p class="e23-count">Выполнено <b>${completed}</b> из ${total}</p>`;
+  const cta = ready ? `Забрать награды · ${ready}` : 'К заданиям';
 
   e23Preview.classList.toggle('is-finished', !!finished);
   e23Preview.innerHTML = `
     <div class="e23-head"><span class="e23-title">Новогодние задания</span></div>
-    <p class="e23-hint">Каждые 24 часа — ${total} новых заданий. Выполняйте все, чтобы быстрее дойти до финала</p>
-    <div class="e23-slots">${slots}</div>
-    ${status}
     <div class="e23-sub">${timer}</div>
+    <div class="e23-chain">
+      <span class="e23-chain-line"><span style="width:${fill}%"></span></span>
+      ${nodes}
+    </div>
+    ${caption}
     <button class="e23-all${finished ? ' is-ghost' : ''}" data-tab="daily">${cta}</button>
     <button class="e23-demo" id="e23Demo">${finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все'}</button>`;
 }
