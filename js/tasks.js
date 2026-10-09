@@ -14,9 +14,9 @@ const TASK_TABS = {
     tasks: [
       // демо: первым можно забрать задание со снежинками — видно, как энергия
       // летит в шкалу, а снежинки — в таб «Игра» к «Новогоднему событию»
-      { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'd-play5', title: 'Сыграйте 5 матчей за день', status: 'Заберите до 31 ноября', state: 'claimable', rewards: [['snow', 20], ['bolt', 6]] },
       { id: 'd-win3', title: 'Выиграйте 3 матча подряд', status: 'До 26 ноября', rewards: [['coins', 10], ['bolt', 6]] },
-      { id: 'd-capture', title: 'Захватите 20 карт соперника', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'd-capture', title: 'Захватите 20 карт соперника', status: 'До 26 ноября', progress: [10, 20], rewards: [['snow', 20], ['bolt', 6]] },
       { id: 'd-combo', title: 'Сделайте 20 прострелов', status: 'До 26 ноября', progress: [10, 20], rewards: [['bolt', 6]] },
       { id: 'd-first', title: 'Сыграйте первый матч дня', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
       { id: 'd-deck', title: 'Соберите колоду из 8 карт', status: 'Выполнено сегодня', state: 'done', rewards: [['bolt', 6]] },
@@ -27,8 +27,8 @@ const TASK_TABS = {
     points: 14,
     claimed: new Set(),
     tasks: [
-      { id: 'w-boxes', title: 'Откройте 2 лутбокса в магазине', status: 'Заберите до 30 ноября', state: 'claimable', rewards: [['snow', 10], ['bolt', 6]] },
-      { id: 'w-wins', title: 'Одержите 15 побед за неделю', status: 'До 30 ноября', progress: [6, 15], rewards: [['snow', 10], ['bolt', 6]] },
+      { id: 'w-boxes', title: 'Откройте 2 лутбокса в магазине', status: 'Заберите до 30 ноября', state: 'claimable', rewards: [['snow', 20], ['bolt', 6]] },
+      { id: 'w-wins', title: 'Одержите 15 побед за неделю', status: 'До 30 ноября', progress: [6, 15], rewards: [['snow', 20], ['bolt', 6]] },
       { id: 'w-streak', title: 'Победите 5 матчей подряд', status: 'До 30 ноября', progress: [2, 5], rewards: [['bolt', 10]] },
       { id: 'w-play10', title: 'Сыграйте 10 матчей', status: 'До 30 ноября', progress: [4, 10], rewards: [['bolt', 6]] },
       { id: 'w-done', title: 'Захватите все клетки поля в одном матче', status: 'Выполнено 22 ноября', state: 'done', rewards: [['bolt', 6]] },
@@ -51,7 +51,7 @@ if (isAppVersion('2.3')) {
     if (t.rewards) t.rewards = t.rewards.filter(([cur]) => cur !== 'snow');
   });
   const combo = TASK_TABS.daily.tasks.find((t) => t.id === 'd-combo');
-  if (combo) combo.rewards = [['snow', 10], ['bolt', 6]];
+  if (combo) combo.rewards = [['snow', 20], ['bolt', 6]];
 }
 
 const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>';

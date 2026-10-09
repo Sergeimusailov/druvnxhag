@@ -1050,3 +1050,85 @@
   background: rgba(255, 255, 255, 0.1);
   color: #f6f7f8;
 }
+
+/* трек по таблице вех: порог снежинок напротив карточки, составные награды */
+.ev-cost {
+  position: absolute;
+  top: 58px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  padding: 0 8px 0 3px;
+  border-radius: 100px;
+  background: rgba(28, 28, 30, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(246, 247, 248, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.ev-cost img {
+  width: 18px;
+  height: 18px;
+}
+
+.ev-level.is-left .ev-cost {
+  left: calc(50% + 24px);
+}
+
+.ev-level.is-right .ev-cost {
+  right: calc(50% + 24px);
+}
+
+.ev-level.is-reached .ev-cost {
+  color: #f6f7f8;
+}
+
+.ev-card-extra {
+  position: absolute;
+  top: 70px;
+  left: 82px;
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.ev-card-item[src*="avatars/"] {
+  top: 32px;
+  left: 38px;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+}
+
+.ev-card-item[src$="v2-coin.png"] {
+  top: 34px;
+  left: 38px;
+  width: 64px;
+  height: 64px;
+}
+
+.ev-card-item[src*="card-pic"],
+.ev-card-item[src$="beckcard.svg"] {
+  top: 24px;
+  left: 42px;
+  width: 56px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  transform: rotate(-6deg);
+}
+
+.ev-card-extra[src$="v2-coin.png"] {
+  width: 36px;
+  height: 36px;
+  top: 76px;
+  left: 86px;
+}
+
+/* скин рубашки — узор на новогоднем фоне, чтобы отличался от обычной */
+.ev-card-item[src$="beckcard.svg"] {
+  background: linear-gradient(160deg, #7b8cff, #3133c2);
+}

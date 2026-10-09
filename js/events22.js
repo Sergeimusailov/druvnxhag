@@ -18,10 +18,14 @@ const EVENTS22 = {
       colors: ['#3133c2', '#709dff'],
       currency: 'snow',
       step: 10,
-      points: 20,
+      // вехи и пороги в снежинках (таблица баланса): шаг 40 → 60 → 100 → 120;
+      // за одно задание — 20 снежинок
+      thresholds: [40, 80, 120, 160, 200, 260, 320, 380, 440, 500, 600, 700, 800, 900, 1000, 1120, 1240, 1360, 1480, 1600],
+      points: 100,
       shown: 2,
       claimed: new Set([1]),
-      rewards: ['chest', 'chest', 'ticket', 'chest', 'ticket', 'chest', 'ticket', 'chest', 'ticket', 'chest'],
+      rewards: ['coins', 'avatar', 'frame', 'coins', 'card', 'avatar', 'ticket', 'frame', 'coins', 'ticket',
+        'skin', 'coins', 'card', 'ticket', 'coins+frame', 'coins+skin', 'ticket', 'coins+avatar', 'coins+card', 'ticket'],
     },
     daily: {
       id: 'daily',
@@ -49,7 +53,13 @@ const EVENTS22 = {
     { id: 'ny-first', title: 'Сыграйте первый матч события', status: 'Выполнено', state: 'done', rewards: [['snow', 10]] },
   ],
 
+  // порог снежинок для уровня (1..N)
+  threshold(ev, level) {
+    return ev.thresholds ? ev.thresholds[level - 1] : level * ev.step;
+  },
+
   reached(ev) {
+    if (ev.thresholds) return ev.thresholds.filter((t) => ev.points >= t).length;
     return Math.min(Math.floor(ev.points / ev.step), ev.rewards.length);
   },
 
@@ -150,16 +160,20 @@ function e22LevelHTML(ev, level) {
   const isTaken = ev.claimed.has(level);
   const side = level % 2 ? 'is-left' : 'is-right';
   const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
-  const item = REWARD_ITEMS[type];
+  // составная награда «монетки + X»: X крупно, монетки — значком в углу
+  const [main, extra] = type.split('+').reverse();
+  const item = REWARD_ITEMS[main];
+  const extraHTML = extra ? `<img class="ev-card-extra" src="${REWARD_ITEMS[extra].src}" alt="${REWARD_ITEMS[extra].alt}">` : '';
+  const cost = ev.thresholds ? `<span class="ev-cost"><img src="${CURRENCY_ICONS[ev.currency]}" alt="">${ev.thresholds[level - 1]}</span>` : '';
   let action = '';
   if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
   else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
   return `<div class="ev-level ${side} ${state}${isReached ? ' is-reached' : ''}" data-level="${level}" style="top:${e22LevelCenter(level) - 70}px">
     <span class="ev-link"></span>
-    <span class="ev-node">${level}</span>
+    <span class="ev-node">${level}</span>${cost}
     <div class="ev-card">
       <img class="ev-card-hex" src="assets/${isReached ? 'v2-event-hex-active.svg' : 'v2-event-hex.svg'}" alt="">
-      <img class="ev-card-item" src="${item.src}" alt="${item.alt}">
+      <img class="ev-card-item" src="${item.src}" alt="${item.alt}">${extraHTML}
       ${action}
     </div>
   </div>`;
@@ -285,7 +299,8 @@ function renderPreview23() {
 
   // сколько заданий до ближайшей награды на треке
   const next = EVENTS22.reached(ev) + 1;
-  const need = next <= ev.rewards.length ? Math.max(0, Math.ceil((next * ev.step - ev.points) / 10)) : 0;
+  const perTask = pack.length ? pack[0].snow : 20;
+  const need = next <= ev.rewards.length ? Math.max(0, Math.ceil((EVENTS22.threshold(ev, next) - ev.points) / perTask)) : 0;
   const plural = (n) => (n === 1 ? 'задание' : n < 5 ? 'задания' : 'заданий');
 
   const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Новые задания через <span data-e23-timer>${packTimer23()}</span></span></span>`;

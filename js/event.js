@@ -26,6 +26,11 @@ EVENT.tasks.forEach((t) => (t.showPlus = true));
 const REWARD_ITEMS = {
   chest: { src: 'assets/v2-event-chest.png', alt: 'Сундук ×1' },
   ticket: { src: 'assets/v2-event-ticket.png', alt: 'Билет на розыгрыш ×1' },
+  coins: { src: 'assets/v2-coin.png', alt: 'Монетки' },
+  avatar: { src: 'assets/avatars/av-05.png', alt: 'Аватар' },
+  frame: { src: 'assets/v2-reward-frame.svg', alt: 'Рамка аватара' },
+  card: { src: 'assets/card-pic__03.png', alt: 'Карточка' },
+  skin: { src: 'assets/beckcard.svg', alt: 'Скин рубашки карт' },
 };
 
 // геометрия трека из макета: молния 72px сверху, первый ромб на 154px,
