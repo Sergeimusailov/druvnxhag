@@ -1549,3 +1549,22 @@
 .ev-fab.is-claimable .ev-fab-text {
   padding-left: 0;
 }
+
+/* «Забрать» — как кнопка «Забрать награду» в задании: плоская жёлтая,
+   тёмный текст без обводки; по 2px уже с каждой стороны */
+.ev-fab.is-claimable .ev-fab-bar {
+  width: 92px;
+  background: #ffdd2d;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+.ev-fab.is-claimable .ev-fab-fill {
+  display: none;
+}
+
+.ev-fab.is-claimable .ev-fab-text {
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #333;
+  -webkit-text-stroke: 0;
+}
