@@ -324,6 +324,7 @@ function closeEvent22() {
 /* ---------- 2.3: превью заданий со снежинками ---------- */
 
 const e23Preview = document.getElementById('e23Preview');
+const e23Demo = document.getElementById('e23Demo');
 
 // дневная пачка снежинок: задания из дейликов, у которых в награде снежинки
 function snowPack23() {
@@ -356,22 +357,24 @@ function renderPreview23() {
   const fill = total > 1 ? (Math.max(0, completed - 1) / (total - 1)) * 100 : 0;
 
   const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
-  const caption = finished
-    ? '<p class="e23-count is-finished">Все задания на сегодня выполнены</p>'
-    : `<p class="e23-count">Выполнено <b>${completed}</b> из ${total}</p>`;
-  const cta = ready ? `Забрать награды · ${ready}` : 'К заданиям';
+  // CTA — квадратная кнопка со стрелкой в углу; жёлтая, когда есть что забрать
+  const arrow = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const label = ready ? `Забрать награды: ${ready}` : 'К заданиям';
 
   e23Preview.classList.toggle('is-finished', !!finished);
   e23Preview.innerHTML = `
-    <div class="e23-head"><span class="e23-title">Новогодние задания</span></div>
-    <div class="e23-sub">${timer}</div>
+    <div class="e23-top">
+      <div class="e23-top-text">
+        <span class="e23-title">Новогодние задания</span>
+        ${timer}
+      </div>
+      <button class="e23-go${ready ? ' is-ready' : ''}" data-tab="daily" aria-label="${label}">${arrow}${ready ? `<span class="e23-go-badge">${ready}</span>` : ''}</button>
+    </div>
     <div class="e23-chain">
       <span class="e23-chain-line"><span style="width:${fill}%"></span></span>
       ${nodes}
-    </div>
-    ${caption}
-    <button class="e23-all${finished ? ' is-ghost' : ''}" data-tab="daily">${cta}</button>
-    <button class="e23-demo" id="e23Demo">${finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все'}</button>`;
+    </div>`;
+  e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';
 }
 
 // таймер до новой пачки тикает, пока превью на экране
@@ -382,8 +385,9 @@ setInterval(() => {
 
 let e23Saved = null;
 
-e23Preview.addEventListener('click', (e) => {
-  if (e.target.closest('#e23Demo')) {
+// демо вынесено под блок, чтобы карточка превью оставалась компактной
+e23Demo.addEventListener('click', () => {
+  {
     // демо: закрываем дневную пачку, чтобы увидеть состояние «завтра»; повторно — откат
     const pack = snowPack23();
     if (e23Saved) {
@@ -407,8 +411,10 @@ e23Preview.addEventListener('click', (e) => {
     renderPreview23();
     TASKS22_RERENDER();
     setTimeout(() => animateTrack22(EVENTS22.list.ny), 300);
-    return;
   }
+});
+
+e23Preview.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-tab]');
   if (!btn) return;
   closeEvent22();

@@ -1441,3 +1441,80 @@
 [data-version="2.3"] #tasksScreen {
   padding-bottom: 190px;
 }
+
+/* 2.3: компактное превью — заголовок и таймер слева, CTA-стрелка справа */
+[data-version="2.3"] .e23-preview {
+  padding: 16px 16px 18px;
+}
+
+.e23-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.e23-top-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.e23-go {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transition: transform 0.15s ease;
+}
+
+.e23-go:active {
+  transform: scale(0.92);
+}
+
+.e23-go.is-ready {
+  background: #ffdd2d;
+  color: #333;
+  box-shadow: 0 0 16px rgba(255, 221, 45, 0.45);
+}
+
+.e23-go-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 100px;
+  background: #ff3b30;
+  box-shadow: 0 0 0 2px #1c1c1e;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #fff;
+}
+
+[data-version="2.3"] .e23-preview .e23-chain {
+  margin: 18px 6px 0;
+}
+
+/* демо — под карточкой, в 2.3 */
+.e23-demo:empty,
+:not([data-version="2.3"]) .e23-demo {
+  display: none;
+}
+
+[data-version="2.3"] #e23Demo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin: 8px auto 0;
+}
