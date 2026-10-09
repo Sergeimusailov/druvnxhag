@@ -1518,3 +1518,34 @@
   display: block;
   margin: 8px auto 0;
 }
+
+/* снежинка на левом краю полоски — понятно, что 120/160 это снежинки */
+.ev-fab {
+  width: 96px;
+}
+
+.ev-fab-bar {
+  width: 96px;
+}
+
+.ev-fab-text {
+  padding-left: 16px;
+}
+
+.ev-fab-snow {
+  position: absolute;
+  left: -8px;
+  bottom: -4px;
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+
+/* в состоянии «Забрать» снежинка не нужна */
+.ev-fab.is-claimable .ev-fab-snow {
+  display: none;
+}
+
+.ev-fab.is-claimable .ev-fab-text {
+  padding-left: 0;
+}
