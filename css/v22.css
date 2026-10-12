@@ -1568,7 +1568,7 @@
    карточка заданий садится на шестигранник со снежинками: задания → снежинки → трек */
 
 [data-version="2.3"] .e23-preview {
-  padding: 16px 16px 40px;
+  padding: 16px 16px 32px;
 }
 
 [data-version="2.3"] .e23-preview .e23-title {
@@ -1683,4 +1683,217 @@
 /* демо — над карточкой, мелко */
 [data-version="2.3"] #e23Demo {
   margin: 16px auto -12px;
+}
+
+/* ---------- 2.3: задания дня — круги ---------- */
+
+.e23-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+  color: #42cf9b;
+}
+
+.e23-dot svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* выполнено — зелёная галка на зелёном круге */
+.e23-dot.is-done,
+.e23-dot.is-ready {
+  background: rgba(66, 207, 155, 0.16);
+  box-shadow: inset 0 0 0 2px #42cf9b;
+}
+
+/* выполнено, но награду ещё не забрали — жёлтый пульсирующий ободок */
+.e23-dot.is-ready {
+  box-shadow: inset 0 0 0 2px #42cf9b, 0 0 0 3px #ffdd2d, 0 0 14px rgba(255, 221, 45, 0.6);
+  animation: e23DotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes e23DotPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* ---------- 2.3: счётчик снежинок в шапке при прокрутке ---------- */
+
+.e23-snowbar {
+  display: none;
+}
+
+[data-version="2.3"] .e22.is-v21 .e23-snowbar {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  display: block;
+  height: 32px;
+  padding: 2px;
+  background: #fff;
+  clip-path: polygon(13px 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 13px 100%, 0 50%);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.e23-snowbar .e23-hex-in {
+  height: 28px;
+  padding: 0 16px 0 10px;
+  font-size: 15px;
+}
+
+.e23-snowbar .e23-hex-in img {
+  width: 22px;
+  height: 22px;
+}
+
+[data-version="2.3"] .e22.is-v21 #e22Title {
+  grid-column: 2;
+  grid-row: 1;
+  transition: opacity 0.2s ease;
+}
+
+[data-version="2.3"] .e22.is-v21 .v2-appbar.is-snow #e22Title {
+  opacity: 0;
+}
+
+[data-version="2.3"] .e22.is-v21 .v2-appbar.is-snow .e23-snowbar {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 2.3: свёрнутые полученные награды ---------- */
+
+.e23-collapsed {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px 0 10px;
+  border-radius: 100px;
+  background: #2c2c2e;
+  box-shadow: 0 0 0 2px #5ca8fe;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.e23-collapsed svg {
+  width: 18px;
+  height: 18px;
+  padding: 3px;
+  border-radius: 50%;
+  background: #42cf9b;
+  color: #fff;
+}
+
+.e23-collapsed span {
+  margin-left: 4px;
+  color: #9fcbff;
+}
+
+/* ---------- 2.3: розыгрыш в конце трека ---------- */
+
+.e23-fin-wrap {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.e23-fin {
+  width: 100%;
+  padding: 20px 20px 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 221, 45, 0.18), transparent 60%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 221, 45, 0.3);
+  text-align: center;
+}
+
+.e23-fin.is-all {
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 221, 45, 0.35), transparent 65%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1.5px #ffdd2d, 0 0 24px rgba(255, 221, 45, 0.25);
+}
+
+.e23-fin-tickets {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.e23-fin-tickets img {
+  width: 44px;
+  height: 44px;
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.e23-fin-tickets img.is-got {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 221, 45, 0.6));
+}
+
+.e23-fin-count {
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.e23-fin-count b {
+  color: #ffdd2d;
+}
+
+.e23-fin-title {
+  margin-top: 12px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.e23-fin-text {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgba(246, 247, 248, 0.75);
+}
+
+.e23-fin-about {
+  margin-top: 16px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 15px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.e23-fin.is-all .e23-fin-about {
+  background: #ffdd2d;
+  color: #333;
+}
+
+[data-version="2.3"] .e23-fin-demo {
+  display: block;
+  margin: 12px auto 0;
 }

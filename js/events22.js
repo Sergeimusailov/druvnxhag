@@ -23,6 +23,9 @@ const EVENTS22 = {
       // так что до финала доходят и с пропусками
       thresholds: [40, 80, 120, 160, 200, 260, 320, 380, 440, 500, 600, 700, 800, 900, 1000, 1120, 1240, 1360, 1480, 1600],
       points: 100,
+      // 2.3: сколько снежинок игрок уже «видел» в событии — остальные
+      // прилетают анимацией при следующем входе
+      seenPoints: 100,
       shown: 2,
       claimed: new Set([1]),
       rewards: ['coins', 'avatar', 'frame', 'coins', 'card', 'avatar', 'ticket', 'frame', 'coins', 'ticket',
@@ -74,14 +77,6 @@ const EVENTS22 = {
     const ev = this.list[this.byCurrency[cur]];
     if (!ev) return;
     ev.points += amount;
-    // 2.3: счётчик снежинок в начале трека
-    if (ev === e22Current) {
-      const pinCount = e22Track.querySelector('[data-pin-count]');
-      if (pinCount) {
-        pinCount.textContent = ev.points;
-        pinCount.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
-      }
-    }
     renderEntries22(true);
   },
 };
@@ -213,9 +208,43 @@ eventFab?.addEventListener('click', () => {
 
 /* ---------- Трек ---------- */
 
+// 2.3: забранные вехи в начале трека сворачиваются в одну строку, чтобы
+// сразу под счётчиком стояла ближайшая награда впереди
+const E23_ROW_TOP = 118;
+const E23_AFTER_ROW = 226;
+let e22Collapsed = 0;
+let e22Expanded = false;
+
 function e22LevelCenter(level) {
-  return E22_FIRST + (level - 1) * E22_STEP;
+  if (!e22Collapsed) return E22_FIRST + (level - 1) * E22_STEP;
+  if (level <= e22Collapsed) return E23_ROW_TOP + 18;
+  return E23_AFTER_ROW + (level - e22Collapsed - 1) * E22_STEP;
 }
+
+function isNy23(ev) {
+  return isAppVersion('2.3') && ev.id === 'ny';
+}
+
+// розыгрыш в конце трека: билеты с трека собраны / ещё нет
+function e23FinaleHTML(ev) {
+  const tickets = ev.rewards.map((r, i) => (r === 'ticket' ? i + 1 : 0)).filter(Boolean);
+  const got = tickets.filter((l) => ev.claimed.has(l)).length;
+  const all = got === tickets.length;
+  const icons = tickets.map((l) => `<img class="${ev.claimed.has(l) ? 'is-got' : ''}" src="assets/v2-ticket-icon.png" alt="">`).join('');
+  const body = all
+    ? `<p class="e23-fin-title">Вы собрали все билеты!</p>
+       <p class="e23-fin-text">Розыгрыш 10 000 000 ₽ пройдёт 25 декабря. Чем больше билетов — тем выше шанс</p>`
+    : `<p class="e23-fin-title">Разыгрываем 10 000 000 ₽</p>
+       <p class="e23-fin-text">Соберите все ${tickets.length} билетов на треке и участвуйте в розыгрыше 25 декабря</p>`;
+  return `<div class="e23-fin${all ? ' is-all' : ''}">
+      <div class="e23-fin-tickets">${icons}</div>
+      <p class="e23-fin-count">Билеты с трека: <b>${got} из ${tickets.length}</b></p>
+      ${body}
+      <button class="e23-fin-about" data-about>О розыгрыше</button>
+    </div>
+    <button class="e23-demo e23-fin-demo" data-fill-track>Демо: заполнить трек</button>`;
+}
+
 
 function e22FillHeight(reached) {
   return Math.max(0, (reached ? e22LevelCenter(reached) : E22_LINE_TOP) - E22_LINE_TOP);
@@ -249,17 +278,30 @@ function e22LevelHTML(ev, level) {
 
 function renderTrack22(ev) {
   const n = ev.rewards.length;
-  const height = e22LevelCenter(n) + 70 + 40;
+  const ny23 = isNy23(ev);
+  e22Collapsed = 0;
+  if (ny23 && !e22Expanded) {
+    while (e22Collapsed < n && ev.claimed.has(e22Collapsed + 1)) e22Collapsed++;
+  }
+  const k = e22Collapsed;
+  const lineEnd = e22LevelCenter(n) + 70 + 20;
+  const height = lineEnd + (ny23 ? 330 : 20);
+  const plural = (m) => (m % 10 === 1 && m % 100 !== 11 ? 'награда' : m % 10 >= 2 && m % 10 <= 4 && (m % 100 < 10 || m % 100 >= 20) ? 'награды' : 'наград');
+  const row = k ? `<button class="e23-collapsed" style="top:${E23_ROW_TOP}px">${CHECK_ICON}Получено ${k} ${plural(k)}<span>Показать</span></button>` : '';
+  const levels = ev.rewards.map((_, i) => i + 1).filter((l) => l > k);
   e22Track.innerHTML = `
     <div class="ev-track e22-track" style="height:${height}px">
       <img class="e22-pin" src="assets/v2-event-pin-blue.svg" alt="">
       <img class="e22-pin-icon" src="${CURRENCY_ICONS[ev.currency]}" alt="">
       <span class="e23-stem"></span>
-      <span class="e23-hex"><span class="e23-hex-in"><img src="${CURRENCY_ICONS[ev.currency]}" alt=""><span data-pin-count>${ev.points}</span></span></span>
-      <span class="ev-track-line" style="top:${E22_LINE_TOP}px;height:${height - E22_LINE_TOP - 20}px"></span>
-      <span class="ev-track-fill" style="top:${E22_LINE_TOP}px;height:${e22FillHeight(ev.shown)}px"></span>
-      ${ev.rewards.map((_, i) => e22LevelHTML(ev, i + 1)).join('')}
+      <span class="e23-hex"><span class="e23-hex-in"><img src="${CURRENCY_ICONS[ev.currency]}" alt=""><span data-pin-count>${ev.seenPoints ?? ev.points}</span></span></span>
+      <span class="ev-track-line" style="top:${E22_LINE_TOP}px;height:${lineEnd - E22_LINE_TOP - 20}px"></span>
+      <span class="ev-track-fill" style="top:${E22_LINE_TOP}px;height:${k === n ? lineEnd - E22_LINE_TOP - 20 : e22FillHeight(ev.shown)}px"></span>
+      ${row}
+      ${levels.map((l) => e22LevelHTML(ev, l)).join('')}
+      ${ny23 ? `<div class="e23-fin-wrap" style="top:${lineEnd + 8}px">${e23FinaleHTML(ev)}</div>` : ''}
     </div>`;
+  if (ny23) updateSnowbar23();
 }
 
 // как в 2.1: полоска едет к новым уровням, награды по пути «включаются»
@@ -303,6 +345,7 @@ function e22DailyTimer() {
 function openEvent22(id) {
   const ev = EVENTS22.list[id];
   e22Current = ev;
+  e22Expanded = false;
   // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
   e22Screen.classList.add('is-v21');
   e22Screen.style.setProperty('--c1', ev.colors[0]);
@@ -320,11 +363,13 @@ function openEvent22(id) {
   if (tabbed) renderNyTasks22();
   e22Tabs.select(tabbed ? 'tasks' : 'rewards');
   if (tabbed) updateRewardsDot22();
-  if (isAppVersion('2.3') && ev.id === 'ny') renderPreview23();
+  if (isNy23(ev)) renderPreview23();
   e22Scroll.scrollTop = 0;
   e22Screen.classList.add('is-open');
   e22Screen.setAttribute('aria-hidden', 'false');
-  if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
+  // 2.3: сначала прилетают снежинки, заработанные в «Заданиях», потом едет трек
+  if (isNy23(ev)) setTimeout(() => playSnow23(ev).then(() => animateTrack22(ev)), 520);
+  else if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
 }
 
 function closeEvent22() {
@@ -360,12 +405,12 @@ function renderPreview23() {
   const completed = done + ready;
   const finished = total && completed === total && !ready;
 
-  // задания — отдельные ромбы без перемычек (это не прогрессия, за серию
-  // ничего не дают); за каждое — всегда 20 снежинок, поэтому без подписей
+  // задания — отдельные круги без перемычек (это не прогрессия): зелёная
+  // галка — выполнено, с жёлтым ободком — выполнено, награду не забрали,
+  // серый — ещё можно сделать
   const nodes = pack.map((_, i) => {
     const state = i < done ? 'is-done' : i < completed ? 'is-ready' : '';
-    const inner = i < completed ? CHECK_ICON : `<span>${i + 1}</span>`;
-    return `<span class="e23-gem ${state}"><span class="e23-gem-in">${inner}</span></span>`;
+    return `<span class="e23-dot ${state}">${i < completed ? CHECK_ICON : ''}</span>`;
   }).join('');
 
   const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
@@ -377,7 +422,7 @@ function renderPreview23() {
   e23Preview.innerHTML = `
     <div class="e23-top">
       <div class="e23-top-text">
-        <span class="e23-title">Снежинки за задания двигают трек к наградам</span>
+        <span class="e23-title">Задания дня</span>
         ${timer}
       </div>
       <button class="e23-go${ready ? ' is-ready' : ''}" data-tab="daily" aria-label="${label}">${arrow}${ready ? `<span class="e23-go-badge">${ready}</span>` : ''}</button>
@@ -393,35 +438,128 @@ setInterval(() => {
 }, 1000);
 
 let e23Saved = null;
+// сколько выполненных заданий игрок уже видел в событии — из новых
+// кружков вылетают снежинки
+let e23SeenDone = snowPack23().filter((i) => i.task.state === 'done').length;
 
-// демо вынесено под блок, чтобы карточка превью оставалась компактной
-e23Demo.addEventListener('click', () => {
-  {
-    // демо: закрываем дневную пачку, чтобы увидеть состояние «завтра»; повторно — откат
-    const pack = snowPack23();
-    if (e23Saved) {
-      pack.forEach(({ task, snow }) => {
-        const was = e23Saved.get(task.id);
-        if (was.state !== 'done') EVENTS22.list.ny.points -= snow;
-        Object.assign(task, was);
-      });
-      e23Saved = null;
-      renderPreview23();
-      TASKS22_RERENDER();
-      renderTrack22(EVENTS22.list.ny);
-      return;
+function updateSnowbar23(value) {
+  const ev = EVENTS22.list.ny;
+  const v = value ?? ev.seenPoints ?? ev.points;
+  document.getElementById('e23SnowbarCount').textContent = v;
+  const pin = e22Track.querySelector('[data-pin-count]');
+  if (pin) pin.textContent = v;
+}
+
+// отложенный полёт: снежинки из заданий, выполненных с прошлого захода,
+// летят из кружков в счётчик, число накручивается
+async function playSnow23(ev) {
+  const from = ev.seenPoints ?? ev.points;
+  const to = ev.points;
+  const doneNow = snowPack23().filter((i) => i.task.state === 'done').length;
+  if (to <= from || e22Current !== ev) {
+    ev.seenPoints = to;
+    e23SeenDone = doneNow;
+    updateSnowbar23();
+    return;
+  }
+  const hex = e22Track.querySelector('.e23-hex');
+  const target = centerOf(hex.querySelector('img'));
+  let dots = Array.from(e23Preview.querySelectorAll('.e23-dot.is-done')).slice(e23SeenDone);
+  if (!dots.length) dots = [e23Preview.querySelector('.e23-tasks')];
+  const flights = [];
+  dots.forEach((dot, di) => {
+    dot.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 320, delay: di * 160, easing: 'ease-out' });
+    const src = centerOf(dot);
+    for (let i = 0; i < 3; i++) {
+      flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, src, target, di * 160 + i * 80).then(() => {
+        hex.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 240, easing: 'ease-out' });
+        burstAt(target);
+      }));
     }
-    e23Saved = new Map(pack.map(({ task }) => [task.id, { state: task.state, status: task.status }]));
+  });
+  // число растёт, пока летят снежинки
+  const start = performance.now();
+  const total = 900 + dots.length * 160;
+  await new Promise((resolve) => {
+    (function tick(now) {
+      const t = Math.min(1, Math.max(0, (now - start) / total));
+      updateSnowbar23(Math.round(from + (to - from) * easeOutCubic(t)));
+      if (t < 1) requestAnimationFrame(tick);
+      else resolve();
+    })(start);
+  });
+  await Promise.all(flights);
+  ev.seenPoints = to;
+  e23SeenDone = doneNow;
+  updateSnowbar23();
+}
+
+// демо — над карточкой, чтобы она оставалась компактной
+e23Demo.addEventListener('click', () => {
+  const ev = EVENTS22.list.ny;
+  const pack = snowPack23();
+  if (e23Saved) {
+    // откат: возвращаем начало дня без анимаций
     pack.forEach(({ task, snow }) => {
-      if (task.state !== 'done') EVENTS22.addCurrency('snow', snow);
-      task.state = 'done';
-      task.status = 'Выполнено сегодня';
+      const was = e23Saved.get(task.id);
+      if (was.state !== 'done') ev.points -= snow;
+      Object.assign(task, was);
     });
+    e23Saved = null;
+    ev.seenPoints = ev.points;
+    ev.shown = Math.min(ev.shown, EVENTS22.reached(ev));
+    e23SeenDone = pack.filter((i) => i.task.state === 'done').length;
     renderPreview23();
     TASKS22_RERENDER();
-    setTimeout(() => animateTrack22(EVENTS22.list.ny), 300);
+    renderTrack22(ev);
+    renderEntries22();
+    return;
+  }
+  e23Saved = new Map(pack.map(({ task }) => [task.id, { state: task.state, status: task.status }]));
+  pack.forEach(({ task, snow }) => {
+    if (task.state !== 'done') ev.points += snow;
+    task.state = 'done';
+    task.status = 'Выполнено сегодня';
+  });
+  renderEntries22(true);
+  renderPreview23();
+  TASKS22_RERENDER();
+  playSnow23(ev).then(() => animateTrack22(ev));
+});
+
+// свёрнутые вехи, «О розыгрыше» и демо заполнения трека
+e22Track.addEventListener('click', (e) => {
+  const ev = e22Current;
+  if (!ev) return;
+  if (e.target.closest('.e23-collapsed')) {
+    e22Expanded = true;
+    renderTrack22(ev);
+  } else if (e.target.closest('[data-about]')) {
+    openNyIntro();
+  } else if (e.target.closest('[data-fill-track]')) {
+    ev.rewards.forEach((r, i) => {
+      if (!ev.claimed.has(i + 1) && r === 'ticket') ev.tickets += 1;
+      ev.claimed.add(i + 1);
+    });
+    ev.points = Math.max(ev.points, ev.thresholds[ev.thresholds.length - 1]);
+    ev.seenPoints = ev.points;
+    ev.shown = ev.rewards.length;
+    document.getElementById('e22TicketCount').textContent = ev.tickets;
+    e22Expanded = false;
+    renderTrack22(ev);
+    renderEntries22();
+    const fin = e22Track.querySelector('.e23-fin');
+    e22Scroll.scrollTo({ top: e22Scroll.scrollTop + fin.getBoundingClientRect().top - 140, behavior: 'smooth' });
   }
 });
+
+// счётчик снежинок закрепляется в шапке, когда шестигранник уехал под неё
+const e22Appbar = e22Scroll.querySelector('.v2-appbar');
+e22Scroll.addEventListener('scroll', () => {
+  const hex = e22Track.querySelector('.e23-hex');
+  const on = !!(hex && e22Current && isNy23(e22Current) && hex.getBoundingClientRect().bottom < e22Appbar.getBoundingClientRect().bottom);
+  e22Appbar.classList.toggle('is-snow', on);
+}, { passive: true });
 
 e23Preview.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-tab]');
