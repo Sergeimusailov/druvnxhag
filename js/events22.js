@@ -214,10 +214,6 @@ const E23_ROW_TOP = 118;
 const E23_AFTER_ROW = 226;
 let e22Collapsed = 0;
 let e22Expanded = false;
-// 2.3: блок «Задания дня» прилипает под шапкой, а полученные награды при
-// входе уезжают под него (трек сразу прокручен к ближайшей награде).
-// false — откат к строке «✓ Получено N наград · Показать»
-const E23_STICKY = true;
 
 function e22LevelCenter(level) {
   if (!e22Collapsed) return E22_FIRST + (level - 1) * E22_STEP;
@@ -284,7 +280,7 @@ function renderTrack22(ev) {
   const n = ev.rewards.length;
   const ny23 = isNy23(ev);
   e22Collapsed = 0;
-  if (ny23 && !e22Expanded && !E23_STICKY) {
+  if (ny23 && !e22Expanded) {
     while (e22Collapsed < n && ev.claimed.has(e22Collapsed + 1)) e22Collapsed++;
   }
   const k = e22Collapsed;
@@ -371,30 +367,9 @@ function openEvent22(id) {
   e22Scroll.scrollTop = 0;
   e22Screen.classList.add('is-open');
   e22Screen.setAttribute('aria-hidden', 'false');
-  e22Screen.classList.toggle('is-sticky23', E23_STICKY && isNy23(ev));
-  if (E23_STICKY && isNy23(ev)) scrollToNextReward23(ev);
   // 2.3: сначала прилетают снежинки, заработанные в «Заданиях», потом едет трек
   if (isNy23(ev)) setTimeout(() => playSnow23(ev).then(() => animateTrack22(ev)), 520);
   else if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
-}
-
-// полученные награды уезжают под прилипший блок «Задания дня»: первая
-// незабранная награда встаёт сразу под ним; вверх можно докрутить вручную
-function scrollToNextReward23(ev) {
-  const next = ev.rewards.findIndex((_, i) => !ev.claimed.has(i + 1)) + 1;
-  if (next <= 1) return;
-  const el = e22Track.querySelector(`.ev-level[data-level="${next}"] .ev-card`);
-  if (!el) return;
-  // высоту блока вкладок подгоняет ResizeObserver, но только к следующему
-  // кадру — без этого прокрутка упрётся в старую высоту
-  const content = e22Track.closest('.v2-tab-content');
-  content.style.height = `${e22Track.closest('.v2-tab-panel').offsetHeight}px`;
-  // по offsetTop, а не getBoundingClientRect: экран в этот момент ещё
-  // въезжает с анимацией (transform), и координаты на экране «плывут»
-  let elTop = 0;
-  for (let n = el; n && n !== e22Scroll; n = n.offsetParent) elTop += n.offsetTop;
-  const stickTop = e22Scroll.querySelector('.v2-appbar').offsetHeight;
-  e22Scroll.scrollTop = Math.max(0, elTop - (stickTop + e23Preview.offsetHeight + 30));
 }
 
 function closeEvent22() {
@@ -452,8 +427,7 @@ function renderPreview23() {
       </div>
       <button class="e23-go${ready ? ' is-ready' : ''}" data-tab="daily" aria-label="${label}">${arrow}${ready ? `<span class="e23-go-badge">${ready}</span>` : ''}</button>
     </div>
-    <div class="e23-tasks">${nodes}</div>
-    ${E23_STICKY ? `<span class="e23-hex e23-hex-card"><span class="e23-hex-in"><img src="${CURRENCY_ICONS.snow}" alt=""><span data-pin-count>${EVENTS22.list.ny.seenPoints ?? EVENTS22.list.ny.points}</span></span></span>` : ''}`;
+    <div class="e23-tasks">${nodes}</div>`;
   e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';
 }
 
@@ -472,7 +446,8 @@ function updateSnowbar23(value) {
   const ev = EVENTS22.list.ny;
   const v = value ?? ev.seenPoints ?? ev.points;
   document.getElementById('e23SnowbarCount').textContent = v;
-  e22Screen.querySelectorAll('[data-pin-count]').forEach((pin) => { pin.textContent = v; });
+  const pin = e22Track.querySelector('[data-pin-count]');
+  if (pin) pin.textContent = v;
 }
 
 // отложенный полёт: снежинки из заданий, выполненных с прошлого захода,
@@ -487,7 +462,7 @@ async function playSnow23(ev) {
     updateSnowbar23();
     return;
   }
-  const hex = (E23_STICKY ? e23Preview : e22Track).querySelector('.e23-hex');
+  const hex = e22Track.querySelector('.e23-hex');
   const target = centerOf(hex.querySelector('img'));
   let dots = Array.from(e23Preview.querySelectorAll('.e23-dot.is-done')).slice(e23SeenDone);
   if (!dots.length) dots = [e23Preview.querySelector('.e23-tasks')];
@@ -582,10 +557,8 @@ e22Track.addEventListener('click', (e) => {
 const e22Appbar = e22Scroll.querySelector('.v2-appbar');
 e22Scroll.addEventListener('scroll', () => {
   const hex = e22Track.querySelector('.e23-hex');
-  const on = !!(!E23_STICKY && hex && e22Current && isNy23(e22Current) && hex.getBoundingClientRect().bottom < e22Appbar.getBoundingClientRect().bottom);
+  const on = !!(hex && e22Current && isNy23(e22Current) && hex.getBoundingClientRect().bottom < e22Appbar.getBoundingClientRect().bottom);
   e22Appbar.classList.toggle('is-snow', on);
-  // блок «Задания дня» прилип под шапкой
-  if (E23_STICKY) e23Preview.classList.toggle('is-stuck', e23Preview.getBoundingClientRect().top - e22Scroll.getBoundingClientRect().top <= e22Appbar.offsetHeight + 1);
 }, { passive: true });
 
 e23Preview.addEventListener('click', (e) => {
