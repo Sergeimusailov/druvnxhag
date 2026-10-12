@@ -79,7 +79,7 @@ const EVENTS22 = {
       const pinCount = e22Track.querySelector('[data-pin-count]');
       if (pinCount) {
         pinCount.textContent = ev.points;
-        pinCount.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.3)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 360, easing: 'ease-out' });
+        pinCount.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
       }
     }
     renderEntries22(true);
@@ -254,7 +254,8 @@ function renderTrack22(ev) {
     <div class="ev-track e22-track" style="height:${height}px">
       <img class="e22-pin" src="assets/v2-event-pin-blue.svg" alt="">
       <img class="e22-pin-icon" src="${CURRENCY_ICONS[ev.currency]}" alt="">
-      <span class="e23-pin-count" data-pin-count>${ev.points}</span>
+      <span class="e23-stem"></span>
+      <span class="e23-hex"><span class="e23-hex-in"><img src="${CURRENCY_ICONS[ev.currency]}" alt=""><span data-pin-count>${ev.points}</span></span></span>
       <span class="ev-track-line" style="top:${E22_LINE_TOP}px;height:${height - E22_LINE_TOP - 20}px"></span>
       <span class="ev-track-fill" style="top:${E22_LINE_TOP}px;height:${e22FillHeight(ev.shown)}px"></span>
       ${ev.rewards.map((_, i) => e22LevelHTML(ev, i + 1)).join('')}
@@ -360,14 +361,11 @@ function renderPreview23() {
   const finished = total && completed === total && !ready;
 
   // задания — отдельные ромбы без перемычек (это не прогрессия, за серию
-  // ничего не дают); под каждым — сколько снежинок оно приносит
-  const nodes = pack.map(({ snow }, i) => {
+  // ничего не дают); за каждое — всегда 20 снежинок, поэтому без подписей
+  const nodes = pack.map((_, i) => {
     const state = i < done ? 'is-done' : i < completed ? 'is-ready' : '';
     const inner = i < completed ? CHECK_ICON : `<span>${i + 1}</span>`;
-    return `<span class="e23-task ${state}">
-        <span class="e23-gem ${state}"><span class="e23-gem-in">${inner}</span></span>
-        <span class="e23-gem-snow"><img src="${CURRENCY_ICONS.snow}" alt="">${snow}</span>
-      </span>`;
+    return `<span class="e23-gem ${state}"><span class="e23-gem-in">${inner}</span></span>`;
   }).join('');
 
   const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
@@ -379,13 +377,12 @@ function renderPreview23() {
   e23Preview.innerHTML = `
     <div class="e23-top">
       <div class="e23-top-text">
-        <span class="e23-title">Новогодние задания</span>
+        <span class="e23-title">Снежинки за задания двигают трек к наградам</span>
         ${timer}
       </div>
       <button class="e23-go${ready ? ' is-ready' : ''}" data-tab="daily" aria-label="${label}">${arrow}${ready ? `<span class="e23-go-badge">${ready}</span>` : ''}</button>
     </div>
-    <div class="e23-tasks">${nodes}</div>
-    <p class="e23-flow">Снежинки за задания двигают трек к наградам</p>`;
+    <div class="e23-tasks">${nodes}</div>`;
   e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';
 }
 

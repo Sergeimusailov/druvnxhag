@@ -1565,91 +1565,119 @@
 }
 
 /* ---------- 2.3: задания и начало трека — один блок ----------
-   карточка заданий садится на «каплю» со снежинкой: задания → снежинки → трек */
+   карточка заданий садится на шестигранник со снежинками: задания → снежинки → трек */
 
 [data-version="2.3"] .e23-preview {
-  padding-bottom: 52px;
+  padding: 16px 16px 40px;
+}
+
+[data-version="2.3"] .e23-preview .e23-title {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.e23-top-text {
+  gap: 8px;
 }
 
 .e23-tasks {
   display: flex;
   justify-content: space-between;
-  margin: 18px 4px 0;
+  margin: 14px 4px 0;
 }
 
-.e23-task {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+/* выполненное задание — зелёное */
+.e23-gem.is-done::before {
+  background: linear-gradient(135deg, #7ff0c3, #2bb37f);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 0 4px #1c1c1e, 0 0 14px rgba(66, 207, 155, 0.6);
 }
 
-.e23-gem-snow {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #9fcbff;
-  font-variant-numeric: tabular-nums;
+/* CTA в углу — в стиле кнопки «Забрать» в заданиях: жёлтая пилюля */
+.e23-go,
+.e23-go.is-ready {
+  width: 52px;
+  height: 36px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  color: #333;
+  box-shadow: none;
 }
 
-.e23-gem-snow img {
-  width: 16px;
-  height: 16px;
+.e23-go svg {
+  width: 20px;
+  height: 20px;
 }
 
-/* выполненное — снежинки уже ушли в трек */
-.e23-task.is-done .e23-gem-snow {
-  opacity: 0.45;
+/* в 2.3 «капли» нет — её место занимает шестигранник со счётчиком */
+[data-version="2.3"] .e22-pin,
+[data-version="2.3"] .e22-pin-icon {
+  display: none;
 }
 
-.e23-task.is-ready .e23-gem-snow {
-  color: #ffdd2d;
-}
-
-.e23-flow {
-  margin-top: 14px;
-  font-size: 13px;
-  line-height: 16px;
-  text-align: center;
-  color: rgba(246, 247, 248, 0.6);
-}
-
-/* трек подтягивается под карточку: круг «капли» садится на её нижний край */
 [data-version="2.3"] .e22-panel {
   padding-top: 0;
 }
 
+/* трек подтягивается так, что центр шестигранника — на нижнем крае карточки */
 [data-version="2.3"] .e22 .v2-tab-content {
   z-index: 2;
-  margin-top: -40px;
+  margin-top: -60px;
 }
 
-/* сколько снежинок уже набрано — на «капле» */
-.e23-pin-count {
+.e23-hex,
+.e23-stem {
   display: none;
 }
 
-[data-version="2.3"] .e23-pin-count {
+/* перемычка от шестигранника к линии трека — всегда «пройдена» */
+[data-version="2.3"] .e23-stem {
   position: absolute;
-  top: 54px;
+  top: 60px;
+  left: 50%;
+  display: block;
+  width: 6.4px;
+  height: 40px;
+  margin-left: -3.7px;
+  background: #5ca8fe;
+}
+
+/* вытянутый шестигранник: слева снежинка, справа количество
+   (как уровень коллекции в Marvel Snap) */
+[data-version="2.3"] .e23-hex {
+  position: absolute;
+  top: 42px;
   left: 50%;
   z-index: 2;
   display: block;
-  min-width: 44px;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 100px;
+  height: 36px;
+  padding: 2px;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
   transform: translateX(-50%);
-  font-size: 13px;
+}
+
+.e23-hex-in {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 18px 0 12px;
+  background: linear-gradient(180deg, #5ca8fe, #3133c2);
+  clip-path: polygon(13px 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 13px 100%, 0 50%);
+  font-size: 17px;
   font-weight: 800;
-  line-height: 22px;
-  text-align: center;
-  color: #2a3f8f;
+  color: #fff;
   font-variant-numeric: tabular-nums;
+}
+
+.e23-hex-in img {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.e23-hex-in span {
+  display: inline-block;
 }
 
 /* демо — над карточкой, мелко */
