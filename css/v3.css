@@ -1,0 +1,581 @@
+/* Версия 3 (v2.html?app=3): лиги и календарь наград. В версии 2 скрыто. */
+
+.v3-only {
+  display: none !important;
+}
+
+[data-app="3"] .v3-only {
+  display: revert !important;
+}
+
+[data-app="3"] .v3-entries.v3-only {
+  display: flex !important;
+}
+
+[data-app="3"] .v3-screen.v3-only {
+  display: block !important;
+}
+
+/* ---------- Точки входа на главной ---------- */
+
+.v3-entries {
+  position: absolute;
+  top: 82px;
+  left: 16px;
+  right: 16px;
+  z-index: 3;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.v3-entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 76px;
+  pointer-events: auto;
+  transition: transform 0.15s ease;
+}
+
+.v3-entry:active {
+  transform: scale(0.94);
+}
+
+/* круг с картинкой — как значок в референсе: светлая обводка, тень */
+.v3-entry-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #8a6a4a 0%, #4a3020 75%);
+  box-shadow: inset 0 0 0 3px rgba(255, 236, 200, 0.9), inset 0 -6px 12px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.v3-entry-ring.is-gift {
+  background: radial-gradient(circle at 50% 35%, #ffb648 0%, #c25a1a 75%);
+}
+
+.v3-entry-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* место в рейтинге — флажок слева сверху, как в референсе */
+.v3-entry-flag {
+  position: absolute;
+  top: -6px;
+  left: -2px;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px 6px 6px 2px;
+  background: linear-gradient(180deg, #8c5cff, #5a2fd6);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 22px;
+  color: #fff;
+}
+
+.v3-entry-pill {
+  margin-top: -10px;
+  padding: 0 8px;
+  height: 22px;
+  border-radius: 100px;
+  background: #fff3df;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 22px;
+  color: #6b3a14;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.v3-entry.is-ready .v3-entry-pill {
+  background: #ffdd2d;
+  color: #333;
+}
+
+.v3-entry.is-ready .v3-entry-ring {
+  animation: v3EntryPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes v3EntryPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.v3-entry-badge {
+  top: -4px;
+  right: 2px;
+  z-index: 2;
+}
+
+.v3-entry-badge[hidden] {
+  display: none;
+}
+
+/* ---------- Экраны ---------- */
+
+.v3-screen {
+  background: #0b0b0d;
+}
+
+.v3-screen .ev-scroll {
+  background:
+    radial-gradient(90% 40% at 50% 0%, rgba(124, 58, 237, 0.35), transparent 70%),
+    #0b0b0d;
+  padding-bottom: 32px;
+}
+
+.v3-help {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* ---------- Лиги ---------- */
+
+.v3-shields {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 78px;
+  margin-top: 8px;
+}
+
+.v3-shield {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  transition: transform 0.2s ease;
+}
+
+.v3-shield img {
+  width: 40px;
+  height: 40px;
+}
+
+.v3-shield.is-locked img {
+  filter: grayscale(1) brightness(0.6);
+}
+
+.v3-shield[data-league="3"] img {
+  filter: none;
+}
+
+.v3-shield.is-active {
+  width: 74px;
+  height: 78px;
+}
+
+.v3-shield.is-active img {
+  width: 70px;
+  height: 70px;
+  filter: drop-shadow(0 0 12px rgba(255, 200, 120, 0.45));
+}
+
+.v3-shield.is-active.is-locked img {
+  filter: grayscale(1) brightness(0.7);
+}
+
+.v3-league-title {
+  margin-top: 8px;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  text-align: center;
+  color: #f6f7f8;
+}
+
+.v3-league-timer {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.v3-league-body {
+  padding: 12px 8px 0;
+}
+
+.v3-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 33px;
+  margin: 4px 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.v3-zone::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+}
+
+.v3-zone span,
+.v3-zone img {
+  position: relative;
+}
+
+.v3-zone span {
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: #2c2c2e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.v3-zone img {
+  width: 16px;
+  height: 16px;
+  margin-left: -26px;
+  margin-right: 8px;
+}
+
+.v3-zone.is-promo {
+  color: #6dff5a;
+}
+
+.v3-zone.is-promo::before {
+  background: linear-gradient(90deg, transparent, rgba(109, 255, 90, 0.6), transparent);
+}
+
+.v3-zone.is-promo span {
+  padding-right: 30px;
+  background: #13280f;
+  box-shadow: inset 0 0 0 1px rgba(109, 255, 90, 0.45);
+}
+
+.v3-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  margin-bottom: 8px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.v3-row-place {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 26px;
+  text-align: center;
+  color: rgba(246, 247, 248, 0.5);
+}
+
+.v3-row.is-promo .v3-row-place {
+  background: #3fd72a;
+  color: #0b0b0d;
+}
+
+.v3-row-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.v3-row-score {
+  font-size: 17px;
+  font-weight: 700;
+  color: #f6f7f8;
+  font-variant-numeric: tabular-nums;
+}
+
+.v3-row-shard {
+  width: 28px;
+  height: 28px;
+}
+
+/* «вы» — зелёная подсветка строки */
+.v3-row.is-me {
+  background: linear-gradient(180deg, #1f4d14, #173a10);
+  box-shadow: inset 0 0 0 1.5px #3fd72a, 0 0 16px rgba(63, 215, 42, 0.25);
+}
+
+.v3-row.is-me .v3-row-name,
+.v3-row.is-me .v3-row-score {
+  color: #6dff5a;
+}
+
+.v3-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24px 16px 0;
+  padding: 28px 20px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.v3-locked img {
+  width: 56px;
+  height: 56px;
+}
+
+.v3-locked-title {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.v3-locked-text {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+/* ---------- Календарь наград ---------- */
+
+.v3-cal-sub {
+  margin: 8px 24px 16px;
+  font-size: 15px;
+  line-height: 20px;
+  text-align: center;
+  color: rgba(246, 247, 248, 0.75);
+}
+
+.v3-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.v3-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 100px;
+  padding: 18px 4px 12px;
+  border-radius: 20px;
+  background: #0d0d0f;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  color: #f6f7f8;
+}
+
+.v3-day-rewards {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+}
+
+.v3-rw {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.v3-rw img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+}
+
+.v3-rw b {
+  margin-top: -10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  -webkit-text-stroke: 3px #000;
+  paint-order: stroke fill;
+}
+
+/* пачка карт — две карты веером */
+.v3-pack {
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+
+.v3-pack img {
+  position: absolute;
+  top: 2px;
+  width: 22px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.v3-pack img:first-child {
+  left: 2px;
+  background: linear-gradient(160deg, #7b8cff, #3133c2);
+  transform: rotate(-10deg);
+}
+
+.v3-pack img:last-child {
+  right: 2px;
+  transform: rotate(8deg);
+}
+
+.v3-day-label {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* получено — приглушено, зелёная галка в углу */
+.v3-day.is-got .v3-day-rewards,
+.v3-day.is-got .v3-day-label {
+  opacity: 0.45;
+}
+
+.v3-day-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #42cf9b;
+  color: #fff;
+}
+
+.v3-day-check svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* можно забрать — жёлтая, мягко пульсирует */
+.v3-day.is-ready {
+  background: #ffdd2d;
+  box-shadow: 0 0 18px rgba(255, 221, 45, 0.45);
+  color: #333;
+  cursor: pointer;
+  animation: v3DayPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes v3DayPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* следующий день — таймер сверху */
+.v3-day-timer {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 7px 0 5px;
+  border-radius: 100px;
+  background: #fff;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: #000;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.v3-day-timer svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* «жирная» награда — оранжевая рамка, огненное свечение и искры */
+.v3-day.is-fat {
+  box-shadow: inset 0 0 0 1.5px #ff9a2d, 0 0 20px rgba(255, 140, 40, 0.25);
+}
+
+.v3-day-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(45% 70% at 50% 50%, rgba(255, 150, 40, 0.75), rgba(255, 90, 20, 0.25) 55%, transparent 80%),
+    repeating-conic-gradient(from 0deg at 50% 50%, rgba(255, 170, 60, 0.18) 0deg 6deg, transparent 6deg 18deg);
+  animation: v3Glow 3s ease-in-out infinite;
+}
+
+@keyframes v3Glow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.v3-sparks {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+}
+
+.v3-sparks i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffd36b;
+  box-shadow: 0 0 6px 2px rgba(255, 190, 80, 0.8);
+  opacity: 0;
+  animation: v3Spark 2.4s ease-out infinite;
+  animation-delay: var(--d);
+}
+
+@keyframes v3Spark {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0; }
+}
+
+.v3-day.is-fat.is-got .v3-day-glow,
+.v3-day.is-fat.is-got .v3-sparks {
+  opacity: 0.3;
+}
+
+[data-app="3"] .v3-cal-demo {
+  display: block;
+  margin: 16px auto 0;
+}
+
+/* число поверх иконки, подпись поверх пульсирующего круга */
+.v3-rw b,
+.v3-entry-pill {
+  position: relative;
+  z-index: 1;
+}

@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610141829"></script>
+  <script src="js/device-frame.js?v=202610141859"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610141829"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610141829">
-  <link rel="stylesheet" href="css/v2.css?v=202610141829">
-  <link rel="stylesheet" href="css/profile.css?v=202610141829">
-  <link rel="stylesheet" href="css/tasks.css?v=202610141829">
-  <link rel="stylesheet" href="css/gifts.css?v=202610141829">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610141829">
-  <link rel="stylesheet" href="css/shop.css?v=202610141829">
-  <link rel="stylesheet" href="css/v22.css?v=202610141829">
-  <link rel="stylesheet" href="css/event.css?v=202610141829">
+  <script src="js/version.js?v=202610141859"></script>
+  <link rel="stylesheet" href="css/match.css?v=202610141859">
+  <link rel="stylesheet" href="css/v2.css?v=202610141859">
+  <link rel="stylesheet" href="css/profile.css?v=202610141859">
+  <link rel="stylesheet" href="css/tasks.css?v=202610141859">
+  <link rel="stylesheet" href="css/gifts.css?v=202610141859">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610141859">
+  <link rel="stylesheet" href="css/shop.css?v=202610141859">
+  <link rel="stylesheet" href="css/v22.css?v=202610141859">
+  <link rel="stylesheet" href="css/v3.css?v=202610141859">
+  <link rel="stylesheet" href="css/event.css?v=202610141859">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -40,6 +41,21 @@
           <span></span>
           <button class="v2-icon-btn v2-glass" data-nav="profile" aria-label="Профиль" style="color: #e8e8e8">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-user-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path d="M3 19C3 15.6863 5.68629 13 9 13H15C18.3137 13 21 15.6863 21 19V22H3V19Z" fill="black"/><path opacity="0.35" fill-rule="evenodd" clip-rule="evenodd" d="M16.2231 2.95239C15.8135 3.73704 14.9922 4.27267 14.0458 4.27267H11.5913C10.2357 4.27267 9.13672 5.37161 9.13672 6.72722V10.6077C9.91476 11.2503 10.9125 11.6363 12.0004 11.6363C14.4856 11.6363 16.5004 9.62159 16.5004 7.13631V4.27267C16.5004 3.80289 16.4014 3.35622 16.2231 2.95239Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2228 2.95245C15.7152 1.80256 14.565 1 13.2273 1H7.5V7.13636C7.5 8.53377 8.13695 9.7824 9.13636 10.6078V6.72727C9.13636 5.37167 10.2353 4.27273 11.5909 4.27273H14.0455C14.9919 4.27273 15.8132 3.7371 16.2228 2.95245Z" fill="url(#ic-user-g0)"/></mask><g mask="url(#ic-user-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-user-g0" x1="10.5" y1="1" x2="10.5" y2="10.6078" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
+          </button>
+        </div>
+
+        <!-- версия 3: точки входа в лиги (слева) и календарь наград (справа) -->
+        <div class="v3-entries v3-only">
+          <button class="v3-entry" id="v3LeagueEntry" aria-label="Лиги">
+            <span class="v3-entry-ring"><img class="v3-entry-img" src="assets/v3-league-bronze.svg" alt=""></span>
+            <span class="v3-entry-flag" id="v3LeagueRank">4</span>
+            <span class="v3-entry-pill" id="v3LeagueTimer"></span>
+            <span class="e22-badge v3-entry-badge" id="v3LeagueBadge" hidden></span>
+          </button>
+          <button class="v3-entry" id="v3CalendarEntry" aria-label="Календарь наград">
+            <span class="v3-entry-ring is-gift"><img class="v3-entry-img" src="assets/v2-gift.png" alt=""></span>
+            <span class="v3-entry-pill" id="v3CalendarLabel"></span>
+            <span class="e22-badge v3-entry-badge" id="v3CalendarBadge" hidden></span>
           </button>
         </div>
 
@@ -383,6 +399,35 @@
       <button class="v2-cta nyi-cta" id="nyIntroCta">К наградам</button>
     </section>
 
+    <!-- Версия 3: лиги -->
+    <section class="ev v3-screen v3-only" id="v3LeagueScreen" aria-hidden="true">
+      <div class="ev-scroll">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" data-back aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
+          <div class="v2-appbar-title">Лиги</div>
+          <button class="v2-icon-btn v2-glass v3-help" aria-label="Помощь">?</button>
+        </div>
+        <div class="v3-shields" id="v3Shields"></div>
+        <h1 class="v3-league-title" id="v3LeagueTitle"></h1>
+        <div class="v3-league-timer"><span class="tasks-timer-badge"><span class="v3-clock"></span><span id="v3LeagueWeek"></span></span></div>
+        <div class="v3-league-body" id="v3LeagueBody"></div>
+      </div>
+    </section>
+
+    <!-- Версия 3: календарь наград (Figma 15959:35872) -->
+    <section class="ev v3-screen v3-only" id="v3CalendarScreen" aria-hidden="true">
+      <div class="ev-scroll">
+        <div class="v2-appbar">
+          <button class="v2-icon-btn v2-glass" data-back aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
+          <div class="v2-appbar-title">Календарь наград</div>
+          <button class="v2-icon-btn v2-glass v3-help" aria-label="Помощь">?</button>
+        </div>
+        <p class="v3-cal-sub">Заходите каждый день и получайте награды<br>и эпические карты</p>
+        <div class="v3-cal-grid" id="v3CalGrid"></div>
+        <button class="e23-demo v3-cal-demo" id="v3CalDemo">Демо: наступил следующий день</button>
+      </div>
+    </section>
+
     <!-- Экран события (общий скелет для «Новогоднего события» и «Дейликов») -->
     <section class="ev e22" id="e22Screen" aria-hidden="true">
       <div class="e22-glow"></div>
@@ -533,15 +578,16 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610141829"></script>
-  <script src="js/v2.js?v=202610141829"></script>
-  <script src="js/profile.js?v=202610141829"></script>
-  <script src="js/tasks22.js?v=202610141829"></script>
-  <script src="js/tasks.js?v=202610141829"></script>
-  <script src="js/cards-v2.js?v=202610141829"></script>
-  <script src="js/shop.js?v=202610141829"></script>
-  <script src="js/gifts.js?v=202610141829"></script>
-  <script src="js/event.js?v=202610141829"></script>
-  <script src="js/events22.js?v=202610141829"></script>
+  <script src="js/cards.js?v=202610141859"></script>
+  <script src="js/v2.js?v=202610141859"></script>
+  <script src="js/profile.js?v=202610141859"></script>
+  <script src="js/tasks22.js?v=202610141859"></script>
+  <script src="js/tasks.js?v=202610141859"></script>
+  <script src="js/cards-v2.js?v=202610141859"></script>
+  <script src="js/shop.js?v=202610141859"></script>
+  <script src="js/gifts.js?v=202610141859"></script>
+  <script src="js/event.js?v=202610141859"></script>
+  <script src="js/events22.js?v=202610141859"></script>
+  <script src="js/v3.js?v=202610141859"></script>
 </body>
 </html>
