@@ -579,3 +579,8 @@
   position: relative;
   z-index: 1;
 }
+
+/* подписи, которые в версии 3 заменены своими (например, «Игра» → «Главная») */
+[data-app="3"] .v2-only {
+  display: none !important;
+}
