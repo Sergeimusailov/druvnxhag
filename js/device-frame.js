@@ -1,6 +1,6 @@
 // Десктоп: игра открывается в минималистичном мокапе iPhone (для презентаций).
-// Страница грузится заново внутри iframe размером с самый большой телефон —
-// максимум 430×960, на невысоких экранах ниже. Внутри iframe игра видит
+// Страница грузится заново внутри iframe размером с экран макетов — 393×852,
+// на невысоких экранах ниже. Внутри iframe игра видит
 // обычный «телефонный» вьюпорт, поэтому вёрстку и скрипты страниц трогать
 // не нужно. На телефонах (узкое окно) и внутри iframe скрипт ничего не делает.
 // Подключается первым в <head>, до остальных стилей и скриптов.
@@ -18,21 +18,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(120% 90% at 50% 0%, #ffffff 0%, #ececf1 55%, #dcdce3 100%);
+      /* тёмный фон, чуть светлее корпуса — не слепит, как белый */
+      background: radial-gradient(120% 90% at 50% 0%, #34343a 0%, #26262b 55%, #1d1d21 100%);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     }
+    /* экран 393 — ширина макетов (iPhone 15/16), высота 852; от интерфейса
+       до внешнего края корпуса — 16px */
     .df-phone {
       position: relative;
-      width: 430px;
-      height: min(960px, calc(100vh - 64px));
-      padding: 12px;
-      border-radius: 64px;
+      width: 393px;
+      height: min(852px, calc(100vh - 80px));
+      padding: 14px;
+      border-radius: 62px;
       background: #0d0d0f;
       box-shadow:
-        inset 0 0 0 2px #2c2c30,
-        0 0 0 1.5px #b9b9c2,
-        0 40px 80px -20px rgba(20, 20, 40, 0.35),
-        0 20px 40px -20px rgba(20, 20, 40, 0.25);
+        inset 0 0 0 1.5px #3a3a40,
+        0 0 0 2px #4a4a52,
+        0 40px 80px -20px rgba(0, 0, 0, 0.6),
+        0 20px 40px -20px rgba(0, 0, 0, 0.5);
       box-sizing: content-box;
     }
     .df-screen {
@@ -40,7 +43,7 @@
       width: 100%;
       height: 100%;
       border: 0;
-      border-radius: 52px;
+      border-radius: 48px;
       background: #000;
     }
   `;
