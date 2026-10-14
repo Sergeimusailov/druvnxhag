@@ -1329,3 +1329,50 @@
   width: 20px;
   height: 20px;
 }
+
+/* ---------- Главная версии 3: горизонтальные уровни ----------
+   1) уровень и монеты  2) лига, календарь, событие  3) лого и подзаголовок
+   4) с другом / найти матч / тренировка  5) навигация */
+
+/* монеты — чуть крупнее, у правого края */
+.v3-coins {
+  left: auto;
+  right: 16px;
+  top: calc(100% + 8px + 10px);
+  height: 32px;
+  gap: 5px;
+  padding: 0 12px 0 4px;
+  font-size: 17px;
+}
+
+.v3-coins img {
+  width: 24px;
+  height: 24px;
+}
+
+/* точки входа — в ряд под уровнем */
+.v3-entries {
+  top: 150px;
+  left: 16px;
+  right: 16px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 28px;
+}
+
+/* лого и подзаголовок — по центру, без старых кнопок */
+[data-app="3"] .v2-screen[data-screen="game"] .v2-hero {
+  display: flex !important;
+  justify-content: flex-start;
+  padding-top: 170px;
+}
+
+[data-app="3"] .v2-screen[data-screen="game"] .v2-hero .v2-btn-group {
+  display: none;
+}
+
+/* лого — по центру между рядом точек входа и кнопками матча */
+[data-app="3"] .v2-screen[data-screen="game"] .v2-hero {
+  justify-content: center;
+  padding: 240px 36px 190px;
+}
