@@ -223,6 +223,11 @@ function renderLevel3() {
   document.getElementById('v3LevelNext').textContent = level + 1;
 }
 
+// монеты рядом с уровнем — тот же баланс, что в магазине
+function renderCoins3() {
+  document.getElementById('v3Coins').textContent = getCoins().toLocaleString('ru-RU');
+}
+
 /* ---------- Открытие экранов ---------- */
 
 function openScreen3(el) {
@@ -275,6 +280,8 @@ if (isApp3()) {
 
   leagueScreen.querySelector('.v3-clock').outerHTML = CLOCK_SVG;
   renderLevel3();
+  renderCoins3();
+  document.addEventListener('v2:screen', renderCoins3);
   renderLeagueEntry3();
   renderCalendarEntry3();
   setInterval(() => {

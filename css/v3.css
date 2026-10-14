@@ -1259,3 +1259,73 @@
   white-space: normal;
   border-radius: 9px;
 }
+
+/* ---------- Главная версии 3: правки раскладки ---------- */
+
+/* «Найти матч» — прежний стиль кнопки (жёлтая, скругление 12px) */
+.v3-play-btn {
+  height: 56px;
+  margin-top: 3px;
+  border-radius: 12px;
+  background: #ffdd2d;
+  box-shadow: none;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #333;
+  animation: none;
+}
+
+.v3-play {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* боковые кнопки — квадраты со скруглёнными углами */
+.v3-side-ring {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9), 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+.v3-side {
+  width: 72px;
+}
+
+/* лига, календарь, событие — колонкой слева под уровнем, с отступами */
+.v3-entries {
+  top: 148px;
+  left: 16px;
+  right: auto;
+  gap: 26px;
+}
+
+/* монеты справа от уровня: по высоте не больше ромба уровня (30px) */
+[data-app="3"] .v3-coins.v3-only {
+  display: inline-flex !important;
+}
+
+.v3-coins {
+  position: absolute;
+  top: calc(100% + 8px + 13px);
+  left: 206px;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 10px 0 3px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffdd2d;
+  font-variant-numeric: tabular-nums;
+}
+
+.v3-coins img {
+  width: 20px;
+  height: 20px;
+}

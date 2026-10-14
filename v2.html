@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610142204"></script>
+  <script src="js/device-frame.js?v=202610142211"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610142204"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610142204">
-  <link rel="stylesheet" href="css/v2.css?v=202610142204">
-  <link rel="stylesheet" href="css/profile.css?v=202610142204">
-  <link rel="stylesheet" href="css/tasks.css?v=202610142204">
-  <link rel="stylesheet" href="css/gifts.css?v=202610142204">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610142204">
-  <link rel="stylesheet" href="css/shop.css?v=202610142204">
-  <link rel="stylesheet" href="css/v22.css?v=202610142204">
-  <link rel="stylesheet" href="css/v3.css?v=202610142204">
-  <link rel="stylesheet" href="css/event.css?v=202610142204">
+  <script src="js/version.js?v=202610142211"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
+  <link rel="stylesheet" href="css/match.css?v=202610142211">
+  <link rel="stylesheet" href="css/v2.css?v=202610142211">
+  <link rel="stylesheet" href="css/profile.css?v=202610142211">
+  <link rel="stylesheet" href="css/tasks.css?v=202610142211">
+  <link rel="stylesheet" href="css/gifts.css?v=202610142211">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610142211">
+  <link rel="stylesheet" href="css/shop.css?v=202610142211">
+  <link rel="stylesheet" href="css/v22.css?v=202610142211">
+  <link rel="stylesheet" href="css/v3.css?v=202610142211">
+  <link rel="stylesheet" href="css/event.css?v=202610142211">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -45,6 +46,8 @@
             <span class="v3-level-bar"><span class="v3-level-fill" id="v3LevelFill"></span><span class="v3-level-text" id="v3LevelText"></span></span>
             <span class="v3-level-gem"><span id="v3LevelNext"></span></span>
           </button>
+          <!-- версия 3: монеты справа от уровня -->
+          <span class="v3-coins v3-only" aria-label="Монеты"><img src="assets/v2-coin.png" alt=""><span id="v3Coins"></span></span>
           <button class="v2-icon-btn v2-glass v2-only" data-nav="profile" aria-label="Профиль" style="color: #e8e8e8">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-user-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path d="M3 19C3 15.6863 5.68629 13 9 13H15C18.3137 13 21 15.6863 21 19V22H3V19Z" fill="black"/><path opacity="0.35" fill-rule="evenodd" clip-rule="evenodd" d="M16.2231 2.95239C15.8135 3.73704 14.9922 4.27267 14.0458 4.27267H11.5913C10.2357 4.27267 9.13672 5.37161 9.13672 6.72722V10.6077C9.91476 11.2503 10.9125 11.6363 12.0004 11.6363C14.4856 11.6363 16.5004 9.62159 16.5004 7.13631V4.27267C16.5004 3.80289 16.4014 3.35622 16.2231 2.95239Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2228 2.95245C15.7152 1.80256 14.565 1 13.2273 1H7.5V7.13636C7.5 8.53377 8.13695 9.7824 9.13636 10.6078V6.72727C9.13636 5.37167 10.2353 4.27273 11.5909 4.27273H14.0455C14.9919 4.27273 15.8132 3.7371 16.2228 2.95245Z" fill="url(#ic-user-g0)"/></mask><g mask="url(#ic-user-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-user-g0" x1="10.5" y1="1" x2="10.5" y2="10.6078" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
           </button>
@@ -58,17 +61,17 @@
             <span class="v3-entry-pill" id="v3LeagueTimer"></span>
             <span class="e22-badge v3-entry-badge" id="v3LeagueBadge" hidden></span>
           </button>
+          <button class="v3-entry" id="v3CalendarEntry" aria-label="Календарь наград">
+            <span class="v3-entry-ring is-gift"><img class="v3-entry-img" src="assets/v2-gift.png" alt=""></span>
+            <span class="v3-entry-pill" id="v3CalendarLabel"></span>
+            <span class="e22-badge v3-entry-badge" id="v3CalendarBadge" hidden></span>
+          </button>
           <button class="v3-entry v3-entry-ny" id="v3NyEntry" aria-label="Новогоднее событие">
             <span class="v3-ny-rays"></span>
             <span class="v3-entry-ring is-ny"><img class="v3-entry-img" src="assets/v2-event-snowflake.png" alt=""></span>
             <span class="v3-ny-sparks"><i></i><i></i><i></i><i></i><i></i><i></i></span>
             <span class="v3-entry-pill is-ny">14 дней</span>
             <span class="e22-badge v3-entry-badge" id="v3NyBadge" hidden></span>
-          </button>
-          <button class="v3-entry" id="v3CalendarEntry" aria-label="Календарь наград">
-            <span class="v3-entry-ring is-gift"><img class="v3-entry-img" src="assets/v2-gift.png" alt=""></span>
-            <span class="v3-entry-pill" id="v3CalendarLabel"></span>
-            <span class="e22-badge v3-entry-badge" id="v3CalendarBadge" hidden></span>
           </button>
         </div>
 
@@ -101,7 +104,7 @@
             <span class="v3-side-ring is-friend"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.6" fill="#fff"/><path d="M2.5 19c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6v1h-13v-1Z" fill="#fff"/><path d="M18 8v6M15 11h6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
             <span class="v3-side-label">Сыграть с другом</span>
           </button>
-          <a class="v3-play-btn" href="match.html">Найти матч</a>
+          <a class="v2-btn v2-btn-primary v3-play-btn" href="match.html">Найти матч</a>
           <a class="v3-side" href="onboarding.html" aria-label="Тренировка">
             <span class="v3-side-ring is-train"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="12" r="5" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="12" r="1.8" fill="#fff"/></svg></span>
             <span class="v3-side-label">Тренировка</span>
@@ -652,17 +655,17 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610142204"></script>
-  <script src="js/v2.js?v=202610142204"></script>
-  <script src="js/profile.js?v=202610142204"></script>
-  <script src="js/tasks22.js?v=202610142204"></script>
-  <script src="js/tasks.js?v=202610142204"></script>
-  <script src="js/card-custom.js?v=202610142204"></script>
-  <script src="js/cards-v2.js?v=202610142204"></script>
-  <script src="js/shop.js?v=202610142204"></script>
-  <script src="js/gifts.js?v=202610142204"></script>
-  <script src="js/event.js?v=202610142204"></script>
-  <script src="js/events22.js?v=202610142204"></script>
-  <script src="js/v3.js?v=202610142204"></script>
+  <script src="js/cards.js?v=202610142211"></script>
+  <script src="js/v2.js?v=202610142211"></script>
+  <script src="js/profile.js?v=202610142211"></script>
+  <script src="js/tasks22.js?v=202610142211"></script>
+  <script src="js/tasks.js?v=202610142211"></script>
+  <script src="js/card-custom.js?v=202610142211"></script>
+  <script src="js/cards-v2.js?v=202610142211"></script>
+  <script src="js/shop.js?v=202610142211"></script>
+  <script src="js/gifts.js?v=202610142211"></script>
+  <script src="js/event.js?v=202610142211"></script>
+  <script src="js/events22.js?v=202610142211"></script>
+  <script src="js/v3.js?v=202610142211"></script>
 </body>
 </html>

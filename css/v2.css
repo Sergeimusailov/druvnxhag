@@ -9,8 +9,15 @@ html, body {
   background: #05050a;
 }
 
+:root {
+  /* шрифты как в макетах: SF Pro; для цифр — SF Pro Rounded. На устройствах
+     без SF подставляются похожие Inter и Nunito (Google Fonts) */
+  --font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-rounded: ui-rounded, "SF Pro Rounded", "Nunito", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sf);
   display: flex;
   justify-content: center;
   -webkit-font-smoothing: antialiased;
@@ -623,4 +630,27 @@ a {
   display: block;
   width: 126.6px;
   height: auto;
+}
+
+/* цифры — SF Pro Rounded: счётчики, бейджи, очки, пороги, таймеры наград */
+.e22-badge,
+.tasks-points,
+.tchest-label,
+.ev-node,
+.e23-hex-in,
+.e23-dot-label,
+.t22-reward span,
+.task-reward span,
+.ev-fab-text,
+.v3-level-text,
+.v3-level-gem span,
+.v3-entry-flag,
+.v3-entry-pill,
+.v3-coins,
+.v3-row-place,
+.v3-row-score,
+.v3-rw b,
+.e22-tickets,
+.shop-balance {
+  font-family: var(--font-rounded);
 }
