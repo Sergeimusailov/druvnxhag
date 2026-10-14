@@ -249,6 +249,8 @@ if (isApp3()) {
     renderCalendar3();
     openScreen3(calScreen);
   });
+  document.getElementById('v3NyEntry').addEventListener('click', () => openNyFromHome());
+  document.getElementById('v3FriendBtn').addEventListener('click', () => openScreen3(document.getElementById('v3FriendScreen')));
   document.querySelectorAll('.v3-screen [data-back]').forEach((b) => b.addEventListener('click', () => closeScreen3(b.closest('.v3-screen'))));
 
   document.getElementById('v3Shields').addEventListener('click', (e) => {

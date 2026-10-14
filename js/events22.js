@@ -106,6 +106,13 @@ function renderEntries22(pulse) {
   const nyEv = EVENTS22.list.ny;
   if (widgetFill) widgetFill.style.width = `${(EVENTS22.reached(nyEv) / nyEv.rewards.length) * 100}%`;
   // счётчик наград, которые можно забрать (Figma 16029:68501)
+  // версия 3: тот же счётчик на круглой кнопке события
+  const v3NyBadge = document.getElementById('v3NyBadge');
+  if (v3NyBadge) {
+    const n3 = EVENTS22.claimable(nyEv);
+    v3NyBadge.textContent = n3;
+    v3NyBadge.hidden = !n3;
+  }
   const widgetBadge = document.getElementById('eventWidgetBadge');
   if (widgetBadge) {
     const n = EVENTS22.claimable(nyEv);

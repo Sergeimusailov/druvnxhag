@@ -1073,3 +1073,189 @@
 .v3-level-gem span {
   font-size: 13px;
 }
+
+/* ---------- Главная версии 3: без логотипа, одна кнопка матча внизу ---------- */
+
+[data-app="3"] .v2-screen[data-screen="game"] .v2-hero,
+[data-app="3"] #eventBanner {
+  display: none !important;
+}
+
+[data-app="3"] .v3-play.v3-only {
+  display: flex !important;
+}
+
+.v3-play {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 112px;
+  z-index: 3;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* «Найти матч» — крупная глянцевая кнопка с белой рамкой, как в референсе */
+.v3-play-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76px;
+  margin-top: 2px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, #ffe866 0%, #ffd21f 55%, #f2b800 100%);
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 0 5px rgba(0, 0, 0, 0.12),
+    inset 0 4px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -6px 0 rgba(176, 120, 0, 0.35),
+    0 10px 24px rgba(0, 0, 0, 0.4);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #3a2a00;
+  transition: transform 0.15s ease;
+  animation: v3PlayBreath 2.4s ease-in-out infinite;
+}
+
+.v3-play-btn:active {
+  transform: scale(0.95);
+  animation: none;
+}
+
+@keyframes v3PlayBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* боковые круглые кнопки с подписью снизу */
+.v3-side {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 78px;
+  transition: transform 0.15s ease;
+}
+
+.v3-side:active {
+  transform: scale(0.93);
+}
+
+.v3-side-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px #fff, inset 0 4px 0 rgba(255, 255, 255, 0.35), 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+.v3-side-ring.is-friend {
+  background: radial-gradient(circle at 50% 30%, #6fb4ff 0%, #2d6be0 75%);
+}
+
+.v3-side-ring.is-train {
+  background: radial-gradient(circle at 50% 30%, #c08bff 0%, #6a32d8 75%);
+}
+
+.v3-side-label {
+  margin-top: -9px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  color: #2a2a3a;
+  white-space: nowrap;
+}
+
+.v3-friend-stub {
+  padding: 120px 40px;
+}
+
+/* ---------- Новогоднее событие — третья круглая кнопка, ярче остальных ---------- */
+
+.v3-entry-ring.is-ny {
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 30%, #8fc0ff 0%, #3133c2 75%);
+  box-shadow: inset 0 0 0 3px #fff, inset 0 -6px 12px rgba(0, 0, 0, 0.25), 0 0 18px rgba(120, 170, 255, 0.85), 0 6px 16px rgba(0, 0, 0, 0.4);
+  animation: v3NyBob 2.6s ease-in-out infinite;
+}
+
+.v3-entry-ring.is-ny .v3-entry-img {
+  animation: v3NySpin 6s linear infinite;
+}
+
+@keyframes v3NyBob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.05); }
+}
+
+@keyframes v3NySpin {
+  to { transform: rotate(360deg); }
+}
+
+/* вращающиеся лучи за кнопкой */
+.v3-ny-rays {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  margin-left: -50px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(160, 200, 255, 0.55) 0deg 10deg, transparent 10deg 30deg);
+  -webkit-mask-image: radial-gradient(circle, #000 25%, transparent 70%);
+  mask-image: radial-gradient(circle, #000 25%, transparent 70%);
+  animation: v3NySpin 10s linear infinite;
+  pointer-events: none;
+}
+
+/* искры-снежинки вокруг */
+.v3-ny-sparks i {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(170, 210, 255, 0.9);
+  opacity: 0;
+  animation: v3NySpark 2.4s ease-out infinite;
+}
+
+.v3-ny-sparks i:nth-child(1) { --x: -40px; --y: -26px; animation-delay: 0s; }
+.v3-ny-sparks i:nth-child(2) { --x: 38px; --y: -30px; animation-delay: 0.4s; }
+.v3-ny-sparks i:nth-child(3) { --x: -44px; --y: 14px; animation-delay: 0.8s; }
+.v3-ny-sparks i:nth-child(4) { --x: 42px; --y: 18px; animation-delay: 1.2s; }
+.v3-ny-sparks i:nth-child(5) { --x: 0; --y: -44px; animation-delay: 1.6s; }
+.v3-ny-sparks i:nth-child(6) { --x: -10px; --y: 40px; animation-delay: 2s; }
+
+@keyframes v3NySpark {
+  0% { transform: translate(0, 0) scale(0.3); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0; }
+}
+
+.v3-entry-pill.is-ny {
+  background: linear-gradient(180deg, #8fc0ff, #4a7ff0);
+  color: #fff;
+}
+
+/* подпись в две строки, если не влезает в ширину кнопки */
+.v3-side-label {
+  position: relative;
+  z-index: 1;
+  max-width: 74px;
+  white-space: normal;
+  border-radius: 9px;
+}
