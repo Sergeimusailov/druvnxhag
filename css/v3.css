@@ -1034,3 +1034,42 @@
   max-width: none;
   border-radius: 0 100px 100px 0;
 }
+
+/* компактнее: полоса ниже и короче, текст 11px, ромб меньше */
+.v3-level-bar {
+  width: 128px;
+  height: 22px;
+  margin: 0 -14px 0 -18px;
+}
+
+.v3-level-bar::before {
+  inset: 3px 3px 3px 0;
+}
+
+.v3-level-fill {
+  top: 3px;
+  bottom: 3px;
+  width: calc(18px + (100% - 32px) * var(--p, 0)) !important;
+}
+
+.v3-level-text {
+  inset: 0 14px 0 18px;
+  font-size: 11px;
+  line-height: 22px;
+  -webkit-text-stroke: 2.5px #2a1460;
+}
+
+.v3-level-gem {
+  width: 30px;
+  height: 30px;
+}
+
+.v3-level-gem::before {
+  inset: 4px;
+  border-radius: 5px;
+  box-shadow: 0 0 0 2px #fff, 0 2px 5px rgba(0, 0, 0, 0.35);
+}
+
+.v3-level-gem span {
+  font-size: 13px;
+}
