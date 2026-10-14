@@ -226,7 +226,7 @@ function openEvent(animate = true) {
 function closeEvent() {
   eventEl.classList.remove('is-open');
   eventEl.setAttribute('aria-hidden', 'true');
-  history.replaceState(null, '', currentScreen === 'game' ? location.pathname : `#${currentScreen}`);
+  history.replaceState(null, '', currentScreen === 'game' ? location.pathname + location.search : `#${currentScreen}`);
 }
 
 /* ---------- События ---------- */

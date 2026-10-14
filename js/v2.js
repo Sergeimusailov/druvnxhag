@@ -149,7 +149,7 @@ function showScreen(screen, animate = true) {
     }, 480);
   }
 
-  history.replaceState(null, '', screen === 'game' ? location.pathname : `#${screen}`);
+  history.replaceState(null, '', screen === 'game' ? location.pathname + location.search : `#${screen}`);
   document.dispatchEvent(new CustomEvent('v2:screen', { detail: { screen, animate } }));
 }
 

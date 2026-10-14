@@ -32,3 +32,15 @@ function isAppVersion(v) {
 }
 
 document.documentElement.dataset.version = getAppVersion();
+
+// Версия 3 — отдельная ветка прототипа поверх всего, что есть в версии 2.
+// Открывается с главной по ссылке v2.html?app=3; параметр живёт в адресе,
+// поэтому версия 2 (v2.html без параметра) не меняется. Правки третьей
+// версии разводим через isApp3() в JS и [data-app="3"] в CSS.
+const APP_MAJOR = new URLSearchParams(location.search).get('app') === '3' ? '3' : '2';
+
+function isApp3() {
+  return APP_MAJOR === '3';
+}
+
+document.documentElement.dataset.app = APP_MAJOR;
