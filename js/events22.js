@@ -357,6 +357,15 @@ function openEvent22(id) {
   document.getElementById('e22Desc').innerHTML = ev.descV21 || ev.desc;
   document.getElementById('e22TicketCount').textContent = ev.tickets || 0;
   document.getElementById('e22BadgeText').textContent = ev.badge || e22DailyTimer();
+  // 2.3 (Figma 16365:14607): деньги, бейдж «До конца N дней», заголовок в две
+  // строки и белая кнопка «Подробнее» — описание розыгрыша спрятано в неё
+  const ny23head = isAppVersion('2.3') && ev.id === 'ny';
+  if (ny23head) {
+    heading.innerHTML = 'Новогоднее событие началось:<br>разыграем 10 000 000 ₽';
+    heading.hidden = false;
+    document.getElementById('e22BadgeText').textContent = 'До конца 14 дней';
+  }
+  document.getElementById('e22About').textContent = ny23head ? 'Подробнее' : 'О розыгрыше';
   renderTrack22(ev);
   // 2.1 — только трек; 2.2 — сначала вкладка «Задания» события
   const tabbed = isAppVersion('2.2') && ev.id === 'ny';
@@ -405,27 +414,23 @@ function renderPreview23() {
   const completed = done + ready;
   const finished = total && completed === total && !ready;
 
-  // задания — отдельные круги без перемычек (это не прогрессия): зелёная
-  // галка — выполнено, с жёлтым ободком — выполнено, награду не забрали,
-  // серый — ещё можно сделать
-  const nodes = pack.map((_, i) => {
+  // задания — отдельные круги без перемычек (это не прогрессия): зелёный с
+  // галкой — выполнено (с жёлтым ободком — награду ещё не забрали), тёмный со
+  // снежинкой и «+20» — ещё можно сделать
+  const nodes = pack.map(({ snow }, i) => {
     const state = i < done ? 'is-done' : i < completed ? 'is-ready' : '';
-    return `<span class="e23-dot ${state}">${i < completed ? CHECK_ICON : ''}</span>`;
+    const inner = i < completed ? CHECK_ICON : `<img src="${CURRENCY_ICONS.snow}" alt=""><span class="e23-dot-label">+${snow}</span>`;
+    return `<span class="e23-dot ${state}">${inner}</span>`;
   }).join('');
 
-  const timer = `<span class="tasks-timer-badge">${CLOCK_SVG}<span>Обновятся через <span data-e23-timer>${packTimer23()}</span></span></span>`;
-  // CTA — квадратная кнопка со стрелкой в углу; жёлтая, когда есть что забрать
-  const arrow = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const label = ready ? `Забрать награды: ${ready}` : 'К заданиям';
-
+  // вся карточка ведёт в «Задания»; таймер — бейдж справа от заголовка
+  const label = ready ? `Задания дня. Забрать награды: ${ready}` : 'Задания дня. Перейти к заданиям';
   e23Preview.classList.toggle('is-finished', !!finished);
   e23Preview.innerHTML = `
+    <button class="e23-card-link" data-tab="daily" aria-label="${label}"></button>
     <div class="e23-top">
-      <div class="e23-top-text">
-        <span class="e23-title">Задания дня</span>
-        ${timer}
-      </div>
-      <button class="e23-go${ready ? ' is-ready' : ''}" data-tab="daily" aria-label="${label}">${arrow}${ready ? `<span class="e23-go-badge">${ready}</span>` : ''}</button>
+      <span class="e23-title">Задания дня</span>
+      <span class="e23-timer-badge">${CLOCK_SVG}<span data-e23-timer>${packTimer23()}</span></span>
     </div>
     <div class="e23-tasks">${nodes}</div>`;
   e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';

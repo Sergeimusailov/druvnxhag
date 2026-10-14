@@ -1897,3 +1897,233 @@
   display: block;
   margin: 12px auto 0;
 }
+
+/* ---------- 2.3: новогодний ивент по макету Figma 16365:14607 ---------- */
+
+/* синий градиент на всю высоту экрана, едет вместе с контентом */
+[data-version="2.3"] .e22.is-v21 #e22Scroll {
+  background: linear-gradient(180deg, #5189f9 0%, #2a4780 100%);
+  background-attachment: local;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-glow {
+  display: none;
+}
+
+/* шапка: деньги за бейджем, заголовок в две строки, белая «Подробнее» */
+.e23-money {
+  display: none;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-head {
+  padding-top: 80px;
+}
+
+[data-version="2.3"] .e22.is-v21 .e23-money {
+  position: absolute;
+  top: -86px;
+  left: 50%;
+  display: block;
+  width: 337px;
+  margin-left: -178px;
+  pointer-events: none;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-head-badge,
+[data-version="2.3"] .e22.is-v21 .e22-heading,
+[data-version="2.3"] .e22.is-v21 .e22-actions {
+  position: relative;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-head-badge {
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+  color: #fff;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-heading {
+  margin-bottom: 0;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-desc {
+  display: none;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-actions {
+  margin-top: 16px;
+}
+
+[data-version="2.3"] .e22.is-v21 #e22About {
+  background: #fff !important;
+  color: #333 !important;
+}
+
+/* билеты в шапке — белая пилюля */
+[data-version="2.3"] .e22.is-v21 .e22-tickets {
+  background: #fff;
+  color: #333;
+}
+
+/* блок «Задания дня» */
+[data-version="2.3"] .e23-preview {
+  margin: 24px 24px 0;
+  padding: 16px 20px 40px;
+  background: #1c1c1e;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-version="2.3"] #e23Demo {
+  margin: 12px auto -12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.e23-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.e23-card-link:active ~ .e23-top,
+.e23-card-link:active ~ .e23-tasks {
+  opacity: 0.75;
+}
+
+[data-version="2.3"] .e23-top {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+[data-version="2.3"] .e23-preview .e23-title {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.e23-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.e23-timer-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+[data-version="2.3"] .e23-preview .e23-tasks {
+  margin: 20px 0 0;
+}
+
+[data-version="2.3"] .e23-dot {
+  width: 48px;
+  height: 48px;
+  background: #333;
+  box-shadow: none;
+}
+
+[data-version="2.3"] .e23-dot > img {
+  width: 32px;
+  height: 32px;
+}
+
+.e23-dot-label {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  right: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+  color: #fff;
+  -webkit-text-stroke: 2px #2c2c2e;
+  paint-order: stroke fill;
+}
+
+[data-version="2.3"] .e23-dot.is-done,
+[data-version="2.3"] .e23-dot.is-ready {
+  background: linear-gradient(180deg, #0cbc37 0%, rgba(12, 188, 55, 0.65) 100%);
+  box-shadow: none;
+  color: #fff;
+}
+
+[data-version="2.3"] .e23-dot.is-ready {
+  box-shadow: 0 0 0 3px #ffdd2d, 0 0 14px rgba(255, 221, 45, 0.6);
+}
+
+[data-version="2.3"] .e23-dot svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* счётчик снежинок — голубая пилюля с белой обводкой (вместо шестигранника) */
+[data-version="2.3"] .e23-hex {
+  top: 42px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  clip-path: none;
+}
+
+[data-version="2.3"] .e23-hex-in,
+[data-version="2.3"] .e23-snowbar .e23-hex-in {
+  gap: 2px;
+  height: 36px;
+  padding: 0 12px 0 4px;
+  border-radius: 32px;
+  background: #5ca8fe;
+  box-shadow: inset 0 0 0 2px #fff;
+  clip-path: none;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #f6f7f8;
+}
+
+[data-version="2.3"] .e23-hex-in img,
+[data-version="2.3"] .e23-snowbar .e23-hex-in img {
+  width: 32px;
+  height: 32px;
+}
+
+[data-version="2.3"] .e22.is-v21 .e23-snowbar {
+  height: 36px;
+  padding: 0;
+  background: none;
+  clip-path: none;
+}
+
+/* шапка ближе к макету: заголовка в аппбаре нет, деньги под бейджем и текстом */
+[data-version="2.3"] .e22.is-v21 .e22-head {
+  padding-top: 54px;
+}
+
+[data-version="2.3"] .e22.is-v21 .e23-money {
+  top: -108px;
+  z-index: 0;
+}
+
+[data-version="2.3"] .e22.is-v21 .e22-head-badge,
+[data-version="2.3"] .e22.is-v21 .e22-heading,
+[data-version="2.3"] .e22.is-v21 .e22-actions {
+  z-index: 1;
+}
+
+[data-version="2.3"] .e22.is-v21 .v2-appbar:not(.is-snow) #e22Title {
+  opacity: 0;
+}
