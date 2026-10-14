@@ -211,6 +211,18 @@ async function claimCalendarDay3(day) {
   v3Claiming = false;
 }
 
+/* ---------- Уровень игрока ---------- */
+
+// опыт до следующего уровня — пока ровно 1000 на каждый уровень
+const V3_LEVEL = { level: 1, xp: 640, per: 1000 };
+
+function renderLevel3() {
+  const { level, xp, per } = V3_LEVEL;
+  document.getElementById('v3LevelFill').style.width = `${Math.min(1, xp / per) * 100}%`;
+  document.getElementById('v3LevelText').textContent = `${xp}/${per}`;
+  document.getElementById('v3LevelNext').textContent = level + 1;
+}
+
 /* ---------- Открытие экранов ---------- */
 
 function openScreen3(el) {
@@ -260,6 +272,7 @@ if (isApp3()) {
   document.querySelectorAll('.v3-screen .ev-scroll').forEach((sc) => sc.addEventListener('scroll', () => sc.classList.toggle('is-scrolled', sc.scrollTop > 2), { passive: true }));
 
   leagueScreen.querySelector('.v3-clock').outerHTML = CLOCK_SVG;
+  renderLevel3();
   renderLeagueEntry3();
   renderCalendarEntry3();
   setInterval(() => {

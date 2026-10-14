@@ -26,6 +26,9 @@ function storageSet(key, value) {
 function applyAvatar(src) {
   if (!src) return;
   profileAvatarEl.src = src;
+  // версия 3: аватар и в плашке уровня на главной
+  const lvlAvatar = document.getElementById('v3LevelAvatar');
+  if (lvlAvatar) lvlAvatar.src = src;
   profileAvatarEl.parentElement.classList.add('is-round');
   document.querySelectorAll('.pset-avatar').forEach((b) => b.classList.toggle('is-selected', b.dataset.avatar === src));
 }

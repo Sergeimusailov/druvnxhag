@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610142021"></script>
+  <script src="js/device-frame.js?v=202610142129"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610142021"></script>
-  <link rel="stylesheet" href="css/match.css?v=202610142021">
-  <link rel="stylesheet" href="css/v2.css?v=202610142021">
-  <link rel="stylesheet" href="css/profile.css?v=202610142021">
-  <link rel="stylesheet" href="css/tasks.css?v=202610142021">
-  <link rel="stylesheet" href="css/gifts.css?v=202610142021">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610142021">
-  <link rel="stylesheet" href="css/shop.css?v=202610142021">
-  <link rel="stylesheet" href="css/v22.css?v=202610142021">
-  <link rel="stylesheet" href="css/v3.css?v=202610142021">
-  <link rel="stylesheet" href="css/event.css?v=202610142021">
+  <script src="js/version.js?v=202610142129"></script>
+  <link rel="stylesheet" href="css/match.css?v=202610142129">
+  <link rel="stylesheet" href="css/v2.css?v=202610142129">
+  <link rel="stylesheet" href="css/profile.css?v=202610142129">
+  <link rel="stylesheet" href="css/tasks.css?v=202610142129">
+  <link rel="stylesheet" href="css/gifts.css?v=202610142129">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610142129">
+  <link rel="stylesheet" href="css/shop.css?v=202610142129">
+  <link rel="stylesheet" href="css/v22.css?v=202610142129">
+  <link rel="stylesheet" href="css/v3.css?v=202610142129">
+  <link rel="stylesheet" href="css/event.css?v=202610142129">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -39,7 +39,13 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.31752 20.4484C3.8556 19.9972 3.86634 19.2023 4.31752 18.7619L10.924 12.1447L4.31752 5.53822C3.86634 5.09779 3.8556 4.31361 4.31752 3.84095C4.77943 3.37904 5.56361 3.38978 6.01478 3.84095L12.6212 10.4474L19.2277 3.84095C19.6896 3.38978 20.4523 3.38978 20.9249 3.8517C21.3976 4.30287 21.3869 5.08705 20.9357 5.53822L14.3292 12.1447L20.9357 18.7619C21.3869 19.213 21.3869 19.9865 20.9249 20.4484C20.463 20.921 19.6896 20.9103 19.2277 20.4591L12.6212 13.8527L6.01478 20.4591C5.56361 20.9103 4.79017 20.9103 4.31752 20.4484Z" fill="currentColor"/></svg>
           </a>
           <span></span>
-          <button class="v2-icon-btn v2-glass" data-nav="profile" aria-label="Профиль" style="color: #e8e8e8">
+          <!-- версия 3: уровень игрока — вход в профиль -->
+          <button class="v3-level v3-only" data-nav="profile" aria-label="Профиль, уровень">
+            <span class="v3-level-avatar"><img id="v3LevelAvatar" src="assets/v2-avatar-square.png" alt=""></span>
+            <span class="v3-level-bar"><span class="v3-level-fill" id="v3LevelFill"></span><span class="v3-level-text" id="v3LevelText"></span></span>
+            <span class="v3-level-gem"><span id="v3LevelNext"></span></span>
+          </button>
+          <button class="v2-icon-btn v2-glass v2-only" data-nav="profile" aria-label="Профиль" style="color: #e8e8e8">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><mask id="ic-user-mask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path d="M3 19C3 15.6863 5.68629 13 9 13H15C18.3137 13 21 15.6863 21 19V22H3V19Z" fill="black"/><path opacity="0.35" fill-rule="evenodd" clip-rule="evenodd" d="M16.2231 2.95239C15.8135 3.73704 14.9922 4.27267 14.0458 4.27267H11.5913C10.2357 4.27267 9.13672 5.37161 9.13672 6.72722V10.6077C9.91476 11.2503 10.9125 11.6363 12.0004 11.6363C14.4856 11.6363 16.5004 9.62159 16.5004 7.13631V4.27267C16.5004 3.80289 16.4014 3.35622 16.2231 2.95239Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2228 2.95245C15.7152 1.80256 14.565 1 13.2273 1H7.5V7.13636C7.5 8.53377 8.13695 9.7824 9.13636 10.6078V6.72727C9.13636 5.37167 10.2353 4.27273 11.5909 4.27273H14.0455C14.9919 4.27273 15.8132 3.7371 16.2228 2.95245Z" fill="url(#ic-user-g0)"/></mask><g mask="url(#ic-user-mask)"><path d="M0 0H24V24H0V0Z" fill="currentColor"/></g><defs><linearGradient id="ic-user-g0" x1="10.5" y1="1" x2="10.5" y2="10.6078" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0.5"/></linearGradient></defs></svg>
           </button>
         </div>
@@ -615,17 +621,17 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610142021"></script>
-  <script src="js/v2.js?v=202610142021"></script>
-  <script src="js/profile.js?v=202610142021"></script>
-  <script src="js/tasks22.js?v=202610142021"></script>
-  <script src="js/tasks.js?v=202610142021"></script>
-  <script src="js/card-custom.js?v=202610142021"></script>
-  <script src="js/cards-v2.js?v=202610142021"></script>
-  <script src="js/shop.js?v=202610142021"></script>
-  <script src="js/gifts.js?v=202610142021"></script>
-  <script src="js/event.js?v=202610142021"></script>
-  <script src="js/events22.js?v=202610142021"></script>
-  <script src="js/v3.js?v=202610142021"></script>
+  <script src="js/cards.js?v=202610142129"></script>
+  <script src="js/v2.js?v=202610142129"></script>
+  <script src="js/profile.js?v=202610142129"></script>
+  <script src="js/tasks22.js?v=202610142129"></script>
+  <script src="js/tasks.js?v=202610142129"></script>
+  <script src="js/card-custom.js?v=202610142129"></script>
+  <script src="js/cards-v2.js?v=202610142129"></script>
+  <script src="js/shop.js?v=202610142129"></script>
+  <script src="js/gifts.js?v=202610142129"></script>
+  <script src="js/event.js?v=202610142129"></script>
+  <script src="js/events22.js?v=202610142129"></script>
+  <script src="js/v3.js?v=202610142129"></script>
 </body>
 </html>
