@@ -1,0 +1,350 @@
+/* Профиль v2 (Figma 15917:99965) */
+
+.v2-screen.v2-screen-profile {
+  /* таб-бар занимает нижние 82px — даём контенту ещё 40px воздуха над ним */
+  padding-bottom: 122px;
+}
+
+.pf-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 22px;
+  text-align: center;
+}
+
+/* аватар в белой рамке, за ним две рубашки карт веером */
+.pf-avatar-wrap {
+  position: relative;
+  width: 104px;
+  height: 104px;
+}
+
+.pf-cardback {
+  position: absolute;
+  top: 37px;
+  width: 69px;
+  height: 69px;
+}
+
+.pf-cardback-right {
+  left: 79px;
+}
+
+.pf-cardback-left {
+  right: 79px;
+  transform: scaleX(-1);
+}
+
+.pf-avatar {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* у аватара по умолчанию белая рамка нарисована в самой картинке,
+   у выбранных в настройках — добавляем её сами */
+.pf-avatar.is-round {
+  border: 4px solid #fff;
+  background: #2c2c2e;
+}
+
+.pf-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* круглые аватарки из настроек растягиваем, чтобы закрыть углы квадрата */
+.pf-avatar.is-round img {
+  transform: scale(1.42);
+}
+
+.pf-name {
+  margin-top: 26px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.pf-status {
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.pf-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 26px 0 24px;
+}
+
+.pf-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 80px;
+  color: #f6f7f8;
+}
+
+.pf-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pf-action:active .pf-action-icon {
+  transform: scale(0.9);
+}
+
+.pf-action-label {
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.pf-card {
+  margin: 8px 16px 0;
+  padding: 16px 20px 12px;
+  border-radius: 24px;
+  background: #2c2c2e;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  color: #f6f7f8;
+}
+
+.pf-card-title {
+  display: block;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #f6f7f8;
+}
+
+.pf-card > .pf-card-title {
+  margin-bottom: 12px;
+}
+
+.pf-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  margin: 0 -4px;
+  padding: 0 4px;
+  font-size: 17px;
+  letter-spacing: -0.41px;
+}
+
+.pf-cell b {
+  font-weight: 400;
+  color: #ffdd2d;
+}
+
+.pf-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding-top: 12px;
+}
+
+.pf-card-row > .pf-card-title {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.pf-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* iOS-переключатель 51×31 */
+.pf-switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.pf-switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.pf-switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  background: rgba(120, 120, 128, 0.32);
+  transition: background 0.2s ease;
+}
+
+.pf-switch span::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+.pf-switch input:checked + span {
+  background: #34c759;
+}
+
+.pf-switch input:checked + span::after {
+  transform: translateX(20px);
+}
+
+.pf-toast {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 45;
+  padding: 10px 16px;
+  border-radius: 100px;
+  background: #42cf9b;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, -90px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+}
+
+.pf-toast.is-visible {
+  transform: translate(-50%, 0);
+}
+
+/* Настройки профиля — поверх разделов и таб-бара, въезжают справа */
+
+.pset {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1),
+    visibility 0s linear 0.45s;
+}
+
+.pset.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pset-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 40px;
+  scrollbar-width: none;
+}
+
+.pset-scroll > * {
+  flex-shrink: 0;
+}
+
+.pset-chip-row {
+  justify-content: flex-start;
+  padding: 20px 16px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pset-avatars {
+  display: grid;
+  grid-template-columns: repeat(3, 95px);
+  justify-content: center;
+  gap: 19px 24px;
+  padding: 0 16px 16px;
+}
+
+.pset-avatar {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), box-shadow 0.2s ease;
+}
+
+.pset-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pset-avatar:active {
+  transform: scale(0.92);
+}
+
+.pset-avatar.is-selected {
+  box-shadow: 0 0 0 3px #1c1c1e, 0 0 0 6px #428bf9;
+}
+
+.pset-stub {
+  padding: 60px 40px;
+}
+
+/* Переключатель версий прототипа */
+
+.pf-version {
+  padding-bottom: 16px;
+}
+
+.pf-version-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pf-version-note {
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+  text-align: right;
+}
+
+.pf-version .v2-segmented {
+  display: grid;
+}
+
+.pf-version[hidden] {
+  display: none;
+}

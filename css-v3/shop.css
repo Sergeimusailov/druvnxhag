@@ -1,0 +1,415 @@
+/* Магазин v2: лутбоксы (прототип, без макета) */
+
+.shop-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 24px 20px;
+  text-align: center;
+}
+
+.shop-balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px 0 8px;
+  border-radius: 100px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffdd2d;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-title {
+  margin-top: 16px;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.shop-sub {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 18px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.shop-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.shop-box {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 16px 16px 16px 8px;
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 90% at 0% 50%, color-mix(in srgb, var(--lb-color) 45%, transparent), transparent 60%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 30%, transparent);
+  overflow: hidden;
+}
+
+.shop-box-art {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  width: 128px;
+}
+
+.shop-box-art .lb-svg {
+  width: 128px;
+  height: auto;
+  filter: drop-shadow(0 6px 16px color-mix(in srgb, var(--lb-color) 60%, transparent));
+  animation: shopBoxBob 3s ease-in-out infinite;
+}
+
+.shop-box-blue .lb-svg { animation-delay: -1s; }
+.shop-box-purple .lb-svg { animation-delay: -2s; }
+
+@keyframes shopBoxBob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+
+.shop-box-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shop-box-name {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.shop-box-count {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.shop-chances {
+  margin: 10px 0 12px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 20px;
+  color: rgba(246, 247, 248, 0.85);
+}
+
+.shop-chances li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shop-chances b {
+  margin-left: auto;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.shop-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.shop-buy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  background: #ffdd2d;
+  color: #333;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.shop-buy:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(246, 247, 248, 0.4);
+}
+
+.shop-buy:disabled img {
+  opacity: 0.5;
+}
+
+.shop-inventory {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 20px 16px 8px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.shop-inventory b {
+  color: #f6f7f8;
+}
+
+.shop-demo {
+  align-self: center;
+  margin: 4px 0 16px;
+  padding: 8px 14px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+/* Экран открытия лутбокса — по мотивам экрана подарка */
+
+.lb-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lb-overlay.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.lb-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 45% at 50% 42%, color-mix(in srgb, var(--lb-color) 55%, transparent), transparent 70%),
+    #050507;
+}
+
+/* лучи в цвете бокса медленно вращаются */
+.lb-rays {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 760px;
+  height: 760px;
+  margin: -380px 0 0 -380px;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--lb-light) 22%, transparent) 0deg 8deg, transparent 8deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  animation: lbRays 18s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes lbRays {
+  to { transform: rotate(360deg); }
+}
+
+.lb-stage {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 220px;
+  height: 200px;
+  margin: -100px 0 0 -110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lb-box .lb-svg {
+  width: 220px;
+  height: auto;
+  filter: drop-shadow(0 10px 30px color-mix(in srgb, var(--lb-color) 70%, transparent));
+}
+
+.lb-svg-lid {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.lb-box.is-idle {
+  animation: lbIdle 1.2s ease-in-out infinite;
+}
+
+@keyframes lbIdle {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.lb-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, var(--lb-light) 40%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lb-hint {
+  position: absolute;
+  top: calc(42% + 120px);
+  font-size: 15px;
+  color: rgba(246, 247, 248, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.lb-hint.is-visible {
+  opacity: 1;
+}
+
+.lb-title {
+  position: relative;
+  margin-top: 80px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f6f7f8;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.lb-title.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.lb-rewards {
+  position: absolute;
+  top: 160px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* предмет: рубашка → переворот на лицевую сторону */
+.lb-reward {
+  width: 160px;
+  height: 200px;
+  perspective: 800px;
+}
+
+.lb-reward-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.34, 1.32, 0.42, 1);
+}
+
+.lb-reward.is-flipped .lb-reward-inner {
+  transform: rotateY(180deg);
+}
+
+.lb-reward-back,
+.lb-reward-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.lb-reward-back {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, transparent 10px 20px),
+    linear-gradient(160deg, var(--lb-light), var(--lb-color));
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+.lb-reward-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: #1c1c1e;
+  box-shadow: 0 0 0 2px var(--glow), 0 0 24px color-mix(in srgb, var(--glow) 70%, transparent);
+  transform: rotateY(180deg);
+  text-align: center;
+}
+
+.lb-card {
+  width: 104px;
+}
+
+.lb-reward-img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.lb-reward-name {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.lb-reward-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* превью косметической рамки */
+.lb-frame {
+  width: 88px;
+  height: 88px;
+  padding: 5px;
+  border-radius: 22px;
+  background: conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9);
+}
+
+.lb-frame span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 17px;
+  background: #2c2c2e url('../assets/v2-avatar-square.png') center / cover;
+}
+
+.lb-claim {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: calc(40px + env(safe-area-inset-bottom));
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+}
+
+.lb-claim.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* рамка выпавшей карты — в цвет её редкости */
+.lb-reward .card.lb-card {
+  color: var(--glow);
+}

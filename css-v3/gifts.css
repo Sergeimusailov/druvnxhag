@@ -1,0 +1,113 @@
+/* Раздел «Призы» (Figma 15803:39165) */
+
+.gifts-seg-wrap {
+  padding-bottom: 38px;
+}
+
+/* «Можно выиграть» — пока драфт */
+
+.gifts-draft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 40px 40px;
+  text-align: center;
+}
+
+.gifts-draft-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  animation: giftsDraftFloat 3s ease-in-out infinite;
+}
+
+@keyframes giftsDraftFloat {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+/* «Уже у вас» — призы (tmCombo, Figma 15908:41094) */
+
+.offers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px 24px;
+}
+
+.prize {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 112px;
+  padding: 16px 100px 18px 20px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.prize:active {
+  transform: scale(0.97);
+}
+
+.prize-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #fff;
+}
+
+.prize.is-expired .prize-badge {
+  padding: 0 6px;
+}
+
+.prize-title {
+  position: relative;
+  z-index: 1;
+  width: 240px;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.prize-img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 120px;
+  height: 90px;
+  pointer-events: none;
+}
+
+/* истёкший приз — приглушено содержимое, фон карточки остаётся плотным,
+   чтобы сквозь него не просвечивал фиолетовый фон экрана */
+.prize.is-expired > * {
+  opacity: 0.5;
+}
+
+/* Появление карточек при входе в раздел: подъезжают снизу из фейда лесенкой */
+
+.offers.is-entering .offer {
+  animation: offerIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+
+@keyframes offerIn {
+  from { opacity: 0; transform: translateY(40px); }
+}
