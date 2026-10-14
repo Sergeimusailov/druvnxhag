@@ -22,6 +22,8 @@
     const el = document.createElement('div');
     el.className = `card owner-you${extra}`;
     el.innerHTML = cardInnerHTML(card);
+    // версия 3: сохранённая кастомизация (вариация, рамка, эффект)
+    if (typeof applyCardCustom === 'function') applyCardCustom(el, card.name);
     return el;
   }
 
@@ -54,6 +56,8 @@
   function openCard(card) {
     sheetTitle.textContent = card.name;
     sheetCard.innerHTML = cardInnerHTML(card);
+    if (typeof applyCardCustom === 'function') applyCardCustom(sheetCard, card.name);
+    sheetCard.dataset.card = card.name;
     sheetHint.textContent = '';
     sheetBtn.disabled = false;
     sheetBtn.classList.remove('is-remove');
@@ -88,6 +92,16 @@
   });
   document.getElementById('cardSheetClose').addEventListener('click', closeCard);
   backdrop.addEventListener('click', closeCard);
+
+  // версия 3: кнопка-карандаш в шторке ведёт в кастомизацию карты
+  const editBtn = document.getElementById('cardSheetEdit');
+  if (editBtn) {
+    editBtn.addEventListener('click', () => {
+      const card = byName(sheetCard.dataset.card);
+      closeCard();
+      if (card) openCardCustom(card, render);
+    });
+  }
 
   render();
 })();

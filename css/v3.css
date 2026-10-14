@@ -584,3 +584,318 @@
 [data-app="3"] .v2-only {
   display: none !important;
 }
+
+/* ---------- Кастомизация карты (Figma 15959:36357) ---------- */
+
+[data-app="3"] .pset.cc.v3-only {
+  display: block !important;
+}
+
+/* шторка карты: «Добавить в колоду» + квадратная кнопка-карандаш */
+.card-sheet-actions {
+  display: flex;
+  align-self: stretch;
+  gap: 8px;
+  margin: 24px 16px 0;
+}
+
+.card-sheet-actions .card-sheet-btn {
+  flex: 1;
+  margin: 0;
+}
+
+[data-app="3"] .card-sheet-edit.v3-only {
+  display: flex !important;
+}
+
+.card-sheet-edit {
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #428bf9;
+  transition: transform 0.15s ease;
+}
+
+.card-sheet-edit:active {
+  transform: scale(0.92);
+}
+
+.cc .pset-scroll {
+  padding-bottom: 110px;
+}
+
+.cc-title {
+  margin-top: 8px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+  color: #f6f7f8;
+}
+
+.cc-preview {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 8px;
+}
+
+.cc-card {
+  width: 220px;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.cc-card .num-top,
+.cc-card .num-bottom,
+.cc-card .num-left,
+.cc-card .num-right {
+  font-size: 30px;
+}
+
+.cc-chip-row {
+  justify-content: center;
+  padding-top: 16px;
+}
+
+/* «Покупки»: круг с превью + жёлтая кнопка «Купить за 5 монет» */
+.cc-shop {
+  display: grid;
+  grid-template-columns: repeat(2, 142px);
+  justify-content: center;
+  gap: 24px 25px;
+  padding: 8px 16px 16px;
+}
+
+.cc-offer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cc-offer-circle {
+  width: 100px;
+  height: 100px;
+  padding: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.cc-offer-circle .card {
+  border-radius: 12px;
+}
+
+.cc-offer-name {
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.cc-buy {
+  width: 142px;
+  height: 30px;
+  margin-top: 8px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cc-buy.is-owned {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* «Вариации», «Рамки», «Эффекты» — сетка вариантов */
+.cc-variants {
+  display: grid;
+  grid-template-columns: repeat(2, 145px);
+  justify-content: center;
+  gap: 20px;
+  padding: 8px 16px 16px;
+}
+
+.cc-frames {
+  display: grid;
+  grid-template-columns: repeat(3, 82px);
+  justify-content: center;
+  gap: 24px;
+  padding: 8px 16px 16px;
+}
+
+.cc-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.cc-item:active {
+  transform: scale(0.94);
+}
+
+.cc-item > .card,
+.cc-frame-swatch,
+.cc-fx-swatch {
+  border-radius: 16px;
+  transition: box-shadow 0.2s ease;
+}
+
+.cc-item.is-selected > .card,
+.cc-item.is-selected .cc-frame-swatch,
+.cc-item.is-selected .cc-fx-swatch {
+  box-shadow: 0 0 0 3px #1c1c1e, 0 0 0 6px #428bf9;
+}
+
+.cc-item.is-locked > .card,
+.cc-item.is-locked .cc-frame-swatch,
+.cc-item.is-locked .cc-fx-swatch {
+  opacity: 0.35;
+}
+
+.cc-item-name {
+  font-size: 12px;
+  color: rgba(246, 247, 248, 0.7);
+  white-space: nowrap;
+}
+
+/* рамка — квадрат с обводкой нужного цвета, как в макете */
+.cc-frame-swatch {
+  display: block;
+  width: 82px;
+  height: 82px;
+  border: 6px solid var(--c);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cc-fx-swatch {
+  display: block;
+  width: 82px;
+  height: 82px;
+}
+
+.cc-fx-swatch .card {
+  border-radius: 16px;
+}
+
+/* кнопки внизу: «Сохранить» + сброс */
+.cc-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 16px 28px;
+  background: linear-gradient(rgba(11, 11, 13, 0), rgba(11, 11, 13, 0.9) 45%);
+}
+
+.cc-save {
+  width: 200px;
+  height: 44px;
+}
+
+.cc-reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #fff;
+  color: #1c1c1e;
+}
+
+/* ---------- Эффекты на карте ---------- */
+
+.cc-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card.cc-fx-glow {
+  box-shadow: 0 0 0 2px rgba(255, 221, 45, 0.6), 0 0 18px rgba(255, 200, 60, 0.7);
+  animation: ccGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes ccGlow {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255, 221, 45, 0.5), 0 0 12px rgba(255, 200, 60, 0.5); }
+  50% { box-shadow: 0 0 0 2px rgba(255, 221, 45, 0.9), 0 0 22px rgba(255, 200, 60, 0.9); }
+}
+
+.cc-fx-sparks .cc-fx i,
+.cc-fx-snow .cc-fx i {
+  position: absolute;
+  bottom: -6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffd36b;
+  box-shadow: 0 0 6px 2px rgba(255, 190, 80, 0.8);
+  opacity: 0;
+  transform: scale(var(--s));
+  animation: ccSpark 2.4s linear infinite;
+  animation-delay: var(--d);
+}
+
+.cc-fx-snow .cc-fx i {
+  top: -6px;
+  bottom: auto;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+  animation-name: ccSnow;
+}
+
+@keyframes ccSpark {
+  0% { transform: translateY(0) scale(var(--s)); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-260%) scale(var(--s)); opacity: 0; }
+}
+
+@keyframes ccSnow {
+  0% { transform: translate(0, 0) scale(var(--s)); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(6px, 2600%) scale(var(--s)); opacity: 0; }
+}
+
+.cc-fx-sparks .cc-fx i,
+.cc-fx-snow .cc-fx i {
+  --h: 1;
+}
+
+.cc-fx-shine .cc-fx::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-150%) skewX(-15deg);
+  animation: ccShine 2.6s ease-in-out infinite;
+}
+
+@keyframes ccShine {
+  0%, 30% { transform: translateX(-150%) skewX(-15deg); }
+  70%, 100% { transform: translateX(350%) skewX(-15deg); }
+}
+
+.card.cc-fx-pulse {
+  animation: ccPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes ccPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
