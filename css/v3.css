@@ -900,22 +900,18 @@
   50% { transform: scale(1.04); }
 }
 
-/* ---------- Уровень игрока на главной (вход в профиль) ---------- */
-
-[data-app="3"] .v2-screen[data-screen="game"] > .v2-appbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ---------- Уровень игрока на главной (вход в профиль) ----------
+   под системной шапкой слева: в шапку iOS 26 игровое не помещаем */
 
 [data-app="3"] .v3-level.v3-only {
   display: flex !important;
 }
 
 .v3-level {
-  position: relative;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 16px;
   align-items: center;
-  height: 44px;
   transition: transform 0.15s ease;
 }
 
@@ -923,16 +919,16 @@
   transform: scale(0.96);
 }
 
-/* аватар — как в профиле, в круге с обводкой, слева поверх полоски */
+/* аватар — как в профиле: квадрат со скруглёнными углами и белой рамкой */
 .v3-level-avatar {
   position: relative;
   z-index: 2;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   overflow: hidden;
   background: #2c2c2e;
-  box-shadow: 0 0 0 2.5px #fff, 0 3px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 0 3px #fff, 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 
 .v3-level-avatar img {
@@ -940,17 +936,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 14px;
+  border: 3px solid #fff;
 }
 
-/* полоса опыта: тёмная подложка в фиолетовой обводке, зелёная заливка */
+/* полоса выезжает из-под аватара и заезжает под ромб уровня */
 .v3-level-bar {
   position: relative;
   z-index: 1;
-  width: 132px;
-  height: 26px;
-  margin: 0 -14px 0 -10px;
-  padding: 3px 16px 3px 13px;
-  border-radius: 0 100px 100px 0;
+  width: 168px;
+  height: 30px;
+  margin: 0 -20px 0 -18px;
+  border-radius: 100px;
   background: linear-gradient(180deg, #8a4bff, #5a24c9);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
@@ -958,17 +955,17 @@
 .v3-level-bar::before {
   content: '';
   position: absolute;
-  inset: 3px 16px 3px 13px;
+  inset: 4px 20px 4px 18px;
   border-radius: 100px;
   background: #2a1460;
 }
 
 .v3-level-fill {
   position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 13px;
-  max-width: calc(100% - 29px);
+  top: 4px;
+  bottom: 4px;
+  left: 18px;
+  max-width: calc(100% - 38px);
   border-radius: 100px;
   background: linear-gradient(180deg, #b6f04a, #5fbf1c);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
@@ -976,11 +973,11 @@
 
 .v3-level-text {
   position: absolute;
-  inset: 0 16px 0 13px;
+  inset: 0 20px 0 18px;
   z-index: 1;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
-  line-height: 26px;
+  line-height: 30px;
   text-align: center;
   color: #fff;
   -webkit-text-stroke: 3px #2a1460;
@@ -988,30 +985,30 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ромб со следующим уровнем — справа */
+/* ромб со следующим уровнем — поверх конца полосы */
 .v3-level-gem {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
 }
 
 .v3-level-gem::before {
   content: '';
   position: absolute;
-  inset: 4px;
-  border-radius: 6px;
+  inset: 6px;
+  border-radius: 7px;
   background: linear-gradient(135deg, #f1e8ff, #b89cf5);
-  box-shadow: 0 0 0 2px #fff, 0 3px 6px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2.5px #fff, 0 3px 6px rgba(0, 0, 0, 0.35);
   transform: rotate(45deg);
 }
 
 .v3-level-gem span {
   position: relative;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #5a24c9;
 }
