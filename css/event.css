@@ -101,17 +101,17 @@
   z-index: 35;
   overflow: hidden;
   background: #1c1c1e;
-  transform: translateX(100%);
+  opacity: 0;
   visibility: hidden;
   transition:
-    transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1),
-    visibility 0s linear 0.45s;
+    opacity 0.25s ease,
+    visibility 0s linear 0.25s;
 }
 
 .ev.is-open {
-  transform: translateX(0);
+  opacity: 1;
   visibility: visible;
-  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+  transition: opacity 0.25s ease;
 }
 
 .ev-scroll {

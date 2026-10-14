@@ -80,7 +80,7 @@ a {
 }
 
 .v2-screen.is-sliding {
-  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+  transition: opacity 0.25s ease;
 }
 
 .v2-screen::-webkit-scrollbar {

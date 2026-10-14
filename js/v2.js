@@ -47,7 +47,14 @@ function createChipTabs(rowEl, trackEl, onChange) {
     } else {
       trackEl.style.transition = 'none';
     }
+    // панели вкладок сменяются фейдом, без горизонтального сдвига
+    trackEl.style.transition = 'none';
     trackEl.style.transform = `translateX(-${i * 100}%)`;
+    if (animate) {
+      trackEl.getBoundingClientRect();
+      trackEl.style.transition = '';
+      panels[i].animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: 'ease-out' });
+    }
     fitHeight();
     if (!animate) {
       trackEl.getBoundingClientRect();
@@ -122,31 +129,30 @@ function showScreen(screen, animate = true) {
     }
   });
 
+  // переходы между разделами — фейдом: разделы будут жить на разных роутах,
+  // и общий горизонтальный слайдер между ними не сделать
+  toEl.style.transform = '';
   if (!animate || !fromEl) {
     toEl.classList.remove('is-sliding');
-    toEl.style.transform = 'translateX(0)';
+    toEl.style.opacity = '1';
     toEl.style.visibility = 'visible';
     if (fromEl) fromEl.style.visibility = 'hidden';
   } else {
-    const dir = SCREENS.indexOf(screen) > SCREENS.indexOf(prev) ? 1 : -1;
-    // a screen that is still sliding out (quick back-and-forth taps) keeps its
-    // current offset and just reverses, instead of jumping to the edge first
-    const inFlight = toEl.style.visibility === 'visible';
-    if (!inFlight) {
+    if (toEl.style.visibility !== 'visible') {
       toEl.classList.remove('is-sliding');
-      toEl.style.transform = `translateX(${dir * 100}%)`;
+      toEl.style.opacity = '0';
       toEl.style.visibility = 'visible';
       toEl.getBoundingClientRect();
     }
     toEl.classList.add('is-sliding');
     fromEl.classList.add('is-sliding');
-    toEl.style.transform = 'translateX(0)';
-    fromEl.style.transform = `translateX(${-dir * 100}%)`;
+    toEl.style.opacity = '1';
+    fromEl.style.opacity = '0';
     slideCleanupTimer = setTimeout(() => {
       fromEl.style.visibility = 'hidden';
       fromEl.classList.remove('is-sliding');
       toEl.classList.remove('is-sliding');
-    }, 480);
+    }, 280);
   }
 
   history.replaceState(null, '', screen === 'game' ? location.pathname + location.search : `#${screen}`);
