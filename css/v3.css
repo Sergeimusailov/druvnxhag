@@ -1020,3 +1020,17 @@
   flex-direction: column;
   gap: 14px;
 }
+
+/* полоса начинается под аватаром без скругления слева, тёмная часть уходит
+   под ромб; видимая часть — между краем аватара (18px) и ромбом (20px) */
+.v3-level-bar::before {
+  inset: 4px 4px 4px 0;
+  border-radius: 0 100px 100px 0;
+}
+
+.v3-level-fill {
+  left: 0;
+  width: calc(18px + (100% - 38px) * var(--p, 0)) !important;
+  max-width: none;
+  border-radius: 0 100px 100px 0;
+}

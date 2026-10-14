@@ -218,7 +218,7 @@ const V3_LEVEL = { level: 1, xp: 640, per: 1000 };
 
 function renderLevel3() {
   const { level, xp, per } = V3_LEVEL;
-  document.getElementById('v3LevelFill').style.width = `${Math.min(1, xp / per) * 100}%`;
+  document.getElementById('v3LevelFill').style.setProperty('--p', Math.min(1, xp / per));
   document.getElementById('v3LevelText').textContent = `${xp}/${per}`;
   document.getElementById('v3LevelNext').textContent = level + 1;
 }
