@@ -1376,3 +1376,10 @@
   justify-content: center;
   padding: 240px 36px 190px;
 }
+
+/* навигация версии 3: «Главная» по центру — Задания, Карты, Главная, Магазин, Призы */
+[data-app="3"] .v2-tab[data-nav="tasks"] { order: 1; }
+[data-app="3"] .v2-tab[data-nav="cards"] { order: 2; }
+[data-app="3"] .v2-tab[data-nav="game"] { order: 3; }
+[data-app="3"] .v2-tab[data-nav="shop"] { order: 4; }
+[data-app="3"] .v2-tab[data-nav="gifts"] { order: 5; }
