@@ -1775,3 +1775,18 @@
   background: #42cf9b;
   color: #fff;
 }
+
+/* магазин: без описания шансов у лутбоксов */
+[data-app="3"] .shop-chances {
+  display: none;
+}
+
+[data-app="3"] .shop-buy {
+  margin-top: 12px;
+}
+
+[data-app="3"] .shop-box-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
