@@ -1682,3 +1682,7 @@
 .pf-level-gift {
   animation: none;
 }
+
+[data-app="3"] .v2-icon-btn.v3-only {
+  display: flex !important;
+}
