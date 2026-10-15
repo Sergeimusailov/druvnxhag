@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610150940"></script>
+  <script src="js/device-frame.js?v=202610150943"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610150940"></script>
+  <script src="js/version.js?v=202610150943"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610150940">
-  <link rel="stylesheet" href="css/v2.css?v=202610150940">
-  <link rel="stylesheet" href="css/profile.css?v=202610150940">
-  <link rel="stylesheet" href="css/tasks.css?v=202610150940">
-  <link rel="stylesheet" href="css/gifts.css?v=202610150940">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610150940">
-  <link rel="stylesheet" href="css/shop.css?v=202610150940">
-  <link rel="stylesheet" href="css/v22.css?v=202610150940">
-  <link rel="stylesheet" href="css/v3.css?v=202610150940">
-  <link rel="stylesheet" href="css/event.css?v=202610150940">
+  <link rel="stylesheet" href="css/match.css?v=202610150943">
+  <link rel="stylesheet" href="css/v2.css?v=202610150943">
+  <link rel="stylesheet" href="css/profile.css?v=202610150943">
+  <link rel="stylesheet" href="css/tasks.css?v=202610150943">
+  <link rel="stylesheet" href="css/gifts.css?v=202610150943">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610150943">
+  <link rel="stylesheet" href="css/shop.css?v=202610150943">
+  <link rel="stylesheet" href="css/v22.css?v=202610150943">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610150943">
+  <link rel="stylesheet" href="css/v3.css?v=202610150943">
+  <link rel="stylesheet" href="css/event.css?v=202610150943">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -180,6 +181,8 @@
         </div>
 
         <div class="shop-boxes" id="shopBoxes"></div>
+        <!-- версия 3: рекламный баннер под сундуками -->
+        <div class="t-ads-slot shop-ads v3-only" data-t-ads></div>
 
         <div class="shop-inventory" id="shopInventory"></div>
         <button class="shop-demo" id="shopDemoCoins">Демо: начислить 500 монет</button>
@@ -246,6 +249,8 @@
                   <p class="prize-title">SOKOLOV Beauty: 15%</p>
                   <img class="prize-img" src="assets/v2-prize-gift.png" alt="">
                 </article>
+                <!-- версия 3: рекламный баннер -->
+                <div class="t-ads-slot gifts-ads v3-only" data-t-ads></div>
                 <article class="offer prize">
                   <span class="prize-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>до 25 декабря</span>
                   <p class="prize-title">SOKOLOV Beauty:<br>скидка 15% скидка 15% скидка 15%</p>
@@ -689,17 +694,18 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610150940"></script>
-  <script src="js/v2.js?v=202610150940"></script>
-  <script src="js/profile.js?v=202610150940"></script>
-  <script src="js/tasks22.js?v=202610150940"></script>
-  <script src="js/tasks.js?v=202610150940"></script>
-  <script src="js/card-custom.js?v=202610150940"></script>
-  <script src="js/cards-v2.js?v=202610150940"></script>
-  <script src="js/shop.js?v=202610150940"></script>
-  <script src="js/gifts.js?v=202610150940"></script>
-  <script src="js/event.js?v=202610150940"></script>
-  <script src="js/events22.js?v=202610150940"></script>
-  <script src="js/v3.js?v=202610150940"></script>
+  <script src="js/cards.js?v=202610150943"></script>
+  <script src="js/v2.js?v=202610150943"></script>
+  <script src="js/profile.js?v=202610150943"></script>
+  <script src="js/tasks22.js?v=202610150943"></script>
+  <script src="js/tasks.js?v=202610150943"></script>
+  <script src="js/card-custom.js?v=202610150943"></script>
+  <script src="js/cards-v2.js?v=202610150943"></script>
+  <script src="js/shop.js?v=202610150943"></script>
+  <script src="js/gifts.js?v=202610150943"></script>
+  <script src="js/event.js?v=202610150943"></script>
+  <script src="js/events22.js?v=202610150943"></script>
+  <script src="js/t-ads.js?v=202610150943"></script>
+  <script src="js/v3.js?v=202610150943"></script>
 </body>
 </html>

@@ -267,6 +267,9 @@ if (isApp3()) {
     renderCalendar3();
     openScreen3(calScreen);
   });
+  // рекламный баннер t-ads во всех слотах (магазин, призы)
+  document.querySelectorAll('[data-t-ads]').forEach((el) => { el.innerHTML = tAdsHTML(); });
+
   document.getElementById('v3NyEntry').addEventListener('click', () => openNyFromHome());
   document.getElementById('v3FriendBtn').addEventListener('click', () => openScreen3(document.getElementById('v3FriendScreen')));
   // «Скопировать код» — в буфер, кнопка на секунду пишет «Код скопирован»

@@ -1790,3 +1790,17 @@
   flex-direction: column;
   justify-content: center;
 }
+
+/* ---------- t-ads в магазине и призах ---------- */
+
+[data-app="3"] .t-ads-slot.v3-only {
+  display: block !important;
+}
+
+.shop-ads {
+  margin: 16px 16px 0;
+}
+
+.gifts-ads {
+  grid-column: 1 / -1;
+}
