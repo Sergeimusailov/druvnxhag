@@ -84,7 +84,10 @@
           <div class="m3-lvl-rows" id="m3LvlRows"></div>
         </div>
       </div>
-      <button class="m3-cta" id="m3Cta"></button>
+      <div class="m3-actions">
+        <button class="m3-cta" id="m3Cta"></button>
+        <a class="m3-home" href="${HOME}" aria-label="На главную"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3.5 11.2 12 4l8.5 7.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9a1 1 0 0 0 1 1h3.5v-5.5h3V20H17a1 1 0 0 0 1-1v-9" fill="currentColor"/></svg></a>
+      </div>
     </section>
 
     <section class="m3-screen m3-up" id="m3LevelUp">

@@ -471,3 +471,35 @@
   font-size: 13px;
   cursor: pointer;
 }
+
+/* жёлтая кнопка + квадратная «домой» справа */
+.m3-actions {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-self: stretch;
+  margin: 40px 8px 0;
+}
+
+.m3-actions .m3-cta {
+  flex: 1;
+  margin: 0;
+}
+
+.m3-home {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transition: transform 0.15s ease;
+}
+
+.m3-home:active {
+  transform: scale(0.94);
+}
