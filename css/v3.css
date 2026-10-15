@@ -1651,3 +1651,34 @@
   font-size: 13px;
   color: rgba(246, 247, 248, 0.7);
 }
+
+/* ---------- Профиль: квадратные аватарки, отступ, статичный сундук ---------- */
+
+[data-app="3"] .pset-avatars {
+  grid-template-columns: repeat(3, 99px);
+  gap: 24px;
+  padding-top: 8px;
+}
+
+[data-app="3"] .pset-avatar {
+  width: 99px;
+  height: 99px;
+  border-radius: 16px;
+}
+
+[data-app="3"] .pset-avatar img {
+  border-radius: 16px;
+}
+
+/* квадратные аватарки не растягиваем (круглые в версии 2 — растягивали) */
+[data-app="3"] .pf-avatar.is-round img {
+  transform: none;
+}
+
+[data-app="3"] .pf-level.v3-only {
+  margin-top: 28px;
+}
+
+.pf-level-gift {
+  animation: none;
+}

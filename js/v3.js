@@ -296,6 +296,14 @@ if (isApp3()) {
   document.addEventListener('click', () => tip.classList.remove('is-open'));
   document.addEventListener('v2:screen', () => tip.classList.remove('is-open'));
 
+  // профиль: квадратные аватарки из макета (15997:61577) вместо круглых
+  const avatarsEl = document.getElementById('psetAvatars');
+  avatarsEl.innerHTML = Array.from({ length: 16 }, (_, i) => {
+    const src = `assets/avatars-sq/sq-${String(i + 1).padStart(2, '0')}.png`;
+    return `<button class="pset-avatar" data-avatar="${src}"><img src="${src}" alt="Аватар ${i + 1}"></button>`;
+  }).join('');
+  applyAvatar(document.getElementById('profileAvatarImg').getAttribute('src'));
+
   // профиль: сундук в конце полосы уровня — что дадут за следующий уровень
   // (та же шторка наград, что у сундуков в заданиях)
   document.getElementById('pfLevelGift').addEventListener('click', () => openSheet());
