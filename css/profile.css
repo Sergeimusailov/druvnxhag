@@ -348,3 +348,40 @@
 .pf-version[hidden] {
   display: none;
 }
+
+/* Настройки профиля (и кастомизация карты): шапка и чипы закреплены при
+   прокрутке, под ними — размытие, как у шапок разделов */
+.pset-scroll > .v2-appbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pset-scroll > .pset-chip-row {
+  position: sticky;
+  top: 70px;
+  /* выше размытия шапки, которое тянется под чипы */
+  z-index: 11;
+}
+
+.pset-scroll > .v2-appbar::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% + 100px);
+  background: linear-gradient(rgba(12, 10, 24, 0.9), rgba(12, 10, 24, 0.75) 75%, rgba(12, 10, 24, 0));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(#000 82%, transparent);
+  mask-image: linear-gradient(#000 82%, transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.pset-scroll.is-scrolled > .v2-appbar::before {
+  opacity: 1;
+}

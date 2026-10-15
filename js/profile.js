@@ -96,3 +96,7 @@ createChipTabs(versionRow, versionTrack, (tab) => {
     location.reload();
   }, 380);
 });
+
+// настройки профиля: при прокрутке под закреплённой шапкой появляется размытие
+const psetScrollEl = profileSettingsEl.querySelector('.pset-scroll');
+psetScrollEl.addEventListener('scroll', () => psetScrollEl.classList.toggle('is-scrolled', psetScrollEl.scrollTop > 2), { passive: true });
