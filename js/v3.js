@@ -296,6 +296,61 @@ if (isApp3()) {
   document.addEventListener('click', () => tip.classList.remove('is-open'));
   document.addEventListener('v2:screen', () => tip.classList.remove('is-open'));
 
+  // профиль: сундук в конце полосы уровня — что дадут за следующий уровень
+  // (та же шторка наград, что у сундуков в заданиях)
+  document.getElementById('pfLevelGift').addEventListener('click', () => openSheet());
+
+  // профиль: рамки аватара и рубашки колоды (вместо заглушек в настройках)
+  const PF_FRAMES = [
+    { id: 'white', name: 'Белая', css: '#fff' },
+    { id: 'gold', name: 'Золото', css: 'linear-gradient(135deg, #fff2a8, #f5b400 50%, #c27a00)' },
+    { id: 'rainbow', name: 'Радуга', css: 'conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9)' },
+    { id: 'ice', name: 'Лёд', css: 'linear-gradient(135deg, #e6f6ff, #7fd4ff 50%, #3f8cff)' },
+    { id: 'fire', name: 'Огонь', css: 'linear-gradient(135deg, #ffe066, #ff6a1a 55%, #c2161b)' },
+    { id: 'violet', name: 'Фиолет', css: 'linear-gradient(135deg, #e3d4ff, #8c5cff 55%, #4b1fb0)' },
+    { id: 'mint', name: 'Мята', css: 'linear-gradient(135deg, #d6ffef, #2fd18f 55%, #0f7a52)' },
+    { id: 'dark', name: 'Тёмная', css: '#2c2c2e' },
+    { id: 'rose', name: 'Роза', css: 'linear-gradient(135deg, #ffe0ea, #ff5c8a 55%, #b0124a)' },
+  ];
+  const PF_BACKS = [
+    { id: 'base', name: 'Классика', filter: '' },
+    { id: 'blue', name: 'Синяя', filter: 'sepia(1) saturate(4) hue-rotate(180deg) brightness(0.9)' },
+    { id: 'violet', name: 'Фиолетовая', filter: 'sepia(1) saturate(4) hue-rotate(220deg) brightness(0.9)' },
+    { id: 'gold', name: 'Золотая', filter: 'sepia(1) saturate(5) hue-rotate(5deg) brightness(1.05)' },
+    { id: 'green', name: 'Зелёная', filter: 'sepia(1) saturate(4) hue-rotate(80deg) brightness(0.9)' },
+    { id: 'red', name: 'Красная', filter: 'sepia(1) saturate(5) hue-rotate(-30deg) brightness(0.85)' },
+  ];
+  const pfGet = (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
+  const pfSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } };
+  const avatarBox = document.querySelector('.pf-avatar');
+  const applyFrame = (id) => {
+    const f = PF_FRAMES.find((x) => x.id === id) || PF_FRAMES[0];
+    avatarBox.style.setProperty('--pf-frame', f.css);
+    avatarBox.classList.add('has-frame');
+    document.querySelectorAll('#psetFrames .pset-tile').forEach((t) => t.classList.toggle('is-selected', t.dataset.id === f.id));
+  };
+  const applyBack = (id) => {
+    const bk = PF_BACKS.find((x) => x.id === id) || PF_BACKS[0];
+    document.querySelectorAll('.pf-cardback').forEach((img) => { img.style.filter = bk.filter; });
+    document.querySelectorAll('#psetBacks .pset-tile').forEach((t) => t.classList.toggle('is-selected', t.dataset.id === bk.id));
+  };
+  document.getElementById('psetFrames').innerHTML = PF_FRAMES.map((f) => `<button class="pset-tile" data-id="${f.id}"><span class="pset-frame" style="--pf-frame:${f.css}"><img src="assets/v2-avatar-square.png" alt=""></span><span class="pset-tile-name">${f.name}</span></button>`).join('');
+  document.getElementById('psetBacks').innerHTML = PF_BACKS.map((bk) => `<button class="pset-tile" data-id="${bk.id}"><span class="pset-back"><img src="assets/v2-profile-cardback.png" alt="" style="filter:${bk.filter}"></span><span class="pset-tile-name">${bk.name}</span></button>`).join('');
+  document.getElementById('psetFrames').addEventListener('click', (e) => {
+    const t = e.target.closest('.pset-tile');
+    if (!t) return;
+    applyFrame(t.dataset.id);
+    pfSet('v3.profileFrame', t.dataset.id);
+  });
+  document.getElementById('psetBacks').addEventListener('click', (e) => {
+    const t = e.target.closest('.pset-tile');
+    if (!t) return;
+    applyBack(t.dataset.id);
+    pfSet('v3.profileBack', t.dataset.id);
+  });
+  applyFrame(pfGet('v3.profileFrame', 'white'));
+  applyBack(pfGet('v3.profileBack', 'base'));
+
   // профиль: выбор статуса в настройках
   const STATUS_KEY = 'v3.profileStatus';
   const statusEl = document.getElementById('profileStatus');

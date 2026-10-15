@@ -1538,3 +1538,116 @@
 [data-app="3"] .v2-screen.v2-screen-profile {
   padding-bottom: 200px;
 }
+
+/* ---------- Профиль: сундук в конце полосы уровня ---------- */
+
+.pf-level-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.pf-level-track .pf-level-bar {
+  flex: 1;
+  margin-top: 0;
+  margin-right: -14px;
+}
+
+.pf-level-gift {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  animation: tchestHop 1.6s ease-in-out infinite;
+}
+
+.pf-level-gift img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+}
+
+/* ---------- Профиль: рамка аватара ---------- */
+
+[data-app="3"] .pf-avatar.has-frame {
+  padding: 4px;
+  border: none;
+  background: var(--pf-frame);
+}
+
+[data-app="3"] .pf-avatar.has-frame img {
+  border-radius: 16px;
+  transform: none;
+}
+
+/* ---------- Настройки профиля: рамки и рубашки ---------- */
+
+[data-app="3"] .pset-grid.v3-only {
+  display: grid !important;
+}
+
+.pset-grid {
+  grid-template-columns: repeat(3, 95px);
+  justify-content: center;
+  gap: 20px 24px;
+  padding: 8px 16px 16px;
+}
+
+.pset-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.pset-tile:active {
+  transform: scale(0.94);
+}
+
+.pset-frame,
+.pset-back {
+  display: block;
+  width: 95px;
+  height: 95px;
+  border-radius: 20px;
+  transition: box-shadow 0.2s ease;
+}
+
+.pset-frame {
+  padding: 5px;
+  background: var(--pf-frame);
+}
+
+.pset-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+.pset-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pset-back img {
+  width: 80px;
+  height: 80px;
+}
+
+.pset-tile.is-selected .pset-frame,
+.pset-tile.is-selected .pset-back {
+  box-shadow: 0 0 0 3px #1c1c1e, 0 0 0 6px #428bf9;
+}
+
+.pset-tile-name {
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.7);
+}
