@@ -1721,3 +1721,57 @@
 .pf-fav-grid .card .num-right {
   font-size: 12px;
 }
+
+/* ---------- Сыграть с другом: приглашение (Figma 15959:37003) ---------- */
+
+.v3-invite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 32px;
+  text-align: center;
+}
+
+.v3-invite-title {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.v3-invite-sub {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 20px;
+  color: #f6f7f8;
+}
+
+.v3-invite-qr {
+  width: 222px;
+  height: 222px;
+  margin-top: 32px;
+  border-radius: 35px;
+}
+
+.v3-invite-code {
+  margin-top: 16px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.v3-invite-code span {
+  font-family: var(--font-rounded);
+  letter-spacing: 0.5px;
+}
+
+.v3-invite-copy {
+  width: 273px;
+  margin-top: 32px;
+}
+
+.v3-invite-copy.is-done {
+  background: #42cf9b;
+  color: #fff;
+}

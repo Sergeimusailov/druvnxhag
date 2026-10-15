@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610150935"></script>
+  <script src="js/device-frame.js?v=202610150936"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610150935"></script>
+  <script src="js/version.js?v=202610150936"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610150935">
-  <link rel="stylesheet" href="css/v2.css?v=202610150935">
-  <link rel="stylesheet" href="css/profile.css?v=202610150935">
-  <link rel="stylesheet" href="css/tasks.css?v=202610150935">
-  <link rel="stylesheet" href="css/gifts.css?v=202610150935">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610150935">
-  <link rel="stylesheet" href="css/shop.css?v=202610150935">
-  <link rel="stylesheet" href="css/v22.css?v=202610150935">
-  <link rel="stylesheet" href="css/v3.css?v=202610150935">
-  <link rel="stylesheet" href="css/event.css?v=202610150935">
+  <link rel="stylesheet" href="css/match.css?v=202610150936">
+  <link rel="stylesheet" href="css/v2.css?v=202610150936">
+  <link rel="stylesheet" href="css/profile.css?v=202610150936">
+  <link rel="stylesheet" href="css/tasks.css?v=202610150936">
+  <link rel="stylesheet" href="css/gifts.css?v=202610150936">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610150936">
+  <link rel="stylesheet" href="css/shop.css?v=202610150936">
+  <link rel="stylesheet" href="css/v22.css?v=202610150936">
+  <link rel="stylesheet" href="css/v3.css?v=202610150936">
+  <link rel="stylesheet" href="css/event.css?v=202610150936">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -507,9 +507,16 @@
         <div class="v2-appbar">
           <button class="v2-icon-btn v2-glass" data-back aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
           <div class="v2-appbar-title">Сыграть с другом</div>
-          <span></span>
+          <button class="v2-icon-btn v2-glass v3-help" aria-label="Помощь">?</button>
         </div>
-        <div class="v2-stub v3-friend-stub"><p class="v2-stub-title">Игра с другом</p><p class="v2-stub-text">Пригласите друга по ссылке и сыграйте матч вместе. Раздел в разработке</p></div>
+        <!-- Figma 15959:37003: в макете шторка, у нас — отдельный раздел -->
+        <div class="v3-invite">
+          <h1 class="v3-invite-title">Пригласить друга</h1>
+          <p class="v3-invite-sub">Код нужно ввести другу в матче</p>
+          <img class="v3-invite-qr" src="assets/v3-invite-qr.png" alt="QR-код приглашения">
+          <p class="v3-invite-code">Код: <span id="v3InviteCode">SBYH-86SP</span></p>
+          <button class="v2-btn v2-btn-primary v3-invite-copy" id="v3InviteCopy">Скопировать код</button>
+        </div>
       </div>
     </section>
 
@@ -682,17 +689,17 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610150935"></script>
-  <script src="js/v2.js?v=202610150935"></script>
-  <script src="js/profile.js?v=202610150935"></script>
-  <script src="js/tasks22.js?v=202610150935"></script>
-  <script src="js/tasks.js?v=202610150935"></script>
-  <script src="js/card-custom.js?v=202610150935"></script>
-  <script src="js/cards-v2.js?v=202610150935"></script>
-  <script src="js/shop.js?v=202610150935"></script>
-  <script src="js/gifts.js?v=202610150935"></script>
-  <script src="js/event.js?v=202610150935"></script>
-  <script src="js/events22.js?v=202610150935"></script>
-  <script src="js/v3.js?v=202610150935"></script>
+  <script src="js/cards.js?v=202610150936"></script>
+  <script src="js/v2.js?v=202610150936"></script>
+  <script src="js/profile.js?v=202610150936"></script>
+  <script src="js/tasks22.js?v=202610150936"></script>
+  <script src="js/tasks.js?v=202610150936"></script>
+  <script src="js/card-custom.js?v=202610150936"></script>
+  <script src="js/cards-v2.js?v=202610150936"></script>
+  <script src="js/shop.js?v=202610150936"></script>
+  <script src="js/gifts.js?v=202610150936"></script>
+  <script src="js/event.js?v=202610150936"></script>
+  <script src="js/events22.js?v=202610150936"></script>
+  <script src="js/v3.js?v=202610150936"></script>
 </body>
 </html>

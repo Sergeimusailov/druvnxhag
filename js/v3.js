@@ -269,6 +269,15 @@ if (isApp3()) {
   });
   document.getElementById('v3NyEntry').addEventListener('click', () => openNyFromHome());
   document.getElementById('v3FriendBtn').addEventListener('click', () => openScreen3(document.getElementById('v3FriendScreen')));
+  // «Скопировать код» — в буфер, кнопка на секунду пишет «Код скопирован»
+  document.getElementById('v3InviteCopy').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const code = document.getElementById('v3InviteCode').textContent;
+    try { await navigator.clipboard.writeText(code); } catch (err) { /* без доступа к буферу — только подсказка */ }
+    btn.textContent = 'Код скопирован';
+    btn.classList.add('is-done');
+    setTimeout(() => { btn.textContent = 'Скопировать код'; btn.classList.remove('is-done'); }, 1600);
+  });
   document.querySelectorAll('.v3-screen [data-back]').forEach((b) => b.addEventListener('click', () => closeScreen3(b.closest('.v3-screen'))));
 
   document.getElementById('v3Shields').addEventListener('click', (e) => {
