@@ -674,8 +674,24 @@ e22Track.addEventListener('click', async (e) => {
     ev.tickets += 1;
     document.getElementById('e22TicketCount').textContent = ev.tickets;
   } else {
-    // сундук — как раньше, через экран подарка
-    await openGiftOverlay();
+    // остальные награды — без экрана подарка: картинка награды подпрыгивает
+    // и улетает вниз, за край экрана
+    const item = card.querySelector('.ev-card-item');
+    const from = centerOf(item);
+    const fly = item.cloneNode(true);
+    fly.className = 'e22-fly-down';
+    fly.style.left = `${from.x}px`;
+    fly.style.top = `${from.y}px`;
+    fxLayerEl.appendChild(fly);
+    burstAt(from);
+    item.style.visibility = 'hidden';
+    const dropY = appEl.getBoundingClientRect().height - from.y + 80;
+    await fly.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+      { transform: 'translate(-50%, calc(-50% - 36px)) scale(1.25)', opacity: 1, offset: 0.25 },
+      { transform: `translate(-50%, calc(-50% + ${dropY}px)) scale(0.6) rotate(18deg)`, opacity: 0.2 },
+    ], { duration: 750, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' }).finished;
+    fly.remove();
   }
   ev.claimed.add(level);
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);

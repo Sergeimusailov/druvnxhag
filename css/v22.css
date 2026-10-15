@@ -2127,3 +2127,13 @@
 [data-version="2.3"] .e22.is-v21 .v2-appbar:not(.is-snow) #e22Title {
   opacity: 0;
 }
+
+/* награда трека улетает вниз (без экрана подарка) */
+.e22-fly-down {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+}
