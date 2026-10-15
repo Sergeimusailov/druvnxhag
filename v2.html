@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610142223"></script>
+  <script src="js/device-frame.js?v=202610150833"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610142223"></script>
+  <script src="js/version.js?v=202610150833"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610142223">
-  <link rel="stylesheet" href="css/v2.css?v=202610142223">
-  <link rel="stylesheet" href="css/profile.css?v=202610142223">
-  <link rel="stylesheet" href="css/tasks.css?v=202610142223">
-  <link rel="stylesheet" href="css/gifts.css?v=202610142223">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610142223">
-  <link rel="stylesheet" href="css/shop.css?v=202610142223">
-  <link rel="stylesheet" href="css/v22.css?v=202610142223">
-  <link rel="stylesheet" href="css/v3.css?v=202610142223">
-  <link rel="stylesheet" href="css/event.css?v=202610142223">
+  <link rel="stylesheet" href="css/match.css?v=202610150833">
+  <link rel="stylesheet" href="css/v2.css?v=202610150833">
+  <link rel="stylesheet" href="css/profile.css?v=202610150833">
+  <link rel="stylesheet" href="css/tasks.css?v=202610150833">
+  <link rel="stylesheet" href="css/gifts.css?v=202610150833">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610150833">
+  <link rel="stylesheet" href="css/shop.css?v=202610150833">
+  <link rel="stylesheet" href="css/v22.css?v=202610150833">
+  <link rel="stylesheet" href="css/v3.css?v=202610150833">
+  <link rel="stylesheet" href="css/event.css?v=202610150833">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -289,7 +289,19 @@
             <div class="pf-avatar"><img id="profileAvatarImg" src="assets/v2-avatar-square.png" alt="Аватар"></div>
           </div>
           <h1 class="pf-name">Александр К.</h1>
-          <p class="pf-status">Т-Ранжира</p>
+          <p class="pf-status" id="profileStatus">Т-Ранжира</p>
+          <!-- версия 3: клан -->
+          <p class="pf-clan v3-only"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2.5 4 5.5v6.2c0 4.6 3.2 8.4 8 9.8 4.8-1.4 8-5.2 8-9.8V5.5l-8-3Z" fill="currentColor"/></svg>Клан «Северный ветер»</p>
+        </div>
+
+        <!-- версия 3: прогресс уровня -->
+        <div class="pf-card pf-level v3-only">
+          <div class="pf-level-head">
+            <h2 class="pf-card-title">Уровень <span id="pfLevelNum">1</span></h2>
+            <span class="pf-level-xp" id="pfLevelXp"></span>
+          </div>
+          <div class="pf-level-bar"><span id="pfLevelFill"></span></div>
+          <p class="pf-level-note" id="pfLevelNote"></p>
         </div>
 
         <div class="pf-actions">
@@ -306,7 +318,8 @@
 
         <div class="pf-card pf-card-row">
           <h2 class="pf-card-title">Уведомления</h2>
-          <span class="pf-hint" title="Напоминания о заданиях и ивентах">?</span>
+          <button class="pf-hint" id="profileNotifyHint" title="Напоминания о заданиях и ивентах" aria-label="Подсказка">?</button>
+          <div class="pf-tooltip v3-only" id="profileNotifyTip" role="tooltip">Пришлём напоминание, когда обновятся задания или в ивенте появится награда</div>
           <label class="pf-switch"><input type="checkbox" id="profileNotifySwitch"><span></span></label>
         </div>
         <div class="pf-card pf-version" hidden>
@@ -388,7 +401,7 @@
             <div class="v2-tab-panel"><div class="pset-avatars" id="psetAvatars"><button class="pset-avatar" data-avatar="assets/avatars/av-01.png"><img src="assets/avatars/av-01.png" alt="Аватар 1"></button><button class="pset-avatar" data-avatar="assets/avatars/av-02.png"><img src="assets/avatars/av-02.png" alt="Аватар 2"></button><button class="pset-avatar" data-avatar="assets/avatars/av-03.png"><img src="assets/avatars/av-03.png" alt="Аватар 3"></button><button class="pset-avatar" data-avatar="assets/avatars/av-04.png"><img src="assets/avatars/av-04.png" alt="Аватар 4"></button><button class="pset-avatar" data-avatar="assets/avatars/av-05.png"><img src="assets/avatars/av-05.png" alt="Аватар 5"></button><button class="pset-avatar" data-avatar="assets/avatars/av-06.png"><img src="assets/avatars/av-06.png" alt="Аватар 6"></button><button class="pset-avatar" data-avatar="assets/avatars/av-07.png"><img src="assets/avatars/av-07.png" alt="Аватар 7"></button><button class="pset-avatar" data-avatar="assets/avatars/av-08.png"><img src="assets/avatars/av-08.png" alt="Аватар 8"></button><button class="pset-avatar" data-avatar="assets/avatars/av-09.png"><img src="assets/avatars/av-09.png" alt="Аватар 9"></button><button class="pset-avatar" data-avatar="assets/avatars/av-10.png"><img src="assets/avatars/av-10.png" alt="Аватар 10"></button><button class="pset-avatar" data-avatar="assets/avatars/av-11.png"><img src="assets/avatars/av-11.png" alt="Аватар 11"></button><button class="pset-avatar" data-avatar="assets/avatars/av-12.png"><img src="assets/avatars/av-12.png" alt="Аватар 12"></button><button class="pset-avatar" data-avatar="assets/avatars/av-13.png"><img src="assets/avatars/av-13.png" alt="Аватар 13"></button><button class="pset-avatar" data-avatar="assets/avatars/av-14.png"><img src="assets/avatars/av-14.png" alt="Аватар 14"></button></div></div>
             <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Рамки скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
             <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Рубашки колоды скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
-            <div class="v2-tab-panel"><div class="v2-stub pset-stub"><p class="v2-stub-title">Статусы скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div></div>
+            <div class="v2-tab-panel"><div class="v2-stub pset-stub v2-only"><p class="v2-stub-title">Статусы скоро появятся</p><p class="v2-stub-text">Раздел в разработке</p></div><div class="pset-statuses v3-only" id="psetStatuses"><button class="pset-status-item" data-status="Т-Ранжира"><span>Т-Ранжира</span><i></i></button><button class="pset-status-item" data-status="Гааааaз"><span>Гааааaз</span><i></i></button><button class="pset-status-item" data-status="Данеумерявконце"><span>Данеумерявконце</span><i></i></button><button class="pset-status-item" data-status="Даумеронвконце"><span>Даумеронвконце</span><i></i></button><button class="pset-status-item" data-status="Т-Ылох"><span>Т-Ылох</span><i></i></button><button class="pset-status-item" data-status="Делай, как надо"><span>Делай, как надо</span><i></i></button><button class="pset-status-item" data-status="Как не надо, не делай"><span>Как не надо, не делай</span><i></i></button><button class="pset-status-item" data-status="Тут — это вам не там"><span>Тут — это вам не там</span><i></i></button><button class="pset-status-item" data-status="Жи-ши пиши от души"><span>Жи-ши пиши от души</span><i></i></button><button class="pset-status-item" data-status="Марианскую впадину знаешь?"><span>Марианскую впадину знаешь?</span><i></i></button></div></div>
           </div>
         </div>
       </div>
@@ -655,17 +668,17 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610142223"></script>
-  <script src="js/v2.js?v=202610142223"></script>
-  <script src="js/profile.js?v=202610142223"></script>
-  <script src="js/tasks22.js?v=202610142223"></script>
-  <script src="js/tasks.js?v=202610142223"></script>
-  <script src="js/card-custom.js?v=202610142223"></script>
-  <script src="js/cards-v2.js?v=202610142223"></script>
-  <script src="js/shop.js?v=202610142223"></script>
-  <script src="js/gifts.js?v=202610142223"></script>
-  <script src="js/event.js?v=202610142223"></script>
-  <script src="js/events22.js?v=202610142223"></script>
-  <script src="js/v3.js?v=202610142223"></script>
+  <script src="js/cards.js?v=202610150833"></script>
+  <script src="js/v2.js?v=202610150833"></script>
+  <script src="js/profile.js?v=202610150833"></script>
+  <script src="js/tasks22.js?v=202610150833"></script>
+  <script src="js/tasks.js?v=202610150833"></script>
+  <script src="js/card-custom.js?v=202610150833"></script>
+  <script src="js/cards-v2.js?v=202610150833"></script>
+  <script src="js/shop.js?v=202610150833"></script>
+  <script src="js/gifts.js?v=202610150833"></script>
+  <script src="js/event.js?v=202610150833"></script>
+  <script src="js/events22.js?v=202610150833"></script>
+  <script src="js/v3.js?v=202610150833"></script>
 </body>
 </html>

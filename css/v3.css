@@ -1383,3 +1383,158 @@
 [data-app="3"] .v2-tab[data-nav="game"] { order: 3; }
 [data-app="3"] .v2-tab[data-nav="shop"] { order: 4; }
 [data-app="3"] .v2-tab[data-nav="gifts"] { order: 5; }
+
+/* ---------- Профиль версии 3 (Figma 15926:132349, 16285:41602, 16326:71406) ---------- */
+
+/* рубашки карт крупнее и под углом ±15°, как в макете */
+[data-app="3"] .pf-cardback {
+  top: 28px;
+  width: 93px;
+  height: 93px;
+}
+
+[data-app="3"] .pf-cardback-right {
+  left: 93px;
+}
+
+[data-app="3"] .pf-cardback-left {
+  right: 93px;
+}
+
+/* клан — под статусом */
+[data-app="3"] .pf-clan.v3-only {
+  display: inline-flex !important;
+}
+
+.pf-clan {
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.pf-clan svg {
+  color: #8c5cff;
+}
+
+/* прогресс уровня */
+[data-app="3"] .pf-level.v3-only {
+  display: block !important;
+  margin-bottom: 8px;
+}
+
+.pf-level-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.pf-level-xp {
+  font-family: var(--font-rounded);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffdd2d;
+}
+
+.pf-level-bar {
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.pf-level-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #b6f04a, #5fbf1c);
+}
+
+.pf-level-note {
+  margin: 8px 0 4px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* тултип у «?» уведомлений: тёмно-серая плашка под строкой */
+.pf-card-row {
+  position: relative;
+}
+
+.pf-hint {
+  cursor: pointer;
+}
+
+.pf-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 5;
+  width: 288px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #4a4a4c;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+  line-height: 20px;
+  color: #f6f7f8;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+[data-app="3"] .pf-tooltip.v3-only {
+  display: block !important;
+}
+
+.pf-tooltip.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* статусы — список с радиокнопками справа */
+[data-app="3"] .pset-statuses.v3-only {
+  display: flex !important;
+}
+
+.pset-statuses {
+  flex-direction: column;
+  padding: 8px 24px 16px;
+}
+
+.pset-status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  font-size: 17px;
+  letter-spacing: -0.41px;
+  text-align: left;
+  color: #f6f7f8;
+}
+
+.pset-status-item i {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+}
+
+.pset-status-item.is-selected i {
+  background: #428bf9 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M6.5 11.5l3 3 6-7" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>') center no-repeat;
+  box-shadow: none;
+}
+
+/* место под тултипом уведомлений, чтобы он не уходил под таб-бар */
+[data-app="3"] .v2-screen.v2-screen-profile {
+  padding-bottom: 200px;
+}

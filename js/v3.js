@@ -218,6 +218,11 @@ const V3_LEVEL = { level: 1, xp: 640, per: 1000 };
 
 function renderLevel3() {
   const { level, xp, per } = V3_LEVEL;
+  // тот же прогресс в профиле
+  document.getElementById('pfLevelNum').textContent = level;
+  document.getElementById('pfLevelXp').textContent = `${xp}/${per}`;
+  document.getElementById('pfLevelFill').style.width = `${Math.min(1, xp / per) * 100}%`;
+  document.getElementById('pfLevelNote').textContent = `Ещё ${per - xp} опыта до ${level + 1} уровня`;
   document.getElementById('v3LevelFill').style.setProperty('--p', Math.min(1, xp / per));
   document.getElementById('v3LevelText').textContent = `${xp}/${per}`;
   document.getElementById('v3LevelNext').textContent = level + 1;
@@ -281,6 +286,32 @@ if (isApp3()) {
   leagueScreen.querySelector('.v3-clock').outerHTML = CLOCK_SVG;
   renderLevel3();
   renderCoins3();
+
+  // профиль: тултип у «?» в уведомлениях — по тапу, закрывается тапом мимо
+  const tip = document.getElementById('profileNotifyTip');
+  document.getElementById('profileNotifyHint').addEventListener('click', (e) => {
+    e.stopPropagation();
+    tip.classList.toggle('is-open');
+  });
+  document.addEventListener('click', () => tip.classList.remove('is-open'));
+  document.addEventListener('v2:screen', () => tip.classList.remove('is-open'));
+
+  // профиль: выбор статуса в настройках
+  const STATUS_KEY = 'v3.profileStatus';
+  const statusEl = document.getElementById('profileStatus');
+  const applyStatus = (t) => {
+    statusEl.textContent = t;
+    document.querySelectorAll('.pset-status-item').forEach((b) => b.classList.toggle('is-selected', b.dataset.status === t));
+  };
+  let savedStatus = null;
+  try { savedStatus = localStorage.getItem(STATUS_KEY); } catch (e) { /* ignore */ }
+  applyStatus(savedStatus || statusEl.textContent);
+  document.getElementById('psetStatuses').addEventListener('click', (e) => {
+    const b = e.target.closest('.pset-status-item');
+    if (!b) return;
+    applyStatus(b.dataset.status);
+    try { localStorage.setItem(STATUS_KEY, b.dataset.status); } catch (err) { /* ignore */ }
+  });
   document.addEventListener('v2:screen', renderCoins3);
   renderLeagueEntry3();
   renderCalendarEntry3();
