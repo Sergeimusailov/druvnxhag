@@ -83,10 +83,15 @@ function drawPlayerSet() {
 const DECK_SIZE = 8;
 const DECK_STORAGE_KEY = 'arena-cards-deck-v1';
 
+// колода на старте: пока игрок ничего не сохранял — 8 карт с картинками
+function defaultDeckNames() {
+  return CARD_ROSTER.filter((c) => c.pic).slice(0, DECK_SIZE).map((c) => c.name);
+}
+
 function getSavedDeckNames() {
   try {
     const raw = localStorage.getItem(DECK_STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return defaultDeckNames();
     const names = JSON.parse(raw);
     return Array.isArray(names) ? names : [];
   } catch (e) {
