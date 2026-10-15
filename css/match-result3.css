@@ -1,0 +1,473 @@
+/* Версия 3: экран итогов матча, новый уровень, открытие подарка
+   (js/match-result3.js; Figma 15959:35983, 15959:36287) */
+
+.m3 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+.m3-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
+  background: #000;
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  overflow: hidden;
+}
+
+.m3-screen.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+
+.m3-glow {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 196, 40, 0.35), transparent 60%);
+  pointer-events: none;
+  animation: m3Breath 3s ease-in-out infinite;
+}
+
+.m3-screen.is-loss .m3-glow {
+  background: radial-gradient(circle, rgba(92, 120, 254, 0.3), transparent 60%);
+}
+
+@keyframes m3Breath {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.m3-bar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-self: stretch;
+  min-height: 44px;
+}
+
+.m3-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.m3-title {
+  position: relative;
+  margin-top: 56px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+}
+
+.m3-screen.is-open .m3-title {
+  animation: m3Drop 0.5s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+}
+
+@keyframes m3Drop {
+  from { opacity: 0; transform: translateY(-16px) scale(0.9); }
+}
+
+.m3-sub {
+  position: relative;
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* подарки — плитки 99px с подписью, выпрыгивают по очереди */
+.m3-tiles {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.m3-tiles-pyramid {
+  max-width: 240px;
+  margin-top: 60px;
+}
+
+.m3-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 99px;
+}
+
+.m3-screen.is-open .m3-tile {
+  animation: m3Pop 0.55s cubic-bezier(0.34, 1.6, 0.5, 1) both;
+  animation-delay: calc(0.35s + var(--i) * 0.18s);
+}
+
+@keyframes m3Pop {
+  from { opacity: 0; transform: translateY(20px) scale(0.3) rotate(-8deg); }
+}
+
+.m3-tile-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 99px;
+  height: 99px;
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 30%, #3a3a3e, #1c1c1e);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.18), 0 0 24px rgba(255, 200, 60, 0.18);
+}
+
+.m3-tile-box .card {
+  width: 72px;
+  border-radius: 10px;
+}
+
+.m3-tile-box .card .num {
+  font-size: 11px;
+}
+
+.m3-frame {
+  display: block;
+  width: 72px;
+  height: 72px;
+  padding: 5px;
+  border-radius: 18px;
+  background: var(--f);
+}
+
+.m3-frame img,
+.m3-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+}
+
+.m3-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+}
+
+.m3-coin {
+  width: 64px;
+  height: 64px;
+}
+
+.m3-tile-label {
+  max-width: 99px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* уровень: квадрат с номером, полоса, разбивка опыта */
+.m3-level {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-self: stretch;
+  margin: auto 8px 0;
+  text-align: left;
+}
+
+.m3-lvl-badge {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #5a5a60, #3a3a3e);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.2);
+}
+
+.m3-lvl-badge b {
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", sans-serif;
+  font-size: 30px;
+  line-height: 30px;
+  font-weight: 800;
+}
+
+.m3-lvl-badge span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.m3-lvl-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.m3-lvl-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  height: 28px;
+}
+
+.m3-lvl-xp {
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", sans-serif;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.m3-lvl-gain {
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #2bd94a;
+}
+
+.m3-lvl-track {
+  position: relative;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 8px;
+  background: #2c2c2e;
+  overflow: hidden;
+}
+
+.m3-lvl-old,
+.m3-lvl-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 8px;
+}
+
+.m3-lvl-fill {
+  background: linear-gradient(90deg, #12b33a, #2bd94a);
+  box-shadow: 0 0 10px rgba(43, 217, 74, 0.7);
+}
+
+/* то, что было до матча — белое, поверх зелёного */
+.m3-lvl-old {
+  z-index: 1;
+  background: #fff;
+}
+
+.m3-lvl-rows {
+  margin-top: 12px;
+}
+
+.m3-lvl-rows div {
+  display: flex;
+  justify-content: space-between;
+  height: 24px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.m3-lvl-rows b {
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", sans-serif;
+  font-weight: 600;
+}
+
+.m3-cta {
+  position: relative;
+  align-self: stretch;
+  height: 56px;
+  margin: 40px 8px 0;
+  border: none;
+  border-radius: 16px;
+  background: #ffdd2d;
+  color: #333;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.m3-cta:active {
+  transform: scale(0.96);
+}
+
+/* новый уровень: звезда с цифрой, лучи */
+.m3-star {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-top: 28px;
+}
+
+.m3-star svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 18px rgba(255, 200, 40, 0.7));
+}
+
+.m3-star b {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: #5a3a00;
+}
+
+.m3-star-rays {
+  position: absolute;
+  inset: -90px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 210, 70, 0.35) 0deg 8deg, transparent 8deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  animation: m3Spin 14s linear infinite;
+}
+
+@keyframes m3Spin {
+  to { transform: rotate(360deg); }
+}
+
+.m3-divider {
+  width: 276px;
+  height: 1px;
+  margin-top: 40px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+.m3-up-gift {
+  width: 110px;
+  margin-top: 16px;
+  animation: m3Bob 1.8s ease-in-out infinite;
+}
+
+@keyframes m3Bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.m3-up .m3-cta {
+  margin-top: auto;
+}
+
+/* открытие подарка — фиолетовые лучи */
+.m3-open {
+  justify-content: center;
+  cursor: pointer;
+}
+
+.m3-open-rays {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 760px;
+  height: 760px;
+  margin: -380px 0 0 -380px;
+  background:
+    radial-gradient(circle, rgba(140, 40, 255, 0.85), transparent 40%),
+    repeating-conic-gradient(from 0deg, rgba(150, 60, 255, 0.55) 0deg 7deg, transparent 7deg 22deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+  animation: m3Spin 18s linear infinite;
+}
+
+.m3-open-flash {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, rgba(255, 220, 120, 0.8) 40%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.m3-open-gift {
+  position: relative;
+  width: 210px;
+  margin-top: -60px;
+}
+
+.m3-open-gift.is-idle {
+  animation: m3Bob 1.2s ease-in-out infinite;
+}
+
+.m3-open-hint {
+  position: relative;
+  margin-top: 40px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.m3-open-hint.is-visible {
+  opacity: 1;
+}
+
+#m3LevelRewards .m3-cta {
+  margin-top: auto;
+}
+
+.m3-sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.m3-sparks i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px rgba(255, 220, 90, 0.8);
+}
+
+/* демо-кнопки внизу матча */
+.m3-demo {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.m3-demo button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

@@ -214,7 +214,15 @@ async function claimCalendarDay3(day) {
 /* ---------- Уровень игрока ---------- */
 
 // опыт до следующего уровня — пока ровно 1000 на каждый уровень
-const V3_LEVEL = { level: 1, xp: 640, per: 1000 };
+// уровень и опыт хранятся в localStorage — их меняет экран итогов матча
+// (js/match-result3.js)
+const V3_LEVEL = (() => {
+  try {
+    const saved = JSON.parse(localStorage.getItem('v3.level') || 'null');
+    if (saved) return { level: saved.level, xp: saved.xp, per: 1000 };
+  } catch (e) { /* ignore */ }
+  return { level: 1, xp: 640, per: 1000 };
+})();
 
 function renderLevel3() {
   const { level, xp, per } = V3_LEVEL;
