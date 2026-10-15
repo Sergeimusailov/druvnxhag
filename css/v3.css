@@ -1804,3 +1804,7 @@
 .gifts-ads {
   grid-column: 1 / -1;
 }
+
+.tasks-ads {
+  margin: 8px 16px 16px;
+}

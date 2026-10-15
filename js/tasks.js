@@ -144,6 +144,7 @@ function renderPanel(tab) {
       <div class="tprog-tag tasks-progress-tag"><img src="assets/v2-progress-bolt-tag.png" alt=""><span class="tasks-points">${data.points}</span></div>
     </div>
     <div class="tasks-list" data-list="active">${active.map(taskHTML).join('')}</div>
+    ${typeof isApp3 === 'function' && isApp3() && typeof tAdsHTML === 'function' ? `<div class="t-ads-slot tasks-ads">${tAdsHTML()}</div>` : ''}
     <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
     <div class="tasks-list" data-list="done">${done.map(taskHTML).join('')}</div>
   `;
