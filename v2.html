@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610150906"></script>
+  <script src="js/device-frame.js?v=202610150911"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610150906"></script>
+  <script src="js/version.js?v=202610150911"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610150906">
-  <link rel="stylesheet" href="css/v2.css?v=202610150906">
-  <link rel="stylesheet" href="css/profile.css?v=202610150906">
-  <link rel="stylesheet" href="css/tasks.css?v=202610150906">
-  <link rel="stylesheet" href="css/gifts.css?v=202610150906">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610150906">
-  <link rel="stylesheet" href="css/shop.css?v=202610150906">
-  <link rel="stylesheet" href="css/v22.css?v=202610150906">
-  <link rel="stylesheet" href="css/v3.css?v=202610150906">
-  <link rel="stylesheet" href="css/event.css?v=202610150906">
+  <link rel="stylesheet" href="css/match.css?v=202610150911">
+  <link rel="stylesheet" href="css/v2.css?v=202610150911">
+  <link rel="stylesheet" href="css/profile.css?v=202610150911">
+  <link rel="stylesheet" href="css/tasks.css?v=202610150911">
+  <link rel="stylesheet" href="css/gifts.css?v=202610150911">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610150911">
+  <link rel="stylesheet" href="css/shop.css?v=202610150911">
+  <link rel="stylesheet" href="css/v22.css?v=202610150911">
+  <link rel="stylesheet" href="css/v3.css?v=202610150911">
+  <link rel="stylesheet" href="css/event.css?v=202610150911">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -318,6 +318,16 @@
           <div class="pf-cell"><span>Всего матчей</span><b>67</b></div>
           <div class="pf-cell"><span>Победы</span><b>32</b></div>
           <div class="pf-cell"><span>Поражения</span><b>12</b></div>
+        </div>
+
+        <!-- версия 3: ачивки и любимая колода (Figma 16396:106643) -->
+        <div class="pf-card pf-achievements v3-only">
+          <h2 class="pf-card-title">Ачивки</h2>
+          <div class="pf-ach-grid" id="pfAchievements"></div>
+        </div>
+        <div class="pf-card pf-fav v3-only">
+          <h2 class="pf-card-title">Любимая колода</h2>
+          <div class="pf-fav-grid" id="pfFavDeck"></div>
         </div>
 
         <div class="pf-card pf-card-row">
@@ -672,17 +682,17 @@
 
   </main>
 
-  <script src="js/cards.js?v=202610150906"></script>
-  <script src="js/v2.js?v=202610150906"></script>
-  <script src="js/profile.js?v=202610150906"></script>
-  <script src="js/tasks22.js?v=202610150906"></script>
-  <script src="js/tasks.js?v=202610150906"></script>
-  <script src="js/card-custom.js?v=202610150906"></script>
-  <script src="js/cards-v2.js?v=202610150906"></script>
-  <script src="js/shop.js?v=202610150906"></script>
-  <script src="js/gifts.js?v=202610150906"></script>
-  <script src="js/event.js?v=202610150906"></script>
-  <script src="js/events22.js?v=202610150906"></script>
-  <script src="js/v3.js?v=202610150906"></script>
+  <script src="js/cards.js?v=202610150911"></script>
+  <script src="js/v2.js?v=202610150911"></script>
+  <script src="js/profile.js?v=202610150911"></script>
+  <script src="js/tasks22.js?v=202610150911"></script>
+  <script src="js/tasks.js?v=202610150911"></script>
+  <script src="js/card-custom.js?v=202610150911"></script>
+  <script src="js/cards-v2.js?v=202610150911"></script>
+  <script src="js/shop.js?v=202610150911"></script>
+  <script src="js/gifts.js?v=202610150911"></script>
+  <script src="js/event.js?v=202610150911"></script>
+  <script src="js/events22.js?v=202610150911"></script>
+  <script src="js/v3.js?v=202610150911"></script>
 </body>
 </html>

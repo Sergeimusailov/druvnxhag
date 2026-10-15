@@ -304,6 +304,26 @@ if (isApp3()) {
   }).join('');
   applyAvatar(document.getElementById('profileAvatarImg').getAttribute('src'));
 
+  // профиль: ачивки (пока одна иконка из макета) и любимая колода — карты из
+  // сохранённой колоды игрока, а если она не собрана — первые 8 из коллекции
+  const ACHIEVEMENTS = ['Первая победа', '10 побед подряд', 'Коллекционер', 'Мастер комбо', 'Захватчик', 'Ветеран'];
+  document.getElementById('pfAchievements').innerHTML = ACHIEVEMENTS.map((a) => `<img src="assets/v3-achievement.png" alt="${a}" title="${a}">`).join('');
+  const renderFavDeck = () => {
+    const saved = getSavedDeckNames().filter((n) => CARD_ROSTER.some((c) => c.name === n));
+    const names = (saved.length ? saved : CARD_ROSTER.map((c) => c.name)).slice(0, 8);
+    const grid = document.getElementById('pfFavDeck');
+    grid.innerHTML = '';
+    names.forEach((name) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = cardInnerHTML(CARD_ROSTER.find((c) => c.name === name));
+      if (typeof applyCardCustom === 'function') applyCardCustom(el, name);
+      grid.appendChild(el);
+    });
+  };
+  renderFavDeck();
+  document.addEventListener('v2:screen', (e) => { if (e.detail.screen === 'profile') renderFavDeck(); });
+
   // профиль: сундук в конце полосы уровня — что дадут за следующий уровень
   // (та же шторка наград, что у сундуков в заданиях)
   document.getElementById('pfLevelGift').addEventListener('click', () => openSheet());

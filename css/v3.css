@@ -1686,3 +1686,38 @@
 [data-app="3"] .v2-icon-btn.v3-only {
   display: flex !important;
 }
+
+/* ---------- Профиль: ачивки и любимая колода ---------- */
+
+[data-app="3"] .pf-achievements.v3-only,
+[data-app="3"] .pf-fav.v3-only {
+  display: block !important;
+}
+
+.pf-ach-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 84px);
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 0 12px;
+}
+
+.pf-ach-grid img {
+  width: 84px;
+  height: 73px;
+  object-fit: contain;
+}
+
+.pf-fav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 4px 0 12px;
+}
+
+.pf-fav-grid .card .num-top,
+.pf-fav-grid .card .num-bottom,
+.pf-fav-grid .card .num-left,
+.pf-fav-grid .card .num-right {
+  font-size: 12px;
+}
