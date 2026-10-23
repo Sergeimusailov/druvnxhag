@@ -63,9 +63,58 @@
 [data-version="2.3"] .tprog {
   margin-top: 20px;
   background:
-    radial-gradient(ellipse 70% 85% at 50% -30%, rgba(115, 45, 255, 0.75), rgba(115, 45, 255, 0) 100%),
+    radial-gradient(ellipse 115% 140% at 50% -30%, rgba(115, 45, 255, 0.75), rgba(115, 45, 255, 0.12) 75%, rgba(115, 45, 255, 0) 100%),
     #1c1c1e;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* еженедельные: то же, но свечение зелёное #4acf16 (Figma 16434:47664) */
+[data-version="2.3"] .tasks-panel.is-weekly .tprog {
+  background:
+    radial-gradient(ellipse 115% 140% at 50% -30%, rgba(74, 207, 22, 0.75), rgba(74, 207, 22, 0.12) 75%, rgba(74, 207, 22, 0) 100%),
+    #1c1c1e;
+}
+
+/* бирка очков: жёлтая стрелка 43×34, звезда 28px, число SF 17/600 с обводкой 2px #333 */
+[data-version="2.3"] .t24-tag {
+  width: 43px;
+  height: 34px;
+}
+
+[data-version="2.3"] .t24-tag .t24-tag-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 43px;
+  height: 34px;
+}
+
+[data-version="2.3"] .t24-tag .t24-tag-icon {
+  position: absolute;
+  left: 4.5px;
+  top: 3px;
+  width: 28px;
+  height: 28px;
+}
+
+[data-version="2.3"] .t24-tag .tasks-points {
+  left: -4px;
+  right: auto;
+  width: 44px;
+  top: 23px;
+  font-family: var(--font-sf);
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  -webkit-text-stroke: 4px #333;
+}
+
+/* подписи сундуков: 13/600, обводка 1.5px #222 */
+[data-version="2.3"] .tchest-label {
+  font-family: var(--font-sf);
+  font-weight: 600;
+  letter-spacing: -0.08px;
 }
 
 /* ---------- Карточки заданий ---------- */

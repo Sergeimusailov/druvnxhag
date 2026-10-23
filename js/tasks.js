@@ -66,6 +66,9 @@ if (isAppVersion('2.3')) {
   ];
 }
 
+// у каждого задания — своя вкладка (от неё зависит цвет звезды)
+Object.entries(TASK_TABS).forEach(([tab, data]) => data.tasks.forEach((t) => { t.tab = tab; }));
+
 const CLOCK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path opacity="0.85" fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>';
 
 const appEl = document.querySelector('.v2-app');
@@ -122,7 +125,7 @@ function taskHTML(task) {
   }
   return `<div class="task${claimable ? ' is-claimable' : ''}" data-task="${task.id}">
     <div class="task-body"><p class="task-title">${task.title}</p>${extra}</div>
-    <div class="task-reward"><img src="assets/v2-bolt.png" alt="Очки"><span>${claimable || task.showPlus ? '+' : ''}${task.reward}</span></div>
+    <div class="task-reward"><img src="${taskBoltIcon(task.tab)}" alt="Очки"><span>${claimable || task.showPlus ? '+' : ''}${task.reward}</span></div>
   </div>`;
 }
 
@@ -134,6 +137,7 @@ function renderPanel(tab) {
   active.sort((a, b) => (b.state === 'claimable') - (a.state === 'claimable') || (isAppVersion('2.3') ? hasSnow(b) - hasSnow(a) : 0));
   const done = data.tasks.filter((t) => t.state === 'done');
   const fraction = pointsToFraction(data.points);
+  panelEls[tab].classList.add(`is-${tab}`);
   panelEls[tab].innerHTML = `
     <div class="tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="${tab}"></span></span></div>
     <div class="tprog">
@@ -141,7 +145,9 @@ function renderPanel(tab) {
         <div class="tprog-track"><div class="tasks-fill" style="width:${fraction * 100}%"></div></div>
         ${MILESTONES.map((_, i) => milestoneHTML(tab, i)).join('')}
       </div>
-      <div class="tprog-tag tasks-progress-tag"><img src="assets/v2-progress-bolt-tag.png" alt=""><span class="tasks-points">${data.points}</span></div>
+      ${isAppVersion('2.3')
+        ? `<div class="tprog-tag tasks-progress-tag t24-tag"><img class="t24-tag-bg" src="assets/v2-progress-tag.svg" alt=""><img class="t24-tag-icon" src="${taskBoltIcon(tab)}" alt=""><span class="tasks-points">${data.points}</span></div>`
+        : `<div class="tprog-tag tasks-progress-tag"><img src="assets/v2-progress-bolt-tag.png" alt=""><span class="tasks-points">${data.points}</span></div>`}
     </div>
     <div class="tasks-list" data-list="active">${active.map(taskHTML).join('')}</div>
     ${typeof isApp3 === 'function' && isApp3() && typeof tAdsHTML === 'function' ? `<div class="t-ads-slot tasks-ads">${tAdsHTML()}</div>` : ''}
@@ -235,9 +241,9 @@ function burstAt(point) {
 
 // молния выпрыгивает из плитки награды, затем по дуге с ускорением летит в
 // бирку шкалы
-function flyBolt(from, to, delay, onArrive) {
+function flyBolt(from, to, delay, onArrive, src = 'assets/v2-bolt.png') {
   const el = document.createElement('img');
-  el.src = 'assets/v2-bolt.png';
+  el.src = src;
   el.className = 'fx-bolt';
   fxLayerEl.appendChild(el);
   const angle = Math.random() * Math.PI * 2;
@@ -366,7 +372,7 @@ async function claimTask(tab, taskId) {
   const boltAmount = rewards.filter(([c]) => c === 'bolt').reduce((sum, [, n]) => sum + n, 0);
   const boltImg = row.querySelector('.t22-reward[data-cur="bolt"] img') || rewardTile.querySelector('img');
   const from = centerOf(boltImg);
-  const to = centerOf(tag.querySelector('img'));
+  const to = centerOf(tag.querySelector('.t24-tag-icon') || tag.querySelector('img'));
   rewardTile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
 
   const count = boltAmount ? Math.max(5, Math.min(10, Math.round(boltAmount / 2))) : 0;
@@ -392,7 +398,7 @@ async function claimTask(tab, taskId) {
       flyBolt(from, to, i * 65, () => {
         tag.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
         burstAt(to);
-      })
+      }, taskBoltIcon(tab))
     );
   }
 

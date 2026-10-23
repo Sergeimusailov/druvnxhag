@@ -4,6 +4,13 @@
 // валюта зачисляется в своё событие — на главной загорается бейдж.
 // Подключается до tasks.js; tasks.js сам зовёт TASKS22 в версии 2.2.
 
+// 2.3 (Figma 16423:43060 / 16434:47649): очки шкалы — звёзды, у ежедневных
+// фиолетовые, у еженедельных зелёные; в старых версиях — молния
+function taskBoltIcon(tab) {
+  if (!isAppVersion('2.3')) return 'assets/v2-bolt.png';
+  return tab === 'weekly' ? 'assets/v2-star-green.png' : 'assets/v2-star-purple.png';
+}
+
 const CURRENCY_ICONS = {
   snow: 'assets/v2-cur-snow.png',
   leaf: 'assets/v2-cur-leaf.png',
@@ -30,7 +37,7 @@ const TASKS22_DATA = {
 const TASKS22 = {
   rewardsHTML(task) {
     return task.rewards
-      .map(([cur, n]) => `<span class="t22-reward" data-cur="${cur}"><img src="${CURRENCY_ICONS[cur]}" alt=""><span>+${n}</span></span>`)
+      .map(([cur, n]) => `<span class="t22-reward" data-cur="${cur}"><img src="${cur === 'bolt' ? taskBoltIcon(task.tab) : CURRENCY_ICONS[cur]}" alt=""><span>+${n}</span></span>`)
       .join('');
   },
 
@@ -116,7 +123,7 @@ const TASKS22 = {
     const flights = [];
     task.rewards.forEach(([cur], ri) => {
       const from = centerOf(row.querySelector(`.t22-reward[data-cur="${cur}"] img`));
-      for (let i = 0; i < 4; i++) flights.push(this.flyIcon(CURRENCY_ICONS[cur], from, to, ri * 120 + i * 70));
+      for (let i = 0; i < 4; i++) flights.push(this.flyIcon(cur === 'bolt' ? taskBoltIcon(tab) : CURRENCY_ICONS[cur], from, to, ri * 120 + i * 70));
     });
 
     task.state = 'done';
