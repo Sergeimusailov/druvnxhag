@@ -9,6 +9,26 @@ html, body {
   background: #05050a;
 }
 
+/* страница приложения сама не прокручивается и не «пружинит» (iOS Safari
+   тянет весь документ вместе с шапкой и навигацией) — скроллятся только
+   экраны внутри .v2-app, а шапка и таб-бар стоят на месте */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+}
+
+.v2-screen,
+.ev-scroll,
+.pset-scroll {
+  overscroll-behavior-y: contain;
+}
+
 :root {
   /* шрифты как в макетах: SF Pro; для цифр — SF Pro Rounded. На устройствах
      без SF подставляются похожие Inter и Nunito (Google Fonts) */
