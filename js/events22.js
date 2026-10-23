@@ -176,7 +176,9 @@ function renderEventFab23() {
   const prizeEl = document.getElementById('eventFabPrize');
   prizeEl.src = ny24Item ? ny24Item.src : REWARD_ITEMS[main].src;
   prizeEl.classList.toggle('is-gold', !!(ny24Item && ny24Item.cls));
-  document.getElementById('eventFabQty').textContent = (ny24Item && ny24Item.qty) || '× 1';
+  const qtyEl = document.getElementById('eventFabQty');
+  qtyEl.textContent = (ny24Item && ny24Item.qty) || '× 1';
+  eventFab.classList.toggle('is-coins', main === 'coins');
   const extraEl = document.getElementById('eventFabExtra');
   extraEl.hidden = !extra;
   if (extra) extraEl.src = REWARD_ITEMS[extra].src;
@@ -480,8 +482,20 @@ function openEvent22(id) {
   e22Screen.classList.add('is-open');
   e22Screen.setAttribute('aria-hidden', 'false');
   // 2.3: сначала прилетают снежинки, заработанные в «Заданиях», потом едет трек
-  if (isNy23(ev)) setTimeout(() => playSnow23(ev).then(() => animateTrack22(ev)), 520);
+  // затем экран доезжает до первой награды, которую можно забрать
+  if (isNy23(ev)) setTimeout(() => playSnow23(ev).then(() => animateTrack22(ev)).then(() => scrollToClaimable24(ev)), 520);
   else if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
+}
+
+// первая награда «Забрать» на треке — по центру экрана (если такая есть)
+function scrollToClaimable24(ev) {
+  if (!isNy24() || e22Current !== ev) return;
+  const level = e22Track.querySelector('.ny24-level.is-claimable');
+  if (!level) return;
+  const r = level.getBoundingClientRect();
+  const box = e22Scroll.getBoundingClientRect();
+  const top = e22Scroll.scrollTop + r.top - box.top - (box.height - r.height) / 2;
+  e22Scroll.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 }
 
 function closeEvent22() {

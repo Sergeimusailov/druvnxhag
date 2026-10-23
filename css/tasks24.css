@@ -146,16 +146,24 @@
   animation: none;
 }
 
-/* ---------- Кнопка входа в событие: шестиугольник с призом и полоска ---------- */
+/* ---------- Кнопка входа в событие (Figma 16746:39089) ----------
+   Ячейка 104×111: шестиугольник с призом, под ним полоска до приза со
+   снежинкой («Прогресс») или жёлтая кнопка «Забрать» с красным счётчиком */
 
 [data-version="2.3"] .ev-fab {
   right: 24px;
   bottom: 108px;
+  display: block;
   width: 104px;
+  height: 111px;
 }
 
 [data-version="2.3"] .ev-fab-ring,
 [data-version="2.3"] .ev-fab.is-claimable .ev-fab-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
   width: 104px;
   height: 104px;
   border-radius: 0;
@@ -165,6 +173,7 @@
 }
 
 .ev-fab-hex,
+.ev-fab-hex::before,
 .ev-fab-hex span,
 .ev-fab-hex span::before {
   position: absolute;
@@ -172,59 +181,109 @@
   mask: var(--t24-hex) center / 100% 100% no-repeat;
 }
 
-/* тонкая светлая кромка → тёмное кольцо → чуть светлее внутри */
-.ev-fab-hex {
-  left: 0;
-  right: 0;
-  top: 5px;
-  bottom: 5px;
-  background: rgba(255, 255, 255, 0.85);
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+.ev-fab-hex::before,
+.ev-fab-hex span::before {
+  content: '';
 }
 
-.ev-fab-hex span {
-  inset: 1px;
+/* как награда на треке: кромка → тёмная рамка → светлое кольцо → нутро */
+.ev-fab-hex {
+  left: -1.5px;
+  right: -1.5px;
+  top: 6px;
+  bottom: 5px;
   background: #2c2c2e;
 }
 
-.ev-fab-hex span::before {
-  content: '';
-  inset: 4px;
-  background: linear-gradient(180deg, #3d3d40, #262628 75%);
+.ev-fab-hex::before {
+  inset: 0.75px;
+  background: #2c2c2e;
 }
 
+.ev-fab-hex span {
+  inset: 3px;
+  background: #565658;
+}
+
+.ev-fab-hex span::before {
+  inset: 3.5px;
+  background:
+    linear-gradient(180deg, rgba(249, 249, 249, 0.15), rgba(249, 249, 249, 0)),
+    #2c2c2e;
+}
+
+/* приз 59×59 по центру шестиугольника */
 [data-version="2.3"] .ev-fab-prize {
-  position: relative;
+  position: absolute;
+  left: 22px;
+  top: 22px;
   width: 59px;
   height: 59px;
-  margin-top: -6px;
+  margin: 0;
+  object-fit: contain;
+  animation: none;
+  filter: none;
 }
 
-.ev-fab-prize.is-gold {
-  filter: sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.08) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+[data-version="2.3"] .ev-fab-prize[src*="avatars/"] {
+  left: 28px;
+  top: 26px;
+  width: 48px;
+  height: 48px;
 }
 
+[data-version="2.3"] .ev-fab-prize.is-gold {
+  filter: sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.08);
+}
+
+[data-version="2.3"] .ev-fab-extra {
+  display: none;
+}
+
+/* «× 1»: SF 12.6/600, белый с тёмной обводкой 2.2px снаружи */
 .ev-fab-qty {
   position: absolute;
   left: 0;
   right: 0;
-  top: 64px;
-  font-size: 13px;
+  top: 63px;
+  font-family: var(--font-sf);
+  font-size: 12.6px;
+  line-height: 15px;
   font-weight: 600;
+  letter-spacing: -0.3px;
   text-align: center;
   color: #fff;
-  -webkit-text-stroke: 2.2px #202020;
+  -webkit-text-stroke: 4.4px #202020;
   paint-order: stroke fill;
 }
 
-/* полоска до приза: чёрная, жёлтое заполнение, снежинка на левом краю */
+/* монеты в макете мельче: стопка 48px и «× 240» 11px */
+[data-version="2.3"] .ev-fab.is-coins .ev-fab-prize {
+  left: 28px;
+  top: 28px;
+  width: 48px;
+  height: 48px;
+}
+
+.ev-fab.is-coins .ev-fab-qty {
+  top: 65px;
+  font-size: 11.1px;
+  line-height: 13px;
+  letter-spacing: -0.18px;
+}
+
+/* полоска 88×12: чёрная, обводка 2px #202020, жёлтое заполнение */
 [data-version="2.3"] .ev-fab-bar {
+  position: absolute;
+  left: 12px;
+  top: 87px;
   width: 88px;
   height: 12px;
-  margin: -17px 0 0 8px;
+  margin: 0;
   border-radius: 8px;
   background: #000;
   box-shadow: 0 0 0 2px #202020;
+  overflow: hidden;
 }
 
 [data-version="2.3"] .ev-fab-fill {
@@ -242,38 +301,56 @@
 
 [data-version="2.3"] .ev-fab-snow {
   left: 4px;
-  bottom: 0;
+  top: 81px;
+  bottom: auto;
   width: 24px;
   height: 24px;
+  filter: none;
 }
 
-/* приз можно забрать: кромка светится жёлтым, вместо полоски — «Забрать» */
+/* можно забрать: жёлтая кромка 0.75px и свечение, кнопка «Забрать» 76×30 */
 [data-version="2.3"] .ev-fab.is-claimable .ev-fab-hex {
   background: #ffdd2d;
-  filter: drop-shadow(0 0 12px rgba(255, 221, 45, 0.6));
   animation: t24FabGlow 1.4s ease-in-out infinite;
 }
 
 @keyframes t24FabGlow {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 221, 45, 0.4)); }
-  50% { filter: drop-shadow(0 0 18px rgba(255, 221, 45, 0.85)); }
+  0%, 100% { filter: drop-shadow(0 0 9px rgba(255, 221, 45, 0.5)); }
+  50% { filter: drop-shadow(0 0 14px rgba(255, 221, 45, 0.8)); }
 }
 
 [data-version="2.3"] .ev-fab.is-claimable .ev-fab-bar {
-  width: 88px;
-  height: 24px;
-  margin: -20px 0 0;
+  left: 14px;
+  top: 81px;
+  width: 76px;
+  height: 30px;
   border-radius: 100px;
   background: #ffdd2d;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
 }
 
 [data-version="2.3"] .ev-fab.is-claimable .ev-fab-text {
+  display: block;
+  padding: 0;
+  font-family: var(--font-sf);
   font-size: 13px;
-  line-height: 24px;
+  line-height: 30px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #333;
+  -webkit-text-stroke: 0;
 }
 
+/* красный счётчик 18px с белой обводкой 1px */
 [data-version="2.3"] .ev-fab-badge {
-  top: 0;
-  right: 4px;
+  top: 8px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 20px;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  box-shadow: 0 0 0 1px #fff;
 }
