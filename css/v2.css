@@ -845,12 +845,14 @@ a {
   color: #333;
 }
 
+/* счётчик внутри карточки, 14px от правого и верхнего края; пока скрыт */
 .v2home-promo-count {
-  top: -4px;
-  right: -4px;
+  top: 14px;
+  right: 14px;
   z-index: 2;
 }
 
+.v2home-promo-count,
 .v2home-promo-count[hidden] {
   display: none;
 }
