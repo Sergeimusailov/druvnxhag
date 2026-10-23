@@ -1,0 +1,448 @@
+/* Профиль версии 2 по макету Figma 15917:99965 (профиль, подсказка,
+   уведомления, настройки: аватарки / рамки / рубашки / статус, «Сохранить»,
+   «Сохранено», скролл). Всё под [data-app="2"] — версию 3 не трогаем. */
+
+.pf-chev24 {
+  display: none;
+}
+
+/* ---------- Шапка: синяя стрелка iOS 12×24 без подложки, «Профиль» 17/600 ---------- */
+
+[data-app="2"] .pf-back,
+[data-app="2"] #profileSettingsBack {
+  justify-content: flex-start;
+  margin-left: -8px;
+  padding-left: 8px;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: #66a3ff;
+}
+
+[data-app="2"] .pf-back > svg:not(.pf-chev24),
+[data-app="2"] #profileSettingsBack > svg:not(.pf-chev24) {
+  display: none;
+}
+
+[data-app="2"] .pf-chev24 {
+  display: block;
+}
+
+/* ---------- Шапка профиля: рамка 8px снаружи аватара 104 (r16), рубашки ±15° ---------- */
+
+[data-app="2"] .pf-head {
+  padding-top: 14px;
+}
+
+/* профиль открывается с главной поверх разделов — без нижней навигации, как в макете */
+[data-app="2"] .v2-screen.v2-screen-profile {
+  padding-bottom: 40px;
+}
+
+[data-app="2"] .v2-tabbar {
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease;
+}
+
+[data-app="2"] .v2-app.is-profile24 .v2-edge-fade,
+[data-app="2"] .v2-app.is-profile24 .v2-tabbar {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-app="2"] .pf-avatar-wrap {
+  width: 120px;
+  height: 120px;
+}
+
+[data-app="2"] .pf-avatar {
+  width: 120px;
+  height: 120px;
+  padding: 8px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--pf-frame, #fff);
+  box-shadow: none;
+}
+
+[data-app="2"] .pf-avatar img {
+  border-radius: 16px;
+  transform: none;
+}
+
+/* рубашка 75.6px повёрнута на 15° — картинка 93×93 уже с поворотом */
+[data-app="2"] .pf-cardback {
+  top: 36px;
+  width: 93px;
+  height: 93px;
+}
+
+[data-app="2"] .pf-cardback-left {
+  right: auto;
+  left: -75px;
+}
+
+[data-app="2"] .pf-cardback-right {
+  left: 101px;
+}
+
+/* имя: SF Pro Display 30/600, +0.36; статус 17/400 */
+[data-app="2"] .pf-name {
+  margin-top: 18px;
+  padding: 0 24px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0.36px;
+}
+
+[data-app="2"] .pf-status {
+  margin-top: 8px;
+}
+
+/* действия: круги 56px, подпись 13/400 −0.08 */
+[data-app="2"] .pf-actions {
+  padding: 26px 0 24px;
+}
+
+[data-app="2"] .pf-action-label {
+  letter-spacing: -0.08px;
+}
+
+/* ---------- Карточки ---------- */
+
+[data-app="2"] .pf-card {
+  margin: 6px 16px 0;
+  padding: 16px 20px 20px;
+  box-shadow: none;
+}
+
+[data-app="2"] .pf-card-title {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+}
+
+[data-app="2"] .pf-card > .pf-card-title {
+  margin-bottom: 12px;
+}
+
+[data-app="2"] .pf-cell {
+  height: 48px;
+  margin: 0;
+  padding: 0;
+}
+
+[data-app="2"] .pf-cell + .pf-cell {
+  margin-top: 4px;
+}
+
+/* уведомления: карточка 56px с тонкой обводкой (5%), «?» 22px, тумблер */
+[data-app="2"] .pf-card-row {
+  position: relative;
+  min-height: 56px;
+  margin-top: 14px;
+  padding: 16px 16px 16px 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+[data-app="2"] .pf-card-row > .pf-card-title {
+  margin-bottom: 0;
+}
+
+[data-app="2"] .pf-hint {
+  margin-right: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239299A2' fill-rule='evenodd' d='M7.00127 7.13865L7 7.13875V8.02556H5V7.29673C5 5.97549 5.51359 5.72771 6.08414 5.45244C6.1289 5.43085 6.17401 5.41001 6.21925 5.38911C6.47027 5.27313 6.72529 5.15531 6.94666 4.89673C7.77623 4.08314 7.15 2.79673 6.10018 2.80457C5.87118 2.7861 5.64153 2.83129 5.4366 2.93516C5.23168 3.03902 5.05945 3.19751 4.93895 3.39312C4.8917 3.46982 4.85313 3.55106 4.82366 3.63534C4.77801 3.76586 4.75419 3.90406 4.75379 4.04359L2.75 4.03853C2.75305 2.829 3.45184 1.69463 4.53072 1.14782C5.06515 0.876946 5.66406 0.759085 6.26128 0.807256C7.92297 0.941285 9.28663 2.36342 9.3 4.04673C9.31089 5.41699 8.26635 6.72897 7.00127 7.13865ZM5 11H6.3C6.6866 11 7 10.6866 7 10.3V8.99996H5.7C5.3134 8.99996 5 9.31336 5 9.69996V11Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+
+/* тумблер 51×31: выкл — белый 20%, вкл — #428bf9 */
+[data-app="2"] .pf-switch span {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-app="2"] .pf-switch input:checked + span {
+  background: #428bf9;
+}
+
+/* подсказка: #4d4d4d, r8, 15/400 −0.24, хвост справа над «?» */
+[data-app="2"] .pf-tooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 1px);
+  z-index: 5;
+  width: 288px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #4d4d4d;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+  color: #f6f7f8;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+[data-app="2"] .pf-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 9px;
+  width: 24px;
+  height: 8px;
+  background: #4d4d4d;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+[data-app="2"] .pf-tooltip.is-open {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Тост: #4d4d4d, 48px, r24, зелёная галка 24px, 15/400 ---------- */
+
+.pf-toast24 {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 12px 16px 12px 12px;
+  border-radius: 24px;
+  background: #4d4d4d;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #f6f7f8;
+  white-space: nowrap;
+  transform: translate(-50%, -80px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+  pointer-events: none;
+}
+
+.pf-toast24.is-visible {
+  transform: translate(-50%, 0);
+}
+
+.pf-toast24-icon svg {
+  display: block;
+}
+
+/* ---------- Настройки профиля ---------- */
+
+/* шапка вынесена из прокрутки (js/profile24.js): контент обрезается под ней без теней */
+[data-app="2"] .pset-bar24 {
+  position: relative;
+  z-index: 12;
+}
+
+[data-app="2"] .pset-bar24::before {
+  display: none;
+}
+
+[data-app="2"] #profileSettings .pset-scroll {
+  top: 60px;
+  padding-bottom: 0;
+}
+
+/* чипы 36px: выбранный белый с тёмным текстом, остальные #333; 13/600 −0.08 */
+[data-app="2"] #profileSettings .pset-chip-row {
+  top: 0;
+  gap: 8px;
+  padding: 20px 20px 16px 16px;
+}
+
+[data-app="2"] #psetChipRow .v2-chip {
+  height: 36px;
+  padding: 0 14px;
+  background: #333;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
+}
+
+[data-app="2"] #psetChipRow .v2-chip-active {
+  background: transparent;
+  color: #333;
+}
+
+[data-app="2"] #psetChipRow .v2-chip-indicator {
+  height: 36px;
+  border-radius: 30px;
+  background: #fff;
+}
+
+/* сетка 3×99px, шаг 24px; последний ряд — в 124px от низа экрана */
+[data-app="2"] .pset-avatars,
+.pset-grid24 {
+  display: grid;
+  grid-template-columns: repeat(3, 99px);
+  justify-content: space-between;
+  gap: 24px 0;
+  padding: 28px 24px 124px;
+}
+
+.pset-tile24 {
+  position: relative;
+  width: 99px;
+  height: 99px;
+  border-radius: 16px;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pset-tile24:active {
+  transform: scale(0.94);
+}
+
+/* выбранный: синяя обводка 4px с зазором 1px, r17 */
+.pset-tile24.is-selected {
+  outline: 4px solid #428bf9;
+  outline-offset: 1px;
+}
+
+.pset-tile24 > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* рамка: чёрный квадрат, рамка 8px внутрь */
+.pset-frame24 {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: var(--pf-frame);
+}
+
+.pset-frame24::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 8px;
+  background: #000;
+}
+
+/* рубашка: картинка с поворотом 15° — разворачиваем обратно и обрезаем по карте */
+.pset-tile24[data-kind="back"] {
+  overflow: hidden;
+}
+
+.pset-tile24[data-kind="back"] > img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 125px;
+  height: 125px;
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(-15deg);
+}
+
+.pset-tile24[data-kind="back"].is-selected {
+  overflow: visible;
+}
+
+.pset-tile24[data-kind="back"].is-selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px #000;
+}
+
+/* статус: строки 56px, радио 22px (выбран — #428bf9 с галкой, нет — обводка 30%) */
+.pset-status24 {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px 124px;
+}
+
+.pset-status24-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 56px;
+  padding: 0 20px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  text-align: left;
+  color: #f6f7f8;
+}
+
+.pset-status24-item i {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.pset-status24-item i svg {
+  opacity: 0;
+}
+
+.pset-status24-item.is-selected i {
+  background: #428bf9;
+  box-shadow: none;
+}
+
+.pset-status24-item.is-selected i svg {
+  opacity: 1;
+}
+
+/* «Сохранить»: закреплена снизу, отступы фиксированные — кнопка тянется по ширине */
+.pset-save24 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  padding: 16px 48px 32px;
+  background: linear-gradient(rgba(17, 17, 17, 0), rgba(17, 17, 17, 0.9));
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pset-save24.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.pset-save24-btn {
+  width: 100%;
+  height: 56px;
+  border-radius: 16px;
+  background: #ffdd2d;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: -0.41px;
+  color: #333;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.pset-save24-btn:active {
+  transform: scale(0.97);
+}

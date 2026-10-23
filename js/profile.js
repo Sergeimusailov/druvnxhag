@@ -54,6 +54,8 @@ document.getElementById('profileSettingsBack').addEventListener('click', () => {
 });
 
 document.getElementById('psetAvatars').addEventListener('click', (e) => {
+  // версия 2: выбор сохраняется кнопкой «Сохранить» (js/profile24.js)
+  if (!isApp3()) return;
   const btn = e.target.closest('.pset-avatar');
   if (!btn) return;
   applyAvatar(btn.dataset.avatar);
