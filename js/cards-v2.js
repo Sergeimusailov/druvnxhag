@@ -91,6 +91,7 @@
     render();
   });
   document.getElementById('cardSheetClose').addEventListener('click', closeCard);
+  attachSheetSwipe(sheet, closeCard);
   backdrop.addEventListener('click', closeCard);
 
   // версия 3: кнопка-карандаш в шторке ведёт в кастомизацию карты

@@ -684,3 +684,11 @@
   align-self: stretch;
   margin-top: 20px;
 }
+
+.fx-sheet {
+  touch-action: none;
+}
+
+.fx-sheet.is-dragging {
+  transition: none;
+}

@@ -222,7 +222,14 @@ const E23_AFTER_ROW = 226;
 let e22Collapsed = 0;
 let e22Expanded = false;
 
+// версия 2.3 (Figma 16632:163477): шестиугольники через каждые 78px,
+// первая веха — на 118px от верха трека, линия — от самого верха
+const NY24_FIRST = 118;
+const NY24_STEP = 78;
+const isNy24 = () => isAppVersion('2.3');
+
 function e22LevelCenter(level) {
+  if (isNy24() && e22Current && e22Current.id === 'ny') return NY24_FIRST + (level - 1) * NY24_STEP;
   if (!e22Collapsed) return E22_FIRST + (level - 1) * E22_STEP;
   if (level <= e22Collapsed) return E23_ROW_TOP + 18;
   return E23_AFTER_ROW + (level - e22Collapsed - 1) * E22_STEP;
@@ -253,11 +260,66 @@ function e23FinaleHTML(ev) {
 }
 
 
+function e22LineTop() {
+  return isNy24() && e22Current && e22Current.id === 'ny' ? 0 : E22_LINE_TOP;
+}
+
 function e22FillHeight(reached) {
-  return Math.max(0, (reached ? e22LevelCenter(reached) : E22_LINE_TOP) - E22_LINE_TOP);
+  const top = e22LineTop();
+  return Math.max(0, (reached ? e22LevelCenter(reached) : top) - top);
+}
+
+// награды трека в 2.3: шестиугольник с рамкой (серый — закрыто, жёлтый со
+// свечением — можно забрать, зелёный с галкой — получено), количество снизу
+const NY24_ITEMS = {
+  coins: { src: 'assets/v2-ny-coins.png', alt: 'Монеты', qty: '× 240' },
+  ticket: { src: 'assets/v2-ny-ticket.png', alt: 'Билет на розыгрыш', cls: 'is-gold' },
+};
+
+function ny24LevelHTML(ev, level) {
+  const type = ev.rewards[level - 1];
+  const isReached = ev.shown >= level;
+  const isTaken = ev.claimed.has(level);
+  const side = level % 2 ? 'is-left' : 'is-right';
+  const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
+  const [main] = type.split('+').reverse();
+  const item = NY24_ITEMS[main] || { ...REWARD_ITEMS[main] };
+  const qty = item.qty || (type.includes('coins+') ? '+ монеты' : '');
+  let action = '';
+  if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
+  else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
+  return `<div class="ev-level ny24-level ${side} ${state}${isReached ? ' is-reached' : ''}" data-level="${level}" style="top:${e22LevelCenter(level) - 70}px">
+    <span class="ev-link"></span>
+    <span class="ev-node is-cost">${ev.thresholds[level - 1]}</span>
+    <div class="ev-card">
+      <span class="ny24-hex"><span></span></span>
+      <img class="ev-card-item ${item.cls || ''}" src="${item.src}" alt="${item.alt}">
+      ${qty ? `<span class="ny24-qty">${qty}</span>` : ''}
+      ${action}
+    </div>
+  </div>`;
+}
+
+// блок билетов в конце трека (Figma «Блок билеты»)
+function ny24FinaleHTML(ev) {
+  const tickets = ev.rewards.map((r, i) => (r === 'ticket' ? i + 1 : 0)).filter(Boolean);
+  const got = tickets.filter((l) => ev.claimed.has(l)).length;
+  const icons = tickets.map((l) => `<img class="${ev.claimed.has(l) ? 'is-gold' : ''}" src="assets/v2-ny-ticket.png" alt="">`).join('');
+  const text = got === tickets.length
+    ? 'Все билеты собраны — вы участвуете в розыгрыше 25 декабря'
+    : `Соберите все ${tickets.length} билетов и участвуйте в розыгрыше 25 декабря`;
+  return `<button class="ny24-tickets" data-tickets>
+      <span class="ny24-tickets-row">${icons}</span>
+      <span class="ny24-tickets-text">${text}</span>
+    </button>
+    <div class="ny24-demos">
+      <button class="e23-demo" data-demo-tasks>Демо: выполнить задания</button>
+      <button class="e23-demo" data-fill-track>Демо: заполнить трек</button>
+    </div>`;
 }
 
 function e22LevelHTML(ev, level) {
+  if (isNy24() && ev.id === 'ny') return ny24LevelHTML(ev, level);
   const type = ev.rewards[level - 1];
   const isReached = ev.shown >= level;
   const isTaken = ev.claimed.has(level);
@@ -283,7 +345,34 @@ function e22LevelHTML(ev, level) {
   </div>`;
 }
 
+function renderTrackNy24(ev) {
+  const n = ev.rewards.length;
+  e22Collapsed = 0;
+  const lineEnd = e22LevelCenter(n) + 70 + 24;
+  e22Track.innerHTML = `
+    <div class="ev-track e22-track ny24-track" style="height:${lineEnd + 260}px">
+      <span class="e23-hex"><span class="e23-hex-in"><img src="${CURRENCY_ICONS[ev.currency]}" alt=""><span data-pin-count>${ev.seenPoints ?? ev.points}</span></span></span>
+      <span class="ev-track-line" style="top:0;height:${lineEnd}px"></span>
+      <span class="ev-track-fill" style="top:0;height:${e22FillHeight(ev.shown)}px"></span>
+      ${ev.rewards.map((_, i) => e22LevelHTML(ev, i + 1)).join('')}
+      <div class="ny24-fin" style="top:${lineEnd}px">${ny24FinaleHTML(ev)}</div>
+    </div>`;
+  updateSnowbar23();
+  updateTickets24(ev);
+}
+
+// счётчик билетов в шапке: «N из 5» — сколько билетов уже забрано с трека
+function updateTickets24(ev) {
+  const tickets = ev.rewards.map((r, i) => (r === 'ticket' ? i + 1 : 0)).filter(Boolean);
+  const got = tickets.filter((l) => ev.claimed.has(l)).length;
+  document.getElementById('e22TicketCount').textContent = `${got} из ${tickets.length}`;
+}
+
 function renderTrack22(ev) {
+  if (isNy24() && ev.id === 'ny') {
+    renderTrackNy24(ev);
+    return;
+  }
   const n = ev.rewards.length;
   const ny23 = isNy23(ev);
   e22Collapsed = 0;
@@ -355,6 +444,8 @@ function openEvent22(id) {
   e22Expanded = false;
   // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
   e22Screen.classList.add('is-v21');
+  e22Screen.classList.toggle('is-ny24', isNy24() && id === 'ny');
+  if (isNy24() && id === 'ny') centerPrizes24();
   e22Screen.style.setProperty('--c1', ev.colors[0]);
   e22Screen.style.setProperty('--c2', ev.colors[1]);
   document.getElementById('e22Title').textContent = ev.title;
@@ -417,29 +508,24 @@ function renderPreview23() {
   const total = pack.length;
   const done = pack.filter((i) => i.task.state === 'done').length;
   const ready = pack.filter((i) => i.task.state === 'claimable').length;
-  // выполненным считается и задание, награду за которое ещё не забрали
   const completed = done + ready;
   const finished = total && completed === total && !ready;
-
-  // задания — отдельные круги без перемычек (это не прогрессия): зелёный с
-  // галкой — выполнено (с жёлтым ободком — награду ещё не забрали), тёмный со
-  // снежинкой и «+20» — ещё можно сделать
-  const nodes = pack.map(({ snow }, i) => {
+  // 2.3 (Figma «Превью заданий»): заголовок со стрелкой, таймер, 5 сегментов
+  // (зелёный — выполнено, жёлтый — выполнено, награду не забрали) и счётчик
+  const segs = pack.map((_, i) => {
     const state = i < done ? 'is-done' : i < completed ? 'is-ready' : '';
-    const inner = i < completed ? CHECK_ICON : `<img src="${CURRENCY_ICONS.snow}" alt=""><span class="e23-dot-label">+${snow}</span>`;
-    return `<span class="e23-dot ${state}">${inner}</span>`;
+    return `<span class="e23-dot ny24-seg ${state}"></span>`;
   }).join('');
-
-  // вся карточка ведёт в «Задания»; таймер — бейдж справа от заголовка
-  const label = ready ? `Задания дня. Забрать награды: ${ready}` : 'Задания дня. Перейти к заданиям';
+  const chevron = '<svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   e23Preview.classList.toggle('is-finished', !!finished);
   e23Preview.innerHTML = `
-    <button class="e23-card-link" data-tab="daily" aria-label="${label}"></button>
+    <button class="e23-card-link" data-tab="daily" aria-label="Задания дня — перейти к заданиям"></button>
     <div class="e23-top">
-      <span class="e23-title">Задания дня</span>
+      <span class="e23-title">Задания дня ${chevron}</span>
       <span class="e23-timer-badge">${CLOCK_SVG}<span data-e23-timer>${packTimer23()}</span></span>
     </div>
-    <div class="e23-tasks">${nodes}</div>`;
+    <div class="e23-tasks ny24-segs">${segs}</div>
+    <div class="ny24-seg-labels"><span>Выполнено заданий</span><span>${completed} / ${total}</span></div>`;
   e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';
 }
 
@@ -543,6 +629,14 @@ e23Demo.addEventListener('click', () => {
 e22Track.addEventListener('click', (e) => {
   const ev = e22Current;
   if (!ev) return;
+  if (e.target.closest('[data-tickets]')) {
+    openTicketsSheet24();
+    return;
+  }
+  if (e.target.closest('[data-demo-tasks]')) {
+    e23Demo.click();
+    return;
+  }
   if (e.target.closest('.e23-collapsed')) {
     e22Expanded = true;
     renderTrack22(ev);
@@ -560,7 +654,8 @@ e22Track.addEventListener('click', (e) => {
     e22Expanded = false;
     renderTrack22(ev);
     renderEntries22();
-    const fin = e22Track.querySelector('.e23-fin');
+    if (isNy24()) updateTickets24(ev);
+    const fin = e22Track.querySelector('.e23-fin, .ny24-fin');
     e22Scroll.scrollTo({ top: e22Scroll.scrollTop + fin.getBoundingClientRect().top - 140, behavior: 'smooth' });
   }
 });
@@ -694,12 +789,20 @@ e22Track.addEventListener('click', async (e) => {
     fly.remove();
   }
   ev.claimed.add(level);
+  if (isNy24() && ev.id === 'ny') {
+    updateTickets24(ev);
+    const fin = e22Track.querySelector('.ny24-fin');
+    if (fin) fin.innerHTML = ny24FinaleHTML(ev);
+  }
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
   levelEl.outerHTML = e22LevelHTML(ev, level);
   e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`).classList.add('is-pop');
   if (isAppVersion('2.2')) updateRewardsDot22();
   e22ClaimBusy = false;
 });
+
+// версия 2: промо-карточка розыгрыша на главной ведёт в событие
+document.getElementById('v2HomePromo')?.addEventListener('click', () => openNyFromHome());
 
 e22Entries.addEventListener('click', (e) => {
   const entry = e.target.closest('[data-event]');
@@ -753,6 +856,12 @@ function nyIntroSeen() {
 
 // виджет на главной (2.1): первый раз — правила, затем событие
 function openNyFromHome() {
+  // 2.3: при первом заходе — событие и сразу шторка-онбординг поверх него
+  if (isNy24()) {
+    openEvent22('ny');
+    if (!nyIntroSeen()) setTimeout(() => nySheets.onboard.open(), 450);
+    return;
+  }
   if (nyIntroSeen()) openEvent22('ny');
   else openNyIntro(() => openEvent22('ny'));
 }
@@ -768,3 +877,81 @@ setInterval(() => {
 renderEntries22();
 if (INITIAL_HASH === 'event') openNyFromHome();
 syncEventFab23(currentScreen);
+
+/* ---------- 2.3: шторки события — онбординг, вопросы, билеты ---------- */
+
+const nyBsBackdrop = document.getElementById('nyBsBackdrop');
+const nySheets = {
+  onboard: bottomSheet(document.getElementById('nyOnboardSheet'), nyBsBackdrop, {
+    onClose: () => { try { localStorage.setItem(NY_INTRO_KEY, '1'); } catch (e) { /* ignore */ } },
+  }),
+  faq: bottomSheet(document.getElementById('nyFaqSheet'), nyBsBackdrop),
+  tickets: bottomSheet(document.getElementById('nyTicketsSheet'), nyBsBackdrop),
+};
+
+const NY_FAQ = [
+  ['Как победить в матче?', 'Выкладывайте карты на поле: если ваша сторона сильнее соседней карты соперника, она становится вашей. Побеждает тот, у кого больше клеток в конце матча.'],
+  ['Какие награды можно получить в конце матча?', 'За победу — опыт и подарки: карты, рамки и аватарки. За поражение — немного опыта.'],
+  ['Зачем нужны монеты?', 'За монеты в магазине открываются лутбоксы с картами, рамками и бустерами.'],
+  ['Сколько ходов в игре и как они устроены?', 'Ходите по очереди, по одной карте за ход, пока на поле 3×3 не закончатся свободные клетки.'],
+  ['Как устроена энергия?', 'Энергия копится за задания и открывает сундуки на шкале в разделе «Задания».'],
+  ['Сколько карт можно разыграть за один ход?', 'Одну. На руке у вас три карты, после хода добирается новая из колоды.'],
+  ['Где хранятся карты?', 'В разделе «Карты»: сверху ваша колода из 8 карт, ниже — вся коллекция.'],
+  ['Какая редкость бывает у карт?', 'Зелёная, синяя и фиолетовая — чем выше сумма сторон, тем реже карта.'],
+  ['Что такое сила и энергия карт?', 'Цифры по сторонам карты — её сила в каждом направлении. Чем больше число, тем легче захватить соседнюю карту.'],
+  ['Что делать с дубликатами карт?', 'Пока дубликаты просто остаются в коллекции — позже их можно будет обменять.'],
+];
+const faqChevron = '<svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+document.getElementById('nyFaqList').innerHTML = NY_FAQ.map(([q, a]) => `
+  <div class="bs-faq-item">
+    <button class="bs-faq-q"><span>${q}</span>${faqChevron}</button>
+    <p class="bs-faq-a">${a}</p>
+  </div>`).join('');
+document.getElementById('nyFaqList').addEventListener('click', (e) => {
+  const q = e.target.closest('.bs-faq-q');
+  if (q) q.parentElement.classList.toggle('is-open');
+});
+
+function openTicketsSheet24() {
+  const ev = EVENTS22.list.ny;
+  const levels = ev.rewards.map((r, i) => (r === 'ticket' ? i + 1 : 0)).filter(Boolean);
+  document.getElementById('nyTicketsList').innerHTML = levels.map((l, i) => (ev.claimed.has(l)
+    ? `<div class="bs-ticket is-got"><b>Билет №${String(482917 + l * 7331).replace(/(\d{3})(?=\d)/g, '$1-')}</b><span>Получен 20 декабря</span></div>`
+    : `<div class="bs-ticket"><b>Билет не получен</b><span>Соберите ${ev.thresholds[l - 1]} снежинок</span></div>`)).join('');
+  nySheets.tickets.open();
+}
+
+document.getElementById('e22Tickets').addEventListener('click', () => { if (isNy24()) openTicketsSheet24(); });
+document.getElementById('ny24Help').addEventListener('click', () => nySheets.faq.open());
+document.getElementById('nyTicketsCta').addEventListener('click', () => {
+  nySheets.tickets.close();
+  closeEvent22();
+  showScreen('tasks');
+  tasksTabs.select('daily');
+});
+
+// лента призов: по центру — суперприз, соседние карточки меньше и повёрнуты
+const ny24Prizes = document.getElementById('ny24Prizes');
+
+function markPrizes24() {
+  const mid = ny24Prizes.scrollLeft + ny24Prizes.clientWidth / 2;
+  const cards = [...ny24Prizes.children];
+  let center = 0;
+  cards.forEach((c, i) => {
+    const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+    const best = Math.abs(cards[center].offsetLeft + cards[center].offsetWidth / 2 - mid);
+    if (d < best) center = i;
+  });
+  cards.forEach((c, i) => {
+    c.classList.toggle('is-side', i !== center);
+    c.classList.toggle('is-after', i > center);
+  });
+}
+
+function centerPrizes24() {
+  const card = ny24Prizes.children[1];
+  ny24Prizes.scrollLeft = card.offsetLeft + card.offsetWidth / 2 - ny24Prizes.clientWidth / 2;
+  markPrizes24();
+}
+
+if (ny24Prizes) ny24Prizes.addEventListener('scroll', markPrizes24, { passive: true });

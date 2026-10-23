@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610150946"></script>
+  <script src="js/device-frame.js?v=202610231554"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610150946"></script>
+  <script src="js/version.js?v=202610231554"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610150946">
-  <link rel="stylesheet" href="css/v2.css?v=202610150946">
-  <link rel="stylesheet" href="css/profile.css?v=202610150946">
-  <link rel="stylesheet" href="css/tasks.css?v=202610150946">
-  <link rel="stylesheet" href="css/gifts.css?v=202610150946">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610150946">
-  <link rel="stylesheet" href="css/shop.css?v=202610150946">
-  <link rel="stylesheet" href="css/v22.css?v=202610150946">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610150946">
-  <link rel="stylesheet" href="css/v3.css?v=202610150946">
-  <link rel="stylesheet" href="css/event.css?v=202610150946">
+  <link rel="stylesheet" href="css/match.css?v=202610231554">
+  <link rel="stylesheet" href="css/v2.css?v=202610231554">
+  <link rel="stylesheet" href="css/profile.css?v=202610231554">
+  <link rel="stylesheet" href="css/tasks.css?v=202610231554">
+  <link rel="stylesheet" href="css/gifts.css?v=202610231554">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610231554">
+  <link rel="stylesheet" href="css/shop.css?v=202610231554">
+  <link rel="stylesheet" href="css/v22.css?v=202610231554">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610231554">
+  <link rel="stylesheet" href="css/ny24.css?v=202610231554">
+  <link rel="stylesheet" href="css/v3.css?v=202610231554">
+  <link rel="stylesheet" href="css/event.css?v=202610231554">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -95,7 +96,21 @@
           <div class="ev-widget-bar"><span class="ev-widget-fill" id="eventWidgetFill"></span></div>
           <img class="ev-widget-ball-small" src="assets/v2-event-ball-small.png" alt="">
           <img class="ev-widget-ball" src="assets/v2-event-ball.png" alt="">
-          <span class="e22-badge ev-widget-badge" id="eventWidgetBadge" hidden></span>
+        </div>
+        <!-- версия 2 (Figma 16779:132998): промо розыгрыша, «Найти матч», «Тренироваться» -->
+        <div class="v2home v2-only">
+          <button class="v2home-promo" id="v2HomePromo" aria-label="Разыграем денежные призы — участвовать">
+            <img class="v2home-promo-money" src="assets/v2-home-promo-money.png" alt="">
+            <span class="v2home-promo-glow"></span>
+            <span class="v2home-badge"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>До конца 14 дней</span>
+            <span class="v2home-promo-title">Разыграем денежные призы</span>
+            <span class="v2home-promo-btn">Участвовать</span>
+            <span class="e22-badge v2home-promo-count" id="eventWidgetBadge" hidden></span>
+          </button>
+          <div class="v2home-col">
+            <a class="v2home-match" href="match.html"><span>Найти матч</span><img src="assets/v2-home-gamepad.png" alt=""></a>
+            <a class="v2home-train" href="onboarding.html"><span>Тренироваться</span></a>
+          </div>
         </div>
         <!-- версия 2.2: два события на главной (js/events22.js) -->
         <div class="e22-entries" id="e22Entries"></div>
@@ -548,6 +563,7 @@
           <div class="v2-appbar-title" id="e22Title"></div>
           <span class="e23-snowbar" id="e23Snowbar" aria-hidden="true"><span class="e23-hex-in"><img src="assets/v2-cur-snow.png" alt=""><span id="e23SnowbarCount"></span></span></span>
           <span class="e22-tickets" id="e22Tickets"><img src="assets/v2-ticket-icon.png" alt="Билеты"><span id="e22TicketCount">12</span></span>
+          <button class="ny24-help" id="ny24Help" aria-label="Ответы на вопросы">?</button>
           <button class="v2-icon-btn v2-glass" id="e22Info" aria-label="Об событии" style="color: #e8e8e8">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM10.75 10.5H13.25V17H10.75V10.5ZM12 6C12.828 6 13.5 6.672 13.5 7.5C13.5 8.328 12.828 9 12 9C11.172 9 10.5 8.328 10.5 7.5C10.5 6.672 11.172 6 12 6Z" fill="currentColor"/></svg>
           </button>
@@ -560,6 +576,17 @@
           <div class="e22-actions">
             <button class="e22-cta" id="e22Cta">К заданиям</button>
             <button class="e22-cta e22-cta-ghost" id="e22About">О розыгрыше</button>
+          </div>
+        </div>
+        <!-- версия 2.3 (Figma 16632:163477): обложка розыгрыша с лентой призов -->
+        <div class="ny24-head">
+          <span class="ny24-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 11.25C8.8995 11.25 11.25 8.8995 11.25 6C11.25 3.10051 8.8995 0.75 6 0.75C3.10051 0.75 0.75 3.10051 0.75 6C0.75 8.8995 3.10051 11.25 6 11.25ZM5.625 2.98027H5.25L5.25054 6.75L7.99411 8.06583L8.15245 7.72627C8.41503 7.16317 8.1714 6.49381 7.6083 6.23123L6.75 5.79451V4.10527C6.75 3.48395 6.24632 2.98027 5.625 2.98027Z" fill="currentColor"/></svg>До конца 14 дней</span>
+          <h1 class="ny24-title">Новогодний розыгрыш</h1>
+          <p class="ny24-desc">Выполняйте задания, собирайте билеты<br>и участвуйте в розыгрыше денежных призов</p>
+          <div class="ny24-prizes" id="ny24Prizes">
+            <div class="ny24-prize "><p class="ny24-prize-title">150 000 ₽<br>на путешествие</p><p class="ny24-prize-sub">5 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
+            <div class="ny24-prize "><p class="ny24-prize-title">1 000 000 ₽</p><p class="ny24-prize-sub">1 суперприз</p><img src="assets/v2-ny-money2.png" alt=""></div>
+            <div class="ny24-prize "><p class="ny24-prize-title">100 000 ₽<br>на смартфон</p><p class="ny24-prize-sub">10 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
           </div>
         </div>
         <!-- версия 2.3: превью заданий со снежинками (задания живут в разделе «Задания») -->
@@ -692,20 +719,42 @@
       <p class="card-sheet-hint" id="cardSheetHint"></p>
     </div>
 
+    <!-- версия 2.3: шторки новогоднего события (js/sheets.js — общее поведение) -->
+    <div class="bs-backdrop" id="nyBsBackdrop"></div>
+    <section class="bs bs-tall bs-onboard" id="nyOnboardSheet" aria-hidden="true" role="dialog" aria-label="Новогоднее событие">
+      <div class="bs-grab"><span></span></div>
+      <div class="bs-onboard-pic"><img src="assets/v2-ny-onboarding.png" alt=""><span>Новогоднее событие</span></div>
+      <h2 class="bs-onboard-title">Разыграем денежные призы</h2>
+      <p class="bs-onboard-text">Выполняйте задания, двигайтесь по треку и собирайте билеты</p>
+      <button class="bs-cta" data-sheet-close>Хочу выиграть миллионы</button>
+    </section>
+    <section class="bs bs-tall" id="nyFaqSheet" aria-hidden="true" role="dialog" aria-label="Ответы на вопросы">
+      <div class="bs-grab"><span></span></div>
+      <h2 class="bs-title">Ответы на вопросы</h2>
+      <div class="bs-scroll"><div class="bs-faq" id="nyFaqList"></div></div>
+    </section>
+    <section class="bs" id="nyTicketsSheet" aria-hidden="true" role="dialog" aria-label="Билеты на розыгрыш">
+      <div class="bs-grab"><span></span></div>
+      <h2 class="bs-title">Билеты на розыгрыш</h2>
+      <p class="bs-sub">Выполняйте ежедневные задания, чтобы<br>получать билеты</p>
+      <div class="bs-tickets" id="nyTicketsList"></div>
+      <button class="bs-cta" id="nyTicketsCta">К заданиям</button>
+    </section>
   </main>
 
-  <script src="js/cards.js?v=202610150946"></script>
-  <script src="js/v2.js?v=202610150946"></script>
-  <script src="js/profile.js?v=202610150946"></script>
-  <script src="js/t-ads.js?v=202610150946"></script>
-  <script src="js/tasks22.js?v=202610150946"></script>
-  <script src="js/tasks.js?v=202610150946"></script>
-  <script src="js/card-custom.js?v=202610150946"></script>
-  <script src="js/cards-v2.js?v=202610150946"></script>
-  <script src="js/shop.js?v=202610150946"></script>
-  <script src="js/gifts.js?v=202610150946"></script>
-  <script src="js/event.js?v=202610150946"></script>
-  <script src="js/events22.js?v=202610150946"></script>
-  <script src="js/v3.js?v=202610150946"></script>
+  <script src="js/cards.js?v=202610231554"></script>
+  <script src="js/v2.js?v=202610231554"></script>
+  <script src="js/sheets.js?v=202610231554"></script>
+  <script src="js/profile.js?v=202610231554"></script>
+  <script src="js/t-ads.js?v=202610231554"></script>
+  <script src="js/tasks22.js?v=202610231554"></script>
+  <script src="js/tasks.js?v=202610231554"></script>
+  <script src="js/card-custom.js?v=202610231554"></script>
+  <script src="js/cards-v2.js?v=202610231554"></script>
+  <script src="js/shop.js?v=202610231554"></script>
+  <script src="js/gifts.js?v=202610231554"></script>
+  <script src="js/event.js?v=202610231554"></script>
+  <script src="js/events22.js?v=202610231554"></script>
+  <script src="js/v3.js?v=202610231554"></script>
 </body>
 </html>

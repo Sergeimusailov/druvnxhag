@@ -1,0 +1,751 @@
+/* Версия 2.3: новогодний ивент по макету Figma 16632:163477 и шторки
+   (онбординг 16825:18801, вопросы 16794:160796, билеты 16807:166071/165501) */
+
+/* ---------- Экран ---------- */
+
+.e22.is-ny24 {
+  background: #000;
+}
+
+/* фон как на главной, притушенный на 50% (в макете — тёмно-фиолетовые пятна) */
+[data-version="2.3"] .e22.is-ny24 #e22Scroll {
+  background:
+    linear-gradient(transparent 1400px, #000 1916px) center top / 100% 1916px no-repeat,
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('../assets/v2-bg.png') center top / 100% 1916px no-repeat,
+    #000;
+  background-attachment: local;
+}
+
+.e22.is-ny24 .e22-glow,
+.e22.is-ny24 .e22-head,
+.e22.is-ny24 #e23Demo,
+.e22.is-ny24 .e23-snowbar,
+.e22.is-ny24 #e22Info,
+.e22.is-ny24 #e22Title {
+  display: none !important;
+}
+
+.ny24-head,
+.ny24-help {
+  display: none;
+}
+
+/* шапка: назад слева, справа «билеты N из 5» и «?» */
+.e22.is-ny24 .v2-appbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.e22.is-ny24 #e22Back {
+  margin-right: auto;
+}
+
+.e22.is-ny24 .e22-tickets {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px 0 6px;
+  border-radius: 100px;
+  background: #fff;
+  font-family: var(--font-sf);
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.e22.is-ny24 .e22-tickets img {
+  width: 24px;
+  height: 24px;
+}
+
+.e22.is-ny24 .ny24-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  font-weight: 800;
+  color: #1c1c1e;
+}
+
+/* ---------- Обложка ---------- */
+
+.e22.is-ny24 .ny24-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 24px;
+  text-align: center;
+}
+
+.ny24-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  color: #f6f7f8;
+}
+
+.ny24-title {
+  margin-top: 8px;
+  padding: 0 16px;
+  white-space: nowrap;
+  letter-spacing: -0.4px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.ny24-desc {
+  margin-top: 8px;
+  padding: 0 24px;
+  font-size: 15px;
+  line-height: 18px;
+  color: #f6f7f8;
+}
+
+/* лента призов: по центру крупная карточка, по бокам выглядывают соседние */
+.ny24-prizes {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 24px;
+  padding: 0 calc(50% - 108px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.ny24-prizes::-webkit-scrollbar {
+  display: none;
+}
+
+.ny24-prize {
+  position: relative;
+  flex: 0 0 216px;
+  height: 240px;
+  padding: 16px 18px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, #2c2c2e, #1c1c1e);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+  text-align: left;
+  scroll-snap-align: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* соседние карточки меньше и чуть повёрнуты, как в макете */
+.ny24-prize.is-side {
+  transform: scale(0.8) rotate(-4deg);
+}
+
+.ny24-prize.is-side.is-after {
+  transform: scale(0.8) rotate(4deg);
+}
+
+.ny24-prize-title {
+  position: relative;
+  z-index: 1;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ny24-prize-sub {
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ny24-prize img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 216px;
+  pointer-events: none;
+}
+
+/* ---------- Превью заданий ---------- */
+
+[data-version="2.3"] .e22.is-ny24 .e23-preview {
+  position: relative;
+  z-index: 1;
+  margin: 0 24px;
+  padding: 17px 21px 33px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.e22.is-ny24 .e23-preview .e23-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.e22.is-ny24 .e23-timer-badge {
+  background: #333;
+}
+
+.e22.is-ny24 .e23-preview .ny24-segs {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 24px 0 0;
+}
+
+[data-version="2.3"] .e22.is-ny24 .e23-dot.ny24-seg {
+  flex: 1;
+  width: auto;
+  height: 12px;
+  border-radius: 20px;
+  background: #333335;
+  box-shadow: none;
+  animation: none;
+}
+
+[data-version="2.3"] .e22.is-ny24 .e23-dot.ny24-seg.is-done {
+  background: #00d635;
+}
+
+[data-version="2.3"] .e22.is-ny24 .e23-dot.ny24-seg.is-ready {
+  background: #ffdd2d;
+}
+
+.ny24-seg-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 16px;
+  color: #9299a2;
+}
+
+/* ---------- Трек ---------- */
+
+[data-version="2.3"] .e22.is-ny24 .v2-tab-content {
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+  overflow: visible;
+}
+
+.e22.is-ny24 .e22-panel {
+  padding-top: 0;
+}
+
+.ny24-track .ev-track-line,
+.ny24-track .ev-track-fill {
+  left: 50%;
+  width: 8px;
+  margin-left: -4px;
+  border-radius: 0 0 8px 8px;
+}
+
+.ny24-track .ev-track-line {
+  background: #2c2c2e;
+}
+
+.e22.is-v21 .ny24-track .ev-track-fill {
+  background: #ffdd2d;
+}
+
+/* счётчик снежинок — жёлтая плашка на стыке превью и трека */
+[data-version="2.3"] .e22.is-ny24 .ny24-track .e23-hex {
+  top: -17px;
+  z-index: 3;
+  height: 32px;
+}
+
+[data-version="2.3"] .e22.is-ny24 .ny24-track .e23-hex-in {
+  gap: 2px;
+  height: 32px;
+  padding: 0 10px 0 4px;
+  border-radius: 12px;
+  background: #ffdd2d;
+  box-shadow: 0 0 0 2px #000, 0 0 12px rgba(0, 0, 0, 0.8);
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+[data-version="2.3"] .e22.is-ny24 .ny24-track .e23-hex-in img {
+  width: 28px;
+  height: 28px;
+}
+
+/* веха: шестиугольник 140px слева/справа, перемычка к линии и плашка порога */
+.ny24-level .ev-card {
+  width: 140px;
+  height: 140px;
+}
+
+.ny24-level.is-left .ev-card {
+  right: calc(50% + 40px);
+}
+
+.ny24-level.is-right .ev-card {
+  left: calc(50% + 40px);
+}
+
+.ny24-level .ev-link {
+  top: 66px;
+  width: 44px;
+  height: 8px;
+  border-radius: 0;
+  background: #2c2c2e;
+}
+
+.ny24-level.is-left .ev-link {
+  right: 50%;
+}
+
+.ny24-level.is-right .ev-link {
+  left: 50%;
+}
+
+.e22.is-v21 .ny24-track .ny24-level.is-reached .ev-link {
+  background: #ffdd2d;
+}
+
+.ny24-level .ev-node.is-cost {
+  top: 61px;
+  z-index: 2;
+  min-width: 48px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 6px;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+}
+
+.ny24-level .ev-node.is-cost::before {
+  inset: 0;
+  border-radius: 6px;
+  clip-path: none;
+  transform: none;
+  background: #5ca8fe;
+  box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.ny24-level .ev-node.is-cost {
+  color: #fff;
+}
+
+.e22.is-v21 .ny24-track .ny24-level.is-reached .ev-node.is-cost {
+  color: #000;
+  filter: none;
+}
+
+.e22.is-v21 .ny24-track .ny24-level.is-reached .ev-node.is-cost::before {
+  background: #ffdd2d;
+  box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+/* шестиугольник: рамка (цвет по состоянию) и тёмное нутро с отблеском */
+.ny24-hex,
+.ny24-hex span {
+  position: absolute;
+  -webkit-mask: var(--hex) center / 100% 100% no-repeat;
+  mask: var(--hex) center / 100% 100% no-repeat;
+}
+
+/* скруглённый шестиугольник из макета (138×125) */
+.ny24-hex {
+  --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 138 125' preserveAspectRatio='none'%3E%3Cpath d='M2.95 73.35C-.98 66.55-.98 58.16 2.95 51.35L26.25 11C30.18 4.19 37.44 0 45.3 0H91.9C99.75 0 107.02 4.19 110.95 11L134.25 51.35C138.18 58.16 138.18 66.55 134.25 73.35L110.95 113.71C107.02 120.51 99.75 124.71 91.9 124.71H45.3C37.44 124.71 30.18 120.51 26.25 113.71Z'/%3E%3C/svg%3E");
+  top: 5px;
+  bottom: 5px;
+  left: -2px;
+  right: -2px;
+  background: #2c2c2e;
+}
+
+.ny24-hex span {
+  inset: 4px;
+  background: linear-gradient(180deg, #3a3a3c, #232325 70%);
+}
+
+.ny24-level.is-claimable .ny24-hex {
+  background: #ffdd2d;
+}
+
+.ny24-level.is-claimable .ev-card {
+  filter: drop-shadow(0 0 18px rgba(255, 221, 45, 0.55));
+}
+
+.ny24-level.is-taken .ny24-hex {
+  background: #00d635;
+}
+
+.ny24-level .ev-card-item {
+  top: 34px;
+  left: 38px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.ny24-level.is-locked .ev-card-item {
+  opacity: 1;
+}
+
+.ev-card-item.is-gold,
+.ny24-tickets-row img.is-gold {
+  filter: sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.08);
+}
+
+.ny24-qty {
+  position: absolute;
+  top: 92px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  font-family: var(--font-rounded);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  -webkit-text-stroke: 3px #202020;
+  paint-order: stroke fill;
+}
+
+.ny24-level .ev-card-claim {
+  top: 114px;
+  left: 32px;
+  width: 76px;
+  height: 30px;
+  padding: 0;
+  border-radius: 100px;
+  background: #ffdd2d;
+  font-size: 13px;
+  font-weight: 400;
+  color: #333;
+}
+
+.ny24-level .ev-card-taken {
+  top: 114px;
+  left: 55px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #00d635;
+  box-shadow: 0 0 0 2px #2c2c2e;
+  color: #333;
+}
+
+/* блок билетов в конце трека */
+.ny24-fin {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  padding-top: 32px;
+}
+
+.ny24-tickets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 25px 24px 24px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.ny24-tickets-row {
+  display: flex;
+  gap: 11px;
+}
+
+.ny24-tickets-row img {
+  width: 43px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.ny24-tickets-text {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ny24-demos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 12px;
+}
+
+[data-version="2.3"] .ny24-demos .e23-demo {
+  display: block;
+  margin: 0;
+}
+
+/* ---------- Шторки (bottom sheet) ---------- */
+
+.bs-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.bs-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 96px);
+  padding: 32px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  border-radius: 24px 24px 0 0;
+  background: #1c1c1e;
+  color: #f6f7f8;
+  transform: translateY(105%);
+  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+  touch-action: none;
+}
+
+.bs.is-open {
+  transform: translateY(0);
+}
+
+.bs.is-dragging {
+  transition: none;
+}
+
+.bs-tall {
+  height: calc(100% - 96px);
+}
+
+.bs-grab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  cursor: grab;
+}
+
+.bs-grab span {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.bs-title {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bs-sub {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 20px;
+  text-align: center;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.bs-cta {
+  flex-shrink: 0;
+  height: 56px;
+  margin-top: 24px;
+  border-radius: 16px;
+  background: #ffdd2d;
+  font-size: 17px;
+  color: #333;
+  transition: transform 0.15s ease;
+}
+
+.bs-cta:active {
+  transform: scale(0.97);
+}
+
+.bs-scroll {
+  flex: 1;
+  min-height: 0;
+  margin-top: 20px;
+  overflow-y: auto;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+
+/* онбординг: картинка во всю ширину, заголовок, текст, кнопка внизу */
+.bs-onboard {
+  padding-top: 0;
+  overflow: hidden;
+}
+
+.bs-onboard .bs-grab span {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.bs-onboard-pic {
+  position: relative;
+  flex-shrink: 1;
+  min-height: 0;
+  margin: 0 -16px;
+  height: 377px;
+}
+
+.bs-onboard-pic img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bs-onboard-pic span {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  font-size: 17px;
+  text-align: center;
+  color: #333;
+}
+
+.bs-onboard-title {
+  margin-top: 24px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bs-onboard-text {
+  margin-top: 16px;
+  font-size: 17px;
+  line-height: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.bs-onboard .bs-cta {
+  margin-top: auto;
+}
+
+/* вопросы: список в карточке, ответ раскрывается по тапу */
+.bs-faq {
+  border-radius: 24px;
+  background: #2c2c2e;
+  padding: 6px 0;
+}
+
+.bs-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 20px;
+  font-size: 17px;
+  line-height: 22px;
+  text-align: left;
+  color: #f6f7f8;
+}
+
+.bs-faq-q svg {
+  flex-shrink: 0;
+  color: rgba(246, 247, 248, 0.4);
+  transition: transform 0.25s ease;
+}
+
+.bs-faq-item.is-open .bs-faq-q svg {
+  transform: rotate(90deg);
+}
+
+.bs-faq-a {
+  display: none;
+  padding: 0 20px 14px;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.bs-faq-item.is-open .bs-faq-a {
+  display: block;
+}
+
+/* билеты: строки — получен (белый, светлая рамка) / не получен (серый) */
+.bs-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.bs-ticket {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: #2c2c2e;
+}
+
+.bs-ticket b {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.bs-ticket span {
+  font-size: 15px;
+  line-height: 18px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.bs-ticket.is-got {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.bs-ticket.is-got b {
+  color: #f6f7f8;
+}

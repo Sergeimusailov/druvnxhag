@@ -654,3 +654,252 @@ a {
 .shop-balance {
   font-family: var(--font-rounded);
 }
+
+/* ---------- Плоский таб-бар как в iOS 18 (Figma 16779:132998) ----------
+   на всю ширину, прибит к низу, полупрозрачный с размытием и тонкой линией
+   сверху; иконки 28px, подписи 10px; активная вкладка — синяя */
+
+.v2-tabbar {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  height: calc(84px + env(safe-area-inset-bottom, 0px) * 0);
+  padding: 0 0 34px;
+  border-radius: 0;
+  overflow: visible;
+  background: rgba(26, 26, 29, 0.7);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.19);
+}
+
+.v2-tab-highlight {
+  display: none;
+}
+
+.v2-tab {
+  height: 50px;
+  gap: 2px;
+  padding: 2px 0 4px;
+  color: #9299a2;
+}
+
+.v2-tab-active {
+  color: #66a3ff;
+}
+
+.v2-tab-icon {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+}
+
+.v2-tab-icon svg {
+  display: none;
+}
+
+.v2-tab-icon::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  background: currentColor;
+  -webkit-mask: var(--ic) center / 28px 28px no-repeat;
+  mask: var(--ic) center / 28px 28px no-repeat;
+}
+
+.v2-tab[data-nav="game"] { --ic: url('../assets/tabs/game.svg'); }
+.v2-tab[data-nav="tasks"] { --ic: url('../assets/tabs/tasks.svg'); }
+.v2-tab[data-nav="cards"] { --ic: url('../assets/tabs/cards.svg'); }
+.v2-tab[data-nav="shop"] { --ic: url('../assets/tabs/shop.svg'); }
+.v2-tab[data-nav="gifts"] { --ic: url('../assets/tabs/gifts.svg'); }
+
+.v2-tab-label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 500;
+}
+
+.v2-tab-active .v2-tab-label {
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.v2-screen {
+  padding-bottom: 84px;
+}
+
+/* ---------- Главная версии 2 (Figma 16779:132998) ---------- */
+
+.v2home {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 32px;
+}
+
+[data-app="3"] .v2home {
+  display: none;
+}
+
+/* в версии 2 вместо двух кнопок под логотипом и баннера события — блоки */
+:root:not([data-app="3"]) .v2-screen[data-screen="game"] .v2-btn-group,
+:root:not([data-app="3"]) #eventBanner {
+  display: none;
+}
+
+.v2home-promo {
+  position: relative;
+  flex: 0 0 calc(50% - 6px);
+  height: 224px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  text-align: left;
+  color: #fff;
+  transition: transform 0.15s ease;
+}
+
+.v2home-promo:active,
+.v2home-match:active,
+.v2home-train:active {
+  transform: scale(0.97);
+}
+
+.v2home-promo-money {
+  position: absolute;
+  top: 0;
+  left: 23px;
+  width: 153px;
+  pointer-events: none;
+}
+
+/* тёплое пятно снизу и затемнение под текстом */
+.v2home-promo-glow {
+  position: absolute;
+  left: -40px;
+  bottom: -64px;
+  width: 127px;
+  height: 127px;
+  border-radius: 50%;
+  background: #f65d2e;
+  filter: blur(46px);
+  pointer-events: none;
+}
+
+.v2home-promo::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 148px;
+  background: linear-gradient(rgba(28, 28, 30, 0), rgba(28, 28, 30, 0.65) 40%, rgba(28, 28, 30, 0.85));
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.v2home-badge,
+.v2home-promo-title,
+.v2home-promo-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.v2home-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+  padding: 0 6px 0 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 11px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.v2home-promo-title {
+  margin-top: auto;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+}
+
+.v2home-promo-btn {
+  margin-top: 12px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 30px;
+  color: #333;
+}
+
+.v2home-promo-count {
+  top: -4px;
+  right: -4px;
+  z-index: 2;
+}
+
+.v2home-promo-count[hidden] {
+  display: none;
+}
+
+.v2home-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.v2home-match {
+  position: relative;
+  height: 132px;
+  padding: 16px 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffdd2d, #ffa42d);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.8), 0 8px 20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #333;
+  transition: transform 0.15s ease;
+}
+
+.v2home-match span {
+  position: relative;
+  z-index: 1;
+}
+
+.v2home-match img {
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 180px;
+  pointer-events: none;
+}
+
+.v2home-train {
+  flex: 1;
+  padding: 16px 20px;
+  border-radius: 24px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 8px 20px rgba(0, 0, 0, 0.25);
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #f6f7f8;
+  transition: transform 0.15s ease;
+}

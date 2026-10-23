@@ -59,6 +59,7 @@
   const close = () => { sheet.classList.remove('is-open'); backdrop.classList.remove('is-open'); };
   document.getElementById('fxClose').addEventListener('click', close);
   backdrop.addEventListener('click', close);
+  attachSheetSwipe(sheet, close);
 
   boardEl.addEventListener('click', (e) => {
     const cell = e.target.closest('.cell-fx');
