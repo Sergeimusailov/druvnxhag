@@ -695,25 +695,13 @@ a {
   padding: 2px;
 }
 
-.v2-tab-icon svg {
-  display: none;
-}
-
-.v2-tab-icon::before {
-  content: '';
+/* иконки из assets/tabs/*.svg вставлены в разметку инлайном: CSS-маска из
+   SVG-файла в iOS Safari растрируется в 1x и «мылится» на ретине */
+.v2-tab-icon .v2-tab-svg {
   display: block;
   width: 28px;
   height: 28px;
-  background: currentColor;
-  -webkit-mask: var(--ic) center / 28px 28px no-repeat;
-  mask: var(--ic) center / 28px 28px no-repeat;
 }
-
-.v2-tab[data-nav="game"] { --ic: url('../assets/tabs/game.svg'); }
-.v2-tab[data-nav="tasks"] { --ic: url('../assets/tabs/tasks.svg'); }
-.v2-tab[data-nav="cards"] { --ic: url('../assets/tabs/cards.svg'); }
-.v2-tab[data-nav="shop"] { --ic: url('../assets/tabs/shop.svg'); }
-.v2-tab[data-nav="gifts"] { --ic: url('../assets/tabs/gifts.svg'); }
 
 .v2-tab-label {
   font-size: 10px;
