@@ -887,6 +887,7 @@ const nySheets = {
   }),
   faq: bottomSheet(document.getElementById('nyFaqSheet'), nyBsBackdrop),
   tickets: bottomSheet(document.getElementById('nyTicketsSheet'), nyBsBackdrop),
+  prize: bottomSheet(document.getElementById('nyPrizeSheet'), nyBsBackdrop),
 };
 
 const NY_FAQ = [
@@ -955,3 +956,27 @@ function centerPrizes24() {
 }
 
 if (ny24Prizes) ny24Prizes.addEventListener('scroll', markPrizes24, { passive: true });
+
+// тап по призу в ленте — шторка с условиями (Figma 16825:19441)
+const NY_PRIZES = [
+  ['150 000 ₽ на путешествие', 'Разыгрываем 5 призов среди всех, у кого есть хотя бы один билет. Чем больше билетов собрал — тем выше шанс выиграть.'],
+  ['Главный приз — 1 млн рублей', 'Разыгрываем среди всех (чем больше билетиков собрал — тем выше вероятность выигрыша).'],
+  ['100 000 ₽ на смартфон', 'Разыгрываем 10 призов среди всех участников с билетами. Каждый билет — ещё один шанс на новый смартфон.'],
+];
+
+if (ny24Prizes) {
+  ny24Prizes.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-prize]');
+    if (!card) return;
+    const [title, text] = NY_PRIZES[card.dataset.prize];
+    document.getElementById('nyPrizeTitle').textContent = title;
+    document.getElementById('nyPrizeText').textContent = text;
+    nySheets.prize.open();
+  });
+}
+
+// «Подробные условия» — из шторки приза переходим в ответы на вопросы
+document.getElementById('nyPrizeMore').addEventListener('click', () => {
+  nySheets.prize.close();
+  setTimeout(() => nySheets.faq.open(), 250);
+});

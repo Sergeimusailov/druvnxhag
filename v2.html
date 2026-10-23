@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610231600"></script>
+  <script src="js/device-frame.js?v=202610231606"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610231600"></script>
+  <script src="js/version.js?v=202610231606"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610231600">
-  <link rel="stylesheet" href="css/v2.css?v=202610231600">
-  <link rel="stylesheet" href="css/profile.css?v=202610231600">
-  <link rel="stylesheet" href="css/tasks.css?v=202610231600">
-  <link rel="stylesheet" href="css/gifts.css?v=202610231600">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610231600">
-  <link rel="stylesheet" href="css/shop.css?v=202610231600">
-  <link rel="stylesheet" href="css/v22.css?v=202610231600">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610231600">
-  <link rel="stylesheet" href="css/ny24.css?v=202610231600">
-  <link rel="stylesheet" href="css/v3.css?v=202610231600">
-  <link rel="stylesheet" href="css/event.css?v=202610231600">
+  <link rel="stylesheet" href="css/match.css?v=202610231606">
+  <link rel="stylesheet" href="css/v2.css?v=202610231606">
+  <link rel="stylesheet" href="css/profile.css?v=202610231606">
+  <link rel="stylesheet" href="css/tasks.css?v=202610231606">
+  <link rel="stylesheet" href="css/gifts.css?v=202610231606">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610231606">
+  <link rel="stylesheet" href="css/shop.css?v=202610231606">
+  <link rel="stylesheet" href="css/v22.css?v=202610231606">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610231606">
+  <link rel="stylesheet" href="css/ny24.css?v=202610231606">
+  <link rel="stylesheet" href="css/v3.css?v=202610231606">
+  <link rel="stylesheet" href="css/event.css?v=202610231606">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -584,9 +584,9 @@
           <h1 class="ny24-title">Новогодний розыгрыш</h1>
           <p class="ny24-desc">Выполняйте задания, собирайте билеты<br>и участвуйте в розыгрыше денежных призов</p>
           <div class="ny24-prizes" id="ny24Prizes">
-            <div class="ny24-prize "><p class="ny24-prize-title">150 000 ₽<br>на путешествие</p><p class="ny24-prize-sub">5 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
-            <div class="ny24-prize "><p class="ny24-prize-title">1 000 000 ₽</p><p class="ny24-prize-sub">1 суперприз</p><img src="assets/v2-ny-money2.png" alt=""></div>
-            <div class="ny24-prize "><p class="ny24-prize-title">100 000 ₽<br>на смартфон</p><p class="ny24-prize-sub">10 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
+            <div class="ny24-prize" data-prize="0" role="button" tabindex="0"><p class="ny24-prize-title">150 000 ₽<br>на путешествие</p><p class="ny24-prize-sub">5 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
+            <div class="ny24-prize" data-prize="1" role="button" tabindex="0"><p class="ny24-prize-title">1 000 000 ₽</p><p class="ny24-prize-sub">1 суперприз</p><img src="assets/v2-ny-money2.png" alt=""></div>
+            <div class="ny24-prize" data-prize="2" role="button" tabindex="0"><p class="ny24-prize-title">100 000 ₽<br>на смартфон</p><p class="ny24-prize-sub">10 призов</p><img src="assets/v2-ny-money2.png" alt=""></div>
           </div>
         </div>
         <!-- версия 2.3: превью заданий со снежинками (задания живут в разделе «Задания») -->
@@ -733,6 +733,12 @@
       <h2 class="bs-title">Ответы на вопросы</h2>
       <div class="bs-scroll"><div class="bs-faq" id="nyFaqList"></div></div>
     </section>
+    <section class="bs bs-prize" id="nyPrizeSheet" aria-hidden="true" role="dialog" aria-label="Условия награды">
+      <div class="bs-grab"><span></span></div>
+      <h2 class="bs-prize-title" id="nyPrizeTitle"></h2>
+      <p class="bs-prize-text" id="nyPrizeText"></p>
+      <button class="bs-cta bs-cta-secondary" id="nyPrizeMore">Подробные условия</button>
+    </section>
     <section class="bs" id="nyTicketsSheet" aria-hidden="true" role="dialog" aria-label="Билеты на розыгрыш">
       <div class="bs-grab"><span></span></div>
       <h2 class="bs-title">Билеты на розыгрыш</h2>
@@ -742,19 +748,19 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610231600"></script>
-  <script src="js/v2.js?v=202610231600"></script>
-  <script src="js/sheets.js?v=202610231600"></script>
-  <script src="js/profile.js?v=202610231600"></script>
-  <script src="js/t-ads.js?v=202610231600"></script>
-  <script src="js/tasks22.js?v=202610231600"></script>
-  <script src="js/tasks.js?v=202610231600"></script>
-  <script src="js/card-custom.js?v=202610231600"></script>
-  <script src="js/cards-v2.js?v=202610231600"></script>
-  <script src="js/shop.js?v=202610231600"></script>
-  <script src="js/gifts.js?v=202610231600"></script>
-  <script src="js/event.js?v=202610231600"></script>
-  <script src="js/events22.js?v=202610231600"></script>
-  <script src="js/v3.js?v=202610231600"></script>
+  <script src="js/cards.js?v=202610231606"></script>
+  <script src="js/v2.js?v=202610231606"></script>
+  <script src="js/sheets.js?v=202610231606"></script>
+  <script src="js/profile.js?v=202610231606"></script>
+  <script src="js/t-ads.js?v=202610231606"></script>
+  <script src="js/tasks22.js?v=202610231606"></script>
+  <script src="js/tasks.js?v=202610231606"></script>
+  <script src="js/card-custom.js?v=202610231606"></script>
+  <script src="js/cards-v2.js?v=202610231606"></script>
+  <script src="js/shop.js?v=202610231606"></script>
+  <script src="js/gifts.js?v=202610231606"></script>
+  <script src="js/event.js?v=202610231606"></script>
+  <script src="js/events22.js?v=202610231606"></script>
+  <script src="js/v3.js?v=202610231606"></script>
 </body>
 </html>

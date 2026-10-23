@@ -139,6 +139,7 @@
 
 .ny24-prize {
   position: relative;
+  cursor: pointer;
   flex: 0 0 216px;
   height: 240px;
   padding: 16px 18px;
@@ -748,4 +749,23 @@
 
 .bs-ticket.is-got b {
   color: #f6f7f8;
+}
+
+/* условия приза: заголовок и текст слева, серая кнопка «Подробные условия» */
+.bs-prize-title {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.bs-prize-text {
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 22px;
+  color: #f6f7f8;
+}
+
+.bs-cta-secondary {
+  background: #2c2c2e;
+  color: #5ca8fe;
 }
