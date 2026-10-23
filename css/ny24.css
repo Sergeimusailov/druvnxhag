@@ -7,14 +7,16 @@
   background: #000;
 }
 
-/* фон как на главной, притушенный на 50% (в макете — тёмно-фиолетовые пятна) */
-[data-version="2.3"] .e22.is-ny24 #e22Scroll {
+/* фон закреплён: тот же, что на остальных экранах (притушен на 70%), стоит
+   на месте, а контент события прокручивается поверх */
+[data-version="2.3"] .e22.is-ny24 {
   background:
-    linear-gradient(transparent 1400px, #000 1916px) center top / 100% 1916px no-repeat,
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('../assets/v2-bg.png') center top / 100% 1916px no-repeat,
-    #000;
-  background-attachment: local;
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+}
+
+[data-version="2.3"] .e22.is-ny24 #e22Scroll {
+  background: none;
 }
 
 .e22.is-ny24 .e22-glow,

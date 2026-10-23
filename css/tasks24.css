@@ -1,0 +1,279 @@
+/* Версия 2.3: раздел «Задания» по макету Figma 16779:47629 — табы, таймер,
+   шкала, карточки заданий (16462:54476: обычное, с прогрессом, «Забрать»,
+   выполненное), кнопка входа в «Новогоднее событие» и общий тёмный фон */
+
+:root {
+  /* скруглённый шестиугольник из макета (как у наград на треке события) */
+  --t24-hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 138 125' preserveAspectRatio='none'%3E%3Cpath d='M2.95 73.35C-.98 66.55-.98 58.16 2.95 51.35L26.25 11C30.18 4.19 37.44 0 45.3 0H91.9C99.75 0 107.02 4.19 110.95 11L134.25 51.35C138.18 58.16 138.18 66.55 134.25 73.35L110.95 113.71C107.02 120.51 99.75 124.71 91.9 124.71H45.3C37.44 124.71 30.18 120.51 26.25 113.71Z'/%3E%3C/svg%3E");
+}
+
+/* ---------- Общий фон: картинка, притушенная на 70% (image 10981) ---------- */
+
+[data-version="2.3"] .v2-bg-fixed,
+[data-version="2.3"] .pset {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+}
+
+/* ---------- Табы (tui-segmented): тёмная пилюля, пункты по ширине текста ---------- */
+
+[data-version="2.3"] .v2-seg-wrap {
+  padding: 8px 16px 24px;
+}
+
+[data-version="2.3"] .v2-segmented {
+  grid-auto-columns: auto;
+}
+
+[data-version="2.3"] .v2-segmented .v2-chip {
+  min-width: 0;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+}
+
+[data-version="2.3"] .v2-segmented .v2-chip-indicator {
+  height: 40px;
+  background: #4d4d4d;
+  box-shadow: none;
+}
+
+[data-version="2.3"] .v2-segmented .v2-chip-active {
+  color: #f6f7f8;
+}
+
+/* ---------- Таймер и шкала ---------- */
+
+[data-version="2.3"] .tasks-timer {
+  height: 24px;
+}
+
+[data-version="2.3"] .tasks-timer-badge {
+  gap: 2px;
+  padding: 0 8px 0 6px;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* шкала: тонкая светлая обводка и фиолетовое свечение сверху */
+[data-version="2.3"] .tprog {
+  margin-top: 20px;
+  background:
+    radial-gradient(ellipse 70% 85% at 50% -30%, rgba(115, 45, 255, 0.75), rgba(115, 45, 255, 0) 100%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- Карточки заданий ---------- */
+
+[data-version="2.3"] .t24-task .task-body {
+  justify-content: flex-start;
+  padding: 8px 8px 18px;
+  background: #1c1c1e;
+  box-shadow: none;
+}
+
+[data-version="2.3"] .t24-task .task-body::after {
+  display: none;
+}
+
+/* плашка «Новогоднее событие» во всю ширину */
+[data-version="2.3"] .t24-task .e23-tag {
+  align-self: stretch;
+  gap: 8px;
+  height: 40px;
+  margin: 0;
+  padding: 0 16px 0 8px;
+  border-radius: 16px;
+  background: rgba(40, 140, 255, 0.2);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
+}
+
+[data-version="2.3"] .t24-task .e23-tag img {
+  width: 24px;
+  height: 24px;
+}
+
+.t24-content {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px 0;
+}
+
+.t24-task .task-progress-track {
+  margin-top: 16px;
+}
+
+[data-version="2.3"] .t24-task .t22-meta {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* выполненное: дата под заголовком */
+[data-version="2.3"] .t24-task.is-done .t22-meta {
+  margin-top: 12px;
+}
+
+[data-version="2.3"] .t24-task.is-done {
+  opacity: 1;
+}
+
+[data-version="2.3"] .t24-task .t22-claim {
+  margin-top: 14px;
+}
+
+/* колонка наград: две награды по вертикали с равными отступами */
+[data-version="2.3"] .t24-task .task-reward,
+[data-version="2.3"] .t24-task.is-event:not(.is-claimable) .task-reward {
+  justify-content: space-evenly;
+  padding: 16px 8px;
+  background: #1c1c1e;
+  box-shadow: none;
+}
+
+[data-version="2.3"] .t24-task.is-claimable .task-reward {
+  background: #ffdd2d;
+  box-shadow: none;
+  animation: none;
+}
+
+/* ---------- Кнопка входа в событие: шестиугольник с призом и полоска ---------- */
+
+[data-version="2.3"] .ev-fab {
+  right: 24px;
+  bottom: 108px;
+  width: 104px;
+}
+
+[data-version="2.3"] .ev-fab-ring,
+[data-version="2.3"] .ev-fab.is-claimable .ev-fab-ring {
+  width: 104px;
+  height: 104px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  animation: none;
+}
+
+.ev-fab-hex,
+.ev-fab-hex span,
+.ev-fab-hex span::before {
+  position: absolute;
+  -webkit-mask: var(--t24-hex) center / 100% 100% no-repeat;
+  mask: var(--t24-hex) center / 100% 100% no-repeat;
+}
+
+/* тонкая светлая кромка → тёмное кольцо → чуть светлее внутри */
+.ev-fab-hex {
+  left: 0;
+  right: 0;
+  top: 5px;
+  bottom: 5px;
+  background: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+}
+
+.ev-fab-hex span {
+  inset: 1px;
+  background: #2c2c2e;
+}
+
+.ev-fab-hex span::before {
+  content: '';
+  inset: 4px;
+  background: linear-gradient(180deg, #3d3d40, #262628 75%);
+}
+
+[data-version="2.3"] .ev-fab-prize {
+  position: relative;
+  width: 59px;
+  height: 59px;
+  margin-top: -6px;
+}
+
+.ev-fab-prize.is-gold {
+  filter: sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.08) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+}
+
+.ev-fab-qty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 64px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  -webkit-text-stroke: 2.2px #202020;
+  paint-order: stroke fill;
+}
+
+/* полоска до приза: чёрная, жёлтое заполнение, снежинка на левом краю */
+[data-version="2.3"] .ev-fab-bar {
+  width: 88px;
+  height: 12px;
+  margin: -17px 0 0 8px;
+  border-radius: 8px;
+  background: #000;
+  box-shadow: 0 0 0 2px #202020;
+}
+
+[data-version="2.3"] .ev-fab-fill {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 100%;
+  border-radius: 20px;
+  background: #ffdd2d;
+}
+
+[data-version="2.3"] .ev-fab:not(.is-claimable) .ev-fab-text {
+  display: none;
+}
+
+[data-version="2.3"] .ev-fab-snow {
+  left: 4px;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+}
+
+/* приз можно забрать: кромка светится жёлтым, вместо полоски — «Забрать» */
+[data-version="2.3"] .ev-fab.is-claimable .ev-fab-hex {
+  background: #ffdd2d;
+  filter: drop-shadow(0 0 12px rgba(255, 221, 45, 0.6));
+  animation: t24FabGlow 1.4s ease-in-out infinite;
+}
+
+@keyframes t24FabGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 221, 45, 0.4)); }
+  50% { filter: drop-shadow(0 0 18px rgba(255, 221, 45, 0.85)); }
+}
+
+[data-version="2.3"] .ev-fab.is-claimable .ev-fab-bar {
+  width: 88px;
+  height: 24px;
+  margin: -20px 0 0;
+  border-radius: 100px;
+  background: #ffdd2d;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+[data-version="2.3"] .ev-fab.is-claimable .ev-fab-text {
+  font-size: 13px;
+  line-height: 24px;
+}
+
+[data-version="2.3"] .ev-fab-badge {
+  top: 0;
+  right: 4px;
+}

@@ -44,12 +44,21 @@ const TASKS22 = {
       foot = `<div class="task-progress-track"><div class="task-progress-fill" style="width:${(cur / total) * 100}%"></div></div>
         <p class="t22-meta"><span>${task.status}</span><span>${cur} / ${total}</span></p>`;
     }
-    const statusTop = claimable ? `<p class="t22-status is-claim">${task.status}</p>` : '';
+    // 2.3 (Figma 16462:54476): у готового к получению задания нет строки
+    // «Заберите до…» — только заголовок и кнопка
+    const statusTop = claimable && !isAppVersion('2.3') ? `<p class="t22-status is-claim">${task.status}</p>` : '';
     const statusBottom = !claimable && !task.progress ? `<p class="t22-meta"><span>${task.status}</span></p>` : '';
     // 2.3: задания, которые двигают «Новогоднее событие», помечены
     // бейджем и голубоватым градиентом
     const isEvent = isAppVersion('2.3') && task.rewards.some(([cur]) => cur === 'snow');
     const eventTag = isEvent ? `<span class="e23-tag"><img src="${CURRENCY_ICONS.snow}" alt="">Новогоднее событие</span>` : '';
+    // 2.3: плашка события во всю ширину карточки, содержимое — отдельным блоком под ней
+    if (isAppVersion('2.3')) {
+      return `<div class="task t22-task t24-task${claimable ? ' is-claimable' : ''}${done ? ' is-done' : ''}${isEvent ? ' is-event' : ''}" data-task="${task.id}">
+      <div class="task-body">${eventTag}<div class="t24-content"><p class="task-title">${task.title}</p>${foot}${statusBottom}</div></div>
+      <div class="task-reward t22-rewards">${this.rewardsHTML(task)}</div>
+    </div>`;
+    }
     return `<div class="task t22-task${claimable ? ' is-claimable' : ''}${done ? ' is-done' : ''}${isEvent ? ' is-event' : ''}" data-task="${task.id}">
       <div class="task-body">${eventTag}${statusTop}<p class="task-title">${task.title}</p>${foot}${statusBottom}</div>
       <div class="task-reward t22-rewards">${this.rewardsHTML(task)}</div>

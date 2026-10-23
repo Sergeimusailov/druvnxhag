@@ -171,7 +171,12 @@ function renderEventFab23() {
   const firstUnclaimed = ev.rewards.findIndex((_, i) => i < reached && !ev.claimed.has(i + 1));
   const level = claimable ? firstUnclaimed + 1 : Math.min(reached + 1, ev.rewards.length);
   const [main, extra] = ev.rewards[level - 1].split('+').reverse();
-  document.getElementById('eventFabPrize').src = REWARD_ITEMS[main].src;
+  // приз и количество — как на треке события (монеты «× 240», остальное «× 1»)
+  const ny24Item = NY24_ITEMS[main];
+  const prizeEl = document.getElementById('eventFabPrize');
+  prizeEl.src = ny24Item ? ny24Item.src : REWARD_ITEMS[main].src;
+  prizeEl.classList.toggle('is-gold', !!(ny24Item && ny24Item.cls));
+  document.getElementById('eventFabQty').textContent = (ny24Item && ny24Item.qty) || '× 1';
   const extraEl = document.getElementById('eventFabExtra');
   extraEl.hidden = !extra;
   if (extra) extraEl.src = REWARD_ITEMS[extra].src;
