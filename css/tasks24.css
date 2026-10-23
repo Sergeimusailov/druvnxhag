@@ -158,6 +158,11 @@
   height: 111px;
 }
 
+/* кнопка есть только в «Заданиях»: на других разделах скрыта атрибутом hidden */
+[data-version="2.3"] .ev-fab[hidden] {
+  display: none;
+}
+
 [data-version="2.3"] .ev-fab-ring,
 [data-version="2.3"] .ev-fab.is-claimable .ev-fab-ring {
   position: absolute;
