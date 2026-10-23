@@ -422,43 +422,74 @@
   box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
-/* шестиугольник: рамка (цвет по состоянию) и тёмное нутро с отблеском */
+/* шестиугольник награды (Figma 16632:127858) — четыре слоя:
+   кромка 1px (цвет состояния) → тёмная рамка → светлое кольцо → нутро с отблеском */
 .ny24-hex,
-.ny24-hex span {
+.ny24-hex::before,
+.ny24-hex span,
+.ny24-hex span::before {
   position: absolute;
   -webkit-mask: var(--hex) center / 100% 100% no-repeat;
   mask: var(--hex) center / 100% 100% no-repeat;
 }
 
-/* скруглённый шестиугольник из макета (138×125) */
+.ny24-hex::before,
+.ny24-hex span::before {
+  content: '';
+}
+
+/* скруглённый шестиугольник из макета: 144×125 по центру ячейки 140×140 */
 .ny24-hex {
   --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 138 125' preserveAspectRatio='none'%3E%3Cpath d='M2.95 73.35C-.98 66.55-.98 58.16 2.95 51.35L26.25 11C30.18 4.19 37.44 0 45.3 0H91.9C99.75 0 107.02 4.19 110.95 11L134.25 51.35C138.18 58.16 138.18 66.55 134.25 73.35L110.95 113.71C107.02 120.51 99.75 124.71 91.9 124.71H45.3C37.44 124.71 30.18 120.51 26.25 113.71Z'/%3E%3C/svg%3E");
-  top: 5px;
-  bottom: 5px;
+  top: 7.5px;
+  bottom: 7.5px;
   left: -2px;
   right: -2px;
   background: #2c2c2e;
 }
 
-.ny24-hex span {
-  inset: 4px;
-  background: linear-gradient(180deg, #3a3a3c, #232325 70%);
+.ny24-hex::before {
+  inset: 1px;
+  background: #2c2c2e;
 }
 
+/* светлое кольцо: #2c2c2e + белый 20% */
+.ny24-hex span {
+  inset: 4px;
+  background: #565658;
+}
+
+/* нутро: тёмное с белым отблеском сверху (15% → 0) и тёмной кромкой 1px */
+.ny24-hex span::before {
+  inset: 5px;
+  background:
+    linear-gradient(180deg, rgba(249, 249, 249, 0.15), rgba(249, 249, 249, 0)),
+    #2c2c2e;
+  box-shadow: inset 0 0 0 1px #2c2c2e;
+}
+
+/* можно забрать: жёлтая кромка и жёлтое свечение */
 .ny24-level.is-claimable .ny24-hex {
   background: #ffdd2d;
 }
 
 .ny24-level.is-claimable .ev-card {
-  filter: drop-shadow(0 0 18px rgba(255, 221, 45, 0.55));
+  filter: drop-shadow(0 0 18px rgba(255, 221, 45, 0.7));
 }
 
+/* получена: зелёная кромка и галочка внизу */
 .ny24-level.is-taken .ny24-hex {
   background: #00d635;
 }
 
+/* недоступна (пропущена): содержимое приглушено до 24% */
+.ny24-level.is-missed.is-missed .ev-card-item,
+.ny24-level.is-missed.is-missed .ny24-qty {
+  opacity: 0.24;
+}
+
 .ny24-level .ev-card-item {
-  top: 34px;
+  top: 38px;
   left: 38px;
   width: 64px;
   height: 64px;
@@ -476,7 +507,7 @@
 
 .ny24-qty {
   position: absolute;
-  top: 92px;
+  top: 88px;
   left: 0;
   right: 0;
   z-index: 1;
@@ -485,7 +516,7 @@
   font-weight: 700;
   text-align: center;
   color: #fff;
-  -webkit-text-stroke: 3px #202020;
+  -webkit-text-stroke: 6px #202020;
   paint-order: stroke fill;
 }
 
@@ -498,7 +529,7 @@
   border-radius: 100px;
   background: #ffdd2d;
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 600;
   color: #333;
 }
 
