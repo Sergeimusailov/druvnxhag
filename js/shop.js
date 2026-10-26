@@ -682,4 +682,14 @@ document.addEventListener('v2:screen', (e) => {
   if (e.detail.screen === 'shop') renderShop();
 });
 
+// прототип: при каждом заходе все сундуки доступны — суточные лимиты сброшены,
+// а монет и жетонов хватает на каждый сундук; недоступность видна уже после покупок
+function resetShopForDemo() {
+  try { localStorage.removeItem(SHOP_LIMITS_KEY); } catch (e) { /* ignore */ }
+  const need = (cur) => LOOTBOXES.filter((b) => b.currency === cur).reduce((sum, b) => sum + b.price, 0);
+  if (getCoins() < need('coins')) setCoins(need('coins'));
+  if (getTokens() < need('tokens')) addTokens(need('tokens') - getTokens());
+}
+
+resetShopForDemo();
 renderShop();
