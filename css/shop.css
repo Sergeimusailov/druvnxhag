@@ -414,20 +414,60 @@
   color: var(--glow);
 }
 
-/* ---------- 2.3: витрина и карточка сундука (без макета) ---------- */
+/* ---------- 2.3: витрина по макету Figma 16908:32749 («Магазин сундуков») ---------- */
+
+/* балансы — бейджи 28px: #2c2c2e, иконка 16, число 13/600 */
+.shop-head {
+  padding: 0;
+}
 
 .shop-balances {
   display: flex;
-  gap: 8px;
-}
-
-.shop-balance-tokens {
-  color: #c9a6ff;
-}
-
-/* витрина: сверху крупная карточка эпического сундука, под ней — зелёный и синий */
-.shop-boxes {
   gap: 12px;
+}
+
+.shop-balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 28px;
+  padding: 0 10px 0 6px;
+  border-radius: 100px;
+  background: #2c2c2e;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-balance img {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  object-fit: contain;
+}
+
+/* описание под балансами: 15/400, отступы 20/24 */
+.shop-sub24 {
+  padding: 20px 24px;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  text-align: center;
+  color: #f6f7f8;
+}
+
+/* бенто: большая карточка эпического, под ней две средних (12px между) */
+.shop-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 23px;
 }
 
 .shop-row {
@@ -439,14 +479,13 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  padding: 16px 16px 24px;
   border-radius: 24px;
-  background:
-    radial-gradient(80% 70% at 50% 35%, color-mix(in srgb, var(--lb-color) 50%, transparent), transparent 75%),
-    #1c1c1e;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 30%, transparent);
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   overflow: hidden;
   cursor: pointer;
+  isolation: isolate;
   transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
@@ -454,125 +493,185 @@
   transform: scale(0.98);
 }
 
+.shop-tile.is-hero {
+  height: 156px;
+}
+
 .shop-tile.is-small {
   flex: 1;
   min-width: 0;
+  height: 219px;
+}
+
+/* свечения: у эпического — размытая 21-лучевая звезда #81223d, у средних — пятно в углу */
+.shop-tile-glow {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.shop-tile.is-hero .shop-tile-glow {
+  left: 40px;
+  top: -24px;
+  width: 440px;
+  height: 440px;
+  filter: blur(14px);
+}
+
+.shop-tile.is-small .shop-tile-glow {
+  left: 120px;
+  top: -100px;
+  width: 135px;
+  height: 135px;
+  border-radius: 50%;
+  background: var(--glow);
+  filter: blur(30px);
+}
+
+/* название: 17/600 −0.41 */
+.shop-tile-name {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.shop-tile-art {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .shop-tile-art .lb-svg {
   display: block;
-  height: auto;
-  filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--lb-color) 65%, transparent));
-  animation: shopBoxBob 3s ease-in-out infinite;
+  width: 100%;
+  height: 100%;
+  animation: none;
+  filter: none;
 }
 
 .shop-tile.is-hero .shop-tile-art {
-  margin-top: 8px;
-}
-
-.shop-tile.is-hero .shop-tile-art .lb-svg {
-  width: 196px;
+  left: 161px;
+  top: 31px;
+  width: 169px;
+  height: 169px;
 }
 
 .shop-tile.is-small .shop-tile-art {
-  margin-top: 8px;
+  left: 18px;
+  top: 40px;
+  width: 132px;
+  height: 132px;
 }
 
-.shop-tile.is-small .shop-tile-art .lb-svg {
-  width: 120px;
-}
-
-.shop-box-blue .lb-svg { animation-delay: -1s; }
-.shop-box-purple .lb-svg { animation-delay: -2s; }
-
-/* эпический — с мягким пульсирующим ореолом, чтобы притягивал взгляд */
-.shop-tile.is-hero {
-  background:
-    radial-gradient(70% 75% at 50% 38%, color-mix(in srgb, var(--lb-color) 70%, transparent), transparent 75%),
-    #1c1c1e;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 45%, transparent), 0 0 28px color-mix(in srgb, var(--lb-color) 35%, transparent);
-}
-
-.shop-tile-price {
+/* бейдж «Остался: 1» у эпического: белый 10%, 20px, 13/600 */
+.shop-tile-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 40px;
-  margin: 4px 0 12px;
-  padding: 0 16px 0 10px;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.1);
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 700;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
   color: #f6f7f8;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.shop-tile-price img {
-  width: 24px;
-  height: 24px;
+.shop-tile-badge svg {
+  flex-shrink: 0;
 }
 
-.shop-tile.is-hero .shop-tile-price {
-  height: 44px;
-  font-size: 22px;
+/* кнопка-цена: жёлтая 30px, иконка 16, 13/600 #333 */
+.shop-tile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 30px;
+  margin-top: auto;
+  padding: 0 11px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #333;
+  font-variant-numeric: tabular-nums;
 }
 
-/* не хватает валюты — цена приглушена */
-.shop-tile-price.is-short {
-  color: rgba(246, 247, 248, 0.45);
+.shop-tile-btn img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
 
-.shop-tile-price.is-short img {
+.shop-tile.is-hero .shop-tile-btn {
+  align-self: flex-start;
+  min-width: 88px;
+}
+
+.shop-tile.is-small .shop-tile-btn {
+  align-self: stretch;
+}
+
+/* нельзя открыть (не хватает валюты или лимит) — кнопка серая */
+.shop-tile-btn.is-off {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.shop-tile-btn.is-off img {
   opacity: 0.6;
 }
 
-/* копим на эпический: сколько жетонов уже есть */
-.shop-hero-progress {
+/* «Осталось: 3» под кнопкой: 11/400 #9299a2 */
+.shop-tile-left {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 6px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  margin: -2px 0 14px;
-  padding: 0 40px;
-  font-size: 13px;
-  line-height: 16px;
-  color: rgba(246, 247, 248, 0.7);
-}
-
-.shop-hero-bar {
-  width: 100%;
-  height: 8px;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.shop-hero-bar i {
-  display: block;
-  height: 100%;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #b36bff, #d7a6ff);
-}
-
-/* низ карточки: сколько можно открыть сегодня или «будет доступен через» с таймером */
-.shop-tile-foot {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 2px 6px;
-  align-self: stretch;
-  min-height: 28px;
-  margin-top: auto;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.25);
-  font-size: 13px;
-  line-height: 16px;
-  color: rgba(246, 247, 248, 0.7);
+  gap: 3px;
+  font-size: 11px;
+  line-height: 13px;
+  color: #9299a2;
   text-align: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* лимит у средней карточки: «Будет доступен через» и таймер — в две строки, кнопка чуть выше */
+.shop-tile.is-small.is-limit {
+  padding-bottom: 36px;
+}
+
+.shop-tile.is-small.is-limit .shop-tile-left {
+  flex-direction: column;
+  gap: 1px;
+}
+
+.shop-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-tile-left .shop-timer svg {
+  width: 10px;
+  height: 10px;
 }
 
 /* подсказка у баланса (монеты / жетоны): что это и как получить */
@@ -627,19 +726,6 @@
   font-size: 13px;
   line-height: 18px;
   color: rgba(51, 51, 51, 0.75);
-}
-
-.shop-timer {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  height: 20px;
-  padding: 0 7px 0 5px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.14);
-  font-size: 13px;
-  color: #f6f7f8;
-  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Карточка сундука ---------- */
@@ -936,62 +1022,3 @@
 }
 
 
-/* если у одного из маленьких сундуков таймер в две строки — низ у обоих одной высоты */
-.shop-row:has(.is-limit) .shop-tile-foot {
-  min-height: 44px;
-}
-
-/* ---------- компактная шапка: только балансы ---------- */
-
-.shop-head {
-  padding: 0 16px 16px;
-}
-
-.shop-balance {
-  gap: 4px;
-  height: 32px;
-  padding: 0 12px 0 6px;
-  font-size: 17px;
-  line-height: 20px;
-  font-weight: 600;
-}
-
-.shop-balance img {
-  width: 24px;
-  height: 24px;
-}
-
-/* сундук на переднем плане: чёткая тень снизу вместо цветного ореола вокруг */
-.shop-tile-art .lb-svg {
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.55));
-}
-
-.shop-tile.is-hero {
-  background:
-    radial-gradient(60% 55% at 50% 42%, color-mix(in srgb, var(--lb-color) 55%, transparent), transparent 80%),
-    #1c1c1e;
-}
-
-/* цена (и полоска накопления) чуть наползает на низ сундука */
-.shop-tile-price {
-  position: relative;
-  z-index: 1;
-  margin-top: -36px;
-  background: rgba(40, 40, 44, 0.85);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-}
-
-.shop-tile.is-small .shop-tile-price {
-  margin-top: -28px;
-}
-
-.shop-hero-progress {
-  position: relative;
-  z-index: 1;
-}
-
-.shop-tile-foot .shop-timer {
-  height: 18px;
-}

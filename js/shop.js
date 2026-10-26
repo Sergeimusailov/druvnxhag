@@ -4,17 +4,17 @@
 // Открытие — экран как у подарка в «Заданиях»: бокс падает, трясётся,
 // крышка слетает, предметы вылетают рубашкой вверх и переворачиваются.
 
-// 2.3 (описание магазина, без макета): три сундука — зелёный и синий за
-// монеты, эпический (фиолетовый) за фиолетовые жетоны-ключи (вторая
+// 2.3 (описание магазина, витрина по макету Figma 16908:32749): три сундука — обычный (зелёный) и редкий (синий) за
+// монеты, эпический (фиолетовый) за фиолетовые жетоны (вторая
 // софт-валюта). При открытии выпадает ОДНА награда из состава сундука.
-// Жетоны выпадают из зелёного и синего сундуков и даются за сундуки-вехи в
+// Жетоны выпадают из обычного и редкого сундуков и даются за сундуки-вехи в
 // «Заданиях». У каждого сундука суточный лимит покупок. Состав и шансы
 // видны в карточке сундука по кнопке «Посмотреть», шансы — по «?».
 const LOOTBOXES = [
   {
     id: 'green',
-    name: 'Зелёный сундук',
-    short: 'Зелёный',
+    name: 'Обычный сундук',
+    short: 'Обычный',
     price: 100,
     currency: 'coins',
     limit: 5,
@@ -28,8 +28,8 @@ const LOOTBOXES = [
   },
   {
     id: 'blue',
-    name: 'Синий сундук',
-    short: 'Синий',
+    name: 'Редкий сундук',
+    short: 'Редкий',
     price: 250,
     currency: 'coins',
     limit: 3,
@@ -64,8 +64,8 @@ const TOKENS_KEY = 'v2.tokens';
 const TOKENS_START = 20;
 const SHOP_LIMITS_KEY = 'v2.shopLimits';
 const CURRENCY = {
-  coins: { icon: 'assets/v2-coin.png', one: 'монета', few: 'монеты', many: 'монет' },
-  tokens: { icon: 'assets/v2-token-key.svg', one: 'жетон', few: 'жетона', many: 'жетонов' },
+  coins: { icon: 'assets/shop-coin.png', one: 'монета', few: 'монеты', many: 'монет' },
+  tokens: { icon: 'assets/shop-energy.png', one: 'жетон', few: 'жетона', many: 'жетонов' },
 };
 
 function getTokens() {
@@ -124,7 +124,6 @@ const INVENTORY_KEY = 'v2.inventory';
 const shopCoinsEl = document.getElementById('shopCoins');
 const shopTokensEl = document.getElementById('shopTokens');
 const shopBoxesEl = document.getElementById('shopBoxes');
-const shopInventoryEl = document.getElementById('shopInventory');
 const lbOverlayEl = document.getElementById('lbOverlay');
 const lbStageEl = document.getElementById('lbStage');
 const lbBoxEl = document.getElementById('lbBox');
@@ -229,7 +228,7 @@ function chanceRows(box) {
   const label = (e) => {
     if (e.kind === 'card') return `${RARITIES[e.rarity].name} карта`;
     if (e.kind === 'coins') return `Монеты ${e.min}–${e.max}`;
-    if (e.kind === 'tokens') return `Жетоны-ключи ${e.min}–${e.max}`;
+    if (e.kind === 'tokens') return `Жетоны ${e.min}–${e.max}`;
     if (e.kind === 'frame') return 'Оформление профиля';
     return 'Бонус';
   };
@@ -264,19 +263,34 @@ function boxState(box) {
 const timerBadge = () => `<span class="shop-timer">${CLOCK_SVG}<span data-shop-timer>${limitTimer()}</span></span>`;
 
 
-// hero — большая карточка эпического сундука с прогрессом накопления жетонов
+// 21-лучевая звезда из макета (свечение за эпическим сундуком)
+const HERO_STAR = (() => {
+  const pts = [];
+  for (let k = 0; k < 42; k++) {
+    const r = k % 2 ? 84 : 220;
+    const a = (Math.PI * k) / 21 - Math.PI / 2;
+    pts.push(`${(220 + r * Math.cos(a)).toFixed(1)},${(220 + r * Math.sin(a)).toFixed(1)}`);
+  }
+  return `<svg class="shop-tile-glow" viewBox="0 0 440 440" aria-hidden="true"><polygon points="${pts.join(' ')}" fill="#81223d"/></svg>`;
+})();
+const TILE_GLOW = { green: '#1eca85', blue: '#3d8aff' };
+
+// бенто по макету (Figma 16908:32749): название, сундук, кнопка-цена;
+// у эпического — бейдж «Остался: N» справа сверху, у средних — «Осталось: N» под кнопкой.
+// Лимит исчерпан — вместо счётчика «Будет доступен через» с таймером
 function tileHTML(box, hero) {
   const st = boxState(box);
-  const balance = balanceOf(box.currency);
-  const progress = hero && st.reason === 'money'
-    ? `<div class="shop-hero-progress"><div class="shop-hero-bar"><i style="width:${Math.min(100, (balance / box.price) * 100)}%"></i></div><span>Накоплено ${balance} из ${box.price}</span></div>`
-    : '';
+  const left = st.reason === 'limit'
+    ? `<span>Будет доступен через</span>${timerBadge()}`
+    : `${hero ? plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' }) : 'Осталось'}: ${st.left}`;
   return `
-    <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
+    <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--glow:${TILE_GLOW[box.id] || 'transparent'}">
+      ${hero ? HERO_STAR : '<span class="shop-tile-glow"></span>'}
       <div class="shop-tile-art">${chestArt(box)}</div>
-      <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
-      ${progress}
-      <div class="shop-tile-foot">${st.reason === 'limit' ? `<span>Будет доступен через</span>${timerBadge()}` : `Доступно сегодня: ${st.left}`}</div>
+      <h2 class="shop-tile-name">${box.short}</h2>
+      ${hero ? `<span class="shop-tile-badge">${left}</span>` : ''}
+      <span class="shop-tile-btn${st.can ? '' : ' is-off'}">${priceHTML(box)}</span>
+      ${hero ? '' : `<p class="shop-tile-left">${left}</p>`}
     </article>`;
 }
 
@@ -285,21 +299,16 @@ function renderShop() {
   shopTokensEl.textContent = getTokens();
   // первым и крупнее всех — эпический сундук: на него копят жетоны
   const hero = LOOTBOXES.find((b) => b.currency === 'tokens');
-  const rest = LOOTBOXES.filter((b) => b !== hero);
+  const rest = LOOTBOXES.filter((b) => b !== hero).reverse();
   shopBoxesEl.innerHTML = tileHTML(hero, true) + `<div class="shop-row">${rest.map((b) => tileHTML(b, false)).join('')}</div>`;
-  const inv = loadInventory();
-  shopInventoryEl.innerHTML = `
-    <span>Карт из сундуков: <b>${inv.cards}</b></span>
-    <span>Оформлений: <b>${inv.frames}</b></span>
-    <span>Бонусов: <b>${inv.bonuses || 0}</b></span>`;
   if (shopDetailBox) renderDetail(shopDetailBox);
 }
 
 /* ---------- Подсказки у балансов: что это и как получить ---------- */
 
 const BALANCE_TIPS = {
-  coins: ['Монеты', 'Основная валюта игры. Даются за задания и выпадают из сундуков. За монеты открываются зелёный и синий сундуки.'],
-  tokens: ['Фиолетовые жетоны-ключи', 'Открывают эпический сундук с фиолетовыми картами. Выпадают из зелёного и синего сундуков и даются за сундуки на шкале в «Заданиях».'],
+  coins: ['Монеты', 'Основная валюта игры. Даются за задания и выпадают из сундуков. За монеты открываются обычный и редкий сундуки.'],
+  tokens: ['Фиолетовые жетоны', 'Открывают эпический сундук с фиолетовыми картами. Выпадают из обычного и редкого сундуков и даются за сундуки на шкале в «Заданиях».'],
 };
 const shopHeadEl = document.querySelector('.shop-head');
 
@@ -362,8 +371,8 @@ function prizeTip(key) {
     return [`${r.name} карта`, `Случайная ${r.name.toLowerCase()} карта для вашей коллекции. Её можно сразу поставить в колоду и играть в матчах.`];
   }
   return {
-    coins: ['Монеты', 'Основная валюта игры. За монеты открываются зелёный и синий сундуки.'],
-    tokens: ['Жетоны-ключи', 'Фиолетовые жетоны открывают эпический сундук — в нём фиолетовые карты.'],
+    coins: ['Монеты', 'Основная валюта игры. За монеты открываются обычный и редкий сундуки.'],
+    tokens: ['Жетоны', 'Фиолетовые жетоны открывают эпический сундук — в нём фиолетовые карты.'],
     frame: ['Оформление', 'Рамка или рубашка для профиля. Появится в настройках профиля.'],
     bonus: ['Бонус', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Активируется в разделе «Бонусы».'],
   }[key];
@@ -406,7 +415,7 @@ function renderDetail(box) {
     <h2 class="shop-detail-name">${box.name}</h2>
     <p class="shop-detail-desc">При открытии сундука вы получите <b>одну</b> из наград ниже</p>
     <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
-    ${box.currency === 'tokens' ? '<p class="shop-detail-hint">Жетоны-ключи выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях»</p>' : ''}
+    ${box.currency === 'tokens' ? '<p class="shop-detail-hint">Жетоны выпадают из обычного и редкого сундуков и даются за сундуки в «Заданиях»</p>' : ''}
     ${btn}
     <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left}`}</p>`;
 }
@@ -462,10 +471,10 @@ function shopFaq() {
   const limits = LOOTBOXES.map((box) => `${box.short.toLowerCase()} — ${box.limit}`).join(', ');
   return [
     ['Как получить новые карты?', 'Карты не продаются напрямую — они выпадают только из сундуков. Чем дороже сундук, тем реже карта внутри.'],
-    ['Чем отличаются сундуки?', `Зелёный и синий открываются за монеты, эпический — за фиолетовые жетоны-ключи. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
-    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, жетоны-ключи или бонус. Чтобы увидеть состав, нажмите на сундук.'],
+    ['Чем отличаются сундуки?', `Обычный и редкий открываются за монеты, эпический — за фиолетовые жетоны. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
+    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, жетоны или бонус. Чтобы увидеть состав, нажмите на сундук.'],
     ['С какими шансами выпадают награды?', chances],
-    ['Где взять фиолетовые жетоны-ключи?', 'Они выпадают из зелёного и синего сундуков и даются за сундуки на шкале в разделе «Задания».'],
+    ['Где взять фиолетовые жетоны?', 'Они выпадают из обычного и редкого сундуков и даются за сундуки на шкале в разделе «Задания».'],
     ['Сколько сундуков можно открыть за день?', `У каждого сундука свой лимит: ${limits}. Он обновляется каждый день в полночь — до обновления на сундуке виден таймер.`],
     ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и жетоны — в баланс, бонусы — в раздел «Бонусы».'],
     ['Что такое бонус?', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Его можно активировать в разделе «Бонусы».'],
@@ -512,7 +521,7 @@ function rewardFaceHTML(r) {
     return `<img class="lb-reward-img" src="assets/v2-coin.png" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Монеты</p>`;
   }
   if (r.kind === 'tokens') {
-    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Жетоны-ключи</p>`;
+    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Жетоны</p>`;
   }
   if (r.kind === 'frame') {
     return `<div class="lb-frame"><span></span></div><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
@@ -667,14 +676,6 @@ shopBoxesEl.addEventListener('click', (e) => {
   const box = LOOTBOXES.find((b) => tile.classList.contains(`shop-box-${b.id}`));
   tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
   openDetail(box);
-});
-
-document.getElementById('shopDemoCoins').addEventListener('click', () => {
-  const before = getCoins();
-  addCoins(500);
-  addTokens(30);
-  renderShop();
-  animateCoins(before, before + 500);
 });
 
 // баланс мог измениться в матче — обновляем при каждом входе в магазин
