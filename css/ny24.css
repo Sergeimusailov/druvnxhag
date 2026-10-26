@@ -64,18 +64,9 @@
   height: 24px;
 }
 
+/* «?» — тот же компонент, что в «Призах» и «Магазине» (.v2-icon-btn.v2-glass) */
 .e22.is-ny24 .ny24-help {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  margin-right: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  font-size: 18px;
-  font-weight: 800;
-  color: #1c1c1e;
 }
 
 /* ---------- Обложка ---------- */
@@ -627,7 +618,14 @@
   background: #1c1c1e;
   color: #f6f7f8;
   transform: translateY(105%);
+  overflow: hidden;
   transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+/* шапка шторки тянется пальцем, список листается сам: touch-action: none
+   на всей шторке блокировал бы прокрутку списка на телефоне */
+.bs:not(:has(.bs-scroll)),
+.bs > :not(.bs-scroll) {
   touch-action: none;
 }
 
@@ -698,6 +696,7 @@
   margin-top: 20px;
   overflow-y: auto;
   touch-action: pan-y;
+  overscroll-behavior: contain;
   scrollbar-width: none;
 }
 
