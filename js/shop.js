@@ -263,21 +263,32 @@ function boxState(box) {
 
 const timerBadge = () => `<span class="shop-timer">${CLOCK_SVG}<span data-shop-timer>${limitTimer()}</span></span>`;
 
+const TILE_CHEVRON = '<svg class="shop-tile-chev" width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+// hero — большая карточка эпического сундука с прогрессом накопления жетонов
+function tileHTML(box, hero) {
+  const st = boxState(box);
+  const balance = balanceOf(box.currency);
+  const progress = hero && st.reason === 'money'
+    ? `<div class="shop-hero-progress"><div class="shop-hero-bar"><i style="width:${Math.min(100, (balance / box.price) * 100)}%"></i></div><span>Накоплено ${balance} из ${box.price}</span></div>`
+    : '';
+  return `
+    <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
+      ${TILE_CHEVRON}
+      <div class="shop-tile-art">${chestArt(box)}</div>
+      <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
+      ${progress}
+      <div class="shop-tile-foot">${st.reason === 'limit' ? `<span>Будет доступен через</span>${timerBadge()}` : `Доступно сегодня: ${st.left}`}</div>
+    </article>`;
+}
+
 function renderShop() {
   shopCoinsEl.textContent = getCoins();
   shopTokensEl.textContent = getTokens();
-  shopBoxesEl.innerHTML = LOOTBOXES.map((box) => {
-    const st = boxState(box);
-    return `
-    <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
-      <div class="shop-tile-main">
-        <div class="shop-tile-art">${chestArt(box)}</div>
-        <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
-        <svg class="shop-tile-chev" width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="shop-tile-foot">${st.reason === 'limit' ? `Откроется через ${timerBadge()}` : `Доступно сегодня: ${st.left}`}</div>
-    </article>`;
-  }).join('');
+  // первым и крупнее всех — эпический сундук: на него копят жетоны
+  const hero = LOOTBOXES.find((b) => b.currency === 'tokens');
+  const rest = LOOTBOXES.filter((b) => b !== hero);
+  shopBoxesEl.innerHTML = tileHTML(hero, true) + `<div class="shop-row">${rest.map((b) => tileHTML(b, false)).join('')}</div>`;
   const inv = loadInventory();
   shopInventoryEl.innerHTML = `
     <span>Карт из сундуков: <b>${inv.cards}</b></span>
@@ -285,6 +296,47 @@ function renderShop() {
     <span>Бонусов: <b>${inv.bonuses || 0}</b></span>`;
   if (shopDetailBox) renderDetail(shopDetailBox);
 }
+
+/* ---------- Подсказки у балансов: что это и как получить ---------- */
+
+const BALANCE_TIPS = {
+  coins: ['Монеты', 'Основная валюта игры. Даются за задания и выпадают из сундуков. За монеты открываются зелёный и синий сундуки.'],
+  tokens: ['Фиолетовые жетоны-ключи', 'Открывают эпический сундук с фиолетовыми картами. Выпадают из зелёного и синего сундуков и даются за сундуки на шкале в «Заданиях».'],
+};
+const shopHeadEl = document.querySelector('.shop-head');
+
+function hideBalanceTip() {
+  shopHeadEl.querySelector('.shop-bal-tip')?.remove();
+  shopHeadEl.querySelectorAll('.shop-balance.is-active').forEach((el) => el.classList.remove('is-active'));
+}
+
+function showBalanceTip(pill) {
+  const wasActive = pill.classList.contains('is-active');
+  hideBalanceTip();
+  if (wasActive) return;
+  const [title, text] = BALANCE_TIPS[pill.dataset.balance];
+  const tip = document.createElement('div');
+  tip.className = 'shop-bal-tip';
+  tip.innerHTML = `<b>${title}</b><span>${text}</span>`;
+  shopHeadEl.appendChild(tip);
+  const head = shopHeadEl.getBoundingClientRect();
+  const r = pill.getBoundingClientRect();
+  const center = r.left + r.width / 2 - head.left;
+  const left = Math.min(Math.max(center - tip.offsetWidth / 2, 16), head.width - tip.offsetWidth - 16);
+  tip.style.left = `${left}px`;
+  tip.style.top = `${r.bottom - head.top + 10}px`;
+  tip.style.setProperty('--tail', `${center - left}px`);
+  pill.classList.add('is-active');
+}
+
+shopHeadEl.addEventListener('click', (e) => {
+  const pill = e.target.closest('[data-balance]');
+  if (!pill) return;
+  e.stopPropagation();
+  showBalanceTip(pill);
+});
+document.addEventListener('click', hideBalanceTip);
+document.addEventListener('v2:screen', hideBalanceTip);
 
 /* ---------- Карточка сундука: состав и «Открыть» ---------- */
 
@@ -346,7 +398,7 @@ function renderDetail(box) {
   const st = boxState(box);
   let btn;
   if (st.can) btn = `<button class="shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
-  else if (st.reason === 'limit') btn = `<button class="shop-open" disabled>Откроется через <span data-shop-timer>${limitTimer()}</span></button>`;
+  else if (st.reason === 'limit') btn = `<button class="shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
   const card = shopDetailEl.querySelector('.shop-detail-card');
   card.style.setProperty('--lb-color', box.colors[1]);

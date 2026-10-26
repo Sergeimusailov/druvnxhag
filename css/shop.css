@@ -425,8 +425,13 @@
   color: #c9a6ff;
 }
 
-/* витрина: пока сундуков три — горизонтальные карточки одна под другой */
+/* витрина: сверху крупная карточка эпического сундука, под ней — зелёный и синий */
 .shop-boxes {
+  gap: 12px;
+}
+
+.shop-row {
+  display: flex;
   gap: 12px;
 }
 
@@ -434,9 +439,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   border-radius: 24px;
   background:
-    radial-gradient(70% 120% at 20% 45%, color-mix(in srgb, var(--lb-color) 45%, transparent), transparent 70%),
+    radial-gradient(80% 70% at 50% 35%, color-mix(in srgb, var(--lb-color) 50%, transparent), transparent 75%),
     #1c1c1e;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 30%, transparent);
   overflow: hidden;
@@ -448,49 +454,76 @@
   transform: scale(0.98);
 }
 
-/* сундук слева — его цвет и есть название, справа цена и стрелка «открыть» */
-.shop-tile-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 20px 8px 16px;
+.shop-tile.is-small {
+  flex: 1;
+  min-width: 0;
 }
 
-.shop-tile-art {
-  flex-shrink: 0;
-  width: 128px;
+.shop-tile-chev {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: rgba(246, 247, 248, 0.4);
 }
 
 .shop-tile-art .lb-svg {
   display: block;
-  width: 128px;
   height: auto;
-  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--lb-color) 60%, transparent));
+  filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--lb-color) 65%, transparent));
   animation: shopBoxBob 3s ease-in-out infinite;
+}
+
+.shop-tile.is-hero .shop-tile-art {
+  margin-top: 8px;
+}
+
+.shop-tile.is-hero .shop-tile-art .lb-svg {
+  width: 196px;
+}
+
+.shop-tile.is-small .shop-tile-art {
+  margin-top: 8px;
+}
+
+.shop-tile.is-small .shop-tile-art .lb-svg {
+  width: 120px;
 }
 
 .shop-box-blue .lb-svg { animation-delay: -1s; }
 .shop-box-purple .lb-svg { animation-delay: -2s; }
 
+/* эпический — с мягким пульсирующим ореолом, чтобы притягивал взгляд */
+.shop-tile.is-hero {
+  background:
+    radial-gradient(70% 75% at 50% 38%, color-mix(in srgb, var(--lb-color) 70%, transparent), transparent 75%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 45%, transparent), 0 0 28px color-mix(in srgb, var(--lb-color) 35%, transparent);
+}
+
 .shop-tile-price {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 44px;
-  margin-left: auto;
+  height: 40px;
+  margin: 4px 0 12px;
   padding: 0 16px 0 10px;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.1);
-  font-size: 22px;
-  line-height: 26px;
+  font-size: 20px;
+  line-height: 24px;
   font-weight: 700;
   color: #f6f7f8;
   font-variant-numeric: tabular-nums;
 }
 
 .shop-tile-price img {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
+}
+
+.shop-tile.is-hero .shop-tile-price {
+  height: 44px;
+  font-size: 22px;
 }
 
 /* не хватает валюты — цена приглушена */
@@ -502,25 +535,109 @@
   opacity: 0.6;
 }
 
-.shop-tile-chev {
-  flex-shrink: 0;
-  color: rgba(246, 247, 248, 0.4);
+/* копим на эпический: сколько жетонов уже есть */
+.shop-hero-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin: -2px 0 14px;
+  padding: 0 40px;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(246, 247, 248, 0.7);
 }
 
-/* низ карточки: сколько можно открыть сегодня или таймер, когда лимит исчерпан */
+.shop-hero-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.shop-hero-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #b36bff, #d7a6ff);
+}
+
+/* низ карточки: сколько можно открыть сегодня или «будет доступен через» с таймером */
 .shop-tile-foot {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 36px;
+  gap: 4px 6px;
+  align-self: stretch;
+  min-height: 36px;
+  margin-top: auto;
+  padding: 6px 8px;
   background: rgba(0, 0, 0, 0.25);
   font-size: 13px;
+  line-height: 16px;
   color: rgba(246, 247, 248, 0.7);
+  text-align: center;
 }
 
 .shop-tile.is-limit .shop-tile-art {
   opacity: 0.6;
+}
+
+/* подсказка у баланса (монеты / жетоны): что это и как получить */
+.shop-head {
+  position: relative;
+  z-index: 3;
+}
+
+.shop-balance {
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+.shop-balance:active {
+  transform: scale(0.95);
+}
+
+.shop-bal-tip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 280px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  text-align: left;
+  animation: shopTipIn 0.2s ease-out;
+}
+
+.shop-bal-tip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: calc(var(--tail) - 12px);
+  width: 24px;
+  height: 8px;
+  background: #fff;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.shop-bal-tip b {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.shop-bal-tip span {
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(51, 51, 51, 0.75);
 }
 
 .shop-timer {
@@ -829,3 +946,8 @@
   color: rgba(246, 247, 248, 0.6);
 }
 
+
+/* если у одного из маленьких сундуков таймер в две строки — низ у обоих одной высоты */
+.shop-row:has(.is-limit) .shop-tile-foot {
+  min-height: 52px;
+}
