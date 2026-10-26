@@ -575,10 +575,6 @@
   text-align: center;
 }
 
-.shop-tile.is-limit .shop-tile-art {
-  opacity: 0.6;
-}
-
 /* подсказка у баланса (монеты / жетоны): что это и как получить */
 .shop-head {
   position: relative;
