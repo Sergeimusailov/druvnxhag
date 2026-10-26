@@ -266,10 +266,14 @@ function renderShop() {
     return `
     <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
       <div class="shop-tile-art">${boxSVG(box, `shop-${box.id}`)}</div>
-      <h2 class="shop-tile-name">${box.short}</h2>
-      <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
-      <button class="shop-tile-btn" data-view="${box.id}">Посмотреть</button>
-      <div class="shop-tile-foot">${st.reason === 'limit' ? timerBadge() : `Осталось: ${st.left}`}</div>
+      <div class="shop-tile-info">
+        <h2 class="shop-tile-name">${box.name}</h2>
+        <p class="shop-tile-left">${st.reason === 'limit' ? `Откроется через ${timerBadge()}` : `Доступно сегодня: ${st.left}`}</p>
+        <div class="shop-tile-row">
+          <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
+          <button class="shop-tile-btn" data-view="${box.id}">Посмотреть</button>
+        </div>
+      </div>
     </article>`;
   }).join('');
   const inv = loadInventory();
@@ -313,7 +317,7 @@ function renderDetail(box) {
     <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
     ${box.currency === 'tokens' ? '<p class="shop-detail-hint">Жетоны-ключи выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях»</p>' : ''}
     ${btn}
-    <p class="shop-detail-left">${st.reason === 'limit' ? 'Лимит на сегодня исчерпан' : `Осталось сегодня: ${st.left}`}</p>`;
+    <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left}`}</p>`;
 }
 
 function openDetail(box) {
@@ -346,25 +350,45 @@ setInterval(() => {
   document.querySelectorAll('[data-shop-timer]').forEach((el) => { el.textContent = limitTimer(); });
 }, 1000);
 
-/* ---------- Состав и шансы всех сундуков (кнопка «?» в шапке) ---------- */
+/* ---------- Ответы на вопросы (кнопка «?» в шапке) — как FAQ в ивенте ---------- */
 
 const shopInfoSheet = bottomSheet(document.getElementById('shopInfoSheet'), document.getElementById('shopBsBackdrop'));
+const SHOP_FAQ_CHEVRON = '<svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function shopFaq() {
+  const chances = LOOTBOXES.map((box) => {
+    const total = box.table.reduce((sum, e) => sum + e.weight, 0);
+    const name = (e) => (e.kind === 'card' ? 'карта' : e.kind === 'coins' ? 'монеты' : e.kind === 'tokens' ? 'жетоны' : e.kind === 'frame' ? 'оформление' : 'бонус');
+    return `${box.name}: ${box.table.map((e) => `${name(e)} ${Math.round((e.weight / total) * 100)}%`).join(', ')}.`;
+  }).join('<br>');
+  const limits = LOOTBOXES.map((box) => `${box.short.toLowerCase()} — ${box.limit}`).join(', ');
+  return [
+    ['Как получить новые карты?', 'Карты не продаются напрямую — они выпадают только из сундуков. Чем дороже сундук, тем реже карта внутри.'],
+    ['Чем отличаются сундуки?', `Зелёный и синий открываются за монеты, эпический — за фиолетовые жетоны-ключи. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
+    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, жетоны-ключи или бонус. Состав виден по кнопке «Посмотреть».'],
+    ['С какими шансами выпадают награды?', chances],
+    ['Где взять фиолетовые жетоны-ключи?', 'Они выпадают из зелёного и синего сундуков и даются за сундуки на шкале в разделе «Задания».'],
+    ['Сколько сундуков можно открыть за день?', `У каждого сундука свой лимит: ${limits}. Он обновляется каждый день в полночь — до обновления на сундуке виден таймер.`],
+    ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и жетоны — в баланс, бонусы — в раздел «Бонусы».'],
+    ['Что такое бонус?', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Его можно активировать в разделе «Бонусы».'],
+  ];
+}
 
 function openShopInfo() {
-  document.getElementById('shopInfoList').innerHTML = LOOTBOXES.map((box) => `
-    <section class="shop-info-box" style="--lb-color:${box.colors[1]}">
-      <div class="shop-info-head">
-        <h3>${box.name}</h3>
-        <span class="shop-info-price">${priceHTML(box)}</span>
-      </div>
-      <p class="shop-info-meta">Одна награда из списка · не больше ${box.limit} в день</p>
-      <ul class="shop-chances shop-info-list">${chanceRows(box)}</ul>
-    </section>`).join('') + '<p class="shop-info-foot">Фиолетовые жетоны-ключи выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях». Бонусы попадают в раздел «Бонусы», оформление — в профиль.</p>';
+  document.getElementById('shopInfoList').innerHTML = shopFaq().map(([q, a]) => `
+    <div class="bs-faq-item">
+      <button class="bs-faq-q"><span>${q}</span>${SHOP_FAQ_CHEVRON}</button>
+      <p class="bs-faq-a">${a}</p>
+    </div>`).join('');
   document.querySelector('#shopInfoSheet .bs-scroll').scrollTop = 0;
   shopInfoSheet.open();
 }
 
 document.getElementById('shopHelpBtn').addEventListener('click', openShopInfo);
+document.getElementById('shopInfoList').addEventListener('click', (e) => {
+  const q = e.target.closest('.bs-faq-q');
+  if (q) q.parentElement.classList.toggle('is-open');
+});
 
 // счётчик баланса «досчитывает» до нового значения
 function animateCoins(from, to) {
