@@ -1068,44 +1068,12 @@
   height: 14px;
 }
 
-/* не хватает жетонов: прогресс накопления вместо кнопки */
-.shop-hero-prog {
-  width: 160px;
-  margin-top: auto;
+
+/* подсказка «Не хватает N жетонов» под кнопкой эпического */
+.shop-boxes {
+  position: relative;
 }
 
-.shop-hero-bar {
-  height: 8px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-}
-
-.shop-hero-bar i {
-  display: block;
-  height: 100%;
-  border-radius: 20px;
-  background: #ffdd2d;
-}
-
-.shop-hero-prog p {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 12px;
-  line-height: 16px;
-  color: rgba(246, 247, 248, 0.7);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.shop-hero-prog p span:last-child {
-  color: #f6f7f8;
-  font-weight: 600;
-}
-
-/* подписи прогресса могут заходить на край сундука — тень для читаемости */
-.shop-hero-prog p {
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+.shop-short-tip {
+  width: 260px;
 }

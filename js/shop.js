@@ -286,15 +286,9 @@ function heroBottom(box, st) {
       <span class="shop-tile-btn is-big is-off">${timerBadge()}</span>`;
   }
   const badge = `<span class="shop-tile-badge">${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}</span>`;
-  if (st.reason === 'money') {
-    const have = balanceOf(box.currency);
-    return `${badge}
-      <div class="shop-hero-prog">
-        <div class="shop-hero-bar"><i style="width:${Math.min(100, (have / box.price) * 100)}%"></i></div>
-        <p><span>Не хватает ${CURRENCY[box.currency].many}</span><span>${have} из ${box.price}</span></p>
-      </div>`;
-  }
-  return `${badge}<span class="shop-tile-btn is-big">${priceHTML(box)}</span>`;
+  // не хватает жетонов — кнопка всё равно яркая; по тапу подсказка «не хватает N» и где взять
+  const short = st.reason === 'money' ? ` data-short="${st.need}"` : '';
+  return `${badge}<button class="shop-tile-btn is-big"${short}>${priceHTML(box)}</button>`;
 }
 
 function tileHTML(box, hero) {
@@ -691,7 +685,38 @@ function applyRewards(rewards) {
 
 /* ---------- События ---------- */
 
+function hideShortTip() {
+  shopBoxesEl.querySelector('.shop-short-tip')?.remove();
+}
+
+function showShortTip(btn) {
+  const had = shopBoxesEl.querySelector('.shop-short-tip');
+  hideShortTip();
+  if (had) return;
+  const need = Number(btn.dataset.short);
+  const tip = document.createElement('div');
+  tip.className = 'shop-bal-tip shop-short-tip';
+  tip.innerHTML = `<b>Не хватает ${need} ${plural(need, CURRENCY.tokens)}</b><span>Жетоны выпадают из обычного и редкого сундуков и даются за сундуки на шкале в «Заданиях».</span>`;
+  shopBoxesEl.appendChild(tip);
+  const box = shopBoxesEl.getBoundingClientRect();
+  const r = btn.getBoundingClientRect();
+  const center = r.left + r.width / 2 - box.left;
+  const left = Math.min(Math.max(center - 40, 0), box.width - tip.offsetWidth);
+  tip.style.left = `${left}px`;
+  tip.style.top = `${r.bottom - box.top + 10}px`;
+  tip.style.setProperty('--tail', `${center - left}px`);
+}
+
+document.addEventListener('click', (e) => { if (!e.target.closest('[data-short]')) hideShortTip(); });
+document.addEventListener('v2:screen', hideShortTip);
+
 shopBoxesEl.addEventListener('click', (e) => {
+  const shortBtn = e.target.closest('[data-short]');
+  if (shortBtn) {
+    shortBtn.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }], { duration: 320, easing: 'ease-out' });
+    showShortTip(shortBtn);
+    return;
+  }
   const tile = e.target.closest('.shop-tile');
   if (!tile) return;
   const box = LOOTBOXES.find((b) => tile.classList.contains(`shop-box-${b.id}`));
