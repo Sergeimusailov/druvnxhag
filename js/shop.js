@@ -294,7 +294,7 @@ let shopDetailBox = null;
 // состав сундука — в ряд, как награды в ивенте: подпись, картинка без фона,
 // под ней счётчик с тёмной обводкой
 function rewardPreview(e) {
-  const item = (label, color, art, qty) => `<li class="shop-prize" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}</span><span class="shop-prize-qty">${qty}</span></li>`;
+  const item = (label, color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}</span><span class="shop-prize-qty">${qty}</span></li>`;
   if (e.kind === 'card') {
     const r = RARITIES[e.rarity];
     return item(r.name, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '× 1');
@@ -305,15 +305,54 @@ function rewardPreview(e) {
   return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '× 1');
 }
 
+// описание награды по тапу (пока рыбный текст)
+function prizeTip(key) {
+  if (key.startsWith('card-')) {
+    const r = RARITIES[key.slice(5)];
+    return [`${r.name} карта`, `Случайная ${r.name.toLowerCase()} карта для вашей коллекции. Её можно сразу поставить в колоду и играть в матчах.`];
+  }
+  return {
+    coins: ['Монеты', 'Основная валюта игры. За монеты открываются зелёный и синий сундуки.'],
+    tokens: ['Жетоны-ключи', 'Фиолетовые жетоны открывают эпический сундук — в нём фиолетовые карты.'],
+    frame: ['Оформление', 'Рамка или рубашка для профиля. Появится в настройках профиля.'],
+    bonus: ['Бонус', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Активируется в разделе «Бонусы».'],
+  }[key];
+}
+
+function hidePrizeTip() {
+  shopDetailEl.querySelector('.shop-prize-tip')?.remove();
+  shopDetailEl.querySelectorAll('.shop-prize.is-active').forEach((el) => el.classList.remove('is-active'));
+}
+
+function showPrizeTip(prize) {
+  const wasActive = prize.classList.contains('is-active');
+  hidePrizeTip();
+  if (wasActive) return;
+  const [title, text] = prizeTip(prize.dataset.prizeTip);
+  const row = prize.parentElement;
+  const tip = document.createElement('div');
+  tip.className = 'shop-prize-tip';
+  tip.innerHTML = `<b>${title}</b><span>${text}</span>`;
+  row.appendChild(tip);
+  // хвостик смотрит на награду, сам пузырь не вылезает за края ряда
+  const center = prize.offsetLeft + prize.offsetWidth / 2;
+  const left = Math.min(Math.max(center - tip.offsetWidth / 2, 0), row.clientWidth - tip.offsetWidth);
+  tip.style.left = `${left}px`;
+  tip.style.setProperty('--tail', `${center - left}px`);
+  prize.classList.add('is-active');
+}
+
 function renderDetail(box) {
   const st = boxState(box);
   let btn;
   if (st.can) btn = `<button class="shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
   else if (st.reason === 'limit') btn = `<button class="shop-open" disabled>Откроется через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
-  shopDetailEl.querySelector('.shop-detail-card').innerHTML = `
+  const card = shopDetailEl.querySelector('.shop-detail-card');
+  card.style.setProperty('--lb-color', box.colors[1]);
+  card.innerHTML = `
     <button class="shop-detail-close" data-detail-close aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
-    <div class="shop-detail-art" style="--lb-color:${box.colors[1]}">${chestArt(box)}</div>
+    <div class="shop-detail-art">${chestArt(box)}</div>
     <h2 class="shop-detail-name">${box.name}</h2>
     <p class="shop-detail-desc">При открытии сундука вы получите <b>одну</b> из наград ниже</p>
     <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
@@ -330,6 +369,7 @@ function openDetail(box) {
 }
 
 function closeDetail() {
+  hidePrizeTip();
   shopDetailBox = null;
   shopDetailEl.classList.remove('is-open');
   shopDetailEl.setAttribute('aria-hidden', 'true');
@@ -340,6 +380,12 @@ shopDetailEl.addEventListener('click', (e) => {
     closeDetail();
     return;
   }
+  const prize = e.target.closest('.shop-prize');
+  if (prize) {
+    showPrizeTip(prize);
+    return;
+  }
+  hidePrizeTip();
   const btn = e.target.closest('[data-open]');
   if (!btn) return;
   const box = LOOTBOXES.find((b) => b.id === btn.dataset.open);
