@@ -263,7 +263,6 @@ function boxState(box) {
 
 const timerBadge = () => `<span class="shop-timer">${CLOCK_SVG}<span data-shop-timer>${limitTimer()}</span></span>`;
 
-const TILE_CHEVRON = '<svg class="shop-tile-chev" width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 // hero — большая карточка эпического сундука с прогрессом накопления жетонов
 function tileHTML(box, hero) {
@@ -274,7 +273,6 @@ function tileHTML(box, hero) {
     : '';
   return `
     <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
-      ${TILE_CHEVRON}
       <div class="shop-tile-art">${chestArt(box)}</div>
       <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
       ${progress}
