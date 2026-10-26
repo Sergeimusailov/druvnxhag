@@ -700,6 +700,28 @@
   scrollbar-width: none;
 }
 
+/* весь контент шторки листается вместе (заголовок, описание, список, кнопка);
+   закреплена только системная полоска сверху */
+.bs-scroll-all {
+  margin: -32px -16px 0;
+  padding: 32px 16px 0;
+}
+
+/* под системной полоской контент уходит в лёгкое затемнение */
+.bs:has(.bs-scroll-all) .bs-grab {
+  padding: 8px 0 12px;
+  background: linear-gradient(#1c1c1e 55%, rgba(28, 28, 30, 0));
+  pointer-events: none;
+}
+
+.bs-scroll-body {
+  margin-top: 20px;
+}
+
+.bs-scroll-all .bs-cta {
+  width: 100%;
+}
+
 /* онбординг: картинка во всю ширину, заголовок, текст, кнопка внизу */
 .bs-onboard {
   padding-top: 0;

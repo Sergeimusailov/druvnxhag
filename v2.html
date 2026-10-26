@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610260838"></script>
+  <script src="js/device-frame.js?v=202610260901"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610260838"></script>
+  <script src="js/version.js?v=202610260901"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610260838">
-  <link rel="stylesheet" href="css/v2.css?v=202610260838">
-  <link rel="stylesheet" href="css/profile.css?v=202610260838">
-  <link rel="stylesheet" href="css/tasks.css?v=202610260838">
-  <link rel="stylesheet" href="css/gifts.css?v=202610260838">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610260838">
-  <link rel="stylesheet" href="css/shop.css?v=202610260838">
-  <link rel="stylesheet" href="css/v22.css?v=202610260838">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610260838">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610260838">
-  <link rel="stylesheet" href="css/ny24.css?v=202610260838">
-  <link rel="stylesheet" href="css/profile24.css?v=202610260838">
-  <link rel="stylesheet" href="css/v3.css?v=202610260838">
-  <link rel="stylesheet" href="css/event.css?v=202610260838">
+  <link rel="stylesheet" href="css/match.css?v=202610260901">
+  <link rel="stylesheet" href="css/v2.css?v=202610260901">
+  <link rel="stylesheet" href="css/profile.css?v=202610260901">
+  <link rel="stylesheet" href="css/tasks.css?v=202610260901">
+  <link rel="stylesheet" href="css/gifts.css?v=202610260901">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610260901">
+  <link rel="stylesheet" href="css/shop.css?v=202610260901">
+  <link rel="stylesheet" href="css/v22.css?v=202610260901">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610260901">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610260901">
+  <link rel="stylesheet" href="css/ny24.css?v=202610260901">
+  <link rel="stylesheet" href="css/profile24.css?v=202610260901">
+  <link rel="stylesheet" href="css/v3.css?v=202610260901">
+  <link rel="stylesheet" href="css/event.css?v=202610260901">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -733,10 +733,12 @@
     <div class="bs-backdrop" id="shopBsBackdrop"></div>
     <section class="bs bs-tall shop-info-sheet" id="shopInfoSheet" aria-hidden="true" role="dialog" aria-label="Состав и шансы сундуков">
       <div class="bs-grab"><span></span></div>
-      <h2 class="bs-title">Что внутри сундуков</h2>
-      <p class="bs-sub">Первый предмет — гарантированно карта цвета сундука, остальные — по шансам</p>
-      <div class="bs-scroll"><div id="shopInfoList"></div></div>
-      <button class="bs-cta" data-sheet-close>Понятно</button>
+      <div class="bs-scroll bs-scroll-all">
+        <h2 class="bs-title">Что внутри сундуков</h2>
+        <p class="bs-sub">Первый предмет — гарантированно карта цвета сундука, остальные — по шансам</p>
+        <div class="bs-scroll-body" id="shopInfoList"></div>
+        <button class="bs-cta" data-sheet-close>Понятно</button>
+      </div>
     </section>
     <!-- версия 2.3: шторки новогоднего события (js/sheets.js — общее поведение) -->
     <div class="bs-backdrop" id="nyBsBackdrop"></div>
@@ -749,8 +751,10 @@
     </section>
     <section class="bs bs-tall" id="nyFaqSheet" aria-hidden="true" role="dialog" aria-label="Ответы на вопросы">
       <div class="bs-grab"><span></span></div>
-      <h2 class="bs-title">Ответы на вопросы</h2>
-      <div class="bs-scroll"><div class="bs-faq" id="nyFaqList"></div></div>
+      <div class="bs-scroll bs-scroll-all">
+        <h2 class="bs-title">Ответы на вопросы</h2>
+        <div class="bs-faq bs-scroll-body" id="nyFaqList"></div>
+      </div>
     </section>
     <section class="bs bs-prize" id="nyPrizeSheet" aria-hidden="true" role="dialog" aria-label="Условия награды">
       <div class="bs-grab"><span></span></div>
@@ -767,20 +771,20 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610260838"></script>
-  <script src="js/v2.js?v=202610260838"></script>
-  <script src="js/sheets.js?v=202610260838"></script>
-  <script src="js/profile.js?v=202610260838"></script>
-  <script src="js/profile24.js?v=202610260838"></script>
-  <script src="js/t-ads.js?v=202610260838"></script>
-  <script src="js/tasks22.js?v=202610260838"></script>
-  <script src="js/tasks.js?v=202610260838"></script>
-  <script src="js/card-custom.js?v=202610260838"></script>
-  <script src="js/cards-v2.js?v=202610260838"></script>
-  <script src="js/shop.js?v=202610260838"></script>
-  <script src="js/gifts.js?v=202610260838"></script>
-  <script src="js/event.js?v=202610260838"></script>
-  <script src="js/events22.js?v=202610260838"></script>
-  <script src="js/v3.js?v=202610260838"></script>
+  <script src="js/cards.js?v=202610260901"></script>
+  <script src="js/v2.js?v=202610260901"></script>
+  <script src="js/sheets.js?v=202610260901"></script>
+  <script src="js/profile.js?v=202610260901"></script>
+  <script src="js/profile24.js?v=202610260901"></script>
+  <script src="js/t-ads.js?v=202610260901"></script>
+  <script src="js/tasks22.js?v=202610260901"></script>
+  <script src="js/tasks.js?v=202610260901"></script>
+  <script src="js/card-custom.js?v=202610260901"></script>
+  <script src="js/cards-v2.js?v=202610260901"></script>
+  <script src="js/shop.js?v=202610260901"></script>
+  <script src="js/gifts.js?v=202610260901"></script>
+  <script src="js/event.js?v=202610260901"></script>
+  <script src="js/events22.js?v=202610260901"></script>
+  <script src="js/v3.js?v=202610260901"></script>
 </body>
 </html>
