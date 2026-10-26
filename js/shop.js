@@ -285,14 +285,18 @@ function renderShop() {
 const shopDetailEl = document.getElementById('shopDetail');
 let shopDetailBox = null;
 
+// состав сундука — в ряд, как награды в ивенте: подпись, картинка без фона,
+// под ней счётчик с тёмной обводкой
 function rewardPreview(e) {
+  const item = (label, color, art, qty) => `<li class="shop-prize" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}</span><span class="shop-prize-qty">${qty}</span></li>`;
   if (e.kind === 'card') {
-    return `<li class="shop-prize"><span class="shop-prize-card" style="--c:${RARITIES[e.rarity].color}">?</span><b>${RARITIES[e.rarity].name} карта</b></li>`;
+    const r = RARITIES[e.rarity];
+    return item(r.name, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '× 1');
   }
-  if (e.kind === 'coins') return `<li class="shop-prize"><img src="assets/v2-coin.png" alt=""><b>${e.min}–${e.max} монет</b></li>`;
-  if (e.kind === 'tokens') return `<li class="shop-prize"><img src="${CURRENCY.tokens.icon}" alt=""><b>${e.min}–${e.max} жетонов</b></li>`;
-  if (e.kind === 'frame') return '<li class="shop-prize"><span class="shop-prize-frame"></span><b>Оформление профиля</b></li>';
-  return '<li class="shop-prize"><img src="assets/v2-prize-gift.png" alt=""><b>Бонус</b></li>';
+  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `× ${e.min}–${e.max}`);
+  if (e.kind === 'tokens') return item('Жетоны', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `× ${e.min}–${e.max}`);
+  if (e.kind === 'frame') return item('Оформление', '#ff7ad9', '<span class="shop-prize-frame"></span>', '× 1');
+  return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '× 1');
 }
 
 function renderDetail(box) {

@@ -615,58 +615,101 @@
   color: #f6f7f8;
 }
 
-/* состав: 4 награды плиткой, выпадет одна */
+/* состав: награды в ряд в общей плашке (по рефу), выпадет одна */
 .shop-prizes {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin: 20px 0 0;
-  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+  margin: 16px 0 0;
+  padding: 12px 6px 14px;
+  border-radius: 20px;
+  background: #2c2c2e;
   list-style: none;
 }
 
 .shop-prize {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 112px;
-  padding: 12px 8px;
-  border-radius: 20px;
-  background: #2c2c2e;
 }
 
-.shop-prize img {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.shop-prize b {
-  font-size: 13px;
+.shop-prize-label {
+  font-size: 12px;
   line-height: 16px;
   font-weight: 600;
-  color: #f6f7f8;
+  color: var(--c);
+  white-space: nowrap;
 }
 
-.shop-prize-card {
+/* картинка без фигуры на фоне — как предмет на треке ивента */
+.shop-prize-art {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 50px;
-  border-radius: 7px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 70%, #fff), var(--c));
-  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 60%, transparent);
-  font-size: 22px;
-  font-weight: 800;
+  width: 56px;
+  height: 56px;
+  margin-top: 4px;
+}
+
+.shop-prize-art img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+/* счётчик заходит на низ картинки, белый с тёмной обводкой (как «× 240» в ивенте) */
+.shop-prize-qty {
+  position: relative;
+  margin-top: -10px;
+  font-family: var(--font-rounded);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
   color: #fff;
+  white-space: nowrap;
+  -webkit-text-stroke: 5px #202020;
+  paint-order: stroke fill;
+}
+
+/* карта: две рубашки цвета редкости веером */
+.shop-prize-cards {
+  position: relative;
+  width: 40px;
+  height: 50px;
+}
+
+.shop-prize-cards i {
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 75%, #fff), var(--c) 60%, color-mix(in srgb, var(--c) 70%, #000));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 60%, #fff), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* узор рубашки — приглушённый, внутри рамки */
+.shop-prize-cards i::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 4px;
+  background: url('../assets/beckcard.svg') center / cover no-repeat;
+  opacity: 0.28;
+}
+
+.shop-prize-cards i:first-child {
+  transform: translate(6px, -2px) rotate(10deg);
+  filter: brightness(0.8);
+}
+
+.shop-prize-cards i:last-child {
+  transform: translate(-3px, 2px) rotate(-6deg);
 }
 
 .shop-prize-frame {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border: 5px solid #ff7ad9;
   border-radius: 12px;
 }
