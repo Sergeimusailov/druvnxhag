@@ -1068,12 +1068,3 @@
   height: 14px;
 }
 
-
-/* подсказка «Не хватает N жетонов» под кнопкой эпического */
-.shop-boxes {
-  position: relative;
-}
-
-.shop-short-tip {
-  width: 260px;
-}
