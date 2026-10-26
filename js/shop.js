@@ -283,7 +283,7 @@ const TILE_GLOW = { green: '#1eca85', blue: '#3d8aff' };
 function heroBottom(box, st) {
   if (st.reason === 'limit') {
     return `<span class="shop-tile-badge">${priceHTML(box)}</span>
-      <span class="shop-tile-btn is-big is-off">${timerBadge()}</span>`;
+      <span class="shop-tile-btn is-big is-timer">${timerBadge()}</span>`;
   }
   const badge = `<span class="shop-tile-badge">${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}</span>`;
   // не хватает жетонов — кнопка всё равно яркая; тап, как и по всей карточке,
@@ -302,7 +302,10 @@ function tileHTML(box, hero) {
       ${hero ? HERO_STAR : '<span class="shop-tile-glow"></span>'}
       <div class="shop-tile-art">${chestArt(box)}</div>
       <h2 class="shop-tile-name">${box.short}</h2>
-      ${hero ? heroBottom(box, st) : `<span class="shop-tile-btn${st.can ? '' : ' is-off'}">${priceHTML(box)}</span>
+      ${hero ? heroBottom(box, st) : st.reason === 'limit'
+    ? `<span class="shop-tile-btn is-timer">${timerBadge()}</span>
+      <p class="shop-tile-left">${priceHTML(box)}</p>`
+    : `<span class="shop-tile-btn${st.can ? '' : ' is-off'}">${priceHTML(box)}</span>
       <p class="shop-tile-left">${left}</p>`}
     </article>`;
 }

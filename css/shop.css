@@ -1068,3 +1068,19 @@
   height: 14px;
 }
 
+
+/* лимит исчерпан — белая кнопка с таймером (цена — в бейдже у эпического, под кнопкой у средних) */
+.shop-tile-btn.is-timer {
+  background: #fff;
+  color: #333;
+}
+
+.shop-tile-btn.is-timer .shop-timer svg {
+  color: #333;
+}
+
+.shop-tile-left img {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+}
