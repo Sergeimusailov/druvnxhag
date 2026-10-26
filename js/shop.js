@@ -191,6 +191,11 @@ function rollBox(box) {
 /* ---------- Отрисовка магазина ---------- */
 
 // лутбокс — сундук в цветах редкости (SVG, чтобы перекрашивать без ассетов)
+// картинка сундука из макета (Figma 16908:29024); класс lb-svg — общие стили и анимации
+function chestArt(box) {
+  return `<img class="lb-svg lb-chest-img" src="assets/shop-chest-${box.id}.png" alt="">`;
+}
+
 function boxSVG(box, uid) {
   const [light, mid, dark] = box.colors;
   return `<svg class="lb-svg" viewBox="0 0 140 130" fill="none" aria-hidden="true">
@@ -266,7 +271,7 @@ function renderShop() {
     return `
     <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
       <div class="shop-tile-main">
-        <div class="shop-tile-art">${boxSVG(box, `shop-${box.id}`)}</div>
+        <div class="shop-tile-art">${chestArt(box)}</div>
         <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
         <svg class="shop-tile-chev" width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
@@ -308,7 +313,7 @@ function renderDetail(box) {
   else btn = `<button class="shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
   shopDetailEl.querySelector('.shop-detail-card').innerHTML = `
     <button class="shop-detail-close" data-detail-close aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
-    <div class="shop-detail-art" style="--lb-color:${box.colors[1]}">${boxSVG(box, `detail-${box.id}`)}</div>
+    <div class="shop-detail-art" style="--lb-color:${box.colors[1]}">${chestArt(box)}</div>
     <h2 class="shop-detail-name">${box.name}</h2>
     <p class="shop-detail-desc">При открытии сундука вы получите <b>одну</b> из наград ниже</p>
     <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
@@ -441,7 +446,7 @@ async function openLootbox(box) {
 
   lbOverlayEl.style.setProperty('--lb-color', box.colors[1]);
   lbOverlayEl.style.setProperty('--lb-light', box.colors[0]);
-  lbBoxEl.innerHTML = boxSVG(box, 'lb-open');
+  lbBoxEl.innerHTML = chestArt(box);
   // анимации прошлого открытия (растворение сундука с fill: forwards) иначе
   // продолжают действовать и прячут новый сундук
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
@@ -485,8 +490,10 @@ async function openLootbox(box) {
   ).finished;
 
   // крышка слетает, вспышка, сундук растворяется
+  // у картинки сундука из макета нет отдельной крышки — тогда сундук просто
+  // растворяется во вспышке
   const lid = lbBoxEl.querySelector('.lb-svg-lid');
-  lid.animate(
+  if (lid) lid.animate(
     [{ transform: 'translate(0, 0) rotate(0)' }, { transform: 'translate(40px, -160px) rotate(35deg)', opacity: 0 }],
     { duration: 520, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'forwards' }
   );
