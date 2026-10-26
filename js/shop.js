@@ -278,6 +278,25 @@ const TILE_GLOW = { green: '#1eca85', blue: '#3d8aff' };
 // бенто по макету (Figma 16908:32749): название, сундук, кнопка-цена;
 // у эпического — бейдж «Остался: N» справа сверху, у средних — «Осталось: N» под кнопкой.
 // Лимит исчерпан — вместо счётчика «Будет доступен через» с таймером
+// эпический: крупная кнопка-цена; не хватает жетонов — прогресс накопления;
+// лимит — нейтральная кнопка с таймером, цена переезжает в бейдж справа сверху
+function heroBottom(box, st) {
+  if (st.reason === 'limit') {
+    return `<span class="shop-tile-badge">${priceHTML(box)}</span>
+      <span class="shop-tile-btn is-big is-off">${timerBadge()}</span>`;
+  }
+  const badge = `<span class="shop-tile-badge">${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}</span>`;
+  if (st.reason === 'money') {
+    const have = balanceOf(box.currency);
+    return `${badge}
+      <div class="shop-hero-prog">
+        <div class="shop-hero-bar"><i style="width:${Math.min(100, (have / box.price) * 100)}%"></i></div>
+        <p><span>Не хватает ${CURRENCY[box.currency].many}</span><span>${have} из ${box.price}</span></p>
+      </div>`;
+  }
+  return `${badge}<span class="shop-tile-btn is-big">${priceHTML(box)}</span>`;
+}
+
 function tileHTML(box, hero) {
   const st = boxState(box);
   // лимит исчерпан — в бейдже/подписи только таймер (что значит — видно внутри карточки)
@@ -289,9 +308,8 @@ function tileHTML(box, hero) {
       ${hero ? HERO_STAR : '<span class="shop-tile-glow"></span>'}
       <div class="shop-tile-art">${chestArt(box)}</div>
       <h2 class="shop-tile-name">${box.short}</h2>
-      ${hero ? `<span class="shop-tile-badge">${left}</span>` : ''}
-      <span class="shop-tile-btn${st.can ? '' : ' is-off'}">${priceHTML(box)}</span>
-      ${hero ? '' : `<p class="shop-tile-left">${left}</p>`}
+      ${hero ? heroBottom(box, st) : `<span class="shop-tile-btn${st.can ? '' : ' is-off'}">${priceHTML(box)}</span>
+      <p class="shop-tile-left">${left}</p>`}
     </article>`;
 }
 
