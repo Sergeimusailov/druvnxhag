@@ -652,16 +652,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* лимит у средней карточки: «Будет доступен через» и таймер — в две строки, кнопка чуть выше */
-.shop-tile.is-small.is-limit {
-  padding-bottom: 36px;
-}
-
-.shop-tile.is-small.is-limit .shop-tile-left {
-  flex-direction: column;
-  gap: 1px;
-}
-
 .shop-timer {
   display: inline-flex;
   align-items: center;

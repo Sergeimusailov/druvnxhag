@@ -280,8 +280,9 @@ const TILE_GLOW = { green: '#1eca85', blue: '#3d8aff' };
 // Лимит исчерпан — вместо счётчика «Будет доступен через» с таймером
 function tileHTML(box, hero) {
   const st = boxState(box);
+  // лимит исчерпан — в бейдже/подписи только таймер (что значит — видно внутри карточки)
   const left = st.reason === 'limit'
-    ? `<span>Будет доступен через</span>${timerBadge()}`
+    ? timerBadge()
     : `${hero ? plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' }) : 'Осталось'}: ${st.left}`;
   return `
     <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--glow:${TILE_GLOW[box.id] || 'transparent'}">
@@ -573,25 +574,27 @@ async function openLootbox(box) {
     ],
     { duration: 720, easing: 'ease-out' }
   ).finished;
+  // без тапа «открыть»: сундук сам покачивается, затем нарастающие встряски —
+  // медленно, чтобы сохранить интригу
   lbBoxEl.classList.add('is-idle');
-  lbHintEl.classList.add('is-visible');
-
-  await Promise.race([wait(2200), once(lbStageEl, 'click')]);
-  lbHintEl.classList.remove('is-visible');
+  await wait(1100);
   lbBoxEl.classList.remove('is-idle');
 
-  // три нарастающих встряски
   await lbBoxEl.animate(
     [
       { transform: 'rotate(0) scale(1)' },
-      { transform: 'rotate(-7deg) scale(1.03)' },
-      { transform: 'rotate(7deg) scale(1.06)' },
-      { transform: 'rotate(-10deg) scale(1.09)' },
-      { transform: 'rotate(10deg) scale(1.12)' },
-      { transform: 'rotate(-12deg) scale(1.15)' },
-      { transform: 'rotate(0) scale(1.18)' },
+      { transform: 'rotate(-4deg) scale(1.02)', offset: 0.12 },
+      { transform: 'rotate(4deg) scale(1.03)', offset: 0.24 },
+      { transform: 'rotate(0) scale(1.03)', offset: 0.36 },
+      { transform: 'rotate(-7deg) scale(1.06)', offset: 0.48 },
+      { transform: 'rotate(7deg) scale(1.08)', offset: 0.58 },
+      { transform: 'rotate(0) scale(1.08)', offset: 0.66 },
+      { transform: 'rotate(-10deg) scale(1.11)', offset: 0.74 },
+      { transform: 'rotate(10deg) scale(1.14)', offset: 0.82 },
+      { transform: 'rotate(-12deg) scale(1.16)', offset: 0.9 },
+      { transform: 'rotate(0) scale(1.2)' },
     ],
-    { duration: 640, easing: 'ease-in' }
+    { duration: 1700, easing: 'ease-in' }
   ).finished;
 
   // крышка слетает, вспышка, сундук растворяется
