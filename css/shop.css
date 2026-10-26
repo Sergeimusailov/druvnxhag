@@ -1022,3 +1022,32 @@
 }
 
 
+
+/* сундуки в карточках левитируют (сдвиг по фазе, чтобы не синхронно) */
+.shop-tile-art .lb-svg {
+  animation: shopLevitate 3.2s ease-in-out infinite;
+}
+
+.shop-box-blue .shop-tile-art .lb-svg { animation-delay: -1.1s; }
+.shop-box-green .shop-tile-art .lb-svg { animation-delay: -2.2s; }
+
+@keyframes shopLevitate {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+
+/* красная звезда за эпическим медленно вращается вокруг своей оси */
+.shop-tile.is-hero .shop-tile-glow {
+  animation: shopStarSpin 24s linear infinite;
+}
+
+@keyframes shopStarSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-tile-art .lb-svg,
+  .shop-tile.is-hero .shop-tile-glow {
+    animation: none;
+  }
+}
