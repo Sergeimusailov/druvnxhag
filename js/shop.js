@@ -4,58 +4,56 @@
 // Открытие — экран как у подарка в «Заданиях»: бокс падает, трясётся,
 // крышка слетает, предметы вылетают рубашкой вверх и переворачиваются.
 
-// 2.3 (описание магазина, первый заход без макета): три сундука — зелёный и
-// синий за монеты, фиолетовый за фиолетовые жетоны (вторая софт-валюта).
+// 2.3 (описание магазина, без макета): три сундука — зелёный и синий за
+// монеты, эпический (фиолетовый) за фиолетовые жетоны-ключи (вторая
+// софт-валюта). При открытии выпадает ОДНА награда из состава сундука.
 // Жетоны выпадают из зелёного и синего сундуков и даются за сундуки-вехи в
 // «Заданиях». У каждого сундука суточный лимит покупок. Состав и шансы
-// скрыты — открываются по кнопке «i».
+// видны в карточке сундука по кнопке «Посмотреть», шансы — по «?».
 const LOOTBOXES = [
   {
     id: 'green',
     name: 'Зелёный сундук',
+    short: 'Зелёный',
     price: 100,
     currency: 'coins',
     limit: 5,
-    items: 2,
     colors: ['#8ff07a', '#2e9e3f', '#1d5e27'],
     table: [
       { kind: 'card', rarity: 'green', weight: 55 },
-      { kind: 'tokens', min: 5, max: 10, weight: 25 },
-      { kind: 'coins', min: 20, max: 60, weight: 15 },
+      { kind: 'coins', min: 20, max: 60, weight: 25 },
+      { kind: 'tokens', min: 5, max: 10, weight: 15 },
       { kind: 'bonus', weight: 5 },
     ],
   },
   {
     id: 'blue',
     name: 'Синий сундук',
+    short: 'Синий',
     price: 250,
     currency: 'coins',
     limit: 3,
-    items: 3,
     colors: ['#8cc8ff', '#2f6fe0', '#1a3c8c'],
     table: [
-      { kind: 'card', rarity: 'blue', weight: 40 },
-      { kind: 'card', rarity: 'green', weight: 15 },
-      { kind: 'tokens', min: 10, max: 20, weight: 25 },
-      { kind: 'frame', weight: 10 },
-      { kind: 'coins', min: 60, max: 150, weight: 5 },
+      { kind: 'card', rarity: 'blue', weight: 50 },
+      { kind: 'coins', min: 60, max: 150, weight: 25 },
+      { kind: 'tokens', min: 10, max: 20, weight: 20 },
       { kind: 'bonus', weight: 5 },
     ],
   },
   {
     id: 'purple',
-    name: 'Фиолетовый сундук',
+    name: 'Эпический сундук',
+    short: 'Эпический',
     price: 30,
     currency: 'tokens',
     limit: 1,
-    items: 4,
     colors: ['#d7a6ff', '#7b34e0', '#3f1683'],
     table: [
-      { kind: 'card', rarity: 'purple', weight: 45 },
-      { kind: 'card', rarity: 'blue', weight: 20 },
-      { kind: 'frame', weight: 20 },
+      { kind: 'card', rarity: 'purple', weight: 55 },
+      { kind: 'coins', min: 150, max: 300, weight: 25 },
+      { kind: 'tokens', min: 20, max: 40, weight: 10 },
       { kind: 'bonus', weight: 10 },
-      { kind: 'coins', min: 150, max: 300, weight: 5 },
     ],
   },
 ];
@@ -67,7 +65,7 @@ const TOKENS_START = 20;
 const SHOP_LIMITS_KEY = 'v2.shopLimits';
 const CURRENCY = {
   coins: { icon: 'assets/v2-coin.png', one: 'монета', few: 'монеты', many: 'монет' },
-  tokens: { icon: 'assets/v3-shard.svg', one: 'жетон', few: 'жетона', many: 'жетонов' },
+  tokens: { icon: 'assets/v2-token-key.svg', one: 'жетон', few: 'жетона', many: 'жетонов' },
 };
 
 function getTokens() {
@@ -187,10 +185,7 @@ function makeReward(entry, taken = new Set()) {
 }
 
 function rollBox(box) {
-  const taken = new Set();
-  const rewards = [makeReward({ kind: 'card', rarity: box.id }, taken)];
-  for (let i = 1; i < box.items; i++) rewards.push(makeReward(rollEntry(box.table), taken));
-  return rewards;
+  return [makeReward(rollEntry(box.table))];
 }
 
 /* ---------- Отрисовка магазина ---------- */
@@ -229,7 +224,7 @@ function chanceRows(box) {
   const label = (e) => {
     if (e.kind === 'card') return `${RARITIES[e.rarity].name} карта`;
     if (e.kind === 'coins') return `Монеты ${e.min}–${e.max}`;
-    if (e.kind === 'tokens') return `Фиолетовые жетоны ${e.min}–${e.max}`;
+    if (e.kind === 'tokens') return `Жетоны-ключи ${e.min}–${e.max}`;
     if (e.kind === 'frame') return 'Оформление профиля';
     return 'Бонус';
   };
@@ -243,17 +238,25 @@ function priceHTML(box) {
   return `<img src="${CURRENCY[box.currency].icon}" alt="" width="20" height="20">${box.price}`;
 }
 
-// под кнопкой — почему нельзя купить или сколько покупок осталось сегодня
+// время до полуночи — когда снова можно открывать сундуки
+function limitTimer() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const t = Math.max(0, Math.floor((next - now) / 1000));
+  const p2 = (n) => String(n).padStart(2, '0');
+  return `${p2(Math.floor(t / 3600))}:${p2(Math.floor((t % 3600) / 60))}:${p2(t % 60)}`;
+}
+
+// can — можно открыть; reason: 'limit' (исчерпан суточный лимит) или 'money' (не хватает валюты)
 function boxState(box) {
   const left = box.limit - boughtToday(box.id);
   const balance = balanceOf(box.currency);
-  if (left <= 0) return { can: false, label: 'Лимит на сегодня', note: 'Новые покупки — завтра' };
-  if (balance < box.price) {
-    const need = box.price - balance;
-    return { can: false, label: priceHTML(box), note: `Не хватает ${need} ${plural(need, CURRENCY[box.currency])}` };
-  }
-  return { can: true, label: priceHTML(box), note: `Сегодня ещё ${left} из ${box.limit}` };
+  if (left <= 0) return { can: false, left: 0, reason: 'limit' };
+  if (balance < box.price) return { can: false, left, reason: 'money', need: box.price - balance };
+  return { can: true, left };
 }
+
+const timerBadge = () => `<span class="shop-timer">${CLOCK_SVG}<span data-shop-timer>${limitTimer()}</span></span>`;
 
 function renderShop() {
   shopCoinsEl.textContent = getCoins();
@@ -261,14 +264,12 @@ function renderShop() {
   shopBoxesEl.innerHTML = LOOTBOXES.map((box) => {
     const st = boxState(box);
     return `
-    <article class="shop-box shop-box-${box.id}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
-      <div class="shop-box-art">${boxSVG(box, `shop-${box.id}`)}</div>
-      <div class="shop-box-info">
-        <h2 class="shop-box-name">${box.name}</h2>
-        ${box.currency === 'tokens' ? '<p class="shop-box-hint">Жетоны выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях»</p>' : ''}
-        <button class="shop-buy${box.currency === 'tokens' ? ' is-tokens' : ''}" data-box="${box.id}"${st.can ? '' : ' disabled'}>${st.label}</button>
-        <p class="shop-box-note${st.can ? '' : ' is-warn'}">${st.note}</p>
-      </div>
+    <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
+      <div class="shop-tile-art">${boxSVG(box, `shop-${box.id}`)}</div>
+      <h2 class="shop-tile-name">${box.short}</h2>
+      <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
+      <button class="shop-tile-btn" data-view="${box.id}">Посмотреть</button>
+      <div class="shop-tile-foot">${st.reason === 'limit' ? timerBadge() : `Осталось: ${st.left}`}</div>
     </article>`;
   }).join('');
   const inv = loadInventory();
@@ -276,23 +277,85 @@ function renderShop() {
     <span>Карт из сундуков: <b>${inv.cards}</b></span>
     <span>Оформлений: <b>${inv.frames}</b></span>
     <span>Бонусов: <b>${inv.bonuses || 0}</b></span>`;
+  if (shopDetailBox) renderDetail(shopDetailBox);
 }
+
+/* ---------- Карточка сундука: состав и «Открыть» ---------- */
+
+const shopDetailEl = document.getElementById('shopDetail');
+let shopDetailBox = null;
+
+function rewardPreview(e) {
+  if (e.kind === 'card') {
+    return `<li class="shop-prize"><span class="shop-prize-card" style="--c:${RARITIES[e.rarity].color}">?</span><b>${RARITIES[e.rarity].name} карта</b></li>`;
+  }
+  if (e.kind === 'coins') return `<li class="shop-prize"><img src="assets/v2-coin.png" alt=""><b>${e.min}–${e.max} монет</b></li>`;
+  if (e.kind === 'tokens') return `<li class="shop-prize"><img src="${CURRENCY.tokens.icon}" alt=""><b>${e.min}–${e.max} жетонов</b></li>`;
+  if (e.kind === 'frame') return '<li class="shop-prize"><span class="shop-prize-frame"></span><b>Оформление профиля</b></li>';
+  return '<li class="shop-prize"><img src="assets/v2-prize-gift.png" alt=""><b>Бонус</b></li>';
+}
+
+function renderDetail(box) {
+  const st = boxState(box);
+  let btn;
+  if (st.can) btn = `<button class="shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
+  else if (st.reason === 'limit') btn = `<button class="shop-open" disabled>Откроется через <span data-shop-timer>${limitTimer()}</span></button>`;
+  else btn = `<button class="shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
+  shopDetailEl.querySelector('.shop-detail-card').innerHTML = `
+    <button class="shop-detail-close" data-detail-close aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+    <div class="shop-detail-art" style="--lb-color:${box.colors[1]}">${boxSVG(box, `detail-${box.id}`)}</div>
+    <h2 class="shop-detail-name">${box.name}</h2>
+    <p class="shop-detail-desc">При открытии сундука вы получите <b>одну</b> из наград ниже</p>
+    <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
+    ${box.currency === 'tokens' ? '<p class="shop-detail-hint">Жетоны-ключи выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях»</p>' : ''}
+    ${btn}
+    <p class="shop-detail-left">${st.reason === 'limit' ? 'Лимит на сегодня исчерпан' : `Осталось сегодня: ${st.left}`}</p>`;
+}
+
+function openDetail(box) {
+  shopDetailBox = box;
+  renderDetail(box);
+  shopDetailEl.classList.add('is-open');
+  shopDetailEl.setAttribute('aria-hidden', 'false');
+}
+
+function closeDetail() {
+  shopDetailBox = null;
+  shopDetailEl.classList.remove('is-open');
+  shopDetailEl.setAttribute('aria-hidden', 'true');
+}
+
+shopDetailEl.addEventListener('click', (e) => {
+  if (e.target === shopDetailEl || e.target.closest('[data-detail-close]')) {
+    closeDetail();
+    return;
+  }
+  const btn = e.target.closest('[data-open]');
+  if (!btn) return;
+  const box = LOOTBOXES.find((b) => b.id === btn.dataset.open);
+  closeDetail();
+  openLootbox(box);
+});
+
+// таймеры лимита тикают, пока магазин на экране
+setInterval(() => {
+  document.querySelectorAll('[data-shop-timer]').forEach((el) => { el.textContent = limitTimer(); });
+}, 1000);
 
 /* ---------- Состав и шансы всех сундуков (кнопка «?» в шапке) ---------- */
 
 const shopInfoSheet = bottomSheet(document.getElementById('shopInfoSheet'), document.getElementById('shopBsBackdrop'));
 
 function openShopInfo() {
-  const items = (n) => `${n} ${plural(n, { one: 'предмет', few: 'предмета', many: 'предметов' })}`;
   document.getElementById('shopInfoList').innerHTML = LOOTBOXES.map((box) => `
     <section class="shop-info-box" style="--lb-color:${box.colors[1]}">
       <div class="shop-info-head">
         <h3>${box.name}</h3>
         <span class="shop-info-price">${priceHTML(box)}</span>
       </div>
-      <p class="shop-info-meta">${items(box.items)} · гарантированно ${RARITIES[box.id].name.toLowerCase()} карта · не больше ${box.limit} в день</p>
+      <p class="shop-info-meta">Одна награда из списка · не больше ${box.limit} в день</p>
       <ul class="shop-chances shop-info-list">${chanceRows(box)}</ul>
-    </section>`).join('') + '<p class="shop-info-foot">Фиолетовые жетоны выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях». Бонусы попадают в раздел «Бонусы», оформление — в профиль.</p>';
+    </section>`).join('') + '<p class="shop-info-foot">Фиолетовые жетоны-ключи выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях». Бонусы попадают в раздел «Бонусы», оформление — в профиль.</p>';
   document.querySelector('#shopInfoSheet .bs-scroll').scrollTop = 0;
   shopInfoSheet.open();
 }
@@ -323,7 +386,7 @@ function rewardFaceHTML(r) {
     return `<img class="lb-reward-img" src="assets/v2-coin.png" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Монеты</p>`;
   }
   if (r.kind === 'tokens') {
-    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Жетоны</p>`;
+    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Жетоны-ключи</p>`;
   }
   if (r.kind === 'frame') {
     return `<div class="lb-frame"><span></span></div><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
@@ -471,11 +534,11 @@ function applyRewards(rewards) {
 /* ---------- События ---------- */
 
 shopBoxesEl.addEventListener('click', (e) => {
-  const btn = e.target.closest('.shop-buy');
-  if (!btn || btn.disabled) return;
-  const box = LOOTBOXES.find((b) => b.id === btn.dataset.box);
-  btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.9)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
-  openLootbox(box);
+  const tile = e.target.closest('.shop-tile');
+  if (!tile) return;
+  const box = LOOTBOXES.find((b) => tile.classList.contains(`shop-box-${b.id}`));
+  tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+  openDetail(box);
 });
 
 document.getElementById('shopDemoCoins').addEventListener('click', () => {

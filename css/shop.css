@@ -414,7 +414,7 @@
   color: var(--glow);
 }
 
-/* ---------- 2.3: витрина по описанию магазина (первый заход, без макета) ---------- */
+/* ---------- 2.3: витрина — три сундука в ряд (без макета) ---------- */
 
 .shop-balances {
   display: flex;
@@ -425,36 +425,289 @@
   color: #c9a6ff;
 }
 
-.shop-box {
-  align-items: center;
+.shop-boxes {
+  flex-direction: row;
+  gap: 8px;
 }
 
-/* откуда берутся жетоны — прямо на фиолетовом сундуке, без отдельного туториала */
-.shop-box-hint {
+.shop-tile {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px 0;
+  border-radius: 24px;
+  background:
+    radial-gradient(110% 70% at 50% 25%, color-mix(in srgb, var(--lb-color) 45%, transparent), transparent 70%),
+    #1c1c1e;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-light) 30%, transparent);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.shop-tile-art .lb-svg {
+  display: block;
+  width: 92px;
+  height: auto;
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--lb-color) 60%, transparent));
+  animation: shopBoxBob 3s ease-in-out infinite;
+}
+
+.shop-box-blue .lb-svg { animation-delay: -1s; }
+.shop-box-purple .lb-svg { animation-delay: -2s; }
+
+.shop-tile-name {
   margin-top: 6px;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.shop-tile-price {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.shop-tile-price img {
+  width: 18px;
+  height: 18px;
+}
+
+/* не хватает валюты — цена приглушена */
+.shop-tile-price.is-short {
+  color: rgba(246, 247, 248, 0.45);
+}
+
+.shop-tile-btn {
+  width: 100%;
+  height: 32px;
+  margin-top: 10px;
+  border-radius: 100px;
+  background: #ffdd2d;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.shop-tile.is-limit .shop-tile-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f6f7f8;
+}
+
+/* низ карточки: «Осталось: N» или таймер, когда лимит исчерпан */
+.shop-tile-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  height: 32px;
+  margin: 12px -8px 0;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.shop-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 7px 0 5px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 13px;
+  color: #f6f7f8;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Карточка сундука ---------- */
+
+.shop-detail {
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.shop-detail.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shop-detail-card {
+  position: relative;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 24px 20px 20px;
+  border-radius: 28px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  transform: scale(0.94);
+  transition: transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1);
+  scrollbar-width: none;
+}
+
+.shop-detail.is-open .shop-detail-card {
+  transform: none;
+}
+
+.shop-detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+}
+
+.shop-detail-art {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.shop-detail-art .lb-svg {
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 8px 24px color-mix(in srgb, var(--lb-color) 70%, transparent));
+  animation: shopBoxBob 3s ease-in-out infinite;
+}
+
+.shop-detail-name {
+  margin-top: 12px;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+  color: #f6f7f8;
+}
+
+.shop-detail-desc {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 20px;
+  color: rgba(246, 247, 248, 0.7);
+}
+
+.shop-detail-desc b {
+  color: #f6f7f8;
+}
+
+/* состав: 4 награды плиткой, выпадет одна */
+.shop-prizes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shop-prize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 112px;
+  padding: 12px 8px;
+  border-radius: 20px;
+  background: #2c2c2e;
+}
+
+.shop-prize img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.shop-prize b {
   font-size: 13px;
   line-height: 16px;
-  color: rgba(246, 247, 248, 0.6);
+  font-weight: 600;
+  color: #f6f7f8;
 }
 
-.shop-box-info .shop-buy {
-  margin-top: 14px;
-}
-
-.shop-buy.is-tokens:not(:disabled) {
-  background: #8c5cff;
+.shop-prize-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 50px;
+  border-radius: 7px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 70%, #fff), var(--c));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 60%, transparent);
+  font-size: 22px;
+  font-weight: 800;
   color: #fff;
 }
 
-.shop-box-note {
-  margin-top: 8px;
+.shop-prize-frame {
+  width: 46px;
+  height: 46px;
+  border: 5px solid #ff7ad9;
+  border-radius: 12px;
+}
+
+.shop-detail-hint {
+  margin-top: 12px;
   font-size: 13px;
   line-height: 16px;
   color: rgba(246, 247, 248, 0.6);
 }
 
-.shop-box-note.is-warn {
-  color: #ff8a80;
+.shop-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 56px;
+  margin-top: 20px;
+  border-radius: 16px;
+  background: #ffdd2d;
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-open img {
+  width: 22px;
+  height: 22px;
+}
+
+.shop-open:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(246, 247, 248, 0.6);
+}
+
+.shop-detail-left {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(246, 247, 248, 0.6);
 }
 
 /* шторка «?»: состав и шансы всех трёх сундуков */

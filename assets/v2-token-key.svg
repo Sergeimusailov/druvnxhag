@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="kg" x1="10" y1="8" x2="40" y2="48" gradientUnits="userSpaceOnUse"><stop stop-color="#fff2a8"/><stop offset="0.5" stop-color="#f5b400"/><stop offset="1" stop-color="#b9780a"/></linearGradient>
+<linearGradient id="tg" x1="34" y1="30" x2="58" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#c79bff"/><stop offset="1" stop-color="#6a2bd6"/></linearGradient>
+</defs>
+<path d="M33 36 52 55" stroke="#8a5a06" stroke-width="2" stroke-linecap="round"/>
+<path d="M36.5 39.5 41 35M41.5 44.5 46 40" stroke="url(#kg)" stroke-width="6" stroke-linecap="round"/>
+<path d="M22 26 47 51" stroke="url(#kg)" stroke-width="7" stroke-linecap="round"/>
+<circle cx="18" cy="20" r="13" fill="url(#kg)"/>
+<circle cx="18" cy="20" r="5.5" fill="#1c1c1e"/>
+<path d="M11 13c2-2.4 5-3.4 8-3" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.7"/>
+<path d="M29 16c4-1 7 1 9 4" stroke="#7b34e0" stroke-width="2" stroke-linecap="round"/>
+<rect x="36" y="14" width="22" height="15" rx="4" transform="rotate(28 36 14)" fill="url(#tg)" stroke="#fff" stroke-opacity="0.6" stroke-width="1.5"/>
+<circle cx="39.5" cy="19.5" r="2" fill="#fff" fill-opacity="0.85"/>
+</svg>
