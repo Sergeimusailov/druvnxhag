@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610232006"></script>
+  <script src="js/device-frame.js?v=202610260825"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610232006"></script>
+  <script src="js/version.js?v=202610260825"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610232006">
-  <link rel="stylesheet" href="css/v2.css?v=202610232006">
-  <link rel="stylesheet" href="css/profile.css?v=202610232006">
-  <link rel="stylesheet" href="css/tasks.css?v=202610232006">
-  <link rel="stylesheet" href="css/gifts.css?v=202610232006">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610232006">
-  <link rel="stylesheet" href="css/shop.css?v=202610232006">
-  <link rel="stylesheet" href="css/v22.css?v=202610232006">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610232006">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610232006">
-  <link rel="stylesheet" href="css/ny24.css?v=202610232006">
-  <link rel="stylesheet" href="css/profile24.css?v=202610232006">
-  <link rel="stylesheet" href="css/v3.css?v=202610232006">
-  <link rel="stylesheet" href="css/event.css?v=202610232006">
+  <link rel="stylesheet" href="css/match.css?v=202610260825">
+  <link rel="stylesheet" href="css/v2.css?v=202610260825">
+  <link rel="stylesheet" href="css/profile.css?v=202610260825">
+  <link rel="stylesheet" href="css/tasks.css?v=202610260825">
+  <link rel="stylesheet" href="css/gifts.css?v=202610260825">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610260825">
+  <link rel="stylesheet" href="css/shop.css?v=202610260825">
+  <link rel="stylesheet" href="css/v22.css?v=202610260825">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610260825">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610260825">
+  <link rel="stylesheet" href="css/ny24.css?v=202610260825">
+  <link rel="stylesheet" href="css/profile24.css?v=202610260825">
+  <link rel="stylesheet" href="css/v3.css?v=202610260825">
+  <link rel="stylesheet" href="css/event.css?v=202610260825">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -192,9 +192,12 @@
         </div>
 
         <div class="shop-head">
-          <div class="shop-balance v2-glass"><img src="assets/v2-coin.png" alt="" width="28" height="28"><span id="shopCoins">0</span></div>
-          <h1 class="shop-title">Лутбоксы</h1>
-          <p class="shop-sub">Открывайте боксы за монеты — внутри карты, рамки, бустеры и монеты</p>
+          <div class="shop-balances">
+            <div class="shop-balance v2-glass" aria-label="Монеты"><img src="assets/v2-coin.png" alt="" width="28" height="28"><span id="shopCoins">0</span></div>
+            <div class="shop-balance shop-balance-tokens v2-glass" aria-label="Фиолетовые жетоны"><img src="assets/v3-shard.svg" alt="" width="28" height="28"><span id="shopTokens">0</span></div>
+          </div>
+          <h1 class="shop-title">Сундуки</h1>
+          <p class="shop-sub">Карты — только из сундуков, в каждом разные. Что внутри и с какими шансами — по кнопке «i»</p>
         </div>
 
         <div class="shop-boxes" id="shopBoxes"></div>
@@ -202,7 +205,7 @@
         <div class="t-ads-slot shop-ads v3-only" data-t-ads></div>
 
         <div class="shop-inventory" id="shopInventory"></div>
-        <button class="shop-demo" id="shopDemoCoins">Демо: начислить 500 монет</button>
+        <button class="shop-demo" id="shopDemoCoins">Демо: +500 монет и +30 жетонов</button>
       </section>
 
       <!-- Призы -->
@@ -724,6 +727,16 @@
       <p class="card-sheet-hint" id="cardSheetHint"></p>
     </div>
 
+    <!-- магазин: состав и шансы сундука (кнопка «i») -->
+    <div class="bs-backdrop" id="shopBsBackdrop"></div>
+    <section class="bs shop-info-sheet" id="shopInfoSheet" aria-hidden="true" role="dialog" aria-label="Состав сундука">
+      <div class="bs-grab"><span></span></div>
+      <h2 class="bs-title" id="shopInfoTitle"></h2>
+      <p class="bs-sub" id="shopInfoSub"></p>
+      <ul class="shop-chances shop-info-list" id="shopInfoList"></ul>
+      <p class="shop-info-foot" id="shopInfoFoot"></p>
+      <button class="bs-cta" data-sheet-close>Понятно</button>
+    </section>
     <!-- версия 2.3: шторки новогоднего события (js/sheets.js — общее поведение) -->
     <div class="bs-backdrop" id="nyBsBackdrop"></div>
     <section class="bs bs-tall bs-onboard" id="nyOnboardSheet" aria-hidden="true" role="dialog" aria-label="Новогоднее событие">
@@ -753,20 +766,20 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610232006"></script>
-  <script src="js/v2.js?v=202610232006"></script>
-  <script src="js/sheets.js?v=202610232006"></script>
-  <script src="js/profile.js?v=202610232006"></script>
-  <script src="js/profile24.js?v=202610232006"></script>
-  <script src="js/t-ads.js?v=202610232006"></script>
-  <script src="js/tasks22.js?v=202610232006"></script>
-  <script src="js/tasks.js?v=202610232006"></script>
-  <script src="js/card-custom.js?v=202610232006"></script>
-  <script src="js/cards-v2.js?v=202610232006"></script>
-  <script src="js/shop.js?v=202610232006"></script>
-  <script src="js/gifts.js?v=202610232006"></script>
-  <script src="js/event.js?v=202610232006"></script>
-  <script src="js/events22.js?v=202610232006"></script>
-  <script src="js/v3.js?v=202610232006"></script>
+  <script src="js/cards.js?v=202610260825"></script>
+  <script src="js/v2.js?v=202610260825"></script>
+  <script src="js/sheets.js?v=202610260825"></script>
+  <script src="js/profile.js?v=202610260825"></script>
+  <script src="js/profile24.js?v=202610260825"></script>
+  <script src="js/t-ads.js?v=202610260825"></script>
+  <script src="js/tasks22.js?v=202610260825"></script>
+  <script src="js/tasks.js?v=202610260825"></script>
+  <script src="js/card-custom.js?v=202610260825"></script>
+  <script src="js/cards-v2.js?v=202610260825"></script>
+  <script src="js/shop.js?v=202610260825"></script>
+  <script src="js/gifts.js?v=202610260825"></script>
+  <script src="js/event.js?v=202610260825"></script>
+  <script src="js/events22.js?v=202610260825"></script>
+  <script src="js/v3.js?v=202610260825"></script>
 </body>
 </html>

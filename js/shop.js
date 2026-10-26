@@ -4,54 +4,127 @@
 // Открытие — экран как у подарка в «Заданиях»: бокс падает, трясётся,
 // крышка слетает, предметы вылетают рубашкой вверх и переворачиваются.
 
+// 2.3 (описание магазина, первый заход без макета): три сундука — зелёный и
+// синий за монеты, фиолетовый за фиолетовые жетоны (вторая софт-валюта).
+// Жетоны выпадают из зелёного и синего сундуков и даются за сундуки-вехи в
+// «Заданиях». У каждого сундука суточный лимит покупок. Состав и шансы
+// скрыты — открываются по кнопке «i».
 const LOOTBOXES = [
   {
     id: 'green',
-    name: 'Зелёный бокс',
+    name: 'Зелёный сундук',
     price: 100,
+    currency: 'coins',
+    limit: 5,
     items: 2,
     colors: ['#8ff07a', '#2e9e3f', '#1d5e27'],
     table: [
-      { kind: 'card', rarity: 'green', weight: 70 },
-      { kind: 'coins', min: 20, max: 60, weight: 20 },
-      { kind: 'booster', weight: 10 },
+      { kind: 'card', rarity: 'green', weight: 55 },
+      { kind: 'tokens', min: 5, max: 10, weight: 25 },
+      { kind: 'coins', min: 20, max: 60, weight: 15 },
+      { kind: 'bonus', weight: 5 },
     ],
   },
   {
     id: 'blue',
-    name: 'Синий бокс',
+    name: 'Синий сундук',
     price: 250,
+    currency: 'coins',
+    limit: 3,
     items: 3,
     colors: ['#8cc8ff', '#2f6fe0', '#1a3c8c'],
     table: [
-      { kind: 'card', rarity: 'blue', weight: 50 },
-      { kind: 'card', rarity: 'green', weight: 20 },
+      { kind: 'card', rarity: 'blue', weight: 40 },
+      { kind: 'card', rarity: 'green', weight: 15 },
+      { kind: 'tokens', min: 10, max: 20, weight: 25 },
       { kind: 'frame', weight: 10 },
-      { kind: 'booster', weight: 10 },
-      { kind: 'coins', min: 60, max: 150, weight: 10 },
+      { kind: 'coins', min: 60, max: 150, weight: 5 },
+      { kind: 'bonus', weight: 5 },
     ],
   },
   {
     id: 'purple',
-    name: 'Фиолетовый бокс',
-    price: 500,
+    name: 'Фиолетовый сундук',
+    price: 30,
+    currency: 'tokens',
+    limit: 1,
     items: 4,
     colors: ['#d7a6ff', '#7b34e0', '#3f1683'],
     table: [
       { kind: 'card', rarity: 'purple', weight: 45 },
       { kind: 'card', rarity: 'blue', weight: 20 },
-      { kind: 'frame', weight: 15 },
-      { kind: 'booster', weight: 10 },
-      { kind: 'coins', min: 150, max: 300, weight: 10 },
+      { kind: 'frame', weight: 20 },
+      { kind: 'bonus', weight: 10 },
+      { kind: 'coins', min: 150, max: 300, weight: 5 },
     ],
   },
 ];
 
+/* ---------- Фиолетовые жетоны и суточные лимиты ---------- */
+
+const TOKENS_KEY = 'v2.tokens';
+const TOKENS_START = 20;
+const SHOP_LIMITS_KEY = 'v2.shopLimits';
+const CURRENCY = {
+  coins: { icon: 'assets/v2-coin.png', one: 'монета', few: 'монеты', many: 'монет' },
+  tokens: { icon: 'assets/v3-shard.svg', one: 'жетон', few: 'жетона', many: 'жетонов' },
+};
+
+function getTokens() {
+  try {
+    const raw = localStorage.getItem(TOKENS_KEY);
+    return raw === null ? TOKENS_START : Math.max(0, parseInt(raw, 10) || 0);
+  } catch (e) {
+    return TOKENS_START;
+  }
+}
+
+function addTokens(delta) {
+  try {
+    localStorage.setItem(TOKENS_KEY, String(Math.max(0, getTokens() + delta)));
+  } catch (e) { /* без хранилища — до перезагрузки */ }
+  return getTokens();
+}
+
+const balanceOf = (cur) => (cur === 'tokens' ? getTokens() : getCoins());
+
+function plural(n, { one, few, many }) {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+// сколько раз сундук куплен сегодня; со сменой дня счётчики обнуляются
+function boughtToday(id) {
+  try {
+    const data = JSON.parse(localStorage.getItem(SHOP_LIMITS_KEY) || '{}');
+    return data.day === todayKey() ? data.counts[id] || 0 : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function markBought(id) {
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(SHOP_LIMITS_KEY) || '{}'); } catch (e) { /* ignore */ }
+  if (data.day !== todayKey()) data = { day: todayKey(), counts: {} };
+  data.counts[id] = (data.counts[id] || 0) + 1;
+  try { localStorage.setItem(SHOP_LIMITS_KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
+}
+
 const FRAME_NAMES = ['Неон', 'Золото', 'Северное сияние', 'Лава', 'Кристалл'];
-const BOOSTER_NAMES = ['Перезапуск', 'Заморозка', 'Блок', 'Энергия'];
+const BONUS_NAMES = ['Кешбэк 5% в кафе', 'Скидка 10% в кино', 'Бесплатная доставка'];
 const INVENTORY_KEY = 'v2.inventory';
 
 const shopCoinsEl = document.getElementById('shopCoins');
+const shopTokensEl = document.getElementById('shopTokens');
 const shopBoxesEl = document.getElementById('shopBoxes');
 const shopInventoryEl = document.getElementById('shopInventory');
 const lbOverlayEl = document.getElementById('lbOverlay');
@@ -67,9 +140,9 @@ const lbClaimEl = document.getElementById('lbClaim');
 
 function loadInventory() {
   try {
-    return { cards: 0, frames: 0, boosters: 0, ...JSON.parse(localStorage.getItem(INVENTORY_KEY) || '{}') };
+    return { cards: 0, frames: 0, bonuses: 0, ...JSON.parse(localStorage.getItem(INVENTORY_KEY) || '{}') };
   } catch (e) {
-    return { cards: 0, frames: 0, boosters: 0 };
+    return { cards: 0, frames: 0, bonuses: 0 };
   }
 }
 
@@ -106,8 +179,11 @@ function makeReward(entry, taken = new Set()) {
     const amount = Math.round((entry.min + Math.random() * (entry.max - entry.min)) / 10) * 10;
     return { kind: 'coins', amount };
   }
+  if (entry.kind === 'tokens') {
+    return { kind: 'tokens', amount: Math.round(entry.min + Math.random() * (entry.max - entry.min)) };
+  }
   if (entry.kind === 'frame') return { kind: 'frame', name: pick(FRAME_NAMES) };
-  return { kind: 'booster', name: pick(BOOSTER_NAMES) };
+  return { kind: 'bonus', name: pick(BONUS_NAMES) };
 }
 
 function rollBox(box) {
@@ -146,40 +222,73 @@ function boxSVG(box, uid) {
   </svg>`;
 }
 
+const KIND_COLORS = { coins: '#ffcf3d', tokens: '#b36bff', frame: '#ff7ad9', bonus: '#42cf9b' };
+
 function chanceRows(box) {
   const total = box.table.reduce((s, e) => s + e.weight, 0);
   const label = (e) => {
     if (e.kind === 'card') return `${RARITIES[e.rarity].name} карта`;
     if (e.kind === 'coins') return `Монеты ${e.min}–${e.max}`;
-    if (e.kind === 'frame') return 'Рамка профиля';
-    return 'Бустер';
+    if (e.kind === 'tokens') return `Фиолетовые жетоны ${e.min}–${e.max}`;
+    if (e.kind === 'frame') return 'Оформление профиля';
+    return 'Бонус';
   };
-  const dot = (e) => (e.kind === 'card' ? RARITIES[e.rarity].color : e.kind === 'coins' ? '#ffcf3d' : e.kind === 'frame' ? '#ff7ad9' : '#9b8cff');
+  const dot = (e) => (e.kind === 'card' ? RARITIES[e.rarity].color : KIND_COLORS[e.kind]);
   return box.table
     .map((e) => `<li><span class="shop-dot" style="background:${dot(e)}"></span>${label(e)}<b>${Math.round((e.weight / total) * 100)}%</b></li>`)
     .join('');
 }
 
+function priceHTML(box) {
+  return `<img src="${CURRENCY[box.currency].icon}" alt="" width="20" height="20">${box.price}`;
+}
+
+// под кнопкой — почему нельзя купить или сколько покупок осталось сегодня
+function boxState(box) {
+  const left = box.limit - boughtToday(box.id);
+  const balance = balanceOf(box.currency);
+  if (left <= 0) return { can: false, label: 'Лимит на сегодня', note: 'Новые покупки — завтра' };
+  if (balance < box.price) {
+    const need = box.price - balance;
+    return { can: false, label: priceHTML(box), note: `Не хватает ${need} ${plural(need, CURRENCY[box.currency])}` };
+  }
+  return { can: true, label: priceHTML(box), note: `Сегодня ещё ${left} из ${box.limit}` };
+}
+
 function renderShop() {
-  const coins = getCoins();
-  shopCoinsEl.textContent = coins;
-  shopBoxesEl.innerHTML = LOOTBOXES.map((box) => `
+  shopCoinsEl.textContent = getCoins();
+  shopTokensEl.textContent = getTokens();
+  shopBoxesEl.innerHTML = LOOTBOXES.map((box) => {
+    const st = boxState(box);
+    return `
     <article class="shop-box shop-box-${box.id}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
+      <button class="shop-info" data-info="${box.id}" aria-label="Состав и шансы">i</button>
       <div class="shop-box-art">${boxSVG(box, `shop-${box.id}`)}</div>
       <div class="shop-box-info">
         <h2 class="shop-box-name">${box.name}</h2>
-        <p class="shop-box-count">${box.items} предмета · гарантированно ${RARITIES[box.id].name.toLowerCase()} карта</p>
-        <ul class="shop-chances">${chanceRows(box)}</ul>
-        <button class="shop-buy" data-box="${box.id}"${coins < box.price ? ' disabled' : ''}>
-          <img src="assets/v2-coin.png" alt="" width="20" height="20">${box.price}
-        </button>
+        ${box.currency === 'tokens' ? '<p class="shop-box-hint">Жетоны выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях»</p>' : ''}
+        <button class="shop-buy${box.currency === 'tokens' ? ' is-tokens' : ''}" data-box="${box.id}"${st.can ? '' : ' disabled'}>${st.label}</button>
+        <p class="shop-box-note${st.can ? '' : ' is-warn'}">${st.note}</p>
       </div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
   const inv = loadInventory();
   shopInventoryEl.innerHTML = `
-    <span>Карт из боксов: <b>${inv.cards}</b></span>
-    <span>Рамок: <b>${inv.frames}</b></span>
-    <span>Бустеров: <b>${inv.boosters}</b></span>`;
+    <span>Карт из сундуков: <b>${inv.cards}</b></span>
+    <span>Оформлений: <b>${inv.frames}</b></span>
+    <span>Бонусов: <b>${inv.bonuses || 0}</b></span>`;
+}
+
+/* ---------- Состав сундука (кнопка «i») ---------- */
+
+const shopInfoSheet = bottomSheet(document.getElementById('shopInfoSheet'), document.getElementById('shopBsBackdrop'));
+
+function openShopInfo(box) {
+  document.getElementById('shopInfoTitle').textContent = box.name;
+  document.getElementById('shopInfoSub').innerHTML = `${box.items} ${plural(box.items, { one: 'предмет', few: 'предмета', many: 'предметов' })}, первый — гарантированно ${RARITIES[box.id].name.toLowerCase()} карта. Остальные — по шансам:`;
+  document.getElementById('shopInfoList').innerHTML = chanceRows(box);
+  document.getElementById('shopInfoFoot').innerHTML = `Цена ${priceHTML(box)} · не больше ${box.limit} в день`;
+  shopInfoSheet.open();
 }
 
 // счётчик баланса «досчитывает» до нового значения
@@ -205,28 +314,33 @@ function rewardFaceHTML(r) {
   if (r.kind === 'coins') {
     return `<img class="lb-reward-img" src="assets/v2-coin.png" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Монеты</p>`;
   }
-  if (r.kind === 'frame') {
-    return `<div class="lb-frame"><span></span></div><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">Рамка профиля</p>`;
+  if (r.kind === 'tokens') {
+    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Жетоны</p>`;
   }
-  return `<img class="lb-reward-img" src="assets/v2-reward-energy.png" alt=""><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">Бустер</p>`;
+  if (r.kind === 'frame') {
+    return `<div class="lb-frame"><span></span></div><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
+  }
+  return `<img class="lb-reward-img" src="assets/v2-prize-gift.png" alt=""><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В «Бонусы»</p>`;
 }
 
 function rewardColor(r) {
-  if (r.kind === 'card') return RARITIES[r.rarity].color;
-  if (r.kind === 'coins') return '#ffcf3d';
-  if (r.kind === 'frame') return '#ff7ad9';
-  return '#9b8cff';
+  return r.kind === 'card' ? RARITIES[r.rarity].color : KIND_COLORS[r.kind];
 }
 
 let lbBusy = false;
 
 async function openLootbox(box) {
-  if (lbBusy) return;
-  const coins = getCoins();
-  if (coins < box.price) return;
+  if (lbBusy || !boxState(box).can) return;
   lbBusy = true;
-  setCoins(coins - box.price);
-  animateCoins(coins, coins - box.price);
+  markBought(box.id);
+  if (box.currency === 'tokens') {
+    addTokens(-box.price);
+    renderShop();
+  } else {
+    const coins = getCoins();
+    setCoins(coins - box.price);
+    animateCoins(coins, coins - box.price);
+  }
   const rewards = rollBox(box);
 
   lbOverlayEl.style.setProperty('--lb-color', box.colors[1]);
@@ -334,7 +448,8 @@ function applyRewards(rewards) {
   rewards.forEach((r) => {
     if (r.kind === 'card') inv.cards += 1;
     else if (r.kind === 'frame') inv.frames += 1;
-    else if (r.kind === 'booster') inv.boosters += 1;
+    else if (r.kind === 'bonus') inv.bonuses = (inv.bonuses || 0) + 1;
+    else if (r.kind === 'tokens') addTokens(r.amount);
     else coinsWon += r.amount;
   });
   saveInventory(inv);
@@ -348,6 +463,11 @@ function applyRewards(rewards) {
 /* ---------- События ---------- */
 
 shopBoxesEl.addEventListener('click', (e) => {
+  const info = e.target.closest('[data-info]');
+  if (info) {
+    openShopInfo(LOOTBOXES.find((b) => b.id === info.dataset.info));
+    return;
+  }
   const btn = e.target.closest('.shop-buy');
   if (!btn || btn.disabled) return;
   const box = LOOTBOXES.find((b) => b.id === btn.dataset.box);
@@ -358,6 +478,7 @@ shopBoxesEl.addEventListener('click', (e) => {
 document.getElementById('shopDemoCoins').addEventListener('click', () => {
   const before = getCoins();
   addCoins(500);
+  addTokens(30);
   renderShop();
   animateCoins(before, before + 500);
 });

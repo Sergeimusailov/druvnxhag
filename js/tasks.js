@@ -702,6 +702,11 @@ async function openChest(chestEl) {
   const i = Number(chestEl.dataset.milestone);
   await openGiftOverlay({ chest: true });
   TASK_TABS[tab].claimed.add(MILESTONES[i]);
+  // 2.3: за сундук-веху — фиолетовые жетоны для фиолетового сундука в магазине
+  if (isAppVersion('2.3') && typeof addTokens === 'function') {
+    addTokens(10);
+    showProfileToast('+10 фиолетовых жетонов');
+  }
   chestEl.outerHTML = milestoneHTML(tab, i);
   const fresh = panelEls[tab].querySelector(`.tchest[data-milestone="${i}"]`);
   fresh.animate([{ transform: 'translateX(-50%) scale(0.6)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });

@@ -1777,7 +1777,7 @@
 }
 
 /* магазин: без описания шансов у лутбоксов */
-[data-app="3"] .shop-chances {
+[data-app="3"] .shop-box .shop-chances {
   display: none;
 }
 

@@ -76,6 +76,9 @@ a {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  /* clip: контейнер нельзя прокрутить даже программно (фокус/scrollIntoView
+     иначе сдвигают всё приложение к спрятанным шторкам под экраном) */
+  overflow: clip;
   color: #fff;
 }
 
