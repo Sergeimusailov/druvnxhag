@@ -683,6 +683,14 @@ document.addEventListener('v2:screen', (e) => {
   if (e.detail.screen === 'shop') renderShop();
 });
 
+document.getElementById('shopDemoCoins').addEventListener('click', () => {
+  const before = getCoins();
+  addCoins(500);
+  addTokens(30);
+  renderShop();
+  animateCoins(before, before + 500);
+});
+
 // прототип: при каждом заходе все сундуки доступны — суточные лимиты сброшены,
 // а монет и жетонов хватает на каждый сундук; недоступность видна уже после покупок
 function resetShopForDemo() {
