@@ -264,16 +264,13 @@ function renderShop() {
   shopBoxesEl.innerHTML = LOOTBOXES.map((box) => {
     const st = boxState(box);
     return `
-    <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
-      <div class="shop-tile-art">${boxSVG(box, `shop-${box.id}`)}</div>
-      <div class="shop-tile-info">
-        <h2 class="shop-tile-name">${box.name}</h2>
-        <p class="shop-tile-left">${st.reason === 'limit' ? `Откроется через ${timerBadge()}` : `Доступно сегодня: ${st.left}`}</p>
-        <div class="shop-tile-row">
-          <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
-          <button class="shop-tile-btn" data-view="${box.id}">Посмотреть</button>
-        </div>
+    <article class="shop-tile shop-box-${box.id}${st.reason === 'limit' ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
+      <div class="shop-tile-main">
+        <div class="shop-tile-art">${boxSVG(box, `shop-${box.id}`)}</div>
+        <p class="shop-tile-price${st.reason === 'money' ? ' is-short' : ''}">${priceHTML(box)}</p>
+        <svg class="shop-tile-chev" width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
+      <div class="shop-tile-foot">${st.reason === 'limit' ? `Откроется через ${timerBadge()}` : `Доступно сегодня: ${st.left}`}</div>
     </article>`;
   }).join('');
   const inv = loadInventory();
@@ -365,7 +362,7 @@ function shopFaq() {
   return [
     ['Как получить новые карты?', 'Карты не продаются напрямую — они выпадают только из сундуков. Чем дороже сундук, тем реже карта внутри.'],
     ['Чем отличаются сундуки?', `Зелёный и синий открываются за монеты, эпический — за фиолетовые жетоны-ключи. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
-    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, жетоны-ключи или бонус. Состав виден по кнопке «Посмотреть».'],
+    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, жетоны-ключи или бонус. Чтобы увидеть состав, нажмите на сундук.'],
     ['С какими шансами выпадают награды?', chances],
     ['Где взять фиолетовые жетоны-ключи?', 'Они выпадают из зелёного и синего сундуков и даются за сундуки на шкале в разделе «Задания».'],
     ['Сколько сундуков можно открыть за день?', `У каждого сундука свой лимит: ${limits}. Он обновляется каждый день в полночь — до обновления на сундуке виден таймер.`],
