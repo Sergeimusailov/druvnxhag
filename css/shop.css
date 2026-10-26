@@ -429,28 +429,6 @@
   align-items: center;
 }
 
-/* «i» — состав и шансы, в правом верхнем углу карточки */
-.shop-info {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 15px;
-  font-style: italic;
-  font-weight: 700;
-  line-height: 24px;
-  color: #f6f7f8;
-}
-
-.shop-box-name {
-  padding-right: 28px;
-}
-
 /* откуда берутся жетоны — прямо на фиолетовом сундуке, без отдельного туториала */
 .shop-box-hint {
   margin-top: 6px;
@@ -479,31 +457,64 @@
   color: #ff8a80;
 }
 
-/* шторка «i» */
-.shop-info-sheet .bs-sub {
-  text-align: left;
-}
-
-.shop-info-list {
-  margin: 16px 0 0;
-  padding: 8px 20px;
+/* шторка «?»: состав и шансы всех трёх сундуков */
+.shop-info-box {
+  margin-top: 12px;
+  padding: 16px 20px 8px;
   border-radius: 20px;
-  background: #2c2c2e;
-  font-size: 15px;
-  line-height: 36px;
+  background:
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--lb-color) 35%, transparent), transparent 60%),
+    #2c2c2e;
 }
 
-.shop-info-foot {
+.shop-info-box:first-child {
+  margin-top: 0;
+}
+
+.shop-info-head {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shop-info-head h3 {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.shop-info-price {
+  display: inline-flex;
+  align-items: center;
   gap: 4px;
-  margin-top: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f6f7f8;
+}
+
+.shop-info-price img {
+  width: 18px;
+  height: 18px;
+}
+
+.shop-info-meta {
+  margin-top: 4px;
   font-size: 13px;
+  line-height: 16px;
   color: rgba(246, 247, 248, 0.6);
 }
 
-.shop-info-foot img {
-  width: 16px;
-  height: 16px;
+.shop-info-list {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 32px;
+}
+
+.shop-info-foot {
+  margin: 16px 4px 8px;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(246, 247, 248, 0.6);
 }

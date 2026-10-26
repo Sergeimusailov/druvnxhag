@@ -262,7 +262,6 @@ function renderShop() {
     const st = boxState(box);
     return `
     <article class="shop-box shop-box-${box.id}" style="--lb-color:${box.colors[1]};--lb-light:${box.colors[0]}">
-      <button class="shop-info" data-info="${box.id}" aria-label="Состав и шансы">i</button>
       <div class="shop-box-art">${boxSVG(box, `shop-${box.id}`)}</div>
       <div class="shop-box-info">
         <h2 class="shop-box-name">${box.name}</h2>
@@ -279,17 +278,26 @@ function renderShop() {
     <span>Бонусов: <b>${inv.bonuses || 0}</b></span>`;
 }
 
-/* ---------- Состав сундука (кнопка «i») ---------- */
+/* ---------- Состав и шансы всех сундуков (кнопка «?» в шапке) ---------- */
 
 const shopInfoSheet = bottomSheet(document.getElementById('shopInfoSheet'), document.getElementById('shopBsBackdrop'));
 
-function openShopInfo(box) {
-  document.getElementById('shopInfoTitle').textContent = box.name;
-  document.getElementById('shopInfoSub').innerHTML = `${box.items} ${plural(box.items, { one: 'предмет', few: 'предмета', many: 'предметов' })}, первый — гарантированно ${RARITIES[box.id].name.toLowerCase()} карта. Остальные — по шансам:`;
-  document.getElementById('shopInfoList').innerHTML = chanceRows(box);
-  document.getElementById('shopInfoFoot').innerHTML = `Цена ${priceHTML(box)} · не больше ${box.limit} в день`;
+function openShopInfo() {
+  const items = (n) => `${n} ${plural(n, { one: 'предмет', few: 'предмета', many: 'предметов' })}`;
+  document.getElementById('shopInfoList').innerHTML = LOOTBOXES.map((box) => `
+    <section class="shop-info-box" style="--lb-color:${box.colors[1]}">
+      <div class="shop-info-head">
+        <h3>${box.name}</h3>
+        <span class="shop-info-price">${priceHTML(box)}</span>
+      </div>
+      <p class="shop-info-meta">${items(box.items)} · гарантированно ${RARITIES[box.id].name.toLowerCase()} карта · не больше ${box.limit} в день</p>
+      <ul class="shop-chances shop-info-list">${chanceRows(box)}</ul>
+    </section>`).join('') + '<p class="shop-info-foot">Фиолетовые жетоны выпадают из зелёного и синего сундуков и даются за сундуки в «Заданиях». Бонусы попадают в раздел «Бонусы», оформление — в профиль.</p>';
+  document.querySelector('#shopInfoSheet .bs-scroll').scrollTop = 0;
   shopInfoSheet.open();
 }
+
+document.getElementById('shopHelpBtn').addEventListener('click', openShopInfo);
 
 // счётчик баланса «досчитывает» до нового значения
 function animateCoins(from, to) {
@@ -463,11 +471,6 @@ function applyRewards(rewards) {
 /* ---------- События ---------- */
 
 shopBoxesEl.addEventListener('click', (e) => {
-  const info = e.target.closest('[data-info]');
-  if (info) {
-    openShopInfo(LOOTBOXES.find((b) => b.id === info.dataset.info));
-    return;
-  }
   const btn = e.target.closest('.shop-buy');
   if (!btn || btn.disabled) return;
   const box = LOOTBOXES.find((b) => b.id === btn.dataset.box);
