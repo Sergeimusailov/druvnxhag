@@ -153,7 +153,7 @@ function renderBoard() {
       const cardEl = document.createElement('div');
       const isFaceDown = index === state.lastPlacedIndex && state.lastPlacedFaceDown;
       cardEl.className = `card owner-${cell.owner}${isFaceDown ? ' face-back' : ''}`;
-      cardEl.innerHTML = isFaceDown ? '' : cardInnerHTML(cell.card);
+      cardEl.innerHTML = isFaceDown ? matchBackHTML(cell.owner) : cardInnerHTML(cell.card);
       cellEl.appendChild(cardEl);
       if (index === state.lastPlacedIndex) playLandAnimation(cardEl);
     }
@@ -177,7 +177,7 @@ function renderHand(hideIndex, faceBackIndex) {
       const isFaceBack = slot === faceBackIndex;
       cardEl.className = `card in-hand${isFaceBack ? ' face-back' : ''}`;
       cardEl.dataset.id = card.instanceId;
-      cardEl.innerHTML = isFaceBack ? '' : cardInnerHTML(card);
+      cardEl.innerHTML = isFaceBack ? matchBackHTML('you') : cardInnerHTML(card);
       if (slot === hideIndex) cardEl.classList.add('hand-card-hidden');
       makeDraggable(cardEl, card);
       slotEl.appendChild(cardEl);
@@ -200,6 +200,8 @@ function renderScore() {
 }
 
 function renderDecks() {
+  // версия 2: колода — квадратная рубашка из профиля, без счётчика
+  if (typeof MATCH24 !== 'undefined') return;
   deckYouEl.textContent = state.yourDeck.length;
   deckOppEl.textContent = state.oppDeck.length;
 }
@@ -398,11 +400,16 @@ async function resolveCaptures(index, card, events, owner) {
   });
 }
 
-function flyGhost(fromRect, toRect, innerHTML, faceDown) {
+// версия 2: рубашка карт рубашкой из профиля (js/match24.js); иначе — фон по умолчанию
+function matchBackHTML(owner) {
+  return typeof MATCH24 !== 'undefined' ? MATCH24.backHTML(owner) : '';
+}
+
+function flyGhost(fromRect, toRect, innerHTML, faceDown, owner = 'you') {
   return new Promise((resolve) => {
     const ghost = document.createElement('div');
     ghost.className = `card drag-ghost${faceDown ? ' face-back' : ''}`;
-    ghost.innerHTML = innerHTML || '';
+    ghost.innerHTML = innerHTML || (faceDown ? matchBackHTML(owner) : '');
     Object.assign(ghost.style, {
       position: 'fixed',
       left: `${fromRect.left}px`,
@@ -435,7 +442,7 @@ function flyGhost(fromRect, toRect, innerHTML, faceDown) {
 async function flyFromDeckToCell(owner, index) {
   const badgeEl = owner === 'you' ? deckYouEl : deckOppEl;
   const cellEl = boardEl.querySelector(`.cell[data-index="${index}"]`);
-  await flyGhost(badgeEl.getBoundingClientRect(), cellEl.getBoundingClientRect(), '', true);
+  await flyGhost(badgeEl.getBoundingClientRect(), cellEl.getBoundingClientRect(), '', true, owner);
 }
 
 async function refillYourHandWithFlight() {
