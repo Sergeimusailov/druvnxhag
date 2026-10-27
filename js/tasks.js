@@ -702,10 +702,10 @@ async function openChest(chestEl) {
   const i = Number(chestEl.dataset.milestone);
   await openGiftOverlay({ chest: true });
   TASK_TABS[tab].claimed.add(MILESTONES[i]);
-  // 2.3: за сундук-веху — фиолетовые жетоны для фиолетового сундука в магазине
+  // 2.3: за сундук-веху — ключи для фиолетового сундука в магазине
   if (isAppVersion('2.3') && typeof addTokens === 'function') {
     addTokens(10);
-    showProfileToast('+10 фиолетовых жетонов');
+    showProfileToast('+10 ключей');
   }
   chestEl.outerHTML = milestoneHTML(tab, i);
   const fresh = panelEls[tab].querySelector(`.tchest[data-milestone="${i}"]`);
