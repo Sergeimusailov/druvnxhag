@@ -545,8 +545,7 @@ function renderPreview23() {
     </div>
     <div class="e23-tasks ny24-segs">${segs}</div>
     <div class="ny24-seg-labels"><span>Выполнено заданий</span><span>${completed} / ${total}</span></div>
-    <button class="ny24-timer-hit" data-timer-tip aria-label="Время до обновления заданий"></button>
-    <div class="ny24-tip" role="tooltip">Время до обновления ежедневных заданий</div>`;
+    <button class="ny24-timer-hit" data-timer-tip aria-label="Время до обновления заданий"></button>`;
   e23Demo.textContent = finished ? 'Демо: вернуть начало дня' : 'Демо: выполнить все';
 }
 
@@ -689,24 +688,12 @@ e22Scroll.addEventListener('scroll', () => {
   e22Appbar.classList.toggle('is-snow', on);
 }, { passive: true });
 
-// тап по таймеру в превью — подсказка (Figma 16671:1223), гаснет сама
-// или по следующему тапу в любом месте
-let e23TipTimer = null;
-function hideTimerTip23() {
-  clearTimeout(e23TipTimer);
-  e23Preview.classList.remove('is-tip');
-}
-
-document.addEventListener('pointerdown', (e) => {
-  if (e23Preview.classList.contains('is-tip') && !e.target.closest('[data-timer-tip]')) hideTimerTip23();
-}, true);
-
+// тап по таймеру в превью — общий тултип (Figma 16671:1223, js/tooltip24.js),
+// гаснет сам через 3 с или по следующему тапу в любом месте
 e23Preview.addEventListener('click', (e) => {
-  if (e.target.closest('[data-timer-tip]')) {
-    if (e23Preview.classList.contains('is-tip')) { hideTimerTip23(); return; }
-    e23Preview.classList.add('is-tip');
-    clearTimeout(e23TipTimer);
-    e23TipTimer = setTimeout(hideTimerTip23, 3000);
+  const timerHit = e.target.closest('[data-timer-tip]');
+  if (timerHit) {
+    Tooltip24.show(timerHit, { text: 'Время до обновления ежедневных заданий', timeout: 3000 });
     return;
   }
   const btn = e.target.closest('[data-tab]');

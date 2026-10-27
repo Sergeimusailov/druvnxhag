@@ -1,0 +1,51 @@
+/* Общий тултип (js/tooltip24.js) — по подсказке таймера в ивенте (Figma 16671:1223) */
+.tip24 {
+  position: absolute;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  font-size: 15px;
+  line-height: 18px;
+  text-align: left;
+  color: #333;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tip24.is-above {
+  transform: translateY(4px);
+}
+
+.tip24.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.tip24 b {
+  font-weight: 600;
+}
+
+/* хвостик сверху (тултип под элементом) или снизу (над элементом) */
+.tip24::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: calc(var(--tail, 50%) - 12px);
+  width: 24px;
+  height: 8px;
+  background: #fff;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.tip24.is-above::before {
+  top: auto;
+  bottom: -8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}

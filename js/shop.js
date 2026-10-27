@@ -313,38 +313,12 @@ const BALANCE_TIPS = {
 };
 const shopHeadEl = document.querySelector('.shop-head');
 
-function hideBalanceTip() {
-  shopHeadEl.querySelector('.shop-bal-tip')?.remove();
-  shopHeadEl.querySelectorAll('.shop-balance.is-active').forEach((el) => el.classList.remove('is-active'));
-}
-
-function showBalanceTip(pill) {
-  const wasActive = pill.classList.contains('is-active');
-  hideBalanceTip();
-  if (wasActive) return;
-  const [title, text] = BALANCE_TIPS[pill.dataset.balance];
-  const tip = document.createElement('div');
-  tip.className = 'shop-bal-tip';
-  tip.innerHTML = `<b>${title}</b><span>${text}</span>`;
-  shopHeadEl.appendChild(tip);
-  const head = shopHeadEl.getBoundingClientRect();
-  const r = pill.getBoundingClientRect();
-  const center = r.left + r.width / 2 - head.left;
-  const left = Math.min(Math.max(center - tip.offsetWidth / 2, 16), head.width - tip.offsetWidth - 16);
-  tip.style.left = `${left}px`;
-  tip.style.top = `${r.bottom - head.top + 10}px`;
-  tip.style.setProperty('--tail', `${center - left}px`);
-  pill.classList.add('is-active');
-}
-
 shopHeadEl.addEventListener('click', (e) => {
   const pill = e.target.closest('[data-balance]');
   if (!pill) return;
-  e.stopPropagation();
-  showBalanceTip(pill);
+  const [title, text] = BALANCE_TIPS[pill.dataset.balance];
+  Tooltip24.show(pill, { title, text, width: 260 });
 });
-document.addEventListener('click', hideBalanceTip);
-document.addEventListener('v2:screen', hideBalanceTip);
 
 /* ---------- Шторка сундука: состав с шансами и «Открыть» ---------- */
 // шторка на весь экран: картинка сундука, бейдж доступности, заголовок,
@@ -357,31 +331,33 @@ const shopDetailFoot = shopDetailEl.querySelector('.shop-detail-foot');
 let shopDetailBox = null;
 const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopDetailBackdrop'), {
   onClose: () => {
-    hidePrizeTip();
+    Tooltip24.hide();
     shopDetailBox = null;
   },
 });
 
 
 
-// награда: сверху шанс выпадения, под ним картинка (как предметы на треке
-// ивента; у монет и ключей — «до N» с тёмной обводкой). Названий нет — что это,
-// видно по картинке и по подсказке на тап
+// награда — карточка 108×132: шанс 20/600, у монет и ключей под ним «до N»,
+// картинка из макета на всю карточку. Карты зелёного и синего сундуков —
+// та же рубашка, перекрашенная фильтром
+const PRIZE_ART = { card: 'card', coins: 'coins', tokens: 'key', bonus: 'bonus', frame: 'cosmetic' };
+// порядок карточек как в макете: карта, бонус, ключи, монеты, косметика
+const PRIZE_ORDER = ['card', 'bonus', 'tokens', 'coins', 'frame'];
 function rewardPreview(e) {
-  const item = (color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-chance">${e.chance}%</span><span class="shop-prize-art">${art}${qty ? `<span class="shop-prize-qty">${qty}</span>` : ''}</span></li>`;
-  if (e.kind === 'card') return item(RARITIES[e.rarity].color, '<span class="shop-prize-cards"><i></i><i></i></span>', '');
-  // количество — только максимум: «до 40»
-  if (e.kind === 'coins') return item('#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `до ${e.max}`);
-  if (e.kind === 'tokens') return item('#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `до ${e.max}`);
-  if (e.kind === 'frame') return item('#ff7ad9', '<span class="shop-prize-cosm"><span class="shop-prize-cosm-back">' + COSMETICS24.backHTML('holo') + '</span><span class="shop-prize-cosm-frame"></span></span>', '');
-  return item('#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '');
+  const key = e.kind === 'card' ? `card-${e.rarity}` : e.kind;
+  const sub = e.kind === 'coins' || e.kind === 'tokens' ? `<span class="shop-prize-sub">до ${e.max}</span>` : '';
+  return `<li class="shop-prize shop-prize-${key}" data-prize-tip="${key}" role="button" tabindex="0">
+    <img class="shop-prize-img" src="assets/shop-prize-${PRIZE_ART[e.kind]}.png" alt="">
+    <span class="shop-prize-chance">${e.chance}%</span>${sub}
+  </li>`;
 }
 
-// описание награды по тапу (пока рыбный текст)
+// описание награды по тапу — общий тултип (js/tooltip24.js)
 function prizeTip(key) {
   if (key.startsWith('card-')) {
     const r = RARITIES[key.slice(5)];
-    return [`${r.name} карта`, `Случайная ${r.name.toLowerCase()} карта для вашей коллекции. Её можно сразу поставить в колоду и играть в матчах.`];
+    return [`${r.name} карта`, `Случайная ${r.name.toLowerCase()} карта в вашу коллекцию. Если такая карта у вас уже есть, дубль распылится в монеты.`];
   }
   return {
     coins: ['Монеты', 'Основная валюта игры. За монеты открываются обычный и редкий сундуки.'],
@@ -391,46 +367,29 @@ function prizeTip(key) {
   }[key];
 }
 
-function hidePrizeTip() {
-  shopDetailEl.querySelector('.shop-prize-tip')?.remove();
-  shopDetailEl.querySelectorAll('.shop-prize.is-active').forEach((el) => el.classList.remove('is-active'));
-}
-
-function showPrizeTip(prize) {
-  const wasActive = prize.classList.contains('is-active');
-  hidePrizeTip();
-  if (wasActive) return;
-  const [title, text] = prizeTip(prize.dataset.prizeTip);
-  const row = prize.parentElement;
-  const tip = document.createElement('div');
-  tip.className = 'shop-prize-tip';
-  tip.innerHTML = `<b>${title}</b><span>${text}</span>`;
-  row.appendChild(tip);
-  // хвостик смотрит на награду, сам пузырь не вылезает за края ряда
-  const center = prize.offsetLeft + prize.offsetWidth / 2;
-  const left = Math.min(Math.max(center - tip.offsetWidth / 2, 0), row.clientWidth - tip.offsetWidth);
-  tip.style.left = `${left}px`;
-  tip.style.setProperty('--tail', `${center - left}px`);
-  prize.classList.add('is-active');
-}
+// звезда за сундуком в шторке — цвета сундука (у эпического из макета #5d25b0)
+const SHEET_GLOW = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
+const SHEET_STAR = HERO_STAR.replace('class="shop-tile-glow"', 'class="shop-detail-star" preserveAspectRatio="none"');
 
 function renderDetail(box) {
   const st = boxState(box);
+  const icon = `<img src="${CURRENCY[box.currency].icon}" alt="">`;
   let btn;
-  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
+  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">${icon}Открыть за ${box.price}</button>`;
   else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
-  // доступность — тот же бейдж, что на плитке: «Осталось: N» или часы с таймером
+  // доступность — тот же бейдж, что на плитке: «Остался: N» или часы с таймером
   const badge = st.reason === 'limit'
     ? timerBadge()
     : `${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}`;
-  shopDetailBody.style.setProperty('--lb-color', box.colors[1]);
+  shopDetailEl.style.setProperty('--glow', SHEET_GLOW[box.id]);
   shopDetailBody.innerHTML = `
+    ${SHEET_STAR}
     <div class="shop-detail-art">${chestArt(box)}</div>
     <span class="shop-tile-badge shop-detail-badge">${badge}</span>
-    <h2 class="bs-title">${box.name}</h2>
-    <p class="bs-sub">Шансы выпадения наград из сундука</p>
-    <ul class="shop-prizes" style="--n:${box.table.length}">${box.table.map(rewardPreview).join('')}</ul>`;
+    <h2 class="shop-detail-title">${box.name}</h2>
+    <p class="shop-detail-sub">Шансы выпадения наград</p>
+    <ul class="shop-prizes">${[...box.table].sort((x, y) => PRIZE_ORDER.indexOf(x.kind) - PRIZE_ORDER.indexOf(y.kind)).map(rewardPreview).join('')}</ul>`;
   shopDetailFoot.innerHTML = btn;
 }
 
@@ -448,10 +407,10 @@ function closeDetail() {
 shopDetailEl.addEventListener('click', (e) => {
   const prize = e.target.closest('.shop-prize');
   if (prize) {
-    showPrizeTip(prize);
+    const [title, text] = prizeTip(prize.dataset.prizeTip);
+    Tooltip24.show(prize, { title, text });
     return;
   }
-  hidePrizeTip();
   const btn = e.target.closest('[data-open]');
   if (!btn) return;
   const box = LOOTBOXES.find((b) => b.id === btn.dataset.open);
