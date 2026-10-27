@@ -370,8 +370,9 @@ function rewardPreview(e, chance) {
     const r = RARITIES[e.rarity];
     return item(`${r.name} карта`, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '');
   }
-  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `${e.min}–${e.max}`);
-  if (e.kind === 'tokens') return item('Ключи', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `${e.min}–${e.max}`);
+  // количество — только максимум: «до 40»
+  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `до ${e.max}`);
+  if (e.kind === 'tokens') return item('Ключи', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `до ${e.max}`);
   if (e.kind === 'frame') return item('Оформление', '#ff7ad9', '<span class="shop-prize-frame"></span>', '');
   return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '');
 }
