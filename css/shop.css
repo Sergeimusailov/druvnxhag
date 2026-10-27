@@ -416,6 +416,112 @@
   pointer-events: auto;
 }
 
+/* бейджи карты на экране наград: «Новая» (открыли) и «Уже есть» (дубль) */
+.lb-reward-face {
+  position: relative;
+}
+
+.lb-new-badge,
+.lb-dup-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 2;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.lb-new-badge {
+  background: #42cf9b;
+  color: #fff;
+}
+
+.lb-dup-badge {
+  background: rgba(255, 255, 255, 0.16);
+  color: #f6f7f8;
+}
+
+/* строка «+20» с монетой вместо редкости — появляется, когда дубль распылился */
+.lb-dup-coins {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+  color: #ffcf3d;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lb-dup-coins img {
+  width: 16px;
+  height: 16px;
+}
+
+/* дубль распылился: карта гаснет, рамка становится золотой, всплывают монеты */
+.lb-reward.is-dup .lb-card {
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+}
+
+.lb-reward.is-dusted .lb-card {
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0.7;
+  transform: scale(0.92);
+}
+
+.lb-reward.is-dusted .lb-reward-face {
+  box-shadow: 0 0 0 2px #ffcf3d, 0 0 24px rgba(255, 207, 61, 0.6);
+  transition: box-shadow 0.4s ease;
+}
+
+.lb-reward.is-dusted .lb-dup-coins {
+  opacity: 1;
+  transform: none;
+}
+
+/* монетки, в которые рассыпается дубль */
+.lb-dust-coin {
+  position: absolute;
+  z-index: 5;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* итог под наградами */
+.lb-dup-note {
+  flex-basis: 100%;
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 20px;
+  text-align: center;
+  color: rgba(246, 247, 248, 0.8);
+  animation: lbNoteIn 0.4s ease both;
+}
+
+@keyframes lbNoteIn {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.lb-rewards.is-compact .lb-dup-coins {
+  font-size: 13px;
+}
+
+.lb-rewards.is-compact .lb-new-badge,
+.lb-rewards.is-compact .lb-dup-badge {
+  top: 6px;
+  font-size: 10px;
+}
+
 /* выпавшая рубашка колоды */
 .lb-back {
   position: relative;

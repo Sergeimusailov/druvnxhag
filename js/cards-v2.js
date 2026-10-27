@@ -17,6 +17,7 @@
   let sheetAction = null;
 
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
+  const LOCK_SVG = '<svg width="20" height="24" viewBox="0 0 20 24" fill="none"><path d="M5 10V7a5 5 0 0 1 10 0v3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="1.5" y="10" width="17" height="12.5" rx="3.5" fill="#fff"/><circle cx="10" cy="15.5" r="1.8" fill="#1c1c1e"/><path d="M10 16.5v2.5" stroke="#1c1c1e" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
   function cardEl(card, extra = '') {
     const el = document.createElement('div');
@@ -45,8 +46,22 @@
     countEl.classList.toggle('is-full', deck.length === DECK_SIZE);
     hintEl.hidden = deck.length === DECK_SIZE;
 
+    // неоткрытые карты — в самом конце, затемнены, с замком; тап — подсказка, как получить
     collectionEl.innerHTML = '';
-    CARD_ROSTER.forEach((card) => {
+    const owned = ownedCardNames();
+    const sorted = [...CARD_ROSTER].sort((a, b) => owned.has(b.name) - owned.has(a.name));
+    sorted.forEach((card) => {
+      if (!owned.has(card.name)) {
+        const el = cardEl(card, ' is-locked');
+        el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
+        el.setAttribute('aria-label', `${card.name} — карта не открыта`);
+        el.addEventListener('click', () => Tooltip24.show(el, {
+          title: 'Карта не открыта',
+          text: `${RARITIES[cardRarity(card)].name} карта выпадает из ${cardRarity(card) === 'purple' ? 'эпического' : cardRarity(card) === 'blue' ? 'редкого' : 'обычного'} сундука в «Магазине».`,
+        }));
+        collectionEl.appendChild(el);
+        return;
+      }
       const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
       el.addEventListener('click', () => openCard(card));
       collectionEl.appendChild(el);
@@ -103,6 +118,9 @@
       if (card) openCardCustom(card, render);
     });
   }
+
+  // карты открываются в магазине — перерисовываем коллекцию при входе в раздел
+  document.addEventListener('v2:screen', (e) => { if (e.detail.screen === 'cards') render(); });
 
   render();
 })();

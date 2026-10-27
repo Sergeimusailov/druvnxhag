@@ -151,6 +151,30 @@ function cardRarity(card) {
   return 'green';
 }
 
+// Открытые карты (версия 2, прототип): со старта открыты зелёные, синие
+// и карты из сохранённой колоды; остальные фиолетовые выпадают только из
+// эпического сундука в магазине. Пока без настоящей экономики
+const OWNED_KEY = 'v2.ownedCards';
+
+function ownedCardNames() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(OWNED_KEY) || 'null');
+    if (Array.isArray(saved)) return new Set(saved);
+  } catch (e) { /* ignore */ }
+  const deck = getSavedDeckNames();
+  return new Set(CARD_ROSTER.filter((c) => cardRarity(c) !== 'purple' || deck.includes(c.name)).map((c) => c.name));
+}
+
+function isCardOwned(name) {
+  return ownedCardNames().has(name);
+}
+
+function unlockCard(name) {
+  const owned = ownedCardNames();
+  owned.add(name);
+  try { localStorage.setItem(OWNED_KEY, JSON.stringify([...owned])); } catch (e) { /* ignore */ }
+}
+
 // Монеты: тратятся в магазине v2 (прототип; начисление за матчи — позже)
 const COINS_KEY = 'v2.coins';
 const COINS_START = 500;

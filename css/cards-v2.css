@@ -80,6 +80,29 @@
   filter: grayscale(60%);
 }
 
+/* карта не открыта — в конце коллекции, затемнена, с замком по центру */
+.cards-collection-grid .card.is-locked {
+  position: relative;
+}
+
+.cards-collection-grid .card.is-locked > :not(.card-lock) {
+  filter: brightness(0.3) grayscale(0.6);
+}
+
+.card-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.card-lock svg {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
 /* шторка карты */
 
 .card-sheet {

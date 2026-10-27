@@ -168,13 +168,65 @@ function rollEntry(table) {
 }
 
 // taken — имена карт, уже выпавших в этом боксе: внутри одного бокса без повторов
+// дубль карты распыляется в монеты (прототип, экономика — позже)
+const DUP_COINS = { green: 20, blue: 50, purple: 100 };
+const DUP_TIP_KEY = 'v2.dupTipSeen';
+
+// анимация «карта → монеты»: карта гаснет и сжимается, из неё разлетаются
+// монетки и слетаются в строку «+N» внизу карточки
+async function dustToCoins(rewardEl) {
+  const card = rewardEl.querySelector('.lb-card');
+  const target = rewardEl.querySelector('.lb-dup-coins');
+  const host = lbOverlayEl;
+  const h = host.getBoundingClientRect();
+  const c = card.getBoundingClientRect();
+  const cx = c.left + c.width / 2 - h.left;
+  const cy = c.top + c.height / 2 - h.top;
+  card.animate([
+    { transform: 'scale(1)', filter: 'none' },
+    { transform: 'scale(1.08) rotate(-3deg)', filter: 'brightness(1.6)', offset: 0.25 },
+    { transform: 'scale(0.92)', filter: 'grayscale(1) brightness(0.55)', opacity: 0.7 },
+  ], { duration: 650, easing: 'ease-in-out', fill: 'forwards' });
+  rewardEl.classList.add('is-dusting');
+  await wait(180);
+  const t = target.getBoundingClientRect();
+  const tx = t.left + 10 - h.left;
+  const ty = t.top + t.height / 2 - h.top;
+  const flights = Array.from({ length: 8 }, (_, i) => {
+    const coin = document.createElement('img');
+    coin.src = 'assets/shop-coin.png';
+    coin.className = 'lb-dust-coin';
+    coin.style.left = `${cx}px`;
+    coin.style.top = `${cy}px`;
+    host.appendChild(coin);
+    const a = (Math.PI * 2 * i) / 8 + Math.random() * 0.4;
+    const r = 34 + Math.random() * 22;
+    const ox = Math.cos(a) * r;
+    const oy = Math.sin(a) * r;
+    return coin.animate([
+      { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px)) scale(1)`, opacity: 1, offset: 0.4 },
+      { transform: `translate(calc(-50% + ${tx - cx}px), calc(-50% + ${ty - cy}px)) scale(0.6)`, opacity: 1 },
+    ], { duration: 750, delay: i * 30, easing: 'cubic-bezier(0.3, 0.7, 0.4, 1)', fill: 'forwards' })
+      .finished.then(() => coin.remove());
+  });
+  await wait(600);
+  rewardEl.classList.add('is-dusted');
+  await Promise.all(flights);
+}
+
 function makeReward(entry, taken = new Set()) {
   if (entry.kind === 'card') {
-    const all = CARD_ROSTER.filter((c) => cardRarity(c) === entry.rarity);
-    const fresh = all.filter((c) => !taken.has(c.name));
-    const card = pick(fresh.length ? fresh : all);
+    // прототип: из эпического — новая фиолетовая карта (пока есть неоткрытые),
+    // из обычного и редкого — всегда дубль уже открытой карты
+    const all = CARD_ROSTER.filter((c) => cardRarity(c) === entry.rarity && !taken.has(c.name));
+    const owned = ownedCardNames();
+    const fresh = all.filter((c) => !owned.has(c.name));
+    const pool = entry.rarity === 'purple' ? fresh : all.filter((c) => owned.has(c.name));
+    const card = pick(pool.length ? pool : all);
     taken.add(card.name);
-    return { kind: 'card', rarity: entry.rarity, card };
+    const dup = owned.has(card.name);
+    return { kind: 'card', rarity: entry.rarity, card, dup, dupCoins: dup ? DUP_COINS[entry.rarity] : 0 };
   }
   if (entry.kind === 'coins') {
     const amount = Math.round((entry.min + Math.random() * (entry.max - entry.min)) / 10) * 10;
@@ -478,8 +530,16 @@ function animateCoins(from, to) {
 /* ---------- Открытие ---------- */
 
 function rewardFaceHTML(r) {
+  if (r.kind === 'card' && r.dup) {
+    // дубль: карту видно, сверху «Уже есть», внизу во что распылилась
+    return `<span class="lb-dup-badge">Уже есть</span>
+      <div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+      <p class="lb-reward-name">${r.card.name}</p>
+      <p class="lb-dup-coins"><img src="assets/shop-coin.png" alt="">+${r.dupCoins}</p>`;
+  }
   if (r.kind === 'card') {
-    return `<div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+    return `<span class="lb-new-badge">Новая</span>
+      <div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
       <p class="lb-reward-name">${r.card.name}</p><p class="lb-reward-sub" style="color:${RARITIES[r.rarity].color}">${RARITIES[r.rarity].name}</p>`;
   }
   if (r.kind === 'coins') {
@@ -523,8 +583,9 @@ async function openLootbox(box) {
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
   lbRewardsEl.innerHTML = '';
   lbRewardsEl.style.setProperty('--n', rewards.length);
-  // 3–5 наград — плитки поменьше, чтобы все поместились на экране
-  lbRewardsEl.classList.toggle('is-compact', rewards.length > 2);
+  // 3–5 наград — плитки поменьше, чтобы все поместились на экране;
+  // на узком экране и две крупные плитки (160 + 12 + 160) не помещаются в ряд
+  lbRewardsEl.classList.toggle('is-compact', rewards.length > 2 || lbRewardsEl.clientWidth < 332);
   lbTitleEl.classList.remove('is-visible');
   lbClaimEl.classList.remove('is-visible');
   lbOverlayEl.style.opacity = '';
@@ -584,7 +645,7 @@ async function openLootbox(box) {
 
   // предметы вылетают из сундука рубашкой вверх и по очереди переворачиваются
   lbRewardsEl.innerHTML = rewards.map((r) => `
-    <div class="lb-reward" style="--glow:${rewardColor(r)}">
+    <div class="lb-reward${r.dup ? ' is-dup' : ''}" style="--glow:${rewardColor(r)}">
       <div class="lb-reward-inner">
         <div class="lb-reward-back"></div>
         <div class="lb-reward-face">${rewardFaceHTML(r)}</div>
@@ -612,6 +673,27 @@ async function openLootbox(box) {
     el.classList.add('is-flipped');
     await wait(320);
   }
+  // дубли: после переворота карта гаснет и превращается в монеты — состояние
+  // остаётся до «Забрать», под наградами — итоговая строка
+  const dups = rewards.filter((r) => r.dup);
+  if (dups.length) {
+    await wait(350);
+    const dupEls = els.filter((el) => el.classList.contains('is-dup'));
+    // карта рассыпается в монеты: монетки вылетают из карты и собираются в «+N»
+    await Promise.all(dupEls.map(dustToCoins));
+    const total = dups.reduce((sum, r) => sum + r.dupCoins, 0);
+    lbRewardsEl.insertAdjacentHTML('beforeend', `<p class="lb-dup-note">${dups.length > 1 ? 'Дубли превращены' : 'Дубль превращён'} в ${total} ${plural(total, CURRENCY.coins)}</p>`);
+    await wait(300);
+    // первый дубль в жизни — объясняем механику тултипом над картой
+    if (!storageGet(DUP_TIP_KEY)) {
+      storageSet(DUP_TIP_KEY, '1');
+      Tooltip24.show(dupEls[0].querySelector('.lb-reward-face'), {
+        title: 'Дубль превращается в монеты',
+        text: 'Такая карта у вас уже есть, поэтому вместо неё вы получаете монеты.',
+        width: 260,
+      });
+    }
+  }
 
   applyRewards(rewards);
   lbClaimEl.classList.add('is-visible');
@@ -628,7 +710,8 @@ function applyRewards(rewards) {
   const inv = loadInventory();
   let coinsWon = 0;
   rewards.forEach((r) => {
-    if (r.kind === 'card') inv.cards += 1;
+    if (r.kind === 'card' && r.dup) coinsWon += r.dupCoins;
+    else if (r.kind === 'card') { inv.cards += 1; unlockCard(r.card.name); }
     else if (r.kind === 'frame') inv.frames += 1;
     else if (r.kind === 'bonus') inv.bonuses = (inv.bonuses || 0) + 1;
     else if (r.kind === 'tokens') addTokens(r.amount);
