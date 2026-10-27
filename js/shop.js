@@ -172,47 +172,44 @@ function rollEntry(table) {
 const DUP_COINS = { green: 20, blue: 50, purple: 100 };
 const DUP_TIP_KEY = 'v2.dupTipSeen';
 
-// анимация «карта → монеты»: карта гаснет и сжимается, из неё разлетаются
-// монетки и слетаются в строку «+N» внизу карточки
-async function dustToCoins(rewardEl) {
-  const card = rewardEl.querySelector('.lb-card');
-  const target = rewardEl.querySelector('.lb-dup-coins');
-  const host = lbOverlayEl;
-  const h = host.getBoundingClientRect();
-  const c = card.getBoundingClientRect();
-  const cx = c.left + c.width / 2 - h.left;
-  const cy = c.top + c.height / 2 - h.top;
-  card.animate([
-    { transform: 'scale(1)', filter: 'none' },
-    { transform: 'scale(1.08) rotate(-3deg)', filter: 'brightness(1.6)', offset: 0.25 },
-    { transform: 'scale(0.92)', filter: 'grayscale(1) brightness(0.55)', opacity: 0.7 },
-  ], { duration: 650, easing: 'ease-in-out', fill: 'forwards' });
-  rewardEl.classList.add('is-dusting');
-  await wait(180);
-  const t = target.getBoundingClientRect();
-  const tx = t.left + 10 - h.left;
-  const ty = t.top + t.height / 2 - h.top;
-  const flights = Array.from({ length: 8 }, (_, i) => {
-    const coin = document.createElement('img');
-    coin.src = 'assets/shop-coin.png';
-    coin.className = 'lb-dust-coin';
-    coin.style.left = `${cx}px`;
-    coin.style.top = `${cy}px`;
-    host.appendChild(coin);
-    const a = (Math.PI * 2 * i) / 8 + Math.random() * 0.4;
-    const r = 34 + Math.random() * 22;
-    const ox = Math.cos(a) * r;
-    const oy = Math.sin(a) * r;
-    return coin.animate([
-      { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0 },
-      { transform: `translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px)) scale(1)`, opacity: 1, offset: 0.4 },
-      { transform: `translate(calc(-50% + ${tx - cx}px), calc(-50% + ${ty - cy}px)) scale(0.6)`, opacity: 1 },
-    ], { duration: 750, delay: i * 30, easing: 'cubic-bezier(0.3, 0.7, 0.4, 1)', fill: 'forwards' })
-      .finished.then(() => coin.remove());
+// «Забрать»: из каждой карты-дубля монетки улетают в счётчик монет магазина,
+// счётчик подпрыгивает на каждую и в конце докручивается до нового значения
+async function flyDupCoins(fromRects, total) {
+  const app = document.querySelector('.v2-app');
+  const target = document.querySelector('.shop-balance[data-balance="coins"]');
+  const a = app.getBoundingClientRect();
+  const t = target.querySelector('img').getBoundingClientRect();
+  const tx = t.left + t.width / 2 - a.left;
+  const ty = t.top + t.height / 2 - a.top;
+  const flights = [];
+  fromRects.forEach((r, k) => {
+    const cx = r.left + r.width / 2 - a.left;
+    const cy = r.top + r.height / 2 - a.top;
+    for (let i = 0; i < 8; i++) {
+      const coin = document.createElement('img');
+      coin.src = 'assets/shop-coin.png';
+      coin.className = 'lb-fly-coin';
+      coin.style.left = `${cx}px`;
+      coin.style.top = `${cy}px`;
+      app.appendChild(coin);
+      const ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
+      const ox = Math.cos(ang) * (26 + Math.random() * 24);
+      const oy = Math.sin(ang) * (26 + Math.random() * 24);
+      const anim = coin.animate([
+        { transform: 'translate(-50%, -50%) scale(0.3)', opacity: 0 },
+        { transform: `translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px)) scale(1.1)`, opacity: 1, offset: 0.3 },
+        { transform: `translate(calc(-50% + ${tx - cx}px), calc(-50% + ${ty - cy}px)) scale(0.7)`, opacity: 1 },
+      ], { duration: 900, delay: k * 120 + i * 45, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' });
+      flights.push(anim.finished.then(() => {
+        coin.remove();
+        target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }], { duration: 160 });
+      }));
+    }
   });
-  await wait(600);
-  rewardEl.classList.add('is-dusted');
   await Promise.all(flights);
+  const before = getCoins();
+  addCoins(total);
+  animateCoins(before, before + total);
 }
 
 function makeReward(entry, taken = new Set()) {
@@ -532,14 +529,14 @@ function animateCoins(from, to) {
 function rewardFaceHTML(r) {
   if (r.kind === 'card' && r.dup) {
     // дубль: карту видно, сверху «Уже есть», внизу во что распылилась
-    return `<span class="lb-dup-badge">Уже есть</span>
-      <div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+    return `<div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+      <span class="lb-dup-badge">Уже есть</span>
       <p class="lb-reward-name">${r.card.name}</p>
       <p class="lb-dup-coins"><img src="assets/shop-coin.png" alt="">+${r.dupCoins}</p>`;
   }
   if (r.kind === 'card') {
-    return `<span class="lb-new-badge">Новая</span>
-      <div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+    return `<div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
+      <span class="lb-new-badge">Новая</span>
       <p class="lb-reward-name">${r.card.name}</p><p class="lb-reward-sub" style="color:${RARITIES[r.rarity].color}">${RARITIES[r.rarity].name}</p>`;
   }
   if (r.kind === 'coins') {
@@ -679,8 +676,9 @@ async function openLootbox(box) {
   if (dups.length) {
     await wait(350);
     const dupEls = els.filter((el) => el.classList.contains('is-dup'));
-    // карта рассыпается в монеты: монетки вылетают из карты и собираются в «+N»
-    await Promise.all(dupEls.map(dustToCoins));
+    // карта гаснет, рамка золотая, «+N» — монеты улетят в баланс по «Забрать»
+    dupEls.forEach((el) => el.classList.add('is-dusted'));
+    await wait(400);
     const total = dups.reduce((sum, r) => sum + r.dupCoins, 0);
     lbRewardsEl.insertAdjacentHTML('beforeend', `<p class="lb-dup-note">${dups.length > 1 ? 'Дубли превращены' : 'Дубль превращён'} в ${total} ${plural(total, CURRENCY.coins)}</p>`);
     await wait(300);
@@ -698,19 +696,23 @@ async function openLootbox(box) {
   applyRewards(rewards);
   lbClaimEl.classList.add('is-visible');
   await once(lbClaimEl, 'click');
+  Tooltip24.hide();
+  const dupCards = Array.from(lbRewardsEl.querySelectorAll('.lb-reward.is-dup .lb-card')).map((el) => el.getBoundingClientRect());
+  const dupTotal = rewards.filter((r) => r.dup).reduce((sum, r) => sum + r.dupCoins, 0);
   await lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished;
   lbOverlayEl.classList.remove('is-open');
   lbOverlayEl.setAttribute('aria-hidden', 'true');
   lbOverlayEl.getAnimations({ subtree: true }).forEach((a) => a.cancel());
   lbBusy = false;
   renderShop();
+  if (dupTotal) await flyDupCoins(dupCards, dupTotal);
 }
 
 function applyRewards(rewards) {
   const inv = loadInventory();
   let coinsWon = 0;
   rewards.forEach((r) => {
-    if (r.kind === 'card' && r.dup) coinsWon += r.dupCoins;
+    if (r.kind === 'card' && r.dup) { /* монеты за дубль начисляет flyDupCoins после «Забрать» */ }
     else if (r.kind === 'card') { inv.cards += 1; unlockCard(r.card.name); }
     else if (r.kind === 'frame') inv.frames += 1;
     else if (r.kind === 'bonus') inv.bonuses = (inv.bonuses || 0) + 1;

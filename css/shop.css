@@ -421,19 +421,18 @@
   position: relative;
 }
 
+/* бейдж — под картой, чтобы не перекрывать её */
 .lb-new-badge,
 .lb-dup-badge {
-  position: absolute;
-  top: 8px;
-  left: 50%;
+  position: relative;
   z-index: 2;
+  margin-top: 8px;
   padding: 2px 8px;
   border-radius: 100px;
   font-size: 11px;
   line-height: 14px;
   font-weight: 700;
   white-space: nowrap;
-  transform: translateX(-50%);
 }
 
 .lb-new-badge {
@@ -442,7 +441,7 @@
 }
 
 .lb-dup-badge {
-  background: rgba(255, 255, 255, 0.16);
+  background: #48484a;
   color: #f6f7f8;
 }
 
@@ -466,7 +465,7 @@
   height: 16px;
 }
 
-/* дубль распылился: карта гаснет, рамка становится золотой, всплывают монеты */
+/* дубль: карта гаснет, рамка становится золотой, всплывает «+N» */
 .lb-reward.is-dup .lb-card {
   transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
 }
@@ -487,10 +486,10 @@
   transform: none;
 }
 
-/* монетки, в которые рассыпается дубль */
-.lb-dust-coin {
+/* монетки, которые по «Забрать» улетают из дубля в счётчик монет */
+.lb-fly-coin {
   position: absolute;
-  z-index: 5;
+  z-index: 70;
   width: 18px;
   height: 18px;
   pointer-events: none;
@@ -518,8 +517,18 @@
 
 .lb-rewards.is-compact .lb-new-badge,
 .lb-rewards.is-compact .lb-dup-badge {
-  top: 6px;
+  margin-top: 5px;
   font-size: 10px;
+}
+
+.lb-rewards.is-compact .lb-new-badge + .lb-reward-name,
+.lb-rewards.is-compact .lb-dup-badge + .lb-reward-name {
+  margin-top: 3px;
+}
+
+.lb-new-badge + .lb-reward-name,
+.lb-dup-badge + .lb-reward-name {
+  margin-top: 4px;
 }
 
 /* выпавшая рубашка колоды */
