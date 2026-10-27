@@ -384,7 +384,14 @@
   background: conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9);
 }
 
+.lb-frame {
+  position: relative;
+  isolation: isolate;
+}
+
 .lb-frame span {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -407,6 +414,67 @@
   opacity: 1;
   transform: none;
   pointer-events: auto;
+}
+
+/* выпавшая рубашка колоды */
+.lb-back {
+  position: relative;
+  width: 72px;
+  height: 96px;
+}
+
+/* 3–5 наград: плитки поменьше, по три в ряд */
+.lb-rewards.is-compact {
+  gap: 10px;
+}
+
+.lb-rewards.is-compact .lb-reward {
+  width: 104px;
+  height: 150px;
+}
+
+.lb-rewards.is-compact .lb-reward-face {
+  padding: 8px 6px;
+  border-radius: 16px;
+}
+
+.lb-rewards.is-compact .lb-reward-back {
+  border-radius: 16px;
+}
+
+.lb-rewards.is-compact .lb-card {
+  width: 64px;
+}
+
+.lb-rewards.is-compact .lb-reward-img {
+  width: 64px;
+  height: 64px;
+}
+
+.lb-rewards.is-compact .lb-frame {
+  width: 64px;
+  height: 64px;
+  padding: 4px;
+  border-radius: 16px;
+}
+
+.lb-rewards.is-compact .lb-frame span {
+  border-radius: 12px;
+}
+
+.lb-rewards.is-compact .lb-back {
+  width: 50px;
+  height: 66px;
+}
+
+.lb-rewards.is-compact .lb-reward-name {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.lb-rewards.is-compact .lb-reward-sub {
+  font-size: 11px;
 }
 
 /* рамка выпавшей карты — в цвет её редкости */
@@ -776,12 +844,13 @@
   }
 }
 
-/* состав: награды в ряд, у каждой своя плашка — название, картинка, шанс */
+/* шансы: награды в ряд (их 2–5 — колонок столько же), у каждой своя плашка:
+   сверху шанс, под ним картинка */
 .shop-prizes {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+  gap: 6px;
   margin: 20px 0 0;
   list-style: none;
 }
@@ -790,7 +859,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 2px;
+  padding: 10px 2px 14px;
   border-radius: 16px;
   background: #2c2c2e;
   cursor: pointer;
@@ -852,21 +921,9 @@
   from { opacity: 0; transform: translateY(-4px); }
 }
 
-/* название: 2 строки максимум, цвет награды */
-.shop-prize-label {
-  display: flex;
-  align-items: center;
-  min-height: 32px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-  color: var(--c);
-}
-
-/* шанс выпадения: крупно, белым */
+/* шанс выпадения: сверху, крупно, белым */
 .shop-prize-chance {
-  margin-top: 10px;
+  margin-bottom: 4px;
   font-size: 17px;
   line-height: 22px;
   font-weight: 700;
@@ -942,11 +999,44 @@
   transform: translate(-3px, 2px) rotate(-6deg);
 }
 
-.shop-prize-frame {
+/* косметика: эпическая рубашка (голофольга) и угол рамки поверх */
+.shop-prize-cosm {
+  position: relative;
   width: 44px;
-  height: 44px;
-  border: 5px solid #ff7ad9;
-  border-radius: 12px;
+  height: 52px;
+}
+
+.shop-prize-cosm-back {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 34px;
+  height: 46px;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.shop-prize-cosm-back .cb24 {
+  border-radius: 6px;
+}
+
+.shop-prize-cosm-frame {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #8a7dff, #ff7ad9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.shop-prize-cosm-frame::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 4px;
+  background: #2c2c2e;
 }
 
 .shop-open {

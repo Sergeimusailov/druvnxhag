@@ -6,10 +6,11 @@
 
 // 2.3 (описание магазина, витрина по макету Figma 16908:32749): три сундука — обычный (зелёный) и редкий (синий) за
 // монеты, эпический (фиолетовый) за ключи (вторая
-// софт-валюта). При открытии выпадает ОДНА награда из состава сундука.
+// софт-валюта). При открытии выпадает от 2 до 5 наград: каждая из пяти
+// (карта, монеты, ключи, бонус, косметика) разыгрывается со своим шансом.
 // Ключи выпадают из обычного и редкого сундуков и даются за сундуки-вехи в
 // «Заданиях». У каждого сундука суточный лимит покупок. Состав и шансы
-// видны в карточке сундука по кнопке «Посмотреть», шансы — по «?».
+// и шансы — в шторке сундука (тап по плитке) и в «?».
 const LOOTBOXES = [
   {
     id: 'green',
@@ -20,10 +21,11 @@ const LOOTBOXES = [
     limit: 5,
     colors: ['#8ff07a', '#2e9e3f', '#1d5e27'],
     table: [
-      { kind: 'card', rarity: 'green', weight: 55 },
-      { kind: 'coins', min: 20, max: 60, weight: 25 },
-      { kind: 'tokens', min: 5, max: 10, weight: 15 },
-      { kind: 'bonus', weight: 5 },
+      { kind: 'card', rarity: 'green', chance: 80 },
+      { kind: 'coins', min: 20, max: 60, chance: 70 },
+      { kind: 'tokens', min: 5, max: 10, chance: 30 },
+      { kind: 'bonus', chance: 15 },
+      { kind: 'frame', chance: 5 },
     ],
   },
   {
@@ -35,10 +37,11 @@ const LOOTBOXES = [
     limit: 3,
     colors: ['#8cc8ff', '#2f6fe0', '#1a3c8c'],
     table: [
-      { kind: 'card', rarity: 'blue', weight: 50 },
-      { kind: 'coins', min: 60, max: 150, weight: 25 },
-      { kind: 'tokens', min: 10, max: 20, weight: 20 },
-      { kind: 'bonus', weight: 5 },
+      { kind: 'card', rarity: 'blue', chance: 85 },
+      { kind: 'coins', min: 60, max: 150, chance: 70 },
+      { kind: 'tokens', min: 10, max: 20, chance: 40 },
+      { kind: 'bonus', chance: 20 },
+      { kind: 'frame', chance: 10 },
     ],
   },
   {
@@ -50,10 +53,11 @@ const LOOTBOXES = [
     limit: 1,
     colors: ['#d7a6ff', '#7b34e0', '#3f1683'],
     table: [
-      { kind: 'card', rarity: 'purple', weight: 55 },
-      { kind: 'coins', min: 150, max: 300, weight: 25 },
-      { kind: 'tokens', min: 20, max: 40, weight: 10 },
-      { kind: 'bonus', weight: 10 },
+      { kind: 'card', rarity: 'purple', chance: 90 },
+      { kind: 'coins', min: 150, max: 300, chance: 75 },
+      { kind: 'tokens', min: 20, max: 40, chance: 40 },
+      { kind: 'bonus', chance: 30 },
+      { kind: 'frame', chance: 25 },
     ],
   },
 ];
@@ -117,7 +121,6 @@ function markBought(id) {
   try { localStorage.setItem(SHOP_LIMITS_KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
 }
 
-const FRAME_NAMES = ['Неон', 'Золото', 'Северное сияние', 'Лава', 'Кристалл'];
 const BONUS_NAMES = ['Кешбэк 5% в кафе', 'Скидка 10% в кино', 'Бесплатная доставка'];
 const INVENTORY_KEY = 'v2.inventory';
 
@@ -153,11 +156,12 @@ function saveInventory(inv) {
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+// взвешенный выбор по шансам (добор до минимума наград)
 function rollEntry(table) {
-  const total = table.reduce((s, e) => s + e.weight, 0);
+  const total = table.reduce((sum, e) => sum + e.chance, 0);
   let r = Math.random() * total;
   for (const e of table) {
-    r -= e.weight;
+    r -= e.chance;
     if (r < 0) return e;
   }
   return table[0];
@@ -179,12 +183,23 @@ function makeReward(entry, taken = new Set()) {
   if (entry.kind === 'tokens') {
     return { kind: 'tokens', amount: Math.round(entry.min + Math.random() * (entry.max - entry.min)) };
   }
-  if (entry.kind === 'frame') return { kind: 'frame', name: pick(FRAME_NAMES) };
+  if (entry.kind === 'frame') {
+    // косметика — эпическая рамка аватара или рубашка колоды (js/cosmetics24.js)
+    const isBack = Math.random() < 0.5;
+    const item = pick((isBack ? COSMETICS24.BACKS : COSMETICS24.FRAMES).filter((x) => x.epic));
+    return { kind: 'frame', back: isBack, id: item.id, name: `${isBack ? 'Рубашка' : 'Рамка'} «${item.name}»` };
+  }
   return { kind: 'bonus', name: pick(BONUS_NAMES) };
 }
 
+// каждая награда разыгрывается со своим шансом; выпало меньше двух —
+// добираем по шансам из оставшихся (максимум — все пять)
+const MIN_REWARDS = 2;
 function rollBox(box) {
-  return [makeReward(rollEntry(box.table))];
+  const got = box.table.filter((e) => Math.random() * 100 < e.chance);
+  while (got.length < MIN_REWARDS) got.push(rollEntry(box.table.filter((e) => !got.includes(e))));
+  const taken = new Set();
+  return box.table.filter((e) => got.includes(e)).map((e) => makeReward(e, taken));
 }
 
 /* ---------- Отрисовка магазина ---------- */
@@ -222,21 +237,6 @@ function boxSVG(box, uid) {
 }
 
 const KIND_COLORS = { coins: '#ffcf3d', tokens: '#b36bff', frame: '#ff7ad9', bonus: '#42cf9b' };
-
-function chanceRows(box) {
-  const total = box.table.reduce((s, e) => s + e.weight, 0);
-  const label = (e) => {
-    if (e.kind === 'card') return `${RARITIES[e.rarity].name} карта`;
-    if (e.kind === 'coins') return `Монеты ${e.min}–${e.max}`;
-    if (e.kind === 'tokens') return `Ключи ${e.min}–${e.max}`;
-    if (e.kind === 'frame') return 'Оформление профиля';
-    return 'Бонус';
-  };
-  const dot = (e) => (e.kind === 'card' ? RARITIES[e.rarity].color : KIND_COLORS[e.kind]);
-  return box.table
-    .map((e) => `<li><span class="shop-dot" style="background:${dot(e)}"></span>${label(e)}<b>${Math.round((e.weight / total) * 100)}%</b></li>`)
-    .join('');
-}
 
 function priceHTML(box) {
   return `<img src="${CURRENCY[box.currency].icon}" alt="" width="20" height="20">${box.price}`;
@@ -360,21 +360,19 @@ const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopD
   },
 });
 
-const chanceOf = (box, e) => Math.round((e.weight / box.table.reduce((sum, x) => sum + x.weight, 0)) * 100);
 
-// награда: название, картинка (как предметы на треке ивента, количество
-// с тёмной обводкой заходит на низ), под ней шанс выпадения
-function rewardPreview(e, chance) {
-  const item = (label, color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}${qty ? `<span class="shop-prize-qty">${qty}</span>` : ''}</span><span class="shop-prize-chance">${chance}%</span></li>`;
-  if (e.kind === 'card') {
-    const r = RARITIES[e.rarity];
-    return item(`${r.name} карта`, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '');
-  }
+
+// награда: сверху шанс выпадения, под ним картинка (как предметы на треке
+// ивента; у монет и ключей — «до N» с тёмной обводкой). Названий нет — что это,
+// видно по картинке и по подсказке на тап
+function rewardPreview(e) {
+  const item = (color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-chance">${e.chance}%</span><span class="shop-prize-art">${art}${qty ? `<span class="shop-prize-qty">${qty}</span>` : ''}</span></li>`;
+  if (e.kind === 'card') return item(RARITIES[e.rarity].color, '<span class="shop-prize-cards"><i></i><i></i></span>', '');
   // количество — только максимум: «до 40»
-  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `до ${e.max}`);
-  if (e.kind === 'tokens') return item('Ключи', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `до ${e.max}`);
-  if (e.kind === 'frame') return item('Оформление', '#ff7ad9', '<span class="shop-prize-frame"></span>', '');
-  return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '');
+  if (e.kind === 'coins') return item('#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `до ${e.max}`);
+  if (e.kind === 'tokens') return item('#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `до ${e.max}`);
+  if (e.kind === 'frame') return item('#ff7ad9', '<span class="shop-prize-cosm"><span class="shop-prize-cosm-back">' + COSMETICS24.backHTML('holo') + '</span><span class="shop-prize-cosm-frame"></span></span>', '');
+  return item('#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '');
 }
 
 // описание награды по тапу (пока рыбный текст)
@@ -386,7 +384,7 @@ function prizeTip(key) {
   return {
     coins: ['Монеты', 'Основная валюта игры. За монеты открываются обычный и редкий сундуки.'],
     tokens: ['Ключи', 'Ключи открывают эпический сундук — в нём фиолетовые карты.'],
-    frame: ['Оформление', 'Рамка или рубашка для профиля. Появится в настройках профиля.'],
+    frame: ['Косметика', 'Эпическая рамка аватара или рубашка колоды с анимацией. Появится в настройках профиля.'],
     bonus: ['Бонус', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Активируется в разделе «Бонусы».'],
   }[key];
 }
@@ -424,8 +422,8 @@ function renderDetail(box) {
   shopDetailBody.innerHTML = `
     <div class="shop-detail-art">${chestArt(box)}</div>
     <h2 class="bs-title">${box.name}</h2>
-    <p class="bs-sub">При открытии выпадет одна из наград. Под каждой — шанс её выпадения</p>
-    <ul class="shop-prizes">${box.table.map((e) => rewardPreview(e, chanceOf(box, e))).join('')}</ul>
+    <p class="bs-sub">Шансы выпадения наград из сундука</p>
+    <ul class="shop-prizes" style="--n:${box.table.length}">${box.table.map(rewardPreview).join('')}</ul>
     ${btn}
     <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left} из ${box.limit}`}</p>`;
 }
@@ -467,19 +465,18 @@ const SHOP_FAQ_CHEVRON = '<svg width="8" height="14" viewBox="0 0 8 14" fill="no
 
 function shopFaq() {
   const chances = LOOTBOXES.map((box) => {
-    const total = box.table.reduce((sum, e) => sum + e.weight, 0);
-    const name = (e) => (e.kind === 'card' ? 'карта' : e.kind === 'coins' ? 'монеты' : e.kind === 'tokens' ? 'ключи' : e.kind === 'frame' ? 'оформление' : 'бонус');
-    return `${box.name}: ${box.table.map((e) => `${name(e)} ${Math.round((e.weight / total) * 100)}%`).join(', ')}.`;
+    const name = (e) => (e.kind === 'card' ? 'карта' : e.kind === 'coins' ? 'монеты' : e.kind === 'tokens' ? 'ключи' : e.kind === 'frame' ? 'косметика' : 'бонус');
+    return `${box.name}: ${box.table.map((e) => `${name(e)} ${e.chance}%`).join(', ')}.`;
   }).join('<br>');
   const limits = LOOTBOXES.map((box) => `${box.short.toLowerCase()} — ${box.limit}`).join(', ');
   return [
     ['Как получить новые карты?', 'Карты не продаются напрямую — они выпадают только из сундуков. Чем дороже сундук, тем реже карта внутри.'],
     ['Чем отличаются сундуки?', `Обычный и редкий открываются за монеты, эпический — за ключи. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
-    ['Что выпадет из сундука?', 'Одна награда из состава сундука: карта, монеты, ключи или бонус. Чтобы увидеть состав, нажмите на сундук.'],
+    ['Что выпадет из сундука?', 'От 2 до 5 наград: карта, монеты, ключи, бонус и косметика — рамка аватара или рубашка колоды. Каждая выпадает со своим шансом. Чтобы увидеть шансы, нажмите на сундук.'],
     ['С какими шансами выпадают награды?', chances],
     ['Где взять ключи?', 'Они выпадают из обычного и редкого сундуков и даются за сундуки на шкале в разделе «Задания».'],
     ['Сколько сундуков можно открыть за день?', `У каждого сундука свой лимит: ${limits}. Он обновляется каждый день в полночь — до обновления на сундуке виден таймер.`],
-    ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и ключи — в баланс, бонусы — в раздел «Бонусы».'],
+    ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и ключи — в баланс, бонусы — в раздел «Бонусы», косметика — в настройки профиля.'],
     ['Что такое бонус?', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Его можно активировать в разделе «Бонусы».'],
   ];
 }
@@ -527,7 +524,8 @@ function rewardFaceHTML(r) {
     return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Ключи</p>`;
   }
   if (r.kind === 'frame') {
-    return `<div class="lb-frame"><span></span></div><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
+    const art = r.back ? `<div class="lb-back">${COSMETICS24.backHTML(r.id)}</div>` : '<div class="lb-frame"><span></span></div>';
+    return `${art}<p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
   }
   return `<img class="lb-reward-img" src="assets/v2-prize-gift.png" alt=""><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В «Бонусы»</p>`;
 }
@@ -560,6 +558,8 @@ async function openLootbox(box) {
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
   lbRewardsEl.innerHTML = '';
   lbRewardsEl.style.setProperty('--n', rewards.length);
+  // 3–5 наград — плитки поменьше, чтобы все поместились на экране
+  lbRewardsEl.classList.toggle('is-compact', rewards.length > 2);
   lbTitleEl.classList.remove('is-visible');
   lbClaimEl.classList.remove('is-visible');
   lbOverlayEl.style.opacity = '';
@@ -625,6 +625,10 @@ async function openLootbox(box) {
         <div class="lb-reward-face">${rewardFaceHTML(r)}</div>
       </div>
     </div>`).join('');
+  lbRewardsEl.querySelectorAll('.lb-frame').forEach((el, i) => {
+    const r = rewards.filter((x) => x.kind === 'frame' && !x.back)[i];
+    if (r) COSMETICS24.applyFrame(el, r.id);
+  });
   lbTitleEl.classList.add('is-visible');
   const center = centerOf(lbStageEl);
   const els = Array.from(lbRewardsEl.children);
