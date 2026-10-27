@@ -346,23 +346,34 @@ shopHeadEl.addEventListener('click', (e) => {
 document.addEventListener('click', hideBalanceTip);
 document.addEventListener('v2:screen', hideBalanceTip);
 
-/* ---------- Карточка сундука: состав и «Открыть» ---------- */
+/* ---------- Шторка сундука: состав с шансами и «Открыть» ---------- */
+// заголовок, текст про шансы, награды (название, картинка, шанс в %),
+// кнопка и доступность на сегодня. Открывается тапом по плитке в любом состоянии.
 
 const shopDetailEl = document.getElementById('shopDetail');
+const shopDetailBody = shopDetailEl.querySelector('.shop-detail-body');
 let shopDetailBox = null;
+const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopDetailBackdrop'), {
+  onClose: () => {
+    hidePrizeTip();
+    shopDetailBox = null;
+  },
+});
 
-// состав сундука — в ряд, как награды в ивенте: подпись, картинка без фона,
-// под ней счётчик с тёмной обводкой
-function rewardPreview(e) {
-  const item = (label, color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}</span><span class="shop-prize-qty">${qty}</span></li>`;
+const chanceOf = (box, e) => Math.round((e.weight / box.table.reduce((sum, x) => sum + x.weight, 0)) * 100);
+
+// награда: название, картинка (как предметы на треке ивента, количество
+// с тёмной обводкой заходит на низ), под ней шанс выпадения
+function rewardPreview(e, chance) {
+  const item = (label, color, art, qty) => `<li class="shop-prize" data-prize-tip="${e.kind === 'card' ? `card-${e.rarity}` : e.kind}" role="button" tabindex="0" style="--c:${color}"><span class="shop-prize-label">${label}</span><span class="shop-prize-art">${art}${qty ? `<span class="shop-prize-qty">${qty}</span>` : ''}</span><span class="shop-prize-chance">${chance}%</span></li>`;
   if (e.kind === 'card') {
     const r = RARITIES[e.rarity];
-    return item(r.name, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '× 1');
+    return item(`${r.name} карта`, r.color, '<span class="shop-prize-cards"><i></i><i></i></span>', '');
   }
-  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `× ${e.min}–${e.max}`);
-  if (e.kind === 'tokens') return item('Ключи', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `× ${e.min}–${e.max}`);
-  if (e.kind === 'frame') return item('Оформление', '#ff7ad9', '<span class="shop-prize-frame"></span>', '× 1');
-  return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '× 1');
+  if (e.kind === 'coins') return item('Монеты', '#ffcf3d', '<img src="assets/v2-ny-coins.png" alt="">', `${e.min}–${e.max}`);
+  if (e.kind === 'tokens') return item('Ключи', '#c9a6ff', `<img src="${CURRENCY.tokens.icon}" alt="">`, `${e.min}–${e.max}`);
+  if (e.kind === 'frame') return item('Оформление', '#ff7ad9', '<span class="shop-prize-frame"></span>', '');
+  return item('Бонус', '#42cf9b', '<img src="assets/v2-prize-gift.png" alt="">', '');
 }
 
 // описание награды по тапу (пока рыбный текст)
@@ -405,41 +416,29 @@ function showPrizeTip(prize) {
 function renderDetail(box) {
   const st = boxState(box);
   let btn;
-  if (st.can) btn = `<button class="shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
-  else if (st.reason === 'limit') btn = `<button class="shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
-  else btn = `<button class="shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
-  const card = shopDetailEl.querySelector('.shop-detail-card');
-  card.style.setProperty('--lb-color', box.colors[1]);
-  card.innerHTML = `
-    <button class="shop-detail-close" data-detail-close aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
-    <div class="shop-detail-art">${chestArt(box)}</div>
-    <h2 class="shop-detail-name">${box.name}</h2>
-    <p class="shop-detail-desc">При открытии сундука вы получите <b>одну</b> из наград ниже</p>
-    <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>
-    ${box.currency === 'tokens' ? '<p class="shop-detail-hint">Ключи выпадают из обычного и редкого сундуков и даются за сундуки в «Заданиях»</p>' : ''}
+  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
+  else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
+  else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
+  shopDetailBody.innerHTML = `
+    <h2 class="bs-title">${box.name}</h2>
+    <p class="bs-sub">При открытии выпадет одна из наград. Под каждой — шанс её выпадения</p>
+    <ul class="shop-prizes">${box.table.map((e) => rewardPreview(e, chanceOf(box, e))).join('')}</ul>
     ${btn}
-    <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left}`}</p>`;
+    <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left} из ${box.limit}`}</p>`;
 }
 
 function openDetail(box) {
   shopDetailBox = box;
   renderDetail(box);
-  shopDetailEl.classList.add('is-open');
-  shopDetailEl.setAttribute('aria-hidden', 'false');
+  shopDetailBody.scrollTop = 0;
+  shopDetailSheet.open();
 }
 
 function closeDetail() {
-  hidePrizeTip();
-  shopDetailBox = null;
-  shopDetailEl.classList.remove('is-open');
-  shopDetailEl.setAttribute('aria-hidden', 'true');
+  shopDetailSheet.close();
 }
 
 shopDetailEl.addEventListener('click', (e) => {
-  if (e.target === shopDetailEl || e.target.closest('[data-detail-close]')) {
-    closeDetail();
-    return;
-  }
   const prize = e.target.closest('.shop-prize');
   if (prize) {
     showPrizeTip(prize);

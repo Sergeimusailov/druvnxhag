@@ -733,125 +733,31 @@
   color: rgba(51, 51, 51, 0.75);
 }
 
-/* ---------- Карточка сундука ---------- */
+/* ---------- Шторка сундука (общий компонент .bs) ---------- */
 
-.shop-detail {
-  position: absolute;
-  inset: 0;
-  z-index: 44;
-  display: flex;
-  flex-direction: column;
-  justify-content: safe center;
-  padding: 112px 16px 24px;
-  overflow-y: auto;
-  background: rgba(0, 0, 0, 0.65);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  scrollbar-width: none;
+.shop-detail .bs-scroll-all {
+  padding-bottom: 2px;
 }
 
-.shop-detail.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* сундук стоит на верхнем крае карточки и вылезает за неё (по рефу) */
-.shop-detail-card {
-  position: relative;
-  flex-shrink: 0;
-  width: 100%;
-  padding: 92px 20px 20px;
-  border-radius: 28px;
-  background:
-    radial-gradient(90% 45% at 50% 0%, color-mix(in srgb, var(--lb-color) 40%, transparent), transparent 100%),
-    #1c1c1e;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  transform: scale(0.94);
-  transition: transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1);
-}
-
-.shop-detail.is-open .shop-detail-card {
-  transform: none;
-}
-
-.shop-detail-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  color: #f6f7f8;
-}
-
-.shop-detail-art {
-  position: absolute;
-  left: 50%;
-  top: -104px;
-  display: flex;
-  justify-content: center;
-  width: 200px;
-  margin-left: -100px;
-  pointer-events: none;
-}
-
-.shop-detail-art .lb-svg {
-  width: 200px;
-  height: auto;
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--lb-color) 70%, transparent));
-  animation: shopBoxBob 3s ease-in-out infinite;
-}
-
-.shop-detail-name {
-  margin-top: 12px;
-  font-size: 24px;
-  line-height: 28px;
-  font-weight: 700;
-  color: #f6f7f8;
-}
-
-.shop-detail-desc {
-  margin-top: 8px;
-  font-size: 15px;
-  line-height: 20px;
-  color: rgba(246, 247, 248, 0.7);
-}
-
-.shop-detail-desc b {
-  color: #f6f7f8;
-}
-
-/* состав: награды в ряд в общей плашке (по рефу), выпадет одна */
+/* состав: награды в ряд, у каждой своя плашка — название, картинка, шанс */
 .shop-prizes {
   position: relative;
-  display: flex;
-  justify-content: space-around;
-  gap: 4px;
-  margin: 16px 0 0;
-  padding: 12px 6px 14px;
-  border-radius: 20px;
-  background: #2c2c2e;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0 0;
   list-style: none;
 }
 
 .shop-prize {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.shop-prize {
+  padding: 10px 2px;
+  border-radius: 16px;
+  background: #2c2c2e;
   cursor: pointer;
-  border-radius: 14px;
+  text-align: center;
   transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
@@ -863,10 +769,11 @@
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--c) 70%, transparent));
 }
 
-/* описание награды: белый пузырь над рядом, хвостик смотрит на награду */
+/* описание награды: белый пузырь под рядом (над ним — заголовок шторки),
+   хвостик смотрит вверх на награду */
 .shop-prize-tip {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);
   z-index: 3;
   display: flex;
   flex-direction: column;
@@ -883,12 +790,12 @@
 .shop-prize-tip::after {
   content: '';
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: calc(var(--tail) - 12px);
   width: 24px;
   height: 8px;
   background: #fff;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .shop-prize-tip b {
@@ -905,19 +812,35 @@
 }
 
 @keyframes shopTipIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(-4px); }
 }
 
+/* название: 2 строки максимум, цвет награды */
 .shop-prize-label {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
+  letter-spacing: -0.2px;
   color: var(--c);
-  white-space: nowrap;
+}
+
+/* шанс выпадения: крупно, белым */
+.shop-prize-chance {
+  margin-top: 10px;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+  font-variant-numeric: tabular-nums;
 }
 
 /* картинка без фигуры на фоне — как предмет на треке ивента */
 .shop-prize-art {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -934,8 +857,10 @@
 
 /* счётчик заходит на низ картинки, белый с тёмной обводкой (как «× 240» в ивенте) */
 .shop-prize-qty {
-  position: relative;
-  margin-top: -10px;
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
   font-family: var(--font-rounded);
   font-size: 14px;
   line-height: 18px;
@@ -987,26 +912,12 @@
   border-radius: 12px;
 }
 
-.shop-detail-hint {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 16px;
-  color: rgba(246, 247, 248, 0.6);
-}
-
 .shop-open {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100%;
-  height: 56px;
-  margin-top: 20px;
-  border-radius: 16px;
-  background: #ffdd2d;
-  font-size: 17px;
   font-weight: 600;
-  color: #333;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1021,12 +932,13 @@
 }
 
 .shop-detail-left {
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 13px;
+  line-height: 18px;
+  text-align: center;
   color: rgba(246, 247, 248, 0.6);
+  font-variant-numeric: tabular-nums;
 }
-
-
 
 /* сундуки в карточках левитируют (сдвиг по фазе, чтобы не синхронно) */
 .shop-tile-art .lb-svg {
