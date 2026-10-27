@@ -10,26 +10,8 @@ if (!isApp3()) {
   const P24_PHOTO = 'assets/v2-avatar-photo.svg';
   const P24_AVATARS = [P24_PHOTO, ...Array.from({ length: 16 }, (_, i) => `assets/avatars-sq/sq-${String(i + 1).padStart(2, '0')}.png`)];
 
-  const P24_FRAMES = [
-    { id: 'white', name: 'Белая', css: '#fff' },
-    { id: 'gold', name: 'Золото', css: 'linear-gradient(135deg, #fff2a8, #f5b400 50%, #c27a00)' },
-    { id: 'rainbow', name: 'Радуга', css: 'conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9)' },
-    { id: 'ice', name: 'Лёд', css: 'linear-gradient(135deg, #e6f6ff, #7fd4ff 50%, #3f8cff)' },
-    { id: 'fire', name: 'Огонь', css: 'linear-gradient(135deg, #ffe066, #ff6a1a 55%, #c2161b)' },
-    { id: 'violet', name: 'Фиолет', css: 'linear-gradient(135deg, #e3d4ff, #8c5cff 55%, #4b1fb0)' },
-    { id: 'mint', name: 'Мята', css: 'linear-gradient(135deg, #d6ffef, #2fd18f 55%, #0f7a52)' },
-    { id: 'dark', name: 'Тёмная', css: '#48484a' },
-    { id: 'rose', name: 'Роза', css: 'linear-gradient(135deg, #ffe0ea, #ff5c8a 55%, #b0124a)' },
-  ];
-
-  const P24_BACKS = [
-    { id: 'base', name: 'Классика', filter: '' },
-    { id: 'blue', name: 'Синяя', filter: 'sepia(1) saturate(4) hue-rotate(180deg) brightness(0.9)' },
-    { id: 'violet', name: 'Фиолетовая', filter: 'sepia(1) saturate(4) hue-rotate(220deg) brightness(0.9)' },
-    { id: 'gold', name: 'Золотая', filter: 'sepia(1) saturate(5) hue-rotate(5deg) brightness(1.05)' },
-    { id: 'green', name: 'Зелёная', filter: 'sepia(1) saturate(4) hue-rotate(80deg) brightness(0.9)' },
-    { id: 'red', name: 'Красная', filter: 'sepia(1) saturate(5) hue-rotate(-30deg) brightness(0.85)' },
-  ];
+  // рамки и рубашки — обычные и эпические (js/cosmetics24.js)
+  const C24 = COSMETICS24;
 
   // статусы — те же, что в настройках версии 3
   const P24_STATUSES = Array.from(document.querySelectorAll('#psetStatuses .pset-status-item')).map((b) => b.dataset.status);
@@ -38,8 +20,8 @@ if (!isApp3()) {
 
   const saved = {
     avatar: storageGet(P24_KEYS.avatar),
-    frame: storageGet(P24_KEYS.frame) || 'white',
-    back: storageGet(P24_KEYS.back) || 'base',
+    frame: C24.frame(storageGet(P24_KEYS.frame) || 'white').id,
+    back: C24.back(storageGet(P24_KEYS.back) || 'classic').id,
     status: storageGet(P24_KEYS.status) || document.getElementById('profileStatus').textContent,
   };
   if (!P24_AVATARS.includes(saved.avatar)) saved.avatar = P24_PHOTO;
@@ -53,9 +35,8 @@ if (!isApp3()) {
   function applyProfile24() {
     avatarImg.src = saved.avatar;
     avatarBox.classList.remove('is-round');
-    avatarBox.style.setProperty('--pf-frame', P24_FRAMES.find((f) => f.id === saved.frame).css);
-    const back = P24_BACKS.find((b) => b.id === saved.back);
-    document.querySelectorAll('.pf-cardback').forEach((img) => { img.style.filter = back.filter; });
+    C24.applyFrame(avatarBox, saved.frame);
+    document.querySelectorAll('.pf-cardback24').forEach((el) => { el.innerHTML = C24.backHTML(saved.back); });
     document.getElementById('profileStatus').textContent = saved.status;
   }
 
@@ -103,8 +84,17 @@ if (!isApp3()) {
 
   function renderSettings24() {
     document.getElementById('psetAvatars').innerHTML = P24_AVATARS.map((src, i) => tile('avatar', src, `<img src="${src}" alt="">`, i ? `Аватар ${i}` : 'Своё фото')).join('');
-    document.getElementById('psetFrames24').innerHTML = P24_FRAMES.map((f) => tile('frame', f.id, `<span class="pset-frame24" style="--pf-frame:${f.css}"></span>`, `Рамка «${f.name}»`)).join('');
-    document.getElementById('psetBacks24').innerHTML = P24_BACKS.map((b) => tile('back', b.id, `<img src="assets/v2-profile-cardback.png" alt="" style="filter:${b.filter}">`, `Рубашка «${b.name}»`)).join('');
+    // две категории: обычные и эпические (анимированные)
+    const sections = (list, render, noun) => [false, true].map((epic) => `
+      <div class="pset-sec24${epic ? ' is-epic' : ''}"><b>${epic ? 'Эпические' : 'Обычные'}</b><span>${epic ? 'С анимацией и эффектами' : `${list.filter((x) => !x.epic).length} ${noun}`}</span></div>
+      <div class="pset-grid24">${list.filter((x) => !!x.epic === epic).map(render).join('')}</div>`).join('');
+    const framesEl = document.getElementById('psetFrames24');
+    framesEl.classList.add('pset-cat24');
+    framesEl.innerHTML = sections(C24.FRAMES, (f) => tile('frame', f.id, '<span class="pset-frame24"></span>', `Рамка «${f.name}»`), 'вариантов');
+    framesEl.querySelectorAll('[data-kind="frame"]').forEach((t) => C24.applyFrame(t.querySelector('.pset-frame24'), t.dataset.id));
+    const backsEl = document.getElementById('psetBacks24');
+    backsEl.classList.add('pset-cat24');
+    backsEl.innerHTML = sections(C24.BACKS, (b) => tile('back', b.id, C24.backHTML(b.id), `Рубашка «${b.name}»`), 'вариантов');
     document.getElementById('psetStatus24').innerHTML = P24_STATUSES.map((s) => `<button class="pset-status24-item" data-kind="status" data-id="${s}"><span>${s}</span><i>${CHECK16}</i></button>`).join('');
     markSelection24();
   }

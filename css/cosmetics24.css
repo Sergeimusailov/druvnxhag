@@ -1,0 +1,489 @@
+/* Косметика профиля версии 2 (js/cosmetics24.js): рамки аватара и рубашки
+   колоды — обычные (заливка / градиент; сплошной цвет + свой узор) и
+   эпические (анимированные переливы, свечение, блики, частицы). */
+
+@property --fx-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes fxSpin {
+  to { --fx-a: 360deg; }
+}
+
+@keyframes fxSweep {
+  0% { background-position: 160% 0; }
+  55%, 100% { background-position: -60% 0; }
+}
+
+@keyframes fxTwinkle {
+  0%, 100% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+  45% { transform: translate(-50%, -50%) scale(1) rotate(45deg); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(0.2) rotate(90deg); opacity: 0.6; }
+}
+
+@keyframes fxRise {
+  0% { transform: translate(-50%, 0) scale(var(--s)); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(-50%, -46px) scale(0); opacity: 0; }
+}
+
+/* ================= Рамки ================= */
+
+.fr24-epic {
+  isolation: isolate;
+}
+
+/* содержимое рамки (картинка аватара / чёрное нутро превью) — поверх перелива */
+[data-app="2"] .pf-avatar.fr24-epic img {
+  position: relative;
+  z-index: 1;
+}
+
+.pset-frame24::after {
+  z-index: 1;
+}
+
+/* блик, пробегающий по рамке */
+.fx-shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.9) 50%, transparent 62%);
+  background-size: 300% 100%;
+  animation: fxSweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* искры по периметру */
+.fx-sp {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 3;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  filter: drop-shadow(0 0 3px var(--spark, #fff));
+  animation: fxTwinkle 2.2s ease-in-out infinite;
+  animation-delay: var(--d);
+  pointer-events: none;
+}
+
+/* угольки, поднимающиеся вверх */
+.fx-em {
+  position: absolute;
+  left: var(--x);
+  bottom: 2px;
+  z-index: 3;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffd34d;
+  box-shadow: 0 0 6px 2px rgba(255, 120, 20, 0.9);
+  animation: fxRise 2.4s ease-out infinite;
+  animation-delay: var(--d);
+  pointer-events: none;
+}
+
+/* Голограмма: радужное сияние вращается по кругу + блик + искры */
+.fx-holo {
+  background: conic-gradient(from var(--fx-a), #ff7ad9, #ffdd2d, #6ff0ff, #8a7dff, #ff7ad9) !important;
+  box-shadow: 0 0 16px rgba(179, 107, 255, 0.65), 0 0 4px rgba(111, 240, 255, 0.8);
+  animation: fxSpin 4s linear infinite;
+}
+
+/* Плазма: быстрое бирюзово-малиновое вращение и пульсирующее свечение */
+.fx-plasma {
+  background: conic-gradient(from var(--fx-a), #00e5ff, #1b2bff 25%, #ff2bd6 50%, #1b2bff 75%, #00e5ff) !important;
+  animation: fxSpin 2.2s linear infinite, fxPlasmaGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes fxPlasmaGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.55); }
+  50% { box-shadow: 0 0 22px rgba(0, 229, 255, 0.95), 0 0 34px rgba(255, 43, 214, 0.45); }
+}
+
+/* Корона: литое золото, частый блик, золотые искры */
+.fx-royal {
+  --spark: #ffdd2d;
+  background: linear-gradient(135deg, #fff6c2, #f5b400 35%, #a86b00 55%, #ffe680 75%, #c27a00) !important;
+  box-shadow: 0 0 14px rgba(255, 200, 40, 0.55);
+}
+
+.fx-royal::before {
+  animation-duration: 2s;
+}
+
+/* Пламя: огонь течёт вверх по рамке, свечение мерцает, летят угольки */
+.fx-flame {
+  background: linear-gradient(0deg, #c2161b, #ff4d00 20%, #ffb000 40%, #ff4d00 60%, #c2161b 80%, #ff4d00) !important;
+  background-size: 100% 300% !important;
+  animation: fxFlameFlow 1.4s linear infinite, fxFlameGlow 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes fxFlameFlow {
+  to { background-position: 0 -300%; }
+}
+
+@keyframes fxFlameGlow {
+  from { box-shadow: 0 0 10px rgba(255, 90, 0, 0.6); }
+  to { box-shadow: 0 0 20px rgba(255, 140, 0, 0.9), 0 -6px 18px rgba(255, 60, 0, 0.5); }
+}
+
+/* Иней: ледяной перелив дрейфует, блик, белые искры */
+.fx-frost {
+  --spark: #9fe3ff;
+  background: linear-gradient(135deg, #ffffff, #9fe3ff 25%, #3f8cff 50%, #c8f1ff 75%, #5fb8ff) !important;
+  background-size: 250% 250% !important;
+  box-shadow: 0 0 16px rgba(127, 212, 255, 0.7);
+  animation: fxDrift 4s ease-in-out infinite alternate;
+}
+
+@keyframes fxDrift {
+  from { background-position: 0 0; }
+  to { background-position: 100% 100%; }
+}
+
+/* Бездна: тёмное кольцо, по которому бежит светящаяся комета */
+.fx-void {
+  --spark: #d7a6ff;
+  background: conic-gradient(from var(--fx-a), #170a2e 0 62%, #6a2bd6 80%, #e9d6ff 96%, #fff 100%) !important;
+  box-shadow: 0 0 18px rgba(140, 92, 255, 0.6);
+  animation: fxSpin 1.8s linear infinite;
+}
+
+/* ================= Рубашки ================= */
+
+.cb24 {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 16%;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--cb);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--cb) 45%, #fff);
+}
+
+/* узор — внутри рамки рубашки */
+.cb24-pat {
+  position: absolute;
+  inset: 7%;
+  border-radius: 10%;
+  background: var(--pat);
+  opacity: var(--pat-op, 1);
+}
+
+/* эмблема в центре */
+.cb24-emb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 30%;
+  aspect-ratio: 1;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  background: var(--cb);
+  transform: translate(-50%, -50%);
+}
+
+.cb24-emb::after {
+  content: '';
+  position: absolute;
+  inset: 26%;
+  background: rgba(255, 255, 255, 0.6);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+/* обычные: свой сплошной цвет и свой узор */
+.cb24-classic {
+  --cb: #1c1c1e;
+  --pat: conic-gradient(from 45deg, #484848 25%, transparent 0 50%, #484848 0 75%, transparent 0) 0 0 / 22px 22px;
+  box-shadow: inset 0 0 0 3px #7f7f7f;
+}
+
+.cb24-dots {
+  --cb: #d23a4a;
+  --pat: radial-gradient(circle, rgba(255, 255, 255, 0.35) 3px, transparent 3.5px) 0 0 / 13px 13px;
+}
+
+.cb24-stripes {
+  --cb: #2f6fe0;
+  --pat: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.24) 0 5px, transparent 5px 12px);
+}
+
+.cb24-rhombus {
+  --cb: #e8821e;
+  --pat: conic-gradient(from 45deg, rgba(255, 255, 255, 0.26) 25%, transparent 0 50%, rgba(255, 255, 255, 0.26) 0 75%, transparent 0) 0 0 / 15px 15px;
+}
+
+.cb24-rings {
+  --cb: #12907f;
+  --pat: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.24) 0 3px, transparent 3px 9px);
+}
+
+.cb24-zigzag {
+  --cb: #6a3fd1;
+  --pat:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) -8px 0 / 16px 16px,
+    linear-gradient(225deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) -8px 0 / 16px 16px,
+    linear-gradient(315deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) 0 0 / 16px 16px,
+    linear-gradient(45deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) 0 0 / 16px 16px;
+}
+
+/* ---------- эпические рубашки ---------- */
+
+.cb24.is-epic .cb24-emb {
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.cb24-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.75) 48%, rgba(255, 255, 255, 0.2) 54%, transparent 64%);
+  background-size: 300% 100%;
+  animation: fxSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Голофольга: радужная фольга переливается поверх узора */
+.cb24-holo {
+  --cb: #241446;
+  --pat: conic-gradient(from 45deg, rgba(255, 255, 255, 0.2) 25%, transparent 0 50%, rgba(255, 255, 255, 0.2) 0 75%, transparent 0) 0 0 / 14px 14px;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.75), 0 0 16px rgba(179, 107, 255, 0.55);
+}
+
+.cb24-foil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(125deg, #ff7ad9, #ffdd2d, #6ff0ff, #8a7dff, #ff7ad9, #ffdd2d);
+  background-size: 300% 300%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.75;
+  animation: fxDrift 3.2s ease-in-out infinite alternate;
+  box-shadow: none;
+}
+
+/* Космос: туманность медленно дрейфует, мерцают звёзды, эмблема светится */
+.cb24-cosmos {
+  --cb: #070b24;
+  --pat:
+    radial-gradient(60% 50% at 30% 30%, rgba(140, 92, 255, 0.55), transparent 70%),
+    radial-gradient(50% 45% at 72% 70%, rgba(0, 200, 255, 0.45), transparent 70%),
+    radial-gradient(40% 40% at 70% 25%, rgba(255, 80, 200, 0.35), transparent 70%);
+  box-shadow: inset 0 0 0 3px rgba(150, 170, 255, 0.6), 0 0 16px rgba(90, 120, 255, 0.5);
+}
+
+.cb24-cosmos .cb24-pat {
+  inset: -20%;
+  background-size: 140% 140%;
+  animation: fxNebula 7s ease-in-out infinite alternate;
+}
+
+@keyframes fxNebula {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(25deg) scale(1.15); }
+}
+
+.cb24-cosmos .cb24-emb {
+  background: #0b1030;
+  box-shadow: 0 0 12px rgba(140, 160, 255, 0.9), inset 0 0 8px rgba(140, 160, 255, 0.7);
+}
+
+.fx-st {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 2;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.9);
+  transform: scale(var(--s));
+  animation: fxStar 2.6s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+
+@keyframes fxStar {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
+}
+
+/* Шторм: тёмно-синяя, рамка и молния в центре вспыхивают, искры */
+.cb24-storm {
+  --cb: #0a1838;
+  --spark: #6ff0ff;
+  --pat:
+    linear-gradient(rgba(111, 240, 255, 0.12) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(90deg, rgba(111, 240, 255, 0.12) 1px, transparent 1px) 0 0 / 12px 12px;
+  animation: fxStormGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes fxStormGlow {
+  0%, 100% { box-shadow: inset 0 0 0 3px rgba(111, 240, 255, 0.55), 0 0 8px rgba(0, 200, 255, 0.4); }
+  8% { box-shadow: inset 0 0 0 3px #fff, 0 0 24px rgba(111, 240, 255, 1); }
+  14% { box-shadow: inset 0 0 0 3px rgba(111, 240, 255, 0.55), 0 0 8px rgba(0, 200, 255, 0.4); }
+  20% { box-shadow: inset 0 0 0 3px #e6fbff, 0 0 18px rgba(111, 240, 255, 0.9); }
+}
+
+.cb24-storm .cb24-emb {
+  display: none;
+}
+
+.cb24-bolt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 40%;
+  height: 40%;
+  fill: #6ff0ff;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 6px #00e5ff);
+  animation: fxBolt 2.4s ease-in-out infinite;
+}
+
+@keyframes fxBolt {
+  0%, 100% { fill: #6ff0ff; filter: drop-shadow(0 0 4px #00e5ff); }
+  8% { fill: #fff; filter: drop-shadow(0 0 14px #fff) drop-shadow(0 0 10px #00e5ff); }
+  14% { fill: #6ff0ff; filter: drop-shadow(0 0 4px #00e5ff); }
+  20% { fill: #fff; filter: drop-shadow(0 0 10px #6ff0ff); }
+}
+
+/* Золото: золотая фольга с тиснёным узором, блик и искры */
+.cb24-goldfoil {
+  --cb: #c08a14;
+  --spark: #fff2a8;
+  background: linear-gradient(135deg, #fff2a8, #e0a020 35%, #9a6200 55%, #ffe680 75%, #c08a14);
+  --pat: conic-gradient(from 45deg, rgba(255, 255, 255, 0.22) 25%, rgba(120, 70, 0, 0.18) 0 50%, rgba(255, 255, 255, 0.22) 0 75%, rgba(120, 70, 0, 0.18) 0) 0 0 / 14px 14px;
+  box-shadow: inset 0 0 0 3px #fff2a8, 0 0 14px rgba(255, 200, 40, 0.55);
+}
+
+.cb24-goldfoil .cb24-emb {
+  background: linear-gradient(135deg, #ffe680, #c08a14);
+  border-color: #fff8d6;
+}
+
+/* Инферно: снизу полыхает, свечение дрожит, летят угольки */
+.cb24-inferno {
+  --cb: #3a0a06;
+  --pat: radial-gradient(90% 60% at 50% 110%, rgba(255, 120, 0, 0.95), rgba(255, 40, 0, 0.5) 45%, transparent 75%);
+  box-shadow: inset 0 0 0 3px #ff7a1a, 0 0 14px rgba(255, 90, 0, 0.6);
+}
+
+.cb24-inferno .cb24-pat {
+  inset: 0;
+  animation: fxInferno 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes fxInferno {
+  from { opacity: 0.75; transform: scaleY(0.95); }
+  to { opacity: 1; transform: scaleY(1.08); }
+}
+
+.cb24-inferno .cb24-emb {
+  background: #5a1206;
+  border-color: #ffb000;
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+}
+
+/* Призма: под тёмным стеклом вращается радужный спектр */
+.cb24-prism {
+  --cb: #111;
+  background: conic-gradient(from var(--fx-a), #ff3d6e, #ffb000, #fff04d, #2fd18f, #2fb7ff, #8a5cff, #ff3d6e);
+  --pat: repeating-linear-gradient(60deg, rgba(0, 0, 0, 0.42) 0 6px, rgba(0, 0, 0, 0.2) 6px 12px);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.85), 0 0 16px rgba(255, 255, 255, 0.35);
+  animation: fxSpin 5s linear infinite;
+}
+
+.cb24-prism .cb24-emb {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: #fff;
+}
+
+/* ================= Секции «Обычные / Эпические» в настройках ================= */
+
+.pset-sec24 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 24px 24px 0;
+}
+
+.pset-sec24 b {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
+}
+
+.pset-sec24.is-epic b {
+  background: linear-gradient(90deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pset-sec24 span {
+  font-size: 13px;
+  line-height: 16px;
+  color: #9299a2;
+}
+
+.pset-cat24 > .pset-grid24.pset-grid24 {
+  padding-top: 16px;
+  padding-bottom: 0;
+}
+
+.pset-cat24 {
+  padding-bottom: 124px;
+}
+
+/* рубашки в профиле (за аватаром): квадратная карта 76px под ±15° */
+.pf-cardback24 {
+  display: none;
+}
+
+[data-app="2"] .pf-cardback {
+  display: none;
+}
+
+[data-app="2"] .pf-cardback24 {
+  position: absolute;
+  top: 44px;
+  display: block;
+  width: 76px;
+  height: 76px;
+}
+
+[data-app="2"] .pf-cardback24.is-left {
+  left: -66px;
+  transform: rotate(-15deg);
+}
+
+[data-app="2"] .pf-cardback24.is-right {
+  left: 110px;
+  transform: rotate(15deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr24-epic,
+  .fr24-epic::before,
+  .fx-sp,
+  .fx-em,
+  .cb24,
+  .cb24 * {
+    animation: none !important;
+  }
+}

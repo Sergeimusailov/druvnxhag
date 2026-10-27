@@ -287,7 +287,7 @@
 
 /* сетка 3×99px, шаг 24px; последний ряд — в 124px от низа экрана */
 [data-app="2"] .pset-avatars,
-.pset-grid24 {
+.pset-grid24:not(.pset-cat24) {
   display: grid;
   grid-template-columns: repeat(3, 99px);
   justify-content: space-between;
@@ -339,7 +339,7 @@
 
 /* рубашка: картинка с поворотом 15° — разворачиваем обратно и обрезаем по карте */
 .pset-tile24[data-kind="back"] {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .pset-tile24[data-kind="back"] > img {
