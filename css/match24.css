@@ -137,3 +137,153 @@ html.m24 .bs {
   max-width: 430px;
   translate: -50% 0;
 }
+
+/* ---------- Профиль соперника (шторка по тапу на его аватар) ---------- */
+
+html.m24 .player-opponent .m24-frame {
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
+}
+
+html.m24 .player-opponent .m24-frame:active {
+  transform: scale(0.94);
+}
+
+.m24-opp {
+  align-items: center;
+  padding-top: 40px;
+  text-align: center;
+}
+
+/* шапка как в профиле: аватар 104 в рамке 8px, за ним две рубашки под ±15° */
+.m24-opp-head {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.m24-opp-back {
+  position: absolute;
+  top: 44px;
+  width: 76px;
+  height: 76px;
+}
+
+.m24-opp-back.is-left {
+  left: -66px;
+  transform: rotate(-15deg);
+}
+
+.m24-opp-back.is-right {
+  left: 110px;
+  transform: rotate(15deg);
+}
+
+.m24-opp-ava {
+  position: relative;
+  display: block;
+  width: 120px;
+  height: 120px;
+  padding: 8px;
+  border-radius: 24px;
+  background: var(--pf-frame);
+}
+
+.m24-opp-ava img {
+  display: block;
+  width: 104px;
+  height: 104px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* имя 30/600 +0.36, статус 17/400 */
+.m24-opp-name {
+  margin-top: 18px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0.36px;
+  color: #f6f7f8;
+}
+
+.m24-opp-status {
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+/* лайк как в инстаграме: сердце и счётчик; поставил — красное, заполненное */
+.m24-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  margin-top: 16px;
+  padding: 0 16px 0 12px;
+  border: 0;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.m24-like svg {
+  fill: none;
+  stroke: #f6f7f8;
+  stroke-width: 2;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.m24-like.is-liked svg {
+  fill: #ff3b5c;
+  stroke: #ff3b5c;
+}
+
+/* статистика: карточка #2c2c2e, r24, заголовок 20/600, строки 48px, значения жёлтые */
+.m24-opp-card {
+  align-self: stretch;
+  margin-top: 20px;
+  padding: 16px 20px 20px;
+  border-radius: 24px;
+  background: #2c2c2e;
+  text-align: left;
+}
+
+.m24-opp-card h3 {
+  margin-bottom: 12px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
+}
+
+.m24-opp-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  font-size: 17px;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.m24-opp-cell + .m24-opp-cell {
+  margin-top: 4px;
+}
+
+.m24-opp-cell b {
+  font-weight: 400;
+  color: #ffdd2d;
+}

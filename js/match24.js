@@ -87,4 +87,57 @@ if (MATCH24) {
     list.parentElement.scrollTop = 0;
     faq.open();
   });
+
+  /* ---------- Профиль соперника: тап по его аватару ---------- */
+
+  const OPP_PROFILE = {
+    name: 'Константин К.',
+    status: 'Гааааaз',
+    avatar: oppImg.getAttribute('src'),
+    stats: [['Процент побед', '61%'], ['Всего матчей', '142'], ['Победы', '87'], ['Поражения', '55']],
+    likes: 128,
+  };
+  const LIKE_KEY = 'v2.oppProfileLiked';
+  let liked = false;
+  try { liked = localStorage.getItem(LIKE_KEY) === '1'; } catch (e) { /* ignore */ }
+  const HEART = '<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linejoin="round" d="M12 20.5s-8-4.9-9.7-10C1.2 7.1 3.3 4 6.6 4c2.3 0 4 1.3 5.4 3.2C13.4 5.3 15.1 4 17.4 4c3.3 0 5.4 3.1 4.3 6.5-1.7 5.1-9.7 10-9.7 10Z"/></svg>';
+
+  main.insertAdjacentHTML('beforeend', `
+    <section class="bs m24-opp" id="m24Opp" aria-hidden="true" role="dialog" aria-label="Профиль соперника">
+      <div class="bs-grab"><span></span></div>
+      <div class="m24-opp-head">
+        <span class="m24-opp-back is-left">${MATCH24.backHTML('opp')}</span>
+        <span class="m24-opp-back is-right">${MATCH24.backHTML('opp')}</span>
+        <span class="m24-opp-ava" style="--pf-frame:#e32d2d"><img src="${OPP_PROFILE.avatar}" alt=""></span>
+      </div>
+      <h2 class="m24-opp-name">${OPP_PROFILE.name}</h2>
+      <p class="m24-opp-status">${OPP_PROFILE.status}</p>
+      <button class="m24-like" id="m24Like" aria-pressed="false">${HEART}<span id="m24LikeCount"></span></button>
+      <div class="m24-opp-card">
+        <h3>Статистика</h3>
+        ${OPP_PROFILE.stats.map(([k, v]) => `<div class="m24-opp-cell"><span>${k}</span><b>${v}</b></div>`).join('')}
+      </div>
+    </section>`);
+
+  const likeBtn = document.getElementById('m24Like');
+  const renderLike = () => {
+    likeBtn.classList.toggle('is-liked', liked);
+    likeBtn.setAttribute('aria-pressed', String(liked));
+    likeBtn.setAttribute('aria-label', liked ? 'Убрать лайк' : 'Поставить лайк');
+    document.getElementById('m24LikeCount').textContent = OPP_PROFILE.likes + (liked ? 1 : 0);
+  };
+  renderLike();
+  likeBtn.addEventListener('click', () => {
+    liked = !liked;
+    try { localStorage.setItem(LIKE_KEY, liked ? '1' : '0'); } catch (e) { /* ignore */ }
+    renderLike();
+    if (liked) likeBtn.querySelector('svg').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(0.9)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+  });
+
+  const oppSheet = bottomSheet(document.getElementById('m24Opp'), document.getElementById('m24Backdrop'));
+  oppFrame.setAttribute('role', 'button');
+  oppFrame.setAttribute('tabindex', '0');
+  oppFrame.setAttribute('aria-label', 'Профиль соперника');
+  oppFrame.addEventListener('click', () => oppSheet.open());
 }
+
