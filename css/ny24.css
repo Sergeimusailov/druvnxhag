@@ -142,16 +142,9 @@
   overflow: hidden;
   text-align: left;
   scroll-snap-align: center;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-/* соседние карточки меньше и чуть повёрнуты, как в макете */
-.ny24-prize.is-side {
-  transform: scale(0.8) rotate(-4deg);
-}
-
-.ny24-prize.is-side.is-after {
-  transform: scale(0.8) rotate(4deg);
+  /* размер и поворот задаёт js/events22.js (markPrizes24) прямо во время
+     прокрутки: центральная — 1 и 0°, соседние — 0.8 и ±4°, между ними плавно */
+  will-change: transform;
 }
 
 .ny24-prize-title {

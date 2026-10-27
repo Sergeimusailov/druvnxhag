@@ -958,22 +958,35 @@ document.getElementById('nyTicketsCta').addEventListener('click', () => {
   tasksTabs.select('daily');
 });
 
-// лента призов: по центру — суперприз, соседние карточки меньше и повёрнуты
+// лента призов: по центру — суперприз, соседние карточки меньше и повёрнуты.
+// Размер и поворот считаются непрерывно от расстояния до центра ленты, поэтому
+// уже во время свайпа карточка плавно растёт и выпрямляется в центр, без скачков
 const ny24Prizes = document.getElementById('ny24Prizes');
+const PRIZE_SIDE_SCALE = 0.8;
+const PRIZE_SIDE_ROTATE = 4;
+let prizesFrame = 0;
 
 function markPrizes24() {
+  prizesFrame = 0;
   const mid = ny24Prizes.scrollLeft + ny24Prizes.clientWidth / 2;
   const cards = [...ny24Prizes.children];
-  let center = 0;
-  cards.forEach((c, i) => {
-    const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
-    const best = Math.abs(cards[center].offsetLeft + cards[center].offsetWidth / 2 - mid);
-    if (d < best) center = i;
+  if (!cards.length) return;
+  // шаг ленты — расстояние между центрами соседних карточек
+  const step = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : cards[0].offsetWidth;
+  cards.forEach((c) => {
+    const offset = (c.offsetLeft + c.offsetWidth / 2 - mid) / step;
+    const t = Math.min(Math.abs(offset), 1);
+    // плавная кривая: у центра изменения мягче, к краю — равномернее
+    const k = t * t * (3 - 2 * t);
+    const scale = 1 - (1 - PRIZE_SIDE_SCALE) * k;
+    const rotate = Math.sign(offset) * PRIZE_SIDE_ROTATE * k;
+    c.style.transform = `scale(${scale.toFixed(4)}) rotate(${rotate.toFixed(3)}deg)`;
+    c.classList.toggle('is-side', t > 0.5);
   });
-  cards.forEach((c, i) => {
-    c.classList.toggle('is-side', i !== center);
-    c.classList.toggle('is-after', i > center);
-  });
+}
+
+function schedulePrizes24() {
+  if (!prizesFrame) prizesFrame = requestAnimationFrame(markPrizes24);
 }
 
 function centerPrizes24() {
@@ -982,7 +995,7 @@ function centerPrizes24() {
   markPrizes24();
 }
 
-if (ny24Prizes) ny24Prizes.addEventListener('scroll', markPrizes24, { passive: true });
+if (ny24Prizes) ny24Prizes.addEventListener('scroll', schedulePrizes24, { passive: true });
 
 // тап по призу в ленте — шторка с условиями (Figma 16825:19441)
 const NY_PRIZES = [
