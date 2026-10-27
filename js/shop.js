@@ -347,7 +347,7 @@ document.addEventListener('click', hideBalanceTip);
 document.addEventListener('v2:screen', hideBalanceTip);
 
 /* ---------- Шторка сундука: состав с шансами и «Открыть» ---------- */
-// заголовок, текст про шансы, награды (название, картинка, шанс в %),
+// картинка сундука, заголовок, текст про шансы, награды (название, картинка, шанс в %),
 // кнопка и доступность на сегодня. Открывается тапом по плитке в любом состоянии.
 
 const shopDetailEl = document.getElementById('shopDetail');
@@ -419,7 +419,9 @@ function renderDetail(box) {
   if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
   else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
+  shopDetailBody.style.setProperty('--lb-color', box.colors[1]);
   shopDetailBody.innerHTML = `
+    <div class="shop-detail-art">${chestArt(box)}</div>
     <h2 class="bs-title">${box.name}</h2>
     <p class="bs-sub">При открытии выпадет одна из наград. Под каждой — шанс её выпадения</p>
     <ul class="shop-prizes">${box.table.map((e) => rewardPreview(e, chanceOf(box, e))).join('')}</ul>

@@ -739,6 +739,43 @@
   padding-bottom: 2px;
 }
 
+/* сундук внутри шторки (не свисает за край), под ним мягкое свечение цвета сундука */
+.shop-detail-art {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 160px;
+  margin: -12px 0 8px;
+  pointer-events: none;
+}
+
+.shop-detail-art::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140px;
+  height: 140px;
+  margin: -70px 0 0 -70px;
+  border-radius: 50%;
+  background: var(--lb-color);
+  opacity: 0.45;
+  filter: blur(40px);
+}
+
+.shop-detail-art .lb-svg {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  animation: shopLevitate 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-detail-art .lb-svg {
+    animation: none;
+  }
+}
+
 /* состав: награды в ряд, у каждой своя плашка — название, картинка, шанс */
 .shop-prizes {
   position: relative;
