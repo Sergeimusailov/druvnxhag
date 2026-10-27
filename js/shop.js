@@ -347,11 +347,13 @@ document.addEventListener('click', hideBalanceTip);
 document.addEventListener('v2:screen', hideBalanceTip);
 
 /* ---------- Шторка сундука: состав с шансами и «Открыть» ---------- */
-// картинка сундука, заголовок, текст про шансы, награды (название, картинка, шанс в %),
+// шторка на весь экран: картинка сундука, бейдж доступности, заголовок,
+// текст про шансы, награды (название, картинка, шанс в %),
 // кнопка и доступность на сегодня. Открывается тапом по плитке в любом состоянии.
 
 const shopDetailEl = document.getElementById('shopDetail');
 const shopDetailBody = shopDetailEl.querySelector('.shop-detail-body');
+const shopDetailFoot = shopDetailEl.querySelector('.shop-detail-foot');
 let shopDetailBox = null;
 const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopDetailBackdrop'), {
   onClose: () => {
@@ -418,14 +420,18 @@ function renderDetail(box) {
   if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${priceHTML(box)}</button>`;
   else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
+  // доступность — тот же бейдж, что на плитке: «Осталось: N» или часы с таймером
+  const badge = st.reason === 'limit'
+    ? timerBadge()
+    : `${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}`;
   shopDetailBody.style.setProperty('--lb-color', box.colors[1]);
   shopDetailBody.innerHTML = `
     <div class="shop-detail-art">${chestArt(box)}</div>
+    <span class="shop-tile-badge shop-detail-badge">${badge}</span>
     <h2 class="bs-title">${box.name}</h2>
     <p class="bs-sub">Шансы выпадения наград из сундука</p>
-    <ul class="shop-prizes" style="--n:${box.table.length}">${box.table.map(rewardPreview).join('')}</ul>
-    ${btn}
-    <p class="shop-detail-left">${st.reason === 'limit' ? 'На сегодня сундуки закончились' : `Доступно сегодня: ${st.left} из ${box.limit}`}</p>`;
+    <ul class="shop-prizes" style="--n:${box.table.length}">${box.table.map(rewardPreview).join('')}</ul>`;
+  shopDetailFoot.innerHTML = btn;
 }
 
 function openDetail(box) {

@@ -803,8 +803,31 @@
 
 /* ---------- Шторка сундука (общий компонент .bs) ---------- */
 
+/* на весь экран: от верха (под статус-баром) до низа; контент листается,
+   кнопка всегда прижата к низу */
+.bs.shop-detail {
+  height: calc(100% - 44px);
+  max-height: none;
+}
+
 .shop-detail .bs-scroll-all {
-  padding-bottom: 2px;
+  padding-bottom: 16px;
+}
+
+.shop-detail-foot {
+  flex-shrink: 0;
+}
+
+.shop-detail-foot .bs-cta {
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* бейдж доступности — как на плитке эпического (20px, 13/600), по центру под сундуком */
+.shop-detail-badge {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 12px;
 }
 
 /* сундук внутри шторки (не свисает за край), под ним мягкое свечение цвета сундука */
@@ -813,7 +836,7 @@
   display: flex;
   justify-content: center;
   height: 160px;
-  margin: -12px 0 8px;
+  margin: -12px 0 12px;
   pointer-events: none;
 }
 
@@ -1056,15 +1079,6 @@
 .shop-open:disabled {
   background: rgba(255, 255, 255, 0.1);
   color: rgba(246, 247, 248, 0.6);
-}
-
-.shop-detail-left {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 18px;
-  text-align: center;
-  color: rgba(246, 247, 248, 0.6);
-  font-variant-numeric: tabular-nums;
 }
 
 /* сундуки в карточках левитируют (сдвиг по фазе, чтобы не синхронно) */
