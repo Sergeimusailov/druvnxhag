@@ -592,17 +592,27 @@ function runShields() {
 }
 
 // низкий экран: если сетка наград не помещается до кнопки «Забрать»,
-// уменьшаем её целиком (пропорции ячеек как в макете)
+// уменьшаем её целиком (пропорции ячеек как в макете); затем ставим
+// заголовок и сетку по центру свободного места
 function fitRewards() {
   lbScale = 1;
+  lbTitleEl.style.marginTop = '';
   lbRewardsEl.style.transform = '';
   lbRewardsEl.style.marginBottom = '';
   const h = lbRewardsEl.offsetHeight;
   const avail = lbClaimEl.offsetTop - lbRewardsEl.offsetTop - 16;
-  if (h <= avail || !h) return;
-  lbScale = Math.max(0.6, avail / h);
-  lbRewardsEl.style.transform = `scale(${lbScale})`;
-  lbRewardsEl.style.marginBottom = `${-h * (1 - lbScale)}px`;
+  if (h > avail && h) {
+    lbScale = Math.max(0.6, avail / h);
+    lbRewardsEl.style.transform = `scale(${lbScale})`;
+    lbRewardsEl.style.marginBottom = `${-h * (1 - lbScale)}px`;
+  }
+  // заголовок «Награды» и сетка — по центру между крестиком и «Забрать»
+  // (решено по смыслу: когда наград мало, внизу не остаётся пустоты)
+  const top = lbCloseEl.offsetTop + lbCloseEl.offsetHeight + 8;
+  const bottom = lbClaimEl.offsetTop - 16;
+  const content = lbRewardsEl.offsetTop + h * lbScale - lbTitleEl.offsetTop;
+  const free = bottom - top - content;
+  if (free > 0) lbTitleEl.style.marginTop = `${Math.round(top + free / 2)}px`;
 }
 
 function rewardCellHTML(r) {
