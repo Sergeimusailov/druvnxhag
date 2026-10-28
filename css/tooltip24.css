@@ -49,3 +49,27 @@
   bottom: -8px;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
+
+/* кнопка перехода в другой раздел: жёлтая, 36px, r12, 15/400 −0.24,
+   стрелка вправо после текста (решено по смыслу, в макете нет) */
+.tip24-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: #ffdd2d;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #333;
+  pointer-events: auto;
+  transition: transform 0.15s ease;
+}
+
+.tip24-btn:active {
+  transform: scale(0.96);
+}

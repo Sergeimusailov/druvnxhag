@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610281310"></script>
+  <script src="js/device-frame.js?v=202610281615"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610281310"></script>
+  <script src="js/version.js?v=202610281615"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610281310">
-  <link rel="stylesheet" href="css/v2.css?v=202610281310">
-  <link rel="stylesheet" href="css/profile.css?v=202610281310">
-  <link rel="stylesheet" href="css/tasks.css?v=202610281310">
-  <link rel="stylesheet" href="css/gifts.css?v=202610281310">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610281310">
-  <link rel="stylesheet" href="css/shop.css?v=202610281310">
-  <link rel="stylesheet" href="css/v22.css?v=202610281310">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610281310">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610281310">
-  <link rel="stylesheet" href="css/ny24.css?v=202610281310">
-  <link rel="stylesheet" href="css/tooltip24.css?v=202610281310">
-  <link rel="stylesheet" href="css/cosmetics24.css?v=202610281310">
-  <link rel="stylesheet" href="css/profile24.css?v=202610281310">
-  <link rel="stylesheet" href="css/v3.css?v=202610281310">
-  <link rel="stylesheet" href="css/event.css?v=202610281310">
+  <link rel="stylesheet" href="css/match.css?v=202610281615">
+  <link rel="stylesheet" href="css/v2.css?v=202610281615">
+  <link rel="stylesheet" href="css/profile.css?v=202610281615">
+  <link rel="stylesheet" href="css/tasks.css?v=202610281615">
+  <link rel="stylesheet" href="css/gifts.css?v=202610281615">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610281615">
+  <link rel="stylesheet" href="css/shop.css?v=202610281615">
+  <link rel="stylesheet" href="css/v22.css?v=202610281615">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610281615">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610281615">
+  <link rel="stylesheet" href="css/ny24.css?v=202610281615">
+  <link rel="stylesheet" href="css/tooltip24.css?v=202610281615">
+  <link rel="stylesheet" href="css/cosmetics24.css?v=202610281615">
+  <link rel="stylesheet" href="css/profile24.css?v=202610281615">
+  <link rel="stylesheet" href="css/v3.css?v=202610281615">
+  <link rel="stylesheet" href="css/event.css?v=202610281615">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -180,7 +180,20 @@
         </div>
 
         <h2 class="cards-title cards-collection-title">Коллекция</h2>
-        <div class="cards-collection-grid" id="cardsCollectionGrid"></div>
+        <!-- коллекции (условно): чипсы как в настройках профиля -->
+        <div class="v2-chip-row cards-chip-row" id="cardsChipRow">
+          <span class="v2-chip-indicator"></span>
+          <button class="v2-chip v2-chip-active" data-tab="veg">Овощная</button>
+          <button class="v2-chip" data-tab="fruit">Фруктовая</button>
+          <button class="v2-chip" data-tab="ny">Новогодняя</button>
+        </div>
+        <div class="v2-tab-content">
+          <div class="v2-tab-track" id="cardsTabTrack">
+            <div class="v2-tab-panel"><div class="cards-collection-grid" data-collection="veg"></div></div>
+            <div class="v2-tab-panel"><div class="cards-collection-grid" data-collection="fruit"></div></div>
+            <div class="v2-tab-panel"><div class="cards-collection-grid" data-collection="ny"></div></div>
+          </div>
+        </div>
       </section>
 
       <!-- Магазин: лутбоксы за монеты (прототип) -->
@@ -778,22 +791,22 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610281310"></script>
-  <script src="js/v2.js?v=202610281310"></script>
-  <script src="js/tooltip24.js?v=202610281310"></script>
-  <script src="js/sheets.js?v=202610281310"></script>
-  <script src="js/profile.js?v=202610281310"></script>
-  <script src="js/cosmetics24.js?v=202610281310"></script>
-  <script src="js/profile24.js?v=202610281310"></script>
-  <script src="js/t-ads.js?v=202610281310"></script>
-  <script src="js/tasks22.js?v=202610281310"></script>
-  <script src="js/tasks.js?v=202610281310"></script>
-  <script src="js/card-custom.js?v=202610281310"></script>
-  <script src="js/cards-v2.js?v=202610281310"></script>
-  <script src="js/shop.js?v=202610281310"></script>
-  <script src="js/gifts.js?v=202610281310"></script>
-  <script src="js/event.js?v=202610281310"></script>
-  <script src="js/events22.js?v=202610281310"></script>
-  <script src="js/v3.js?v=202610281310"></script>
+  <script src="js/cards.js?v=202610281615"></script>
+  <script src="js/v2.js?v=202610281615"></script>
+  <script src="js/tooltip24.js?v=202610281615"></script>
+  <script src="js/sheets.js?v=202610281615"></script>
+  <script src="js/profile.js?v=202610281615"></script>
+  <script src="js/cosmetics24.js?v=202610281615"></script>
+  <script src="js/profile24.js?v=202610281615"></script>
+  <script src="js/t-ads.js?v=202610281615"></script>
+  <script src="js/tasks22.js?v=202610281615"></script>
+  <script src="js/tasks.js?v=202610281615"></script>
+  <script src="js/card-custom.js?v=202610281615"></script>
+  <script src="js/cards-v2.js?v=202610281615"></script>
+  <script src="js/shop.js?v=202610281615"></script>
+  <script src="js/gifts.js?v=202610281615"></script>
+  <script src="js/event.js?v=202610281615"></script>
+  <script src="js/events22.js?v=202610281615"></script>
+  <script src="js/v3.js?v=202610281615"></script>
 </body>
 </html>

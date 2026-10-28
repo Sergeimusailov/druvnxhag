@@ -3,7 +3,7 @@
 // сохраняется сразу при каждом изменении (кнопки «Сохранить» нет).
 (() => {
   const deckGridEl = document.getElementById('cardsDeckGrid');
-  const collectionEl = document.getElementById('cardsCollectionGrid');
+  const collectionEls = Array.from(document.querySelectorAll('#cardsTabTrack .cards-collection-grid'));
   const countEl = document.getElementById('cardsDeckCount');
   const hintEl = document.getElementById('cardsDeckHint');
   const sheet = document.getElementById('cardSheet');
@@ -17,6 +17,29 @@
   let sheetAction = null;
 
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
+
+  // коллекции (прототип): весь список карт поровну на три — овощную,
+  // фруктовую и новогоднюю; порядок панелей — как у чипсов
+  const COLLECTION_IDS = ['veg', 'fruit', 'ny'];
+  const collectionOf = (card) => COLLECTION_IDS[Math.min(2, Math.floor(CARD_ROSTER.indexOf(card) / Math.ceil(CARD_ROSTER.length / 3)))];
+  // где получить закрытую карту: через одну — за задания или в сундуках магазина
+  const unlockSource = (card) => (CARD_ROSTER.indexOf(card) % 2 ? 'shop' : 'tasks');
+
+  function lockedTip(card) {
+    const rarity = cardRarity(card);
+    if (unlockSource(card) === 'tasks') {
+      return {
+        title: 'Карта не открыта',
+        text: 'Её можно получить за выполнение заданий.',
+        action: { label: 'К заданиям', onClick: () => showScreen('tasks') },
+      };
+    }
+    return {
+      title: 'Карта не открыта',
+      text: `${RARITIES[rarity].name} карта выпадает из ${rarity === 'purple' ? 'эпического' : rarity === 'blue' ? 'редкого' : 'обычного'} сундука в «Магазине».`,
+      action: { label: 'В магазин', onClick: () => showScreen('shop') },
+    };
+  }
   const LOCK_SVG = '<svg width="20" height="24" viewBox="0 0 20 24" fill="none"><path d="M5 10V7a5 5 0 0 1 10 0v3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="1.5" y="10" width="17" height="12.5" rx="3.5" fill="#fff"/><circle cx="10" cy="15.5" r="1.8" fill="#1c1c1e"/><path d="M10 16.5v2.5" stroke="#1c1c1e" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
   function cardEl(card, extra = '') {
@@ -46,25 +69,24 @@
     countEl.classList.toggle('is-full', deck.length === DECK_SIZE);
     hintEl.hidden = deck.length === DECK_SIZE;
 
-    // неоткрытые карты — в самом конце, затемнены, с замком; тап — подсказка, как получить
-    collectionEl.innerHTML = '';
+    // в каждой коллекции неоткрытые карты — в самом конце, затемнены, с замком;
+    // тап — подсказка, как получить, и кнопка перехода в нужный раздел
+    collectionEls.forEach((grid) => { grid.innerHTML = ''; });
     const owned = ownedCardNames();
     const sorted = [...CARD_ROSTER].sort((a, b) => owned.has(b.name) - owned.has(a.name));
     sorted.forEach((card) => {
+      const grid = collectionEls[COLLECTION_IDS.indexOf(collectionOf(card))];
       if (!owned.has(card.name)) {
         const el = cardEl(card, ' is-locked');
         el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
         el.setAttribute('aria-label', `${card.name} — карта не открыта`);
-        el.addEventListener('click', () => Tooltip24.show(el, {
-          title: 'Карта не открыта',
-          text: `${RARITIES[cardRarity(card)].name} карта выпадает из ${cardRarity(card) === 'purple' ? 'эпического' : cardRarity(card) === 'blue' ? 'редкого' : 'обычного'} сундука в «Магазине».`,
-        }));
-        collectionEl.appendChild(el);
+        el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
+        grid.appendChild(el);
         return;
       }
       const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
       el.addEventListener('click', () => openCard(card));
-      collectionEl.appendChild(el);
+      grid.appendChild(el);
     });
   }
 
@@ -122,5 +144,6 @@
   // карты открываются в магазине — перерисовываем коллекцию при входе в раздел
   document.addEventListener('v2:screen', (e) => { if (e.detail.screen === 'cards') render(); });
 
+  createChipTabs(document.getElementById('cardsChipRow'), document.getElementById('cardsTabTrack'));
   render();
 })();

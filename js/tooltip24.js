@@ -1,6 +1,8 @@
 // Общий тултип версии 2 — как подсказка у таймера в ивенте (Figma 16671:1223):
 // белый пузырь 15/18 #333, скругление 8, хвостик 24×8 смотрит на элемент.
-//   Tooltip24.show(anchor, { text, title, timeout });  Tooltip24.hide();
+//   Tooltip24.show(anchor, { text, title, timeout, action });  Tooltip24.hide();
+// action: { label, onClick } — жёлтая кнопка со стрелкой вправо (переход в
+// другой раздел); по нажатию тултип закрывается и вызывается onClick.
 // Встаёт под элементом (если снизу нет места — над ним), не вылезает за края
 // экрана. Повторный тап по тому же элементу, тап мимо или прокрутка — прячут.
 
@@ -19,14 +21,22 @@ const Tooltip24 = (() => {
     anchor = null;
   }
 
-  function show(el, { text = '', title = '', timeout = 0, width = 233 } = {}) {
+  const ARROW = '<svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function show(el, { text = '', title = '', timeout = 0, width = 233, action = null } = {}) {
     if (anchor === el) { hide(); return; }
     hide();
     const host = el.closest('.v2-app') || document.body;
     tip = document.createElement('div');
     tip.className = 'tip24';
     tip.setAttribute('role', 'tooltip');
-    tip.innerHTML = `${title ? `<b>${title}</b>` : ''}<span>${text}</span>`;
+    tip.innerHTML = `${title ? `<b>${title}</b>` : ''}<span>${text}</span>${action ? `<button class="tip24-btn" type="button">${action.label}${ARROW}</button>` : ''}`;
+    if (action) {
+      tip.querySelector('.tip24-btn').addEventListener('click', () => {
+        hide();
+        action.onClick();
+      });
+    }
     host.appendChild(tip);
     const h = host.getBoundingClientRect();
     const a = el.getBoundingClientRect();
@@ -46,7 +56,7 @@ const Tooltip24 = (() => {
   }
 
   document.addEventListener('pointerdown', (e) => {
-    if (tip && !(anchor && anchor.contains(e.target))) hide();
+    if (tip && !tip.contains(e.target) && !(anchor && anchor.contains(e.target))) hide();
   }, true);
   document.addEventListener('scroll', () => hide(), true);
   document.addEventListener('v2:screen', hide);

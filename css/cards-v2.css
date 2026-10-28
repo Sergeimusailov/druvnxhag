@@ -67,7 +67,35 @@
 }
 
 .cards-collection-title {
-  margin: 24px 16px 12px;
+  margin: 24px 16px 0;
+}
+
+/* навигация по коллекциям — чипсы как в настройках профиля: 36px, 13/600
+   −0.08, выбранный белый с тёмным текстом, остальные #333, слева, листаются */
+.cards-chip-row {
+  justify-content: flex-start;
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cards-chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.cards-chip-row .v2-chip {
+  flex: none;
+  background: #333;
+  color: #f6f7f8;
+}
+
+.cards-chip-row .v2-chip-active {
+  background: transparent;
+  color: #333;
+}
+
+.cards-chip-row .v2-chip-indicator {
+  background: #fff;
 }
 
 .cards-collection-grid {
