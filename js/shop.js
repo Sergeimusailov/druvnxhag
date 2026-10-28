@@ -549,9 +549,47 @@ const LB_RAY = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
 const LB_ORDER = ['bonus', 'card', 'coins', 'tokens', 'frame'];
 const CONFETTI_COLORS = ['#ffdd2d', '#ff5c8a', '#42cf9b', '#3d8aff', '#b36bff', '#ffffff'];
 
+// закрытая ячейка — узор из «щитов» (LB_SHIELDS из js/shop-shields.js,
+// Figma 17100:199395). Пока ячейки закрыты, щиты по случайному порядку
+// плавно светлеют до одного из серых оттенков макета и гаснут обратно до
+// самого тёмного (#0c0c0c)
+function shieldsSVG(kind) {
+  const { vb, shields } = LB_SHIELDS[kind];
+  return `<svg class="lb-shields" viewBox="${vb}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${shields.map(([c, d]) => `<path d="${d}" fill="${c}"/>`).join('')}</svg>`;
+}
+
+const SHIELD_DARK = '#0c0c0c';
+const SHIELD_GREYS = ['#202020', '#202020', '#323232', '#363636', '#363636', '#757575', '#878787'];
+let shieldTimer = 0;
+
+function stopShields() {
+  clearTimeout(shieldTimer);
+  shieldTimer = 0;
+}
+
+function runShields() {
+  stopShields();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const tick = () => {
+    const paths = lbRewardsEl.querySelectorAll('.lb-cell:not(.is-open) .lb-shields path:not([data-lit])');
+    if (!paths.length && !lbRewardsEl.querySelector('.lb-cell:not(.is-open)')) return;
+    for (let i = 0; i < 3 && paths.length; i++) {
+      const p = paths[Math.floor(Math.random() * paths.length)];
+      p.dataset.lit = '1';
+      p.style.fill = SHIELD_GREYS[Math.floor(Math.random() * SHIELD_GREYS.length)];
+      setTimeout(() => {
+        p.style.fill = SHIELD_DARK;
+        setTimeout(() => p.removeAttribute('data-lit'), 900);
+      }, 900 + Math.random() * 900);
+    }
+    shieldTimer = setTimeout(tick, 160);
+  };
+  tick();
+}
+
 function rewardCellHTML(r) {
   if (r.kind === 'bonus') {
-    return `<div class="lb-cell is-bonus"><div class="lb-cell-in"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div><span class="lb-cell-cover"></span></div>`;
+    return `<div class="lb-cell is-bonus"><div class="lb-cell-in"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div><span class="lb-cell-cover">${shieldsSVG('bonus')}</span></div>`;
   }
   let title;
   let art;
@@ -569,7 +607,7 @@ function rewardCellHTML(r) {
     title = r.back ? 'Рубашка' : 'Рамка';
     art = r.back ? `<div class="lb-back">${COSMETICS24.backHTML(r.id)}</div>` : '<span class="lb-frame-prev"></span>';
   }
-  return `<div class="lb-cell${r.dup ? ' is-dup' : ''}"><div class="lb-cell-in"><p class="lb-cell-title">${title}</p><div class="lb-cell-art">${art}</div></div><span class="lb-cell-cover"></span></div>`;
+  return `<div class="lb-cell${r.dup ? ' is-dup' : ''}"><div class="lb-cell-in"><p class="lb-cell-title">${title}</p><div class="lb-cell-art">${art}</div></div><span class="lb-cell-cover">${shieldsSVG('cell')}</span></div>`;
 }
 
 let lbBusy = false;
@@ -692,6 +730,7 @@ async function openLootbox(box) {
     if (r) COSMETICS24.applyFrame(el, r.id);
   });
   lbTitleEl.classList.add('is-visible');
+  runShields();
   cells.forEach((c, i) => {
     if (lbSkip) return;
     c.animate([
@@ -746,6 +785,7 @@ async function openLootbox(box) {
     lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
     lbRewardsEl.innerHTML = '';
     lbBusy = false;
+    stopShields();
   });
   await Promise.all([fade, ...rewards.map((r, i) => {
     const delay = 250 + i * 200;

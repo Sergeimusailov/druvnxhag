@@ -471,18 +471,28 @@
   object-fit: contain;
 }
 
-/* закрытая ячейка («рубашка»): тёмная, с диагональным узором, без значка;
+/* закрытая ячейка («рубашка»): чёрная, с узором из «щитов»;
    при раскрытии по ней пробегает перелив, потом она гаснет */
 .lb-cell-cover {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
-  background:
-    radial-gradient(70% 60% at 50% 50%, color-mix(in srgb, var(--lb-glow) 28%, transparent), transparent 70%),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 8px, transparent 8px 16px),
-    #121214;
+  background: #000;
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* узор «щитов» (Figma 17100:199395): цвет каждого щита плавно меняется
+   (runShields в js/shop.js) */
+.lb-shields {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lb-shields path {
+  transition: fill 0.9s ease-in-out;
 }
 
 .lb-cell-cover::after {
