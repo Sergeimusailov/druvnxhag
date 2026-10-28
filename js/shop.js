@@ -69,7 +69,7 @@ const TOKENS_START = 20;
 const SHOP_LIMITS_KEY = 'v2.shopLimits';
 const CURRENCY = {
   coins: { icon: 'assets/shop-coin.png', one: 'монета', few: 'монеты', many: 'монет' },
-  tokens: { icon: 'assets/shop-key.png', one: 'ключ', few: 'ключа', many: 'ключей' },
+  tokens: { icon: 'assets/shop-key-192.png', one: 'ключ', few: 'ключа', many: 'ключей' },
 };
 
 function getTokens() {
@@ -121,7 +121,7 @@ function markBought(id) {
   try { localStorage.setItem(SHOP_LIMITS_KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
 }
 
-const BONUS_NAMES = ['Кешбэк 5% в кафе', 'Скидка 10% в кино', 'Бесплатная доставка'];
+const BONUS_NAMES = ['SOKOLOV Beauty: скидка 15%', 'Кешбэк 5% в кафе', 'Скидка 10% в кино'];
 const INVENTORY_KEY = 'v2.inventory';
 
 const shopCoinsEl = document.getElementById('shopCoins');
@@ -131,7 +131,8 @@ const lbOverlayEl = document.getElementById('lbOverlay');
 const lbStageEl = document.getElementById('lbStage');
 const lbBoxEl = document.getElementById('lbBox');
 const lbFlashEl = lbStageEl.querySelector('.lb-flash');
-const lbHintEl = document.getElementById('lbHint');
+const lbRaysEl = document.getElementById('lbRays');
+const lbCloseEl = document.getElementById('lbClose');
 const lbTitleEl = document.getElementById('lbTitle');
 const lbRewardsEl = document.getElementById('lbRewards');
 const lbClaimEl = document.getElementById('lbClaim');
@@ -340,7 +341,7 @@ function tileHTML(box, hero) {
       <div class="shop-tile-art">${chestArt(box)}</div>
       <h2 class="shop-tile-name">${box.short}</h2>
       <span class="shop-tile-badge">${badge}</span>
-      <span class="shop-tile-btn${hero ? ' is-big' : ''}${limit ? ' is-off' : ''}">${priceHTML(box)}</span>
+      <span class="shop-tile-btn${hero ? ' is-big' : ''}${limit ? ' is-off' : ''}">${hero ? 'Открыть за ' : ''}${box.price}<img src="${CURRENCY[box.currency].icon}" alt=""></span>
     </article>`;
 }
 
@@ -402,29 +403,28 @@ function rewardPreview(e) {
   </li>`;
 }
 
-// описание награды по тапу — общий тултип (js/tooltip24.js)
+// подсказка по тапу на награду — общий тултип, коротко, как в макете
+// (Figma 16908:29698 «Подсказка в наградам»)
 function prizeTip(key) {
-  if (key.startsWith('card-')) {
-    const r = RARITIES[key.slice(5)];
-    return [`${r.name} карта`, `Случайная ${r.name.toLowerCase()} карта в вашу коллекцию. Если такая карта у вас уже есть, дубль распылится в монеты.`];
-  }
   return {
-    coins: ['Монеты', 'Основная валюта игры. За монеты открываются обычный и редкий сундуки.'],
-    tokens: ['Ключи', 'Ключи открывают эпический сундук — в нём фиолетовые карты.'],
-    frame: ['Косметика', 'Эпическая рамка аватара или рубашка колоды с анимацией. Появится в настройках профиля.'],
-    bonus: ['Бонус', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Активируется в разделе «Бонусы».'],
+    'card-green': 'Обычная карта. Если такая уже есть, дубль превратится в монеты',
+    'card-blue': 'Редкая карта. Если такая уже есть, дубль превратится в монеты',
+    'card-purple': 'Редкая или эпическая карта',
+    coins: 'Монеты, за которые открываются обычный и редкий сундуки',
+    tokens: 'Ключи, которые открывают фиолетовый сундук',
+    frame: 'Эпическая рамка аватара или рубашка колоды',
+    bonus: 'Скидка или кешбэк от партнёров — появится в «Бонусах»',
   }[key];
 }
 
-// звезда за сундуком в шторке — цвета сундука (у эпического из макета #5d25b0)
+// свечение сверху шторки — цвета сундука (у эпического из макета #5d25b0)
 const SHEET_GLOW = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
-const SHEET_STAR = HERO_STAR.replace('class="shop-tile-glow"', 'class="shop-detail-star" preserveAspectRatio="none"');
 
 function renderDetail(box) {
   const st = boxState(box);
   const icon = `<img src="${CURRENCY[box.currency].icon}" alt="">`;
   let btn;
-  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">${icon}Открыть за ${box.price}</button>`;
+  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${box.price}${icon}</button>`;
   else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
   else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
   // доступность — тот же бейдж, что на плитке: «Остался: N» или часы с таймером
@@ -433,7 +433,7 @@ function renderDetail(box) {
     : `${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}`;
   shopDetailEl.style.setProperty('--glow', SHEET_GLOW[box.id]);
   shopDetailBody.innerHTML = `
-    ${SHEET_STAR}
+    <span class="shop-detail-star" aria-hidden="true"></span>
     <div class="shop-detail-art">${chestArt(box)}</div>
     <span class="shop-tile-badge shop-detail-badge">${badge}</span>
     <h2 class="shop-detail-title">${box.name}</h2>
@@ -456,8 +456,7 @@ function closeDetail() {
 shopDetailEl.addEventListener('click', (e) => {
   const prize = e.target.closest('.shop-prize');
   if (prize) {
-    const [title, text] = prizeTip(prize.dataset.prizeTip);
-    Tooltip24.show(prize, { title, text });
+    Tooltip24.show(prize, { text: prizeTip(prize.dataset.prizeTip) });
     return;
   }
   const btn = e.target.closest('[data-open]');
@@ -524,43 +523,98 @@ function animateCoins(from, to) {
   shopCoinsEl.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
 }
 
-/* ---------- Открытие ---------- */
+/* ---------- Открытие (Figma 16908:29698 «Открытие сундука», «Награды») ---------- */
+// Быстро: сундук влетает и вздрагивает, лучи за ним с поворотом «наезжают
+// в камеру», вспышка — и на месте сундука появляются закрытые ячейки наград.
+// Ячейки раскрываются по очереди, с паузой (интрига): по ячейке пробегает
+// перелив, затем внутри проявляется награда — как лут в Arc Raiders / DMZ,
+// без переворота. В эпическом сундуке карта и бонус открываются «легендарно»:
+// перелив дольше, ячейка пульсирует, вспышка и конфетти. В обычном и редком —
+// простое раскрытие.
 
-function rewardFaceHTML(r) {
-  if (r.kind === 'card' && r.dup) {
-    // дубль: карту видно, сверху «Уже есть», внизу во что распылилась
-    return `<div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
-      <span class="lb-dup-badge">Уже есть</span>
-      <p class="lb-reward-name">${r.card.name}</p>
-      <p class="lb-dup-coins"><img src="assets/shop-coin.png" alt="">+${r.dupCoins}</p>`;
+const RARITY_TITLE = { green: 'Обычная карта', blue: 'Редкая карта', purple: 'Эпическая карта' };
+// свечение ячеек (у эпического #bb00ff из макета) и лучей (#5d25b0)
+const LB_GLOW = { purple: '#bb00ff', blue: '#3d8aff', green: '#1eca85' };
+const LB_RAY = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
+// порядок как в макете: бонус сверху во всю ширину, дальше карта, монеты, ключи, косметика
+const LB_ORDER = ['bonus', 'card', 'coins', 'tokens', 'frame'];
+const CONFETTI_COLORS = ['#ffdd2d', '#ff5c8a', '#42cf9b', '#3d8aff', '#b36bff', '#ffffff'];
+
+function rewardCellHTML(r) {
+  if (r.kind === 'bonus') {
+    return `<div class="lb-cell is-bonus"><div class="lb-cell-in"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div><span class="lb-cell-cover"></span></div>`;
   }
+  let title;
+  let art;
   if (r.kind === 'card') {
-    return `<div class="card owner-you lb-card">${cardInnerHTML(r.card)}</div>
-      <span class="lb-new-badge">Новая</span>
-      <p class="lb-reward-name">${r.card.name}</p><p class="lb-reward-sub" style="color:${RARITIES[r.rarity].color}">${RARITIES[r.rarity].name}</p>`;
+    // дубль: «Уже есть», карта погашена, внизу «+N» монет
+    title = r.dup ? 'Уже есть' : RARITY_TITLE[r.rarity];
+    art = `<div class="card owner-you lb-card" style="color:${RARITIES[r.rarity].color}">${cardInnerHTML(r.card)}</div>${r.dup ? `<span class="lb-qty"><img src="assets/shop-coin.png" alt="">+${r.dupCoins}</span>` : ''}`;
+  } else if (r.kind === 'coins') {
+    title = 'Монеты';
+    art = `<img src="assets/v2-ny-coins.png" alt=""><span class="lb-qty">× ${r.amount}</span>`;
+  } else if (r.kind === 'tokens') {
+    title = 'Ключи';
+    art = `<img src="${CURRENCY.tokens.icon}" alt=""><span class="lb-qty">× ${r.amount}</span>`;
+  } else {
+    title = r.back ? 'Рубашка' : 'Рамка';
+    art = r.back ? `<div class="lb-back">${COSMETICS24.backHTML(r.id)}</div>` : '<span class="lb-frame-prev"></span>';
   }
-  if (r.kind === 'coins') {
-    return `<img class="lb-reward-img" src="assets/v2-coin.png" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Монеты</p>`;
-  }
-  if (r.kind === 'tokens') {
-    return `<img class="lb-reward-img" src="${CURRENCY.tokens.icon}" alt=""><p class="lb-reward-name">+${r.amount}</p><p class="lb-reward-sub">Ключи</p>`;
-  }
-  if (r.kind === 'frame') {
-    const art = r.back ? `<div class="lb-back">${COSMETICS24.backHTML(r.id)}</div>` : '<div class="lb-frame"><span></span></div>';
-    return `${art}<p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В профиль</p>`;
-  }
-  return `<img class="lb-reward-img" src="assets/v2-prize-gift.png" alt=""><p class="lb-reward-name">${r.name}</p><p class="lb-reward-sub">В «Бонусы»</p>`;
-}
-
-function rewardColor(r) {
-  return r.kind === 'card' ? RARITIES[r.rarity].color : KIND_COLORS[r.kind];
+  return `<div class="lb-cell${r.dup ? ' is-dup' : ''}"><div class="lb-cell-in"><p class="lb-cell-title">${title}</p><div class="lb-cell-art">${art}</div></div><span class="lb-cell-cover"></span></div>`;
 }
 
 let lbBusy = false;
+let lbSkip = false;
+// пауза, которую «Закрыть» во время открытия пропускает
+const lbWait = (ms) => (lbSkip ? Promise.resolve() : wait(ms));
+const lbAnim = (el, frames, opts) => (lbSkip ? Promise.resolve() : el.animate(frames, opts).finished.catch(() => {}));
+
+// конфетти из центра ячейки: разлетаются вверх и в стороны и осыпаются
+function confettiFrom(cell) {
+  const a = lbOverlayEl.getBoundingClientRect();
+  const r = cell.getBoundingClientRect();
+  const cx = r.left + r.width / 2 - a.left;
+  const cy = r.top + r.height / 2 - a.top;
+  for (let i = 0; i < 46; i++) {
+    const c = document.createElement('span');
+    c.className = 'lb-confetti';
+    c.style.left = `${cx}px`;
+    c.style.top = `${cy}px`;
+    c.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    lbOverlayEl.appendChild(c);
+    const vx = (Math.random() - 0.5) * 340;
+    const vy = -140 - Math.random() * 200;
+    const rot = (Math.random() - 0.5) * 900;
+    c.animate([
+      { transform: 'translate(-50%, -50%) rotate(0) scale(0.4)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${vx * 0.8}px), calc(-50% + ${vy}px)) rotate(${rot * 0.5}deg) scale(1)`, opacity: 1, offset: 0.35 },
+      { transform: `translate(calc(-50% + ${vx}px), calc(-50% + ${vy + 320}px)) rotate(${rot}deg) scale(0.9)`, opacity: 0 },
+    ], { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)', fill: 'forwards' }).finished.then(() => c.remove());
+  }
+}
+
+async function revealCell(cell, legend) {
+  cell.classList.add('is-scanning');
+  if (legend) cell.classList.add('is-legend');
+  await lbWait(legend ? 900 : 480);
+  cell.classList.remove('is-scanning');
+  cell.classList.add('is-open');
+  if (lbSkip) return;
+  cell.animate([{ transform: 'scale(1)' }, { transform: `scale(${legend ? 1.12 : 1.06})` }, { transform: 'scale(1)' }], { duration: legend ? 450 : 320, easing: 'ease-out' });
+  if (legend) {
+    lbFlashEl.animate([
+      { transform: 'scale(0.4)', opacity: 0 },
+      { transform: 'scale(4)', opacity: 0.7, offset: 0.3 },
+      { transform: 'scale(7)', opacity: 0 },
+    ], { duration: 600, easing: 'ease-out' });
+    confettiFrom(cell);
+  }
+}
 
 async function openLootbox(box) {
   if (lbBusy || !boxState(box).can) return;
   lbBusy = true;
+  lbSkip = false;
   markBought(box.id);
   if (box.currency === 'tokens') {
     addTokens(-box.price);
@@ -570,143 +624,121 @@ async function openLootbox(box) {
     setCoins(coins - box.price);
     animateCoins(coins, coins - box.price);
   }
-  const rewards = rollBox(box);
+  const rewards = rollBox(box).sort((x, y) => LB_ORDER.indexOf(x.kind) - LB_ORDER.indexOf(y.kind));
+  const epic = box.id === 'purple';
 
-  lbOverlayEl.style.setProperty('--lb-color', box.colors[1]);
-  lbOverlayEl.style.setProperty('--lb-light', box.colors[0]);
-  lbBoxEl.innerHTML = chestArt(box);
-  // анимации прошлого открытия (растворение сундука с fill: forwards) иначе
-  // продолжают действовать и прячут новый сундук
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
+  lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
+  lbOverlayEl.style.setProperty('--lb-glow', LB_GLOW[box.id]);
+  lbOverlayEl.style.setProperty('--lb-ray', LB_RAY[box.id]);
+  lbBoxEl.innerHTML = chestArt(box);
+  lbRaysEl.innerHTML = HERO_STAR.replace('class="shop-tile-glow"', '');
   lbRewardsEl.innerHTML = '';
-  lbRewardsEl.style.setProperty('--n', rewards.length);
-  // 3–5 наград — плитки поменьше, чтобы все поместились на экране;
-  // на узком экране и две крупные плитки (160 + 12 + 160) не помещаются в ряд
-  lbRewardsEl.classList.toggle('is-compact', rewards.length > 2 || lbRewardsEl.clientWidth < 332);
   lbTitleEl.classList.remove('is-visible');
   lbClaimEl.classList.remove('is-visible');
   lbOverlayEl.style.opacity = '';
   lbOverlayEl.classList.add('is-open');
   lbOverlayEl.setAttribute('aria-hidden', 'false');
 
-  // бокс падает с пружинкой и покачивается
-  await lbBoxEl.animate(
-    [
-      { transform: 'translateY(-260px) scale(0.6)', opacity: 0 },
-      { transform: 'translateY(12px) scale(1.06, 0.92)', opacity: 1, offset: 0.6 },
-      { transform: 'translateY(-6px) scale(0.97, 1.04)', offset: 0.8 },
-      { transform: 'translateY(0) scale(1)', opacity: 1 },
-    ],
-    { duration: 720, easing: 'ease-out' }
-  ).finished;
-  // без тапа «открыть»: сундук сам покачивается, затем нарастающие встряски —
-  // медленно, чтобы сохранить интригу
-  lbBoxEl.classList.add('is-idle');
-  await wait(1100);
-  lbBoxEl.classList.remove('is-idle');
+  // 1. сундук влетает, лучи за ним медленно крутятся
+  lbRaysEl.animate([{ transform: 'scale(0.5) rotate(-20deg)', opacity: 0 }, { transform: 'scale(1) rotate(0)', opacity: 1 }], { duration: 400, easing: 'ease-out', fill: 'forwards' });
+  await lbAnim(lbBoxEl, [
+    { transform: 'translateY(-60px) scale(0.6)', opacity: 0 },
+    { transform: 'translateY(8px) scale(1.04)', opacity: 1, offset: 0.7 },
+    { transform: 'none', opacity: 1 },
+  ], { duration: 420, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
 
-  await lbBoxEl.animate(
-    [
-      { transform: 'rotate(0) scale(1)' },
-      { transform: 'rotate(-4deg) scale(1.02)', offset: 0.12 },
-      { transform: 'rotate(4deg) scale(1.03)', offset: 0.24 },
-      { transform: 'rotate(0) scale(1.03)', offset: 0.36 },
-      { transform: 'rotate(-7deg) scale(1.06)', offset: 0.48 },
-      { transform: 'rotate(7deg) scale(1.08)', offset: 0.58 },
-      { transform: 'rotate(0) scale(1.08)', offset: 0.66 },
-      { transform: 'rotate(-10deg) scale(1.11)', offset: 0.74 },
-      { transform: 'rotate(10deg) scale(1.14)', offset: 0.82 },
-      { transform: 'rotate(-12deg) scale(1.16)', offset: 0.9 },
-      { transform: 'rotate(0) scale(1.2)' },
-    ],
-    { duration: 1700, easing: 'ease-in' }
-  ).finished;
+  // 2. сундук вздрагивает, лучи с поворотом наезжают в камеру
+  lbRaysEl.animate([
+    { transform: 'scale(1) rotate(0)', opacity: 1 },
+    { transform: 'scale(1.4) rotate(50deg)', opacity: 1, offset: 0.5 },
+    { transform: 'scale(5) rotate(170deg)', opacity: 0 },
+  ], { duration: 1000, easing: 'cubic-bezier(0.55, 0, 0.75, 0.2)', fill: 'forwards' });
+  await lbAnim(lbBoxEl, [
+    { transform: 'rotate(0) scale(1)' },
+    { transform: 'rotate(-5deg) scale(1.03)', offset: 0.15 },
+    { transform: 'rotate(5deg) scale(1.05)', offset: 0.3 },
+    { transform: 'rotate(-7deg) scale(1.08)', offset: 0.45 },
+    { transform: 'rotate(7deg) scale(1.1)', offset: 0.6 },
+    { transform: 'rotate(-4deg) scale(1.14)', offset: 0.75 },
+    { transform: 'rotate(0) scale(1.18)' },
+  ], { duration: 620, easing: 'ease-in' });
 
-  // крышка слетает, вспышка, сундук растворяется
-  // у картинки сундука из макета нет отдельной крышки — тогда сундук просто
-  // растворяется во вспышке
-  const lid = lbBoxEl.querySelector('.lb-svg-lid');
-  if (lid) lid.animate(
-    [{ transform: 'translate(0, 0) rotate(0)' }, { transform: 'translate(40px, -160px) rotate(35deg)', opacity: 0 }],
-    { duration: 520, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'forwards' }
-  );
-  lbFlashEl.animate(
-    [
-      { transform: 'scale(0.2)', opacity: 0 },
-      { transform: 'scale(7)', opacity: 1, offset: 0.3 },
-      { transform: 'scale(12)', opacity: 0 },
-    ],
-    { duration: 800, easing: 'ease-out' }
-  );
-  lbBoxEl.animate([{ opacity: 1, transform: 'scale(1.18)' }, { opacity: 0, transform: 'scale(1.5)' }], { duration: 420, delay: 160, easing: 'ease-in', fill: 'forwards' });
+  // 3. вспышка, сундук растворяется
+  if (!lbSkip) {
+    lbFlashEl.animate([
+      { transform: 'scale(0.3)', opacity: 0 },
+      { transform: 'scale(8)', opacity: 1, offset: 0.3 },
+      { transform: 'scale(14)', opacity: 0 },
+    ], { duration: 650, easing: 'ease-out' });
+  }
+  lbBoxEl.animate([{ opacity: 1, transform: 'scale(1.18)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: lbSkip ? 1 : 300, easing: 'ease-in', fill: 'forwards' });
+  await lbWait(220);
 
-  // предметы вылетают из сундука рубашкой вверх и по очереди переворачиваются
-  lbRewardsEl.innerHTML = rewards.map((r) => `
-    <div class="lb-reward${r.dup ? ' is-dup' : ''}" style="--glow:${rewardColor(r)}">
-      <div class="lb-reward-inner">
-        <div class="lb-reward-back"></div>
-        <div class="lb-reward-face">${rewardFaceHTML(r)}</div>
-      </div>
-    </div>`).join('');
-  lbRewardsEl.querySelectorAll('.lb-frame').forEach((el, i) => {
-    const r = rewards.filter((x) => x.kind === 'frame' && !x.back)[i];
+  // 4. ячейки-«рубашки» появляются
+  lbRewardsEl.innerHTML = rewards.map(rewardCellHTML).join('');
+  const cells = Array.from(lbRewardsEl.children);
+  lbRewardsEl.querySelectorAll('.lb-frame-prev').forEach((el) => {
+    const r = rewards.find((x) => x.kind === 'frame' && !x.back);
     if (r) COSMETICS24.applyFrame(el, r.id);
   });
   lbTitleEl.classList.add('is-visible');
-  const center = centerOf(lbStageEl);
-  const els = Array.from(lbRewardsEl.children);
-  await Promise.all(els.map((el, i) => {
-    const c = centerOf(el);
-    return el.animate(
-      [
-        { transform: `translate(${center.x - c.x}px, ${center.y - c.y}px) scale(0.2)`, opacity: 0 },
-        { transform: 'translate(0, -16px) scale(1.08)', opacity: 1, offset: 0.7 },
-        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-      ],
-      { duration: 620, delay: 200 + i * 110, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' }
-    ).finished;
-  }));
-  for (const el of els) {
-    el.classList.add('is-flipped');
-    await wait(320);
+  cells.forEach((c, i) => {
+    if (lbSkip) return;
+    c.animate([
+      { opacity: 0, transform: 'translateY(18px) scale(0.85)' },
+      { opacity: 1, transform: 'none' },
+    ], { duration: 340, delay: i * 70, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.2)', fill: 'backwards' });
+  });
+  await lbWait(340 + cells.length * 70 + 250);
+
+  // 5. раскрываем по очереди
+  for (let i = 0; i < cells.length; i++) {
+    const r = rewards[i];
+    const legend = epic && (r.kind === 'card' || r.kind === 'bonus');
+    await revealCell(cells[i], legend);
+    await lbWait(legend ? 380 : 200);
   }
-  // дубли: после переворота карта гаснет и превращается в монеты — состояние
-  // остаётся до «Забрать», под наградами — итоговая строка
-  const dups = rewards.filter((r) => r.dup);
-  if (dups.length) {
-    await wait(350);
-    const dupEls = els.filter((el) => el.classList.contains('is-dup'));
-    // карта гаснет, рамка золотая, «+N» — монеты улетят в баланс по «Забрать»
-    dupEls.forEach((el) => el.classList.add('is-dusted'));
-    await wait(400);
-    const total = dups.reduce((sum, r) => sum + r.dupCoins, 0);
-    lbRewardsEl.insertAdjacentHTML('beforeend', `<p class="lb-dup-note">${dups.length > 1 ? 'Дубли превращены' : 'Дубль превращён'} в ${total} ${plural(total, CURRENCY.coins)}</p>`);
-    await wait(300);
-    // первый дубль в жизни — объясняем механику тултипом над картой
-    if (!storageGet(DUP_TIP_KEY)) {
-      storageSet(DUP_TIP_KEY, '1');
-      Tooltip24.show(dupEls[0].querySelector('.lb-reward-face'), {
-        title: 'Дубль превращается в монеты',
-        text: 'Такая карта у вас уже есть, поэтому вместо неё вы получаете монеты.',
-        width: 260,
-      });
-    }
+
+  // первый дубль в жизни — объясняем механику тултипом над ячейкой
+  const dupCell = cells.find((c) => c.classList.contains('is-dup'));
+  if (dupCell && !storageGet(DUP_TIP_KEY)) {
+    storageSet(DUP_TIP_KEY, '1');
+    Tooltip24.show(dupCell, {
+      title: 'Дубль превращается в монеты',
+      text: 'Такая карта у вас уже есть, поэтому вместо неё вы получаете монеты.',
+      width: 260,
+    });
   }
 
   applyRewards(rewards);
   lbClaimEl.classList.add('is-visible');
-  await once(lbClaimEl, 'click');
+  await new Promise((resolve) => {
+    const done = () => { lbClaimEl.removeEventListener('click', done); lbCloseEl.removeEventListener('click', done); resolve(); };
+    lbClaimEl.addEventListener('click', done);
+    lbCloseEl.addEventListener('click', done);
+  });
   Tooltip24.hide();
-  const dupCards = Array.from(lbRewardsEl.querySelectorAll('.lb-reward.is-dup .lb-card')).map((el) => el.getBoundingClientRect());
+  const dupCards = Array.from(lbRewardsEl.querySelectorAll('.lb-cell.is-dup .lb-card')).map((el) => el.getBoundingClientRect());
   const dupTotal = rewards.filter((r) => r.dup).reduce((sum, r) => sum + r.dupCoins, 0);
   await lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished;
   lbOverlayEl.classList.remove('is-open');
   lbOverlayEl.setAttribute('aria-hidden', 'true');
-  lbOverlayEl.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
+  lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
   lbBusy = false;
   renderShop();
   if (dupTotal) await flyDupCoins(dupCards, dupTotal);
 }
+
+// «Закрыть» во время открытия — пропустить анимацию и сразу показать награды
+lbCloseEl.addEventListener('click', () => {
+  if (lbClaimEl.classList.contains('is-visible')) return;
+  lbSkip = true;
+  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => {
+    if (an.effect && an.effect.getComputedTiming().iterations !== Infinity) an.finish();
+  });
+});
 
 function applyRewards(rewards) {
   const inv = loadInventory();

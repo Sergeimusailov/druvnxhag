@@ -172,7 +172,7 @@
   color: rgba(246, 247, 248, 0.7);
 }
 
-/* Экран открытия лутбокса — по мотивам экрана подарка */
+/* ---------- Открытие сундука (Figma 16908:29698 «Открытие сундука», «Награды») ---------- */
 
 .lb-overlay {
   position: absolute;
@@ -181,6 +181,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
   visibility: hidden;
   pointer-events: none;
 }
@@ -190,64 +191,65 @@
   pointer-events: auto;
 }
 
+/* фон как у разделов: картинка, затемнённая на 70%, и свечение цвета сундука */
 .lb-bg {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(60% 45% at 50% 42%, color-mix(in srgb, var(--lb-color) 55%, transparent), transparent 70%),
-    #050507;
+    radial-gradient(55% 32% at 50% 46%, color-mix(in srgb, var(--lb-ray) 45%, transparent), transparent 75%),
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
 }
 
-/* лучи в цвете бокса медленно вращаются */
+/* лучи за сундуком: размытая 21-лучевая звезда цвета сундука; при открытии
+   с поворотом «наезжают в камеру» (js: openLootbox) */
 .lb-rays {
   position: absolute;
+  top: 45%;
   left: 50%;
-  top: 42%;
-  width: 760px;
-  height: 760px;
-  margin: -380px 0 0 -380px;
-  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--lb-light) 22%, transparent) 0deg 8deg, transparent 8deg 24deg);
-  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 60%);
-  mask-image: radial-gradient(circle, #000 0%, transparent 60%);
-  animation: lbRays 18s linear infinite;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  filter: blur(10px);
   pointer-events: none;
 }
 
-@keyframes lbRays {
-  to { transform: rotate(360deg); }
+.lb-rays svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lb-rays polygon {
+  fill: var(--lb-ray);
+}
+
+.lb-close {
+  position: absolute;
+  top: 5px;
+  left: 16px;
+  z-index: 3;
 }
 
 .lb-stage {
   position: absolute;
-  top: 42%;
+  top: 45%;
   left: 50%;
-  width: 220px;
-  height: 200px;
-  margin: -100px 0 0 -110px;
+  width: 290px;
+  height: 290px;
+  margin: -145px 0 0 -145px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .lb-box .lb-svg {
-  width: 220px;
-  height: auto;
-  filter: drop-shadow(0 10px 30px color-mix(in srgb, var(--lb-color) 70%, transparent));
-}
-
-.lb-svg-lid {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-}
-
-.lb-box.is-idle {
-  animation: lbIdle 1.2s ease-in-out infinite;
-}
-
-@keyframes lbIdle {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
+  display: block;
+  width: 290px;
+  height: 290px;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
 }
 
 .lb-flash {
@@ -258,35 +260,24 @@
   height: 60px;
   margin: -30px 0 0 -30px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff 0%, var(--lb-light) 40%, transparent 70%);
+  background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--lb-ray) 60%, #fff) 40%, transparent 70%);
   opacity: 0;
   pointer-events: none;
 }
 
-.lb-hint {
-  position: absolute;
-  top: calc(42% + 120px);
-  font-size: 15px;
-  color: rgba(246, 247, 248, 0.7);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.lb-hint.is-visible {
-  opacity: 1;
-}
-
+/* «Награды» 30/700 +0.36 — под шапкой, как в макете */
 .lb-title {
   position: relative;
-  margin-top: 80px;
-  font-size: 28px;
+  z-index: 2;
+  margin-top: 74px;
+  font-size: 30px;
+  line-height: 36px;
   font-weight: 700;
+  letter-spacing: 0.36px;
   color: #f6f7f8;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
 }
 
 .lb-title.is-visible {
@@ -294,116 +285,284 @@
   transform: none;
 }
 
+/* сетка наград: ширина 277, бонус во всю ширину сверху (отступ 20),
+   остальные ячейки 132×156 по две в ряд, между ними 12; нечётная — по центру */
 .lb-rewards {
-  position: absolute;
-  top: 160px;
-  left: 16px;
-  right: 16px;
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+  width: 277px;
+  margin-top: 16px;
 }
 
-/* предмет: рубашка → переворот на лицевую сторону */
-.lb-reward {
-  width: 160px;
-  height: 200px;
-  perspective: 800px;
-}
-
-.lb-reward-inner {
+/* ячейка: чёрная, обводка белая 10% снаружи, r16, свечение цвета сундука */
+.lb-cell {
   position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.34, 1.32, 0.42, 1);
+  width: 132px;
+  height: 156px;
+  border-radius: 16px;
+  background: #000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 16px color-mix(in srgb, var(--lb-glow) 40%, transparent);
 }
 
-.lb-reward.is-flipped .lb-reward-inner {
-  transform: rotateY(180deg);
+.lb-cell.is-bonus {
+  width: 277px;
+  height: 126px;
+  margin-bottom: 8px;
+  border-radius: 24px;
 }
 
-.lb-reward-back,
-.lb-reward-face {
+.lb-cell-in {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.lb-reward-back {
-  background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, transparent 10px 20px),
-    linear-gradient(160deg, var(--lb-light), var(--lb-color));
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.35);
-}
-
-.lb-reward-face {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 10px;
-  background: #1c1c1e;
-  box-shadow: 0 0 0 2px var(--glow), 0 0 24px color-mix(in srgb, var(--glow) 70%, transparent);
-  transform: rotateY(180deg);
+  gap: 12px;
+  padding: 12px 12px 24px;
+  border-radius: inherit;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.85);
+  filter: blur(6px);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
+}
+
+.lb-cell.is-open .lb-cell-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* название 13/600 −0.08 */
+.lb-cell-title {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
   text-align: center;
+  white-space: nowrap;
 }
 
-.lb-card {
-  width: 104px;
+/* картинка 88×88, количество «× 240» 20/700 с обводкой 3px #202020 снаружи */
+.lb-cell-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
 }
 
-.lb-reward-img {
-  width: 96px;
-  height: 96px;
+.lb-cell-art > img {
+  width: 88px;
+  height: 88px;
   object-fit: contain;
 }
 
-.lb-reward-name {
-  margin-top: 8px;
-  font-size: 15px;
+.lb-cell-art .lb-card {
+  width: 88px;
+}
+
+.lb-qty {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 20px;
+  line-height: 24px;
   font-weight: 700;
-  color: #f6f7f8;
+  letter-spacing: 0.38px;
+  color: #fff;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  -webkit-text-stroke: 6px #202020;
+  paint-order: stroke fill;
 }
 
-.lb-reward-sub {
-  margin-top: 2px;
-  font-size: 12px;
-  color: rgba(246, 247, 248, 0.6);
+.lb-qty img {
+  width: 18px;
+  height: 18px;
 }
 
-/* превью косметической рамки */
-.lb-frame {
+/* дубль: карта погашена, внизу «+N» монет (улетят в счётчик по «Забрать») */
+.lb-cell.is-dup .lb-card {
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0.75;
+}
+
+.lb-cell.is-dup .lb-qty {
+  color: #ffcf3d;
+}
+
+/* рамка-превью 88×88: рамка 8px внутрь, внутри чёрное */
+.lb-frame-prev {
+  position: relative;
   width: 88px;
   height: 88px;
-  padding: 5px;
-  border-radius: 22px;
-  background: conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9);
-}
-
-.lb-frame {
-  position: relative;
+  border-radius: 14px;
+  background: var(--pf-frame, #fff);
   isolation: isolate;
 }
 
-.lb-frame span {
-  position: relative;
+.lb-frame-prev::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
   z-index: 1;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 17px;
-  background: #2c2c2e url('../assets/v2-avatar-square.png') center / cover;
+  border-radius: 7px;
+  background: #000;
+}
+
+.lb-back {
+  position: relative;
+  width: 66px;
+  height: 88px;
+}
+
+/* бонус: «SOKOLOV Beauty: скидка 15%» 17/700 −0.41 слева, подарок 120×90 справа внизу */
+.lb-cell.is-bonus .lb-cell-in {
+  align-items: flex-start;
+  padding: 16px 100px 18px 20px;
+}
+
+.lb-bonus-title {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
+}
+
+.lb-bonus-img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+}
+
+/* закрытая ячейка («рубашка»): тёмная, с диагональным узором и знаком
+   сундука; при раскрытии по ней пробегает перелив, потом она гаснет */
+.lb-cell-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 50% 50%, color-mix(in srgb, var(--lb-glow) 28%, transparent), transparent 70%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 8px, transparent 8px 16px),
+    #121214;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.lb-cell-cover::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 8px;
+  border: 2px solid color-mix(in srgb, var(--lb-glow) 70%, #fff);
+  opacity: 0.6;
+  transform: rotate(45deg);
+}
+
+.lb-cell-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, color-mix(in srgb, var(--lb-glow) 50%, #fff) 52%, transparent 70%);
+  background-size: 250% 100%;
+  background-position: 130% 0;
+  opacity: 0;
+}
+
+.lb-cell.is-scanning .lb-cell-cover::after {
+  opacity: 1;
+  animation: lbScan 0.55s linear infinite;
+}
+
+.lb-cell.is-scanning .lb-cell-cover::before {
+  animation: lbPulse 0.55s ease-in-out infinite;
+}
+
+/* «легендарная» ячейка (карта и бонус в эпическом сундуке): перелив дольше,
+   ячейка светится и пульсирует */
+.lb-cell.is-legend.is-scanning {
+  animation: lbLegendGlow 0.5s ease-in-out infinite;
+}
+
+.lb-cell.is-open .lb-cell-cover {
+  opacity: 0;
+  transform: scale(1.06);
+  pointer-events: none;
+}
+
+@keyframes lbScan {
+  from { background-position: 130% 0; }
+  to { background-position: -30% 0; }
+}
+
+@keyframes lbPulse {
+  50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
+}
+
+@keyframes lbLegendGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 16px color-mix(in srgb, var(--lb-glow) 50%, transparent); }
+  50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--lb-glow) 80%, #fff), 0 0 40px color-mix(in srgb, var(--lb-glow) 90%, transparent); }
+}
+
+/* конфетти легендарной награды и монетки дубля */
+.lb-confetti {
+  position: absolute;
+  z-index: 5;
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.lb-fly-coin {
+  position: absolute;
+  z-index: 70;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* «Забрать» 345×56 r16, 17/400 −0.41 */
+/* низкие экраны (нет в макете): ужимаем сетку, чтобы 5 наград не уходили под «Забрать» */
+@media (max-height: 760px) {
+  .lb-title { margin-top: 32px; }
+  .lb-cell { height: 132px; }
+  .lb-cell.is-bonus { height: 104px; margin-bottom: 4px; }
+  .lb-cell-art { width: 72px; height: 72px; }
 }
 
 .lb-claim {
   position: absolute;
   left: 24px;
   right: 24px;
-  bottom: calc(40px + env(safe-area-inset-bottom));
+  bottom: max(40px, calc(16px + env(safe-area-inset-bottom)));
+  z-index: 2;
+  height: 56px;
+  border-radius: 16px;
+  background: #ffdd2d;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #333;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.32, 0.42, 1);
@@ -416,185 +575,16 @@
   pointer-events: auto;
 }
 
-/* бейджи карты на экране наград: «Новая» (открыли) и «Уже есть» (дубль) */
-.lb-reward-face {
-  position: relative;
+.lb-claim:active {
+  transform: scale(0.97);
 }
 
-/* бейдж — под картой, чтобы не перекрывать её */
-.lb-new-badge,
-.lb-dup-badge {
-  position: relative;
-  z-index: 2;
-  margin-top: 8px;
-  padding: 2px 8px;
-  border-radius: 100px;
-  font-size: 11px;
-  line-height: 14px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.lb-new-badge {
-  background: #42cf9b;
-  color: #fff;
-}
-
-.lb-dup-badge {
-  background: #48484a;
-  color: #f6f7f8;
-}
-
-/* строка «+20» с монетой вместо редкости — появляется, когда дубль распылился */
-.lb-dup-coins {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 2px;
-  font-size: 15px;
-  line-height: 18px;
-  font-weight: 700;
-  color: #ffcf3d;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.lb-dup-coins img {
-  width: 16px;
-  height: 16px;
-}
-
-/* дубль: карта гаснет, рамка становится золотой, всплывает «+N» */
-.lb-reward.is-dup .lb-card {
-  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
-}
-
-.lb-reward.is-dusted .lb-card {
-  filter: grayscale(1) brightness(0.55);
-  opacity: 0.7;
-  transform: scale(0.92);
-}
-
-.lb-reward.is-dusted .lb-reward-face {
-  box-shadow: 0 0 0 2px #ffcf3d, 0 0 24px rgba(255, 207, 61, 0.6);
-  transition: box-shadow 0.4s ease;
-}
-
-.lb-reward.is-dusted .lb-dup-coins {
-  opacity: 1;
-  transform: none;
-}
-
-/* монетки, которые по «Забрать» улетают из дубля в счётчик монет */
-.lb-fly-coin {
-  position: absolute;
-  z-index: 70;
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-}
-
-/* итог под наградами */
-.lb-dup-note {
-  flex-basis: 100%;
-  margin-top: 4px;
-  font-size: 15px;
-  line-height: 20px;
-  text-align: center;
-  color: rgba(246, 247, 248, 0.8);
-  animation: lbNoteIn 0.4s ease both;
-}
-
-@keyframes lbNoteIn {
-  from { opacity: 0; transform: translateY(6px); }
-}
-
-.lb-rewards.is-compact .lb-dup-coins {
-  font-size: 13px;
-}
-
-.lb-rewards.is-compact .lb-new-badge,
-.lb-rewards.is-compact .lb-dup-badge {
-  margin-top: 5px;
-  font-size: 10px;
-}
-
-.lb-rewards.is-compact .lb-new-badge + .lb-reward-name,
-.lb-rewards.is-compact .lb-dup-badge + .lb-reward-name {
-  margin-top: 3px;
-}
-
-.lb-new-badge + .lb-reward-name,
-.lb-dup-badge + .lb-reward-name {
-  margin-top: 4px;
-}
-
-/* выпавшая рубашка колоды */
-.lb-back {
-  position: relative;
-  width: 72px;
-  height: 96px;
-}
-
-/* 3–5 наград: плитки поменьше, по три в ряд */
-.lb-rewards.is-compact {
-  gap: 10px;
-}
-
-.lb-rewards.is-compact .lb-reward {
-  width: 104px;
-  height: 150px;
-}
-
-.lb-rewards.is-compact .lb-reward-face {
-  padding: 8px 6px;
-  border-radius: 16px;
-}
-
-.lb-rewards.is-compact .lb-reward-back {
-  border-radius: 16px;
-}
-
-.lb-rewards.is-compact .lb-card {
-  width: 64px;
-}
-
-.lb-rewards.is-compact .lb-reward-img {
-  width: 64px;
-  height: 64px;
-}
-
-.lb-rewards.is-compact .lb-frame {
-  width: 64px;
-  height: 64px;
-  padding: 4px;
-  border-radius: 16px;
-}
-
-.lb-rewards.is-compact .lb-frame span {
-  border-radius: 12px;
-}
-
-.lb-rewards.is-compact .lb-back {
-  width: 50px;
-  height: 66px;
-}
-
-.lb-rewards.is-compact .lb-reward-name {
-  margin-top: 6px;
-  font-size: 13px;
-  line-height: 16px;
-}
-
-.lb-rewards.is-compact .lb-reward-sub {
-  font-size: 11px;
-}
-
-/* рамка выпавшей карты — в цвет её редкости */
-.lb-reward .card.lb-card {
-  color: var(--glow);
+@media (prefers-reduced-motion: reduce) {
+  .lb-cell.is-scanning .lb-cell-cover::after,
+  .lb-cell.is-scanning .lb-cell-cover::before,
+  .lb-cell.is-legend.is-scanning {
+    animation: none;
+  }
 }
 
 /* ---------- 2.3: витрина по макету Figma 16908:32749 («Магазин сундуков») ---------- */
@@ -800,14 +790,15 @@
   height: 10px;
 }
 
-/* кнопка-цена: жёлтая, у средних 30px на всю ширину (монета 16, 13/600 #333),
-   у эпического 112×44 r12 (ключ 24, 15/600) */
+/* кнопка-цена (Figma 16908:29698): жёлтая, иконка валюты справа от цены;
+   у средних 32px на всю ширину (13/600 + монета 16), у эпического
+   «Открыть за N» 44px r16 (15/400 −0.24 + ключ 24) */
 .shop-tile-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  height: 30px;
+  height: 32px;
   margin-top: auto;
   padding: 0 10px;
   border-radius: 100px;
@@ -831,12 +822,13 @@
 }
 
 .shop-tile-btn.is-big {
-  width: 112px;
   height: 44px;
-  gap: 6px;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 0 20px 0 24px;
+  border-radius: 16px;
   font-size: 15px;
   line-height: 20px;
+  font-weight: 400;
   letter-spacing: -0.24px;
 }
 
@@ -877,12 +869,14 @@
   transform: scale(0.95);
 }
 
-/* ---------- Шторка сундука (Figma 16966:63594, общий компонент .bs) ---------- */
+/* ---------- Шторка сундука (Figma 16908:29698, общий компонент .bs) ---------- */
 
-/* на весь экран под статус-баром, чёрная; контент листается, кнопка всегда внизу */
+/* высота по контенту (не выше экрана под статус-баром), фон чёрный */
 .bs.shop-detail {
-  height: calc(100% - 44px);
-  max-height: none;
+  height: auto;
+  max-height: calc(100% - 44px);
+  padding-left: 24px;
+  padding-right: 24px;
   background: #000;
 }
 
@@ -894,89 +888,96 @@
 .shop-detail .bs-scroll-all {
   position: relative;
   isolation: isolate;
-  padding: 40px 16px 0;
+  margin: -32px -24px 0;
+  padding: 40px 24px 0;
 }
 
-/* размытая 21-лучевая звезда цвета сундука (у эпического #5d25b0), 766×448 */
+/* свечение сверху: эллипс 482×267 цвета сундука (у эпического #5d25b0), размытие 86 */
 .shop-detail-star {
   position: absolute;
   z-index: -1;
-  top: -198px;
+  top: -216px;
   left: 50%;
-  width: 766px;
-  height: 448px;
-  margin-left: -383px;
+  width: 482px;
+  height: 267px;
+  margin-left: -241px;
+  border-radius: 50%;
+  background: var(--glow);
   filter: blur(43px);
   pointer-events: none;
-}
-
-.shop-detail-star polygon {
-  fill: var(--glow);
 }
 
 .shop-detail-art {
   display: flex;
   justify-content: center;
-  height: 200px;
-  margin-top: 4px;
+  height: 180px;
   pointer-events: none;
 }
 
 .shop-detail-art .lb-svg {
-  width: 207px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   object-fit: contain;
   animation: shopLevitate 3.2s ease-in-out infinite;
 }
 
-/* бейдж доступности — как на плитке эпического (20px, 13/600 #9299a2) */
-.shop-detail-badge {
+/* бейдж доступности 16px: 11/700 −0.1 #9299a2 (таймер — светлый) */
+.shop-detail-badge.shop-tile-badge {
   display: flex;
   width: fit-content;
+  height: 16px;
   margin: 2px auto 0;
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
 }
 
-/* заголовок 30/700 +0.36, под ним «Шансы выпадения наград» 13/600 */
+.shop-detail-badge .shop-timer svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* заголовок 20/600 +0.38, под ним «Шансы выпадения наград» 13/400 −0.08 */
 .shop-detail-title {
-  margin-top: 12px;
-  font-size: 30px;
-  line-height: 36px;
-  font-weight: 700;
-  letter-spacing: 0.36px;
+  margin-top: 4px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
   text-align: center;
   color: #f6f7f8;
 }
 
 .shop-detail-sub {
-  margin-top: 8px;
+  margin-top: 4px;
   font-size: 13px;
   line-height: 16px;
-  font-weight: 600;
   letter-spacing: -0.08px;
   text-align: center;
   color: #f6f7f8;
 }
 
-/* награды: карточки 108×132 по центру, между ними 12, отступы 16 / 32 */
+/* награды: карточки 84×100 по центру, между ними 8, отступы 16 / 32 */
 .shop-prizes {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin-top: 2px;
+  gap: 8px;
   padding: 16px 0 32px;
   list-style: none;
 }
 
-/* карточка: #1c1c1e, обводка белая 10% внутрь, r16, отступы 14/16;
+/* карточка: #1c1c1e, обводка белая 10% внутрь, r16, отступы 8/12;
    картинка из макета на всю карточку, текст поверх */
 .shop-prize {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 108px;
-  height: 132px;
-  padding: 14px 16px;
+  width: 84px;
+  height: 100px;
+  padding: 8px 12px;
   border-radius: 16px;
   background: #1c1c1e;
   overflow: hidden;
@@ -1016,28 +1017,27 @@
   filter: hue-rotate(-140deg) saturate(1.1);
 }
 
-/* шанс 20/600 +0.38, «до N» 13/400 −0.08 */
+/* шанс 15/600 −0.24, «до N» 11/400 #9299a2 */
 .shop-prize-chance {
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 15px;
+  line-height: 18px;
   font-weight: 600;
-  letter-spacing: 0.38px;
+  letter-spacing: -0.24px;
   color: #f6f7f8;
   font-variant-numeric: tabular-nums;
 }
 
 .shop-prize-sub {
-  margin-top: 4px;
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: -0.08px;
-  color: #f6f7f8;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 13px;
+  color: #9299a2;
 }
 
 /* низ шторки: кнопка 56, r16, иконка 24 + «Открыть за N» 17/400 −0.41 */
 .shop-detail-foot {
   flex-shrink: 0;
-  padding: 16px 0 24px;
+  padding-top: 16px;
 }
 
 .shop-detail-foot .bs-cta {
