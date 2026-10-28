@@ -123,26 +123,60 @@
     el.animate([{ transform: 'scale(0.85)' }, { transform: 'scale(1.08)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
   }
 
+  // Элементы карт создаются один раз и при перерисовке только переставляются
+  // и меняют состояние: если пересоздавать их, на телефоне картинки заново
+  // декодируются и раздел на миг мерцает. Ключ — место (колода / коллекция),
+  // имя карты и открыта ли она.
+  const elCache = new Map();
+
+  function deckCardEl(card) {
+    const key = `deck:${card.name}`;
+    if (!elCache.has(key)) {
+      const el = cardEl(card);
+      onPress(el, () => openCard(card), () => toggleDeck(card, el));
+      elCache.set(key, el);
+    }
+    return elCache.get(key);
+  }
+
+  function collCardEl(card, isOwned) {
+    const key = `coll:${card.name}:${isOwned ? 'open' : 'locked'}`;
+    if (!elCache.has(key)) {
+      let el;
+      if (isOwned) {
+        el = cardEl(card);
+        onPress(el, () => openCard(card), () => toggleDeck(card, el));
+      } else {
+        el = cardEl(card, ' is-locked');
+        el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
+        el.setAttribute('aria-label', `${card.name} — карта не открыта`);
+        el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
+      }
+      elCache.set(key, el);
+    }
+    return elCache.get(key);
+  }
+
   function render() {
-    deckGridEl.innerHTML = '';
+    const deckNodes = [];
     for (let i = 0; i < DECK_SIZE; i++) {
       const name = deck[i];
       if (name) {
-        const el = cardEl(byName(name));
-        onPress(el, () => openCard(byName(name)), () => toggleDeck(byName(name), el));
-        deckGridEl.appendChild(el);
-        if (bumpName === name) bump(el);
+        const el = deckCardEl(byName(name));
+        deckNodes.push(el);
+        if (bumpName === name) requestAnimationFrame(() => bump(el));
       } else {
         const empty = document.createElement('div');
         empty.className = 'cards-slot-empty';
-        deckGridEl.appendChild(empty);
+        deckNodes.push(empty);
       }
     }
+    deckGridEl.replaceChildren(...deckNodes);
     badgeEl.hidden = deck.length === DECK_SIZE;
 
     // коллекции: заголовок и «открыто N из M», карты от эпических к обычным,
-    // неоткрытые — в конце коллекции, затемнены, с замком; тап — подсказка, как получить, и кнопка
-    // перехода в нужный раздел
+    // неоткрытые — в конце коллекции, затемнены, с замком; тап — подсказка,
+    // как получить, и кнопка перехода в нужный раздел
     const owned = ownedCardNames();
     COLLECTION_IDS.forEach((id, i) => {
       const grid = collectionEls[i];
@@ -150,21 +184,15 @@
         .sort((a, b) => (owned.has(b.name) - owned.has(a.name))
           || RARITY_ORDER.indexOf(cardRarity(a)) - RARITY_ORDER.indexOf(cardRarity(b)));
       grid.parentElement.querySelector('[data-count]').textContent = `открыто ${cards.filter((c) => owned.has(c.name)).length} из ${cards.length}`;
-      grid.innerHTML = '';
-      cards.forEach((card) => {
-        if (!owned.has(card.name)) {
-          const el = cardEl(card, ' is-locked');
-          el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
-          el.setAttribute('aria-label', `${card.name} — карта не открыта`);
-          el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
-          grid.appendChild(el);
-          return;
+      grid.replaceChildren(...cards.map((card) => {
+        const isOwned = owned.has(card.name);
+        const el = collCardEl(card, isOwned);
+        if (isOwned) {
+          el.classList.toggle('in-deck', deck.includes(card.name));
+          if (bumpName === card.name && !deck.includes(card.name)) requestAnimationFrame(() => bump(el));
         }
-        const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
-        onPress(el, () => openCard(card), () => toggleDeck(card, el));
-        grid.appendChild(el);
-        if (bumpName === card.name && !deck.includes(card.name)) bump(el);
-      });
+        return el;
+      }));
     });
     bumpName = null;
   }
@@ -216,7 +244,7 @@
     editBtn.addEventListener('click', () => {
       const card = byName(sheetCard.dataset.card);
       closeCard();
-      if (card) openCardCustom(card, render);
+      if (card) openCardCustom(card, () => { elCache.clear(); render(); });
     });
   }
 
