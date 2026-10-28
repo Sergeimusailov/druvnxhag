@@ -189,39 +189,6 @@
 }
 
 
-.cards-collection-grid {
-  padding: 0 16px 16px;
-}
-
-/* карта уже в колоде — приглушена */
-.cards-collection-grid .card.in-deck {
-  opacity: 0.35;
-  filter: grayscale(60%);
-}
-
-/* карта не открыта — в конце коллекции, затемнена, с замком по центру */
-.cards-collection-grid .card.is-locked {
-  position: relative;
-}
-
-.cards-collection-grid .card.is-locked > :not(.card-lock) {
-  filter: brightness(0.3) grayscale(0.6);
-}
-
-.card-lock {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.card-lock svg {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-}
-
 /* шторка карты (Figma 12081:108027, нельзя добавить — 12112:79294):
    карта 287 по центру, отступ сверху 20; кнопка 200×56
    r16 по центру; неактивная — белая 10%, текст 30%; подсказка 15/400 −0.24 */
