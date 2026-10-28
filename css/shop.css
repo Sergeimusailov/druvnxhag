@@ -395,17 +395,20 @@
 /* дубль (Figma 17056:193778): карта 80×80 в цвете, под ней «+ 12» 17/700
    −0.41 #ffb249 с обводкой 3px #202020 снаружи и монета 24 справа, между ними 2.
    Монеты улетят в счётчик по «Забрать» */
-.lb-cell.is-dup .lb-cell-art {
+.lb-cell.is-dup .lb-cell-art,
+.lb-fly-item.is-dup .lb-cell-art {
   width: 80px;
   height: 80px;
   margin-top: -6px;
 }
 
-.lb-cell.is-dup .lb-card {
+.lb-cell.is-dup .lb-card,
+.lb-fly-item.is-dup .lb-card {
   width: 80px;
 }
 
-.lb-cell.is-dup .lb-qty {
+.lb-cell.is-dup .lb-qty,
+.lb-fly-item.is-dup .lb-qty {
   top: 86px;
   bottom: auto;
   font-size: 17px;
@@ -414,7 +417,8 @@
   color: #ffb249;
 }
 
-.lb-cell.is-dup .lb-qty img {
+.lb-cell.is-dup .lb-qty img,
+.lb-fly-item.is-dup .lb-qty img {
   width: 24px;
   height: 24px;
 }
@@ -556,12 +560,8 @@
   pointer-events: none;
 }
 
-.lb-fly-item > * {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
+.lb-fly-item .lb-cell-art.lb-cell-art {
+  margin: 0;
 }
 
 .lb-fly-coin {

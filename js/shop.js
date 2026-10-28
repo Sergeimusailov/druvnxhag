@@ -175,70 +175,44 @@ const DUP_TIP_KEY = 'v2.dupTipSeen';
 
 // «Забрать»: из каждой карты-дубля монетки улетают в счётчик монет магазина,
 // счётчик подпрыгивает на каждую и в конце докручивается до нового значения
-// монетки (или ключи) разлетаются из точки и улетают в иконку счётчика,
-// счётчик подпрыгивает на каждую
-function flyIcons(from, src, target, delay = 0) {
+// награда с экрана наград: копия встаёт ровно на место оригинала (оригинал
+// прячется), поэтому, пока фон и ячейки гаснут, награда остаётся на экране
+function liftReward(art, dup) {
   const app = document.querySelector('.v2-app');
   const a = app.getBoundingClientRect();
-  const t = (target.querySelector('img') || target).getBoundingClientRect();
-  const tx = t.left + t.width / 2 - a.left;
-  const ty = t.top + t.height / 2 - a.top;
-  const cx = from.left + from.width / 2 - a.left;
-  const cy = from.top + from.height / 2 - a.top;
-  const flights = [];
-  for (let i = 0; i < 8; i++) {
-    const coin = document.createElement('img');
-    coin.src = src;
-    coin.className = 'lb-fly-coin';
-    coin.style.left = `${cx}px`;
-    coin.style.top = `${cy}px`;
-    app.appendChild(coin);
-    const ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
-    const ox = Math.cos(ang) * (26 + Math.random() * 24);
-    const oy = Math.sin(ang) * (26 + Math.random() * 24);
-    const anim = coin.animate([
-      { transform: 'translate(-50%, -50%) scale(0.3)', opacity: 0 },
-      { transform: `translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px)) scale(1.1)`, opacity: 1, offset: 0.3 },
-      { transform: `translate(calc(-50% + ${tx - cx}px), calc(-50% + ${ty - cy}px)) scale(0.7)`, opacity: 1 },
-    ], { duration: 900, delay: delay + i * 45, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' });
-    flights.push(anim.finished.then(() => {
-      coin.remove();
-      target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }], { duration: 160 });
-    }));
-  }
-  return Promise.all(flights);
+  const rect = art.getBoundingClientRect();
+  const wrap = document.createElement('div');
+  wrap.className = `lb-fly-item${dup ? ' is-dup' : ''}`;
+  wrap.style.left = `${rect.left - a.left}px`;
+  wrap.style.top = `${rect.top - a.top}px`;
+  wrap.style.width = `${rect.width}px`;
+  wrap.style.height = `${rect.height}px`;
+  wrap.appendChild(art.cloneNode(true));
+  app.appendChild(wrap);
+  art.style.visibility = 'hidden';
+  return { wrap, rect };
 }
 
-// карта, бонус или косметика уменьшается и улетает в свой раздел в таббаре;
-// иконка раздела подпрыгивает и вспыхивает
-function flyToTab(node, from, nav, delay = 0) {
-  const tab = document.querySelector(`.v2-tab[data-nav="${nav}"]`);
-  if (!tab || !from.width) return Promise.resolve();
-  const app = document.querySelector('.v2-app');
-  const a = app.getBoundingClientRect();
-  const icon = tab.querySelector('.v2-tab-icon') || tab;
-  const t = icon.getBoundingClientRect();
-  const wrap = document.createElement('div');
-  wrap.className = 'lb-fly-item';
-  wrap.style.left = `${from.left - a.left}px`;
-  wrap.style.top = `${from.top - a.top}px`;
-  wrap.style.width = `${from.width}px`;
-  wrap.style.height = `${from.height}px`;
-  wrap.appendChild(node);
-  app.appendChild(wrap);
-  const dx = t.left + t.width / 2 - (from.left + from.width / 2);
-  const dy = t.top + t.height / 2 - (from.top + from.height / 2);
-  const k = Math.min(1, 28 / Math.max(from.width, from.height));
+// награда приподнимается и, уменьшаясь, улетает в свою цель (счётчик или
+// иконку таба); цель подпрыгивает и вспыхивает
+function flyReward({ wrap, rect }, target, delay = 0) {
+  if (!target) {
+    return wrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay, fill: 'both' }).finished.then(() => wrap.remove());
+  }
+  const t = (target.querySelector('img, .v2-tab-icon') || target).getBoundingClientRect();
+  const dx = t.left + t.width / 2 - (rect.left + rect.width / 2);
+  const dy = t.top + t.height / 2 - (rect.top + rect.height / 2);
+  const k = Math.min(1, 24 / Math.max(rect.width, rect.height));
   return wrap.animate([
     { transform: 'none', opacity: 1 },
-    { transform: 'translateY(-18px) scale(1.08)', opacity: 1, offset: 0.2 },
-    { transform: `translate(${dx}px, ${dy}px) scale(${k})`, opacity: 1, offset: 0.92 },
-    { transform: `translate(${dx}px, ${dy}px) scale(${k * 0.6})`, opacity: 0 },
+    { transform: 'translateY(-14px) scale(1.06)', opacity: 1, offset: 0.2 },
+    { transform: `translate(${dx}px, ${dy}px) scale(${k})`, opacity: 1, offset: 0.9 },
+    { transform: `translate(${dx}px, ${dy}px) scale(${k * 0.5})`, opacity: 0 },
   ], { duration: 950, delay, easing: 'cubic-bezier(0.5, 0, 0.3, 1)', fill: 'both' }).finished.then(() => {
     wrap.remove();
-    icon.animate([
+    target.animate([
       { transform: 'scale(1)', filter: 'none' },
-      { transform: 'scale(1.3)', filter: 'drop-shadow(0 0 8px #ffdd2d)' },
+      { transform: 'scale(1.25)', filter: 'drop-shadow(0 0 8px #ffdd2d)' },
       { transform: 'scale(1)', filter: 'none' },
     ], { duration: 420, easing: 'ease-out' });
   });
@@ -754,43 +728,42 @@ async function openLootbox(box) {
     lbCloseEl.addEventListener('click', done);
   });
   Tooltip24.hide();
-  // каждая награда улетает в свой раздел: монеты и ключи — в счётчики,
-  // карта — в «Карты», косметика — в «Игру» (профиль), бонус — в «Призы»
-  const flights = cells.map((cell, i) => {
-    const r = rewards[i];
-    const art = cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : '.lb-cell-art > :first-child');
-    const qtyImg = cell.querySelector('.lb-qty img');
-    return { r, rect: art.getBoundingClientRect(), node: art.cloneNode(true), coinRect: qtyImg && qtyImg.getBoundingClientRect() };
-  });
-  await lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished;
-  lbOverlayEl.classList.remove('is-open');
-  lbOverlayEl.setAttribute('aria-hidden', 'true');
-  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
-  lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
-  lbBusy = false;
-  renderShop();
+  // каждая награда прямо с экрана улетает в свой раздел: монеты, ключи и
+  // дубль (он стал монетами) — в счётчики, карта — в «Карты», косметика —
+  // в «Игру» (профиль), бонус — в «Призы». Фон, ячейки и кнопка гаснут
+  // вокруг наград, сами награды остаются на месте до вылета
   const coinsBox = document.querySelector('.shop-balance[data-balance="coins"]');
   const tokensBox = document.querySelector('.shop-balance[data-balance="tokens"]');
-  await Promise.all(flights.map(({ r, rect, node, coinRect }, i) => {
-    const delay = i * 220;
+  const tab = (nav) => document.querySelector(`.v2-tab[data-nav="${nav}"] .v2-tab-icon`);
+  const lifted = cells.map((cell, i) => liftReward(cell.querySelector(rewards[i].kind === 'bonus' ? '.lb-bonus-img' : '.lb-cell-art'), rewards[i].dup));
+  renderShop();
+  const fade = lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' }).finished.then(() => {
+    lbOverlayEl.classList.remove('is-open');
+    lbOverlayEl.setAttribute('aria-hidden', 'true');
+    lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
+    lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
+    lbRewardsEl.innerHTML = '';
+    lbBusy = false;
+  });
+  await Promise.all([fade, ...rewards.map((r, i) => {
+    const delay = 250 + i * 200;
     if (r.kind === 'coins' || (r.kind === 'card' && r.dup)) {
       const amount = r.kind === 'coins' ? r.amount : r.dupCoins;
-      return flyIcons(coinRect || rect, 'assets/shop-coin.png', coinsBox, delay).then(() => {
+      return flyReward(lifted[i], coinsBox, delay).then(() => {
         const before = getCoins();
         addCoins(amount);
         animateCoins(before, before + amount);
       });
     }
     if (r.kind === 'tokens') {
-      return flyIcons(rect, CURRENCY.tokens.icon, tokensBox, delay).then(() => {
+      return flyReward(lifted[i], tokensBox, delay).then(() => {
         const before = getTokens();
         addTokens(r.amount);
         animateBalance(shopTokensEl, before, before + r.amount);
       });
     }
-    const nav = r.kind === 'card' ? 'cards' : r.kind === 'bonus' ? 'gifts' : 'game';
-    return flyToTab(node, rect, nav, delay);
-  }));
+    return flyReward(lifted[i], tab(r.kind === 'card' ? 'cards' : r.kind === 'bonus' ? 'gifts' : 'game'), delay);
+  })]);
 }
 
 // «Закрыть» во время открытия — пропустить анимацию и сразу показать награды
