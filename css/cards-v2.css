@@ -8,66 +8,187 @@
   color: #f6f7f8;
 }
 
+/* колода (Figma 12016:123988): карточка #1c1c1e r24, шапка 16/20/12/20,
+   «Колода» 17/600 −0.41; сетка 4 карты по ширине, отступы 0/16/20 */
 .cards-deck {
   margin: 8px 16px 0;
-  padding: 16px;
   border-radius: 24px;
-  background: rgba(28, 28, 30, 0.85);
+  background: #1c1c1e;
 }
 
 .cards-deck-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+  padding: 16px 20px 12px;
 }
 
-.cards-deck-count {
-  font-size: 15px;
-  color: rgba(246, 247, 248, 0.6);
+.cards-deck-title {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+  color: #f6f7f8;
 }
 
-.cards-deck-count.is-full {
-  color: #42cf9b;
+/* бейдж «Заполните все ячейки»: 28px, #ffdd2d 24%, r100, отступы 0 6,
+   иконка 16, текст 13/600 −0.08 белый */
+.cards-deck-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  margin: -4px 0;
+  padding: 0 10px 0 6px;
+  gap: 4px;
+  border-radius: 100px;
+  background: rgba(255, 221, 45, 0.24);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: #fff;
+  white-space: nowrap;
 }
 
-.cards-deck-grid,
-.cards-collection-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+.cards-deck-badge[hidden] {
+  display: none;
 }
 
 .cards-deck-grid {
-  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 0 16px 20px;
 }
 
-.cards-deck-grid .card,
-.cards-collection-grid .card {
-  width: 100%;
-  cursor: pointer;
-  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease, filter 0.2s ease;
-}
-
-.cards-deck-grid .card:active,
-.cards-collection-grid .card:active {
-  transform: scale(0.94);
-}
-
+/* пустая ячейка: #1c1c1e, обводка белая 40% внутрь, r8 — по телу карты */
 .cards-slot-empty {
   aspect-ratio: 1;
-  border-radius: 12px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.3);
-}
-
-.cards-deck-hint {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 16px;
-  color: rgba(246, 247, 248, 0.6);
+  margin: 3.97%;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .cards-collection-title {
   margin: 24px 16px 0;
+}
+
+/* заголовок коллекции — как секции в профиле: 20/600 +0.38, справа
+   «открыто N из M» 13 #9299a2 */
+.cards-coll-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px 0;
+}
+
+.cards-coll-head b {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
+}
+
+.cards-coll-head span {
+  font-size: 13px;
+  line-height: 16px;
+  color: #9299a2;
+}
+
+/* сетка коллекции: 3 колонки по 115, между ними 8, отступы 8/16/32 */
+.cards-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 8px 16px 32px;
+}
+
+/* карта уже в колоде — прозрачность 24% */
+.cards-collection-grid .card24.in-deck {
+  opacity: 0.24;
+}
+
+/* карта не открыта — затемнена, с замком по центру */
+.card24.is-locked > :not(.card-lock) {
+  filter: brightness(0.3) grayscale(0.6);
+}
+
+.card-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.card-lock svg {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+/* ---------- Карта по макету (Figma 11507:49800, card24HTML) ----------
+   элемент 126 условных единиц: тело 116 + выступы кружков по 5 */
+.card24 {
+  position: relative;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease;
+}
+
+.card24:active {
+  transform: scale(0.94);
+}
+
+.card24-art {
+  position: absolute;
+  inset: 3.97%;
+  width: 92.06%;
+  height: 92.06%;
+  border-radius: 9.52cqw;
+  object-fit: cover;
+}
+
+.card24-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: #252525;
+}
+
+/* цифры 18/600 +0.26, #f6f7f8, тень 0 0 1 чёрная 32%; центры кружков —
+   (5 + 8) и (5 + 108) из 126 */
+.card24-num {
+  position: absolute;
+  font-size: 14.29cqw;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.0143em;
+  color: #f6f7f8;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.32);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.card24-num.is-top { left: 50%; top: 10.32%; }
+.card24-num.is-bottom { left: 50%; top: 89.68%; }
+.card24-num.is-left { left: 10.32%; top: 50%; }
+.card24-num.is-right { left: 89.68%; top: 50%; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* навигация по коллекциям — чипсы как в настройках профиля: 36px, 13/600
@@ -131,22 +252,30 @@
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* шторка карты */
-
+/* шторка карты (Figma 12081:108027, нельзя добавить — 12112:79294):
+   карта 287 (с выступами 312) по центру, отступ сверху 20; кнопка 200×56
+   r16 по центру; неактивная — белая 10%, текст 30%; подсказка 15/400 −0.24 */
 .card-sheet {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
 
 .card-sheet-card {
-  width: 160px;
-  margin-top: 16px;
+  width: min(312px, calc(100% - 32px));
+  margin-top: 8px;
+  cursor: default;
+}
+
+.card-sheet-card:active {
+  transform: none;
 }
 
 .card-sheet-btn {
-  align-self: stretch;
-  margin: 24px 16px 0;
+  align-self: center;
+  width: 200px;
+  margin: 24px 0 0;
 }
 
 .card-sheet-btn.is-remove {
@@ -155,13 +284,31 @@
 }
 
 .card-sheet-btn:disabled {
-  opacity: 0.4;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .card-sheet-hint {
-  min-height: 18px;
-  margin-top: 10px;
-  font-size: 13px;
-  color: rgba(246, 247, 248, 0.6);
+  min-height: 0;
+  margin-top: 0;
+  padding: 8px 40px 0;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #fff;
   text-align: center;
+}
+
+.card-sheet-hint:empty {
+  display: none;
+}
+
+/* версия 2: кнопка шторки 200px по центру (в версии 3 рядом карандаш) */
+[data-app="2"] .card-sheet-actions {
+  justify-content: center;
+}
+
+[data-app="2"] .card-sheet-actions .card-sheet-btn {
+  flex: none;
+  width: 200px;
 }

@@ -1,71 +1,68 @@
+// 60 карт (Figma 13839:103172): три коллекции по 20 — овощная, фруктовая,
+// новогодняя (col). Цвет фона картинки = редкость: зелёный — обычная,
+// фиолетовый — редкая, жёлтый — эпическая (по сумме сторон, см. cardRarity)
 const CARD_ROSTER = [
-  { name: 'Росток', top: 2, left: 1, right: 4, bottom: 3, pic: 'assets/card-pic__06.png' },
-  { name: 'Лейка', top: 1, left: 0, right: 3, bottom: 2, pic: 'assets/card-pic__04.png' },
-  { name: 'Ромашка', top: 4, left: 2, right: 5, bottom: 3, pic: 'assets/card-pic__05.png' },
-  { name: 'Кувшинка', top: 3, left: 5, right: 2, bottom: 4 },
-  { name: 'Подсолнух', top: 5, left: 3, right: 6, bottom: 4, pic: 'assets/card-pic__01.png' },
-  { name: 'Шип', top: 6, left: 7, right: 2, bottom: 3 },
-  { name: 'Гроза', top: 6, left: 7, right: 4, bottom: 5, pic: 'assets/card-pic__07.png' },
-  { name: 'Молния', top: 8, left: 3, right: 6, bottom: 4 },
-  { name: 'Тайфун', top: 5, left: 6, right: 7, bottom: 4 },
-  { name: 'Туман', top: 3, left: 4, right: 3, bottom: 4 },
-  { name: 'Солнце', top: 6, left: 4, right: 7, bottom: 5, pic: 'assets/card-pic__03.png' },
-  { name: 'Луч', top: 4, left: 6, right: 3, bottom: 5 },
-  { name: 'Ракушка', top: 3, left: 5, right: 4, bottom: 2, pic: 'assets/card-pic__02.png' },
-  { name: 'Жемчужина', top: 7, left: 4, right: 6, bottom: 5 },
-  { name: 'Медуза', top: 5, left: 2, right: 6, bottom: 3, pic: 'assets/card-pic__09.png' },
-  { name: 'Спираль', top: 4, left: 8, right: 3, bottom: 6, pic: 'assets/card-pic__08.png' },
-  { name: 'Коралл', top: 5, left: 5, right: 5, bottom: 5 },
-  { name: 'Кристалл', top: 8, left: 2, right: 7, bottom: 3 },
-  { name: 'Айсберг', top: 6, left: 6, right: 2, bottom: 5 },
-  { name: 'Вулкан', top: 9, left: 3, right: 8, bottom: 2 },
-  { name: 'Ледник', top: 3, left: 9, right: 2, bottom: 7 },
-  { name: 'Цунами', top: 4, left: 7, right: 5, bottom: 8 },
-  { name: 'Ветер', top: 3, left: 6, right: 4, bottom: 5 },
-  { name: 'Дождь', top: 2, left: 3, right: 5, bottom: 1 },
-  { name: 'Роса', top: 1, left: 2, right: 3, bottom: 2 },
-  { name: 'Снег', top: 4, left: 5, right: 3, bottom: 6 },
-  { name: 'Иней', top: 5, left: 3, right: 6, bottom: 2 },
-  { name: 'Пепел', top: 6, left: 4, right: 2, bottom: 5 },
-  { name: 'Дым', top: 2, left: 4, right: 1, bottom: 3 },
-  { name: 'Пламя', top: 7, left: 3, right: 6, bottom: 4 },
-  { name: 'Искра', top: 4, left: 6, right: 3, bottom: 5 },
-  { name: 'Гром', top: 8, left: 4, right: 5, bottom: 3 },
-  { name: 'Радуга', top: 5, left: 5, right: 6, bottom: 4 },
-  { name: 'Закат', top: 6, left: 3, right: 5, bottom: 4 },
-  { name: 'Рассвет', top: 4, left: 5, right: 4, bottom: 5 },
-  { name: 'Прилив', top: 5, left: 6, right: 4, bottom: 7 },
-  { name: 'Отлив', top: 3, left: 4, right: 3, bottom: 4 },
-  { name: 'Бриз', top: 2, left: 3, right: 4, bottom: 3 },
-  { name: 'Шторм', top: 6, left: 6, right: 5, bottom: 7 },
-  { name: 'Вихрь', top: 5, left: 7, right: 4, bottom: 6 },
-  { name: 'Пыльца', top: 1, left: 3, right: 2, bottom: 4 },
-  { name: 'Стебель', top: 3, left: 2, right: 4, bottom: 3 },
-  { name: 'Корень', top: 4, left: 3, right: 5, bottom: 2 },
-  { name: 'Побег', top: 2, left: 4, right: 3, bottom: 5 },
-  { name: 'Цветок', top: 4, left: 5, right: 4, bottom: 3 },
-  { name: 'Пыльник', top: 3, left: 4, right: 2, bottom: 5 },
-  { name: 'Нектар', top: 5, left: 4, right: 6, bottom: 3 },
-  { name: 'Соцветие', top: 6, left: 5, right: 7, bottom: 4 },
+  { name: 'Репка', top: 7, left: 5, right: 3, bottom: 7, col: 'veg', pic: 'assets/cards/repa.webp' },
+  { name: 'Муравей', top: 8, left: 3, right: 6, bottom: 4, col: 'veg', pic: 'assets/cards/muravey.webp' },
+  { name: 'Пиксель', top: 6, left: 7, right: 4, bottom: 5, col: 'veg', pic: 'assets/cards/cvetok_pixel.webp' },
+  { name: 'Колючка', top: 6, left: 7, right: 2, bottom: 3, col: 'veg', pic: 'assets/cards/koluchka.webp' },
+  { name: 'Улитка', top: 7, left: 1, right: 7, bottom: 5, col: 'veg', pic: 'assets/cards/ulitka.webp' },
+  { name: 'Бабочка', top: 7, left: 8, right: 1, bottom: 3, col: 'veg', pic: 'assets/cards/babochka.webp' },
+  { name: 'Геймпад', top: 6, left: 5, right: 4, bottom: 2, col: 'veg', pic: 'assets/cards/gamepad.webp' },
+  { name: 'Дракончик', top: 9, left: 1, right: 4, bottom: 4, col: 'veg', pic: 'assets/cards/drakon.webp' },
+  { name: 'Дино', top: 3, left: 5, right: 6, bottom: 3, col: 'veg', pic: 'assets/cards/dino.webp' },
+  { name: 'Редиска', top: 7, left: 3, right: 1, bottom: 3, col: 'veg', pic: 'assets/cards/redisk.webp' },
+  { name: 'Лук', top: 1, left: 1, right: 6, bottom: 3, col: 'veg', pic: 'assets/cards/luk.webp' },
+  { name: 'Огурчик', top: 3, left: 3, right: 2, bottom: 6, col: 'veg', pic: 'assets/cards/ogurec.webp' },
+  { name: 'Кивано', top: 5, left: 1, right: 1, bottom: 9, col: 'veg', pic: 'assets/cards/dikiy_ogurec.webp' },
+  { name: 'Брокколи', top: 7, left: 1, right: 3, bottom: 5, col: 'veg', pic: 'assets/cards/brokkoli.webp' },
+  { name: 'Кукуруза', top: 2, left: 7, right: 3, bottom: 3, col: 'veg', pic: 'assets/cards/kukuruza.webp' },
+  { name: 'Фасоль', top: 4, left: 4, right: 1, bottom: 3, col: 'veg', pic: 'assets/cards/fasol.webp' },
+  { name: 'Гриб', top: 5, left: 2, right: 2, bottom: 6, col: 'veg', pic: 'assets/cards/grib.webp' },
+  { name: 'Слизень', top: 2, left: 1, right: 3, bottom: 6, col: 'veg', pic: 'assets/cards/gusenica.webp' },
+  { name: 'Лейка', top: 1, left: 0, right: 3, bottom: 2, col: 'veg', pic: 'assets/cards/leika.webp' },
+  { name: 'Ромашка', top: 4, left: 2, right: 5, bottom: 3, col: 'veg', pic: 'assets/cards/romashka.webp' },
+  { name: 'Обезьянка', top: 5, left: 6, right: 7, bottom: 4, col: 'fruit', pic: 'assets/cards/obezyana.webp' },
+  { name: 'Яйца', top: 7, left: 4, right: 6, bottom: 5, col: 'fruit', pic: 'assets/cards/eggs.webp' },
+  { name: 'Солнце', top: 6, left: 4, right: 7, bottom: 5, col: 'fruit', pic: 'assets/card-pic__03.png' },
+  { name: 'Виноград', top: 4, left: 1, right: 3, bottom: 9, col: 'fruit', pic: 'assets/cards/vinograd.webp' },
+  { name: 'Бабл-ти', top: 4, left: 4, right: 5, bottom: 5, col: 'fruit', pic: 'assets/cards/stakan.webp' },
+  { name: 'Медуза', top: 4, left: 1, right: 4, bottom: 8, col: 'fruit', pic: 'assets/cards/meduza.webp' },
+  { name: 'Пузырь', top: 7, left: 9, right: 2, bottom: 2, col: 'fruit', pic: 'assets/cards/puzir.webp' },
+  { name: 'Очки', top: 5, left: 3, right: 6, bottom: 4, col: 'fruit', pic: 'assets/cards/ochki.webp' },
+  { name: 'Голубь', top: 9, left: 7, right: 2, bottom: 2, col: 'fruit', pic: 'assets/cards/golub.webp' },
+  { name: 'Банан', top: 1, left: 6, right: 3, bottom: 6, col: 'fruit', pic: 'assets/cards/banan.webp' },
+  { name: 'Яблоко', top: 9, left: 1, right: 1, bottom: 3, col: 'fruit', pic: 'assets/cards/yabloko.webp' },
+  { name: 'Лайм', top: 2, left: 1, right: 5, bottom: 6, col: 'fruit', pic: 'assets/cards/limon.webp' },
+  { name: 'Груша', top: 2, left: 3, right: 5, bottom: 3, col: 'fruit', pic: 'assets/cards/grusha.webp' },
+  { name: 'Цветок', top: 1, left: 1, right: 1, bottom: 6, col: 'fruit', pic: 'assets/cards/cvetok.webp' },
+  { name: 'Одуванчик', top: 3, left: 4, right: 3, bottom: 4, col: 'fruit', pic: 'assets/cards/oduvanchik.webp' },
+  { name: 'Клевер', top: 5, left: 2, right: 1, bottom: 1, col: 'fruit', pic: 'assets/cards/clever.webp' },
+  { name: 'Тапки', top: 4, left: 4, right: 2, bottom: 6, col: 'fruit', pic: 'assets/cards/tapki.webp' },
+  { name: 'Лягушка', top: 3, left: 5, right: 2, bottom: 4, col: 'fruit', pic: 'assets/cards/laguha.webp' },
+  { name: 'Лягушонок', top: 2, left: 1, right: 1, bottom: 8, col: 'fruit', pic: 'assets/cards/lyagushka_bot.webp' },
+  { name: 'Аксолотль', top: 6, left: 2, right: 2, bottom: 2, col: 'fruit', pic: 'assets/cards/vodorosli.webp' },
+  { name: 'Конус', top: 4, left: 6, right: 8, bottom: 6, col: 'ny', pic: 'assets/cards/konus.webp' },
+  { name: 'Петушок', top: 4, left: 8, right: 3, bottom: 6, col: 'ny', pic: 'assets/cards/petushok.webp' },
+  { name: 'Оленёнок', top: 4, left: 7, right: 5, bottom: 8, col: 'ny', pic: 'assets/cards/olen.webp' },
+  { name: 'Шар', top: 7, left: 5, right: 3, bottom: 5, col: 'ny', pic: 'assets/cards/shar.webp' },
+  { name: 'Кассета', top: 6, left: 9, right: 3, bottom: 1, col: 'ny', pic: 'assets/cards/kaseta.webp' },
+  { name: 'Лампа', top: 4, left: 6, right: 3, bottom: 5, col: 'ny', pic: 'assets/cards/lampa.webp' },
+  { name: 'Вертушка', top: 5, left: 5, right: 5, bottom: 5, col: 'ny', pic: 'assets/cards/vertushka.webp' },
+  { name: 'Тучка', top: 6, left: 6, right: 4, bottom: 1, col: 'ny', pic: 'assets/card-pic__07.png' },
+  { name: 'Колпак', top: 2, left: 3, right: 5, bottom: 4, col: 'ny', pic: 'assets/cards/kolpak.webp' },
+  { name: 'Леденец', top: 1, left: 3, right: 6, bottom: 4, col: 'ny', pic: 'assets/cards/ledenec.webp' },
+  { name: 'Мороженка', top: 3, left: 3, right: 1, bottom: 4, col: 'ny', pic: 'assets/cards/morozenka.webp' },
+  { name: 'Мяч', top: 4, left: 6, right: 1, bottom: 3, col: 'ny', pic: 'assets/cards/myach.webp' },
+  { name: 'Собакен', top: 1, left: 8, right: 2, bottom: 3, col: 'ny', pic: 'assets/cards/sobaken.webp' },
+  { name: 'Змейка', top: 6, left: 2, right: 3, bottom: 2, col: 'ny', pic: 'assets/cards/zmeya.webp' },
+  { name: 'Единорог', top: 9, left: 1, right: 2, bottom: 1, col: 'ny', pic: 'assets/cards/edinorog.webp' },
+  { name: 'Лебедь', top: 2, left: 6, right: 7, bottom: 1, col: 'ny', pic: 'assets/cards/zkh.webp' },
+  { name: 'Тигр', top: 6, left: 1, right: 2, bottom: 2, col: 'ny', pic: 'assets/cards/tigr.webp' },
+  { name: 'Муха', top: 2, left: 5, right: 5, bottom: 1, col: 'ny', pic: 'assets/cards/muha.webp' },
+  { name: 'Медузка', top: 5, left: 2, right: 6, bottom: 3, col: 'ny', pic: 'assets/cards/baby_meduza.webp' },
+  { name: 'Конёк', top: 1, left: 6, right: 4, bottom: 2, col: 'ny', pic: 'assets/cards/konek.webp' },
 ];
-
-const CARD_PIC_POOL = [
-  'assets/card-pic__01.png',
-  'assets/card-pic__02.png',
-  'assets/card-pic__03.png',
-  'assets/card-pic__04.png',
-  'assets/card-pic__05.png',
-  'assets/card-pic__06.png',
-  'assets/card-pic__07.png',
-  'assets/card-pic__08.png',
-  'assets/card-pic__09.png',
-];
-
-CARD_ROSTER.forEach((card) => {
-  if (!card.pic) {
-    card.pic = CARD_PIC_POOL[Math.floor(Math.random() * CARD_PIC_POOL.length)];
-  }
-});
 
 function shuffle(input) {
   const arr = [...input];
@@ -83,9 +80,10 @@ function drawPlayerSet() {
 const DECK_SIZE = 8;
 const DECK_STORAGE_KEY = 'arena-cards-deck-v1';
 
-// колода на старте: пока игрок ничего не сохранял — 8 карт с картинками
+// колода на старте: пока игрок ничего не сохранял — первые 8 открытых
+// (не эпических) карт
 function defaultDeckNames() {
-  return CARD_ROSTER.filter((c) => c.pic).slice(0, DECK_SIZE).map((c) => c.name);
+  return CARD_ROSTER.filter((c) => cardRarity(c) !== 'purple').slice(0, DECK_SIZE).map((c) => c.name);
 }
 
 function getSavedDeckNames() {
@@ -137,11 +135,30 @@ function cardInnerHTML(card) {
   `;
 }
 
-// Редкость карты по сумме сторон: зелёная ≤ 16, синяя 17–20, фиолетовая ≥ 21
+// Карта по макету (Figma 11507:49800): рамка #252525 с белым контуром 70%
+// снаружи, цифры 18/600 в кружках, которые выступают за край карты.
+// Элемент включает выступы: тело карты 116 из 126 (viewBox -5 -5 126 126),
+// картинка — с отступом 5/126. Фон карты — фон самой картинки.
+const CARD24_FRAME_PATH = [
+  'M12 0H104A12 12 0 0 1 116 12V104A12 12 0 0 1 104 116H12A12 12 0 0 1 0 104V12A12 12 0 0 1 12 0Z',
+  'M12 8A4 4 0 0 0 8 12V104A4 4 0 0 0 12 108H104A4 4 0 0 0 108 104V12A4 4 0 0 0 104 8Z',
+  ...[[58, 8], [58, 108], [8, 58], [108, 58]].map(([x, y]) => `M${x - 13} ${y}a13 13 0 1 1 26 0a13 13 0 1 1 -26 0Z`),
+].join('');
+
+function card24HTML(card) {
+  return `<img class="card24-art" src="${card.pic}" alt="" loading="lazy">`
+    + `<svg class="card24-frame" viewBox="-5 -5 126 126" aria-hidden="true"><path d="${CARD24_FRAME_PATH}" filter="url(#card24-outline)"/></svg>`
+    + `<span class="card24-num is-top">${card.top}</span><span class="card24-num is-left">${card.left}</span>`
+    + `<span class="card24-num is-right">${card.right}</span><span class="card24-num is-bottom">${card.bottom}</span>`;
+}
+
+// Редкость карты по сумме сторон: обычная ≤ 16, редкая 17–20, эпическая ≥ 21.
+// Ключи остались прежними (green / blue / purple — так их зовут сундуки),
+// цвета — как у фона картинок: зелёный, фиолетовый, жёлтый
 const RARITIES = {
-  green: { name: 'Зелёная', color: '#4cd964' },
-  blue: { name: 'Синяя', color: '#4a9dff' },
-  purple: { name: 'Фиолетовая', color: '#b36bff' },
+  green: { name: 'Обычная', color: '#3f9c74' },
+  blue: { name: 'Редкая', color: '#8b5cf6' },
+  purple: { name: 'Эпическая', color: '#ffc43d' },
 };
 
 function cardRarity(card) {
@@ -159,7 +176,8 @@ const OWNED_KEY = 'v2.ownedCards';
 function ownedCardNames() {
   try {
     const saved = JSON.parse(localStorage.getItem(OWNED_KEY) || 'null');
-    if (Array.isArray(saved)) return new Set(saved);
+    // обычные и редкие открыты всегда (в том числе новые карты из обновлений)
+    if (Array.isArray(saved)) return new Set([...saved, ...CARD_ROSTER.filter((c) => cardRarity(c) !== 'purple').map((c) => c.name)]);
   } catch (e) { /* ignore */ }
   const deck = getSavedDeckNames();
   return new Set(CARD_ROSTER.filter((c) => cardRarity(c) !== 'purple' || deck.includes(c.name)).map((c) => c.name));

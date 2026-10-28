@@ -968,15 +968,15 @@ const STEPS = [
   { kind: 'info', text: 'Вы играете против соперника. Цель матча: занять больше клеток в поле чем соперник.', target: '.player-opponent' },
   { kind: 'info', text: 'На каждый ход даётся 20 секунд.', target: '.timer-wrap' },
   { kind: 'info', text: 'Поле состоит из 9 клеток. Цель: занять больше клеток, чем соперник.', target: '#board' },
-  { kind: 'drag', text: 'Сделайте первый ход.', cardName: 'Кувшинка', targetIndex: 4 },
+  { kind: 'drag', text: 'Сделайте первый ход.', cardName: 'Лягушка', targetIndex: 4 },
   { kind: 'auto-opp-move', cardName: 'Лейка', index: 8 },
   { kind: 'drag', text: 'Чтобы захватить карту соперника, перетащите карту сюда.', cardName: 'Ромашка', targetIndex: 7, avoidIndexes: [8], compare: [{ hand: 'Ромашка', side: 'right' }, { index: 8, side: 'left' }] },
   { kind: 'info', text: 'Вы захватили карту соперника. Ваша сторона больше стороны соперника.', targets: ['.cell[data-index="7"]', '.cell[data-index="8"]'], compare: [{ index: 7, side: 'right' }, { index: 8, side: 'left' }] },
-  { kind: 'auto-opp-move', cardName: 'Шип', index: 5 },
+  { kind: 'auto-opp-move', cardName: 'Колючка', index: 5 },
   { kind: 'info', text: 'Соперник захватил сразу две карты! Каждая выигравшая сторона забирает свою клетку.', targets: ['.cell[data-index="4"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 5, side: 'left' }, { index: 4, side: 'right' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
-  { kind: 'drag', text: 'Ещё можно захватить сразу 2 карты соперника. Перетащите карту сюда.', cardName: 'Цунами', targetIndex: 2, tooltipAbove: true, compare: [{ hand: 'Цунами', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
+  { kind: 'drag', text: 'Ещё можно захватить сразу 2 карты соперника. Перетащите карту сюда.', cardName: 'Оленёнок', targetIndex: 2, tooltipAbove: true, compare: [{ hand: 'Оленёнок', side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
   { kind: 'info', text: 'Это прострел. Он работает только по 1 линии: вертикальной или горизонтальной.', targets: ['.cell[data-index="2"]', '.cell[data-index="5"]', '.cell[data-index="8"]'], compare: [{ index: 2, side: 'bottom' }, { index: 5, side: 'top' }, { index: 5, side: 'bottom' }, { index: 8, side: 'top' }] },
-  { kind: 'auto-opp-move', cardName: 'Подсолнух', index: 3 },
+  { kind: 'auto-opp-move', cardName: 'Очки', index: 3 },
   { kind: 'final', text: 'Теперь вы знаете основы! Доиграйте матч до конца чтобы получить вашу первую награду.' },
 ];
 
@@ -1069,10 +1069,10 @@ function finishScript() {
 }
 
 function initGame() {
-  const yourNames = ['Кувшинка', 'Ромашка', 'Цунами'];
-  const yourDeckNames = ['Гроза', 'Молния', 'Тайфун', 'Туман', 'Солнце'];
-  const oppNames = ['Лейка', 'Шип', 'Подсолнух'];
-  const oppDeckNames = ['Луч', 'Жемчужина', 'Медуза', 'Спираль', 'Коралл'];
+  const yourNames = ['Лягушка', 'Ромашка', 'Оленёнок'];
+  const yourDeckNames = ['Пиксель', 'Муравей', 'Обезьянка', 'Одуванчик', 'Солнце'];
+  const oppNames = ['Лейка', 'Колючка', 'Очки'];
+  const oppDeckNames = ['Лампа', 'Яйца', 'Медузка', 'Петушок', 'Вертушка'];
 
   state.yourHand = withInstanceIds(yourNames.map(findCard), 'you');
   state.yourDeck = withInstanceIds(yourDeckNames.map(findCard), 'you-deck');

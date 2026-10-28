@@ -558,7 +558,7 @@ function rewardCellHTML(r) {
   if (r.kind === 'card') {
     // дубль: «Уже есть», карта погашена, внизу «+N» монет
     title = r.dup ? 'Уже есть' : RARITY_TITLE[r.rarity];
-    art = `<div class="card owner-you lb-card" style="color:${RARITIES[r.rarity].color}">${cardInnerHTML(r.card)}</div>${r.dup ? `<span class="lb-qty">+ ${r.dupCoins}<img src="assets/shop-coin.png" alt=""></span>` : ''}`;
+    art = `<div class="card24 lb-card">${card24HTML(r.card)}</div>${r.dup ? `<span class="lb-qty">+ ${r.dupCoins}<img src="assets/shop-coin.png" alt=""></span>` : ''}`;
   } else if (r.kind === 'coins') {
     title = 'Монеты';
     art = `<img src="assets/v2-ny-coins.png" alt=""><span class="lb-qty">× ${r.amount}</span>`;

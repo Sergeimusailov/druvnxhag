@@ -4,8 +4,7 @@
 (() => {
   const deckGridEl = document.getElementById('cardsDeckGrid');
   const collectionEls = Array.from(document.querySelectorAll('#cardsTabTrack .cards-collection-grid'));
-  const countEl = document.getElementById('cardsDeckCount');
-  const hintEl = document.getElementById('cardsDeckHint');
+  const badgeEl = document.getElementById('cardsDeckBadge');
   const sheet = document.getElementById('cardSheet');
   const backdrop = document.getElementById('cardSheetBackdrop');
   const sheetTitle = document.getElementById('cardSheetTitle');
@@ -18,10 +17,10 @@
 
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
 
-  // коллекции (прототип): весь список карт поровну на три — овощную,
-  // фруктовую и новогоднюю; порядок панелей — как у чипсов
+  // коллекции: у каждой карты своя (card.col) — овощная, фруктовая,
+  // новогодняя; порядок панелей — как у чипсов. Внутри — от эпических к обычным
   const COLLECTION_IDS = ['veg', 'fruit', 'ny'];
-  const collectionOf = (card) => COLLECTION_IDS[Math.min(2, Math.floor(CARD_ROSTER.indexOf(card) / Math.ceil(CARD_ROSTER.length / 3)))];
+  const RARITY_ORDER = ['purple', 'blue', 'green'];
   // где получить закрытую карту: через одну — за задания или в сундуках магазина
   const unlockSource = (card) => (CARD_ROSTER.indexOf(card) % 2 ? 'shop' : 'tasks');
 
@@ -44,8 +43,8 @@
 
   function cardEl(card, extra = '') {
     const el = document.createElement('div');
-    el.className = `card owner-you${extra}`;
-    el.innerHTML = cardInnerHTML(card);
+    el.className = `card24${extra}`;
+    el.innerHTML = card24HTML(card);
     // версия 3: сохранённая кастомизация (вариация, рамка, эффект)
     if (typeof applyCardCustom === 'function') applyCardCustom(el, card.name);
     return el;
@@ -65,34 +64,37 @@
         deckGridEl.appendChild(empty);
       }
     }
-    countEl.textContent = `${deck.length} / ${DECK_SIZE}`;
-    countEl.classList.toggle('is-full', deck.length === DECK_SIZE);
-    hintEl.hidden = deck.length === DECK_SIZE;
+    badgeEl.hidden = deck.length === DECK_SIZE;
 
-    // в каждой коллекции неоткрытые карты — в самом конце, затемнены, с замком;
-    // тап — подсказка, как получить, и кнопка перехода в нужный раздел
-    collectionEls.forEach((grid) => { grid.innerHTML = ''; });
+    // коллекции: заголовок и «открыто N из M», карты от эпических к обычным;
+    // неоткрытые затемнены, с замком; тап — подсказка, как получить, и кнопка
+    // перехода в нужный раздел
     const owned = ownedCardNames();
-    const sorted = [...CARD_ROSTER].sort((a, b) => owned.has(b.name) - owned.has(a.name));
-    sorted.forEach((card) => {
-      const grid = collectionEls[COLLECTION_IDS.indexOf(collectionOf(card))];
-      if (!owned.has(card.name)) {
-        const el = cardEl(card, ' is-locked');
-        el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
-        el.setAttribute('aria-label', `${card.name} — карта не открыта`);
-        el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
+    COLLECTION_IDS.forEach((id, i) => {
+      const grid = collectionEls[i];
+      const cards = CARD_ROSTER.filter((c) => c.col === id)
+        .sort((a, b) => RARITY_ORDER.indexOf(cardRarity(a)) - RARITY_ORDER.indexOf(cardRarity(b)));
+      grid.parentElement.querySelector('[data-count]').textContent = `${cards.filter((c) => owned.has(c.name)).length} из ${cards.length}`;
+      grid.innerHTML = '';
+      cards.forEach((card) => {
+        if (!owned.has(card.name)) {
+          const el = cardEl(card, ' is-locked');
+          el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
+          el.setAttribute('aria-label', `${card.name} — карта не открыта`);
+          el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
+          grid.appendChild(el);
+          return;
+        }
+        const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
+        el.addEventListener('click', () => openCard(card));
         grid.appendChild(el);
-        return;
-      }
-      const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
-      el.addEventListener('click', () => openCard(card));
-      grid.appendChild(el);
+      });
     });
   }
 
   function openCard(card) {
     sheetTitle.textContent = card.name;
-    sheetCard.innerHTML = cardInnerHTML(card);
+    sheetCard.innerHTML = card24HTML(card);
     if (typeof applyCardCustom === 'function') applyCardCustom(sheetCard, card.name);
     sheetCard.dataset.card = card.name;
     sheetHint.textContent = '';
@@ -105,7 +107,7 @@
     } else if (deck.length >= DECK_SIZE) {
       sheetBtn.textContent = 'Добавить в колоду';
       sheetBtn.disabled = true;
-      sheetHint.textContent = 'Уберите карту из колоды, чтобы добавить новую';
+      sheetHint.textContent = 'Удалите карту из колоды, чтобы добавить новую';
       sheetAction = null;
     } else {
       sheetBtn.textContent = 'Добавить в колоду';
