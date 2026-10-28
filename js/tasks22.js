@@ -8,11 +8,11 @@
 // фиолетовые, у еженедельных зелёные; в старых версиях — молния
 function taskBoltIcon(tab) {
   if (!isAppVersion('2.3')) return 'assets/v2-bolt.png';
-  return tab === 'weekly' ? 'assets/v2-star-green.png' : 'assets/v2-star-purple.png';
+  return tab === 'weekly' ? 'assets/v2-star-weekly.png' : 'assets/v2-star-daily.png';
 }
 
 const CURRENCY_ICONS = {
-  snow: 'assets/v2-cur-snow.png',
+  snow: 'assets/v2-snow-pts.png',
   leaf: 'assets/v2-cur-leaf.png',
   coins: 'assets/v2-coin.png',
   bolt: 'assets/v2-bolt.png',

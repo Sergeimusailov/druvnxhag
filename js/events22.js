@@ -902,7 +902,8 @@ setInterval(() => {
 }, 1000);
 
 renderEntries22();
-if (INITIAL_HASH === 'event') openNyFromHome();
+// после выполнения всего файла: ленте призов (ny24Prizes ниже) нужна готовая константа
+if (INITIAL_HASH === 'event') setTimeout(openNyFromHome);
 syncEventFab23(currentScreen);
 
 /* ---------- 2.3: шторки события — онбординг, вопросы, билеты ---------- */
