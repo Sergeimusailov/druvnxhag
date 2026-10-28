@@ -74,7 +74,7 @@
   margin: 32px 16px 0;
 }
 
-/* заголовок коллекции — как секции в профиле: 20/600 +0.38, справа
+/* заголовок коллекции 17/600 −0.41 (как «Колода»), справа
    «открыто N из M» 13 #9299a2 */
 .cards-coll-head {
   display: flex;
@@ -89,10 +89,10 @@
 }
 
 .cards-coll-head b {
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 17px;
+  line-height: 20px;
   font-weight: 600;
-  letter-spacing: 0.38px;
+  letter-spacing: -0.41px;
   color: #f6f7f8;
 }
 
