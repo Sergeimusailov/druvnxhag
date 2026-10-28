@@ -605,7 +605,7 @@ function confettiFrom(cell) {
 async function revealCell(cell, legend) {
   cell.classList.add('is-scanning');
   if (legend) cell.classList.add('is-legend');
-  await lbWait(legend ? 1000 : 600);
+  await lbWait(legend ? 1600 : 1200);
   cell.classList.remove('is-scanning');
   cell.classList.add('is-open');
   if (lbSkip) return;
@@ -735,7 +735,9 @@ async function openLootbox(box) {
   const coinsBox = document.querySelector('.shop-balance[data-balance="coins"]');
   const tokensBox = document.querySelector('.shop-balance[data-balance="tokens"]');
   const tab = (nav) => document.querySelector(`.v2-tab[data-nav="${nav}"] .v2-tab-icon`);
-  const lifted = cells.map((cell, i) => liftReward(cell.querySelector(rewards[i].kind === 'bonus' ? '.lb-bonus-img' : '.lb-cell-art'), rewards[i].dup));
+  // у дубля улетают только монеты «+ N», карта гаснет вместе с экраном
+  const artOf = (cell, r) => cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : r.dup ? '.lb-qty' : '.lb-cell-art');
+  const lifted = cells.map((cell, i) => liftReward(artOf(cell, rewards[i]), rewards[i].dup));
   renderShop();
   const fade = lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' }).finished.then(() => {
     lbOverlayEl.classList.remove('is-open');

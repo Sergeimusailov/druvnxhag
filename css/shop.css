@@ -471,8 +471,8 @@
   object-fit: contain;
 }
 
-/* закрытая ячейка («рубашка»): тёмная, с диагональным узором и знаком
-   сундука; при раскрытии по ней пробегает перелив, потом она гаснет */
+/* закрытая ячейка («рубашка»): тёмная, с диагональным узором, без значка;
+   при раскрытии по ней пробегает перелив, потом она гаснет */
 .lb-cell-cover {
   position: absolute;
   inset: 0;
@@ -483,20 +483,6 @@
     repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 8px, transparent 8px 16px),
     #121214;
   transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.lb-cell-cover::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
-  border-radius: 8px;
-  border: 2px solid color-mix(in srgb, var(--lb-glow) 70%, #fff);
-  opacity: 0.6;
-  transform: rotate(45deg);
 }
 
 .lb-cell-cover::after {
@@ -514,10 +500,6 @@
   animation: lbScan 0.55s linear infinite;
 }
 
-.lb-cell.is-scanning .lb-cell-cover::before {
-  animation: lbPulse 0.55s ease-in-out infinite;
-}
-
 /* «легендарная» ячейка (карта и бонус в эпическом сундуке): перелив дольше,
    ячейка светится и пульсирует */
 .lb-cell.is-legend.is-scanning {
@@ -533,10 +515,6 @@
 @keyframes lbScan {
   from { background-position: 130% 0; }
   to { background-position: -30% 0; }
-}
-
-@keyframes lbPulse {
-  50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
 }
 
 @keyframes lbLegendGlow {
@@ -562,6 +540,12 @@
 
 .lb-fly-item .lb-cell-art.lb-cell-art {
   margin: 0;
+}
+
+/* монеты дубля летят без карты: «+ N» стоит в обёртке как есть */
+.lb-fly-item > .lb-qty {
+  position: static;
+  transform: none;
 }
 
 .lb-fly-coin {
@@ -613,7 +597,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lb-cell.is-scanning .lb-cell-cover::after,
-  .lb-cell.is-scanning .lb-cell-cover::before,
   .lb-cell.is-legend.is-scanning {
     animation: none;
   }
