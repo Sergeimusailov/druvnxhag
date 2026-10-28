@@ -472,7 +472,7 @@
 }
 
 /* закрытая ячейка («рубашка»): чёрная, с узором из «щитов»;
-   при раскрытии по ней пробегает перелив, потом она гаснет */
+   при раскрытии блика нет — ячейка просто гаснет */
 .lb-cell-cover {
   position: absolute;
   inset: 0;
@@ -492,22 +492,7 @@
 }
 
 .lb-shields path {
-  transition: fill 0.9s ease-in-out;
-}
-
-.lb-cell-cover::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, color-mix(in srgb, var(--lb-glow) 50%, #fff) 52%, transparent 70%);
-  background-size: 250% 100%;
-  background-position: 130% 0;
-  opacity: 0;
-}
-
-.lb-cell.is-scanning .lb-cell-cover::after {
-  opacity: 1;
-  animation: lbScan 0.55s linear infinite;
+  transition: fill 0.45s ease-in-out;
 }
 
 /* «легендарная» ячейка (карта и бонус в эпическом сундуке): перелив дольше,
@@ -520,11 +505,6 @@
   opacity: 0;
   transform: scale(1.06);
   pointer-events: none;
-}
-
-@keyframes lbScan {
-  from { background-position: 130% 0; }
-  to { background-position: -30% 0; }
 }
 
 @keyframes lbLegendGlow {
@@ -606,7 +586,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lb-cell.is-scanning .lb-cell-cover::after,
   .lb-cell.is-legend.is-scanning {
     animation: none;
   }
