@@ -18,7 +18,8 @@
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
 
   // коллекции: у каждой карты своя (card.col) — овощная, фруктовая,
-  // новогодняя; идут подряд в этом порядке. Внутри — от эпических к обычным
+  // новогодняя; идут подряд в этом порядке. Внутри — открытые от эпических
+  // к обычным, неоткрытые в конце
   const COLLECTION_IDS = ['veg', 'fruit', 'ny'];
   const RARITY_ORDER = ['purple', 'blue', 'green'];
   // где получить закрытую карту: через одну — за задания или в сундуках магазина
@@ -66,14 +67,15 @@
     }
     badgeEl.hidden = deck.length === DECK_SIZE;
 
-    // коллекции: заголовок и «открыто N из M», карты от эпических к обычным;
-    // неоткрытые затемнены, с замком; тап — подсказка, как получить, и кнопка
+    // коллекции: заголовок и «открыто N из M», карты от эпических к обычным,
+    // неоткрытые — в конце коллекции, затемнены, с замком; тап — подсказка, как получить, и кнопка
     // перехода в нужный раздел
     const owned = ownedCardNames();
     COLLECTION_IDS.forEach((id, i) => {
       const grid = collectionEls[i];
       const cards = CARD_ROSTER.filter((c) => c.col === id)
-        .sort((a, b) => RARITY_ORDER.indexOf(cardRarity(a)) - RARITY_ORDER.indexOf(cardRarity(b)));
+        .sort((a, b) => (owned.has(b.name) - owned.has(a.name))
+          || RARITY_ORDER.indexOf(cardRarity(a)) - RARITY_ORDER.indexOf(cardRarity(b)));
       grid.parentElement.querySelector('[data-count]').textContent = `открыто ${cards.filter((c) => owned.has(c.name)).length} из ${cards.length}`;
       grid.innerHTML = '';
       cards.forEach((card) => {

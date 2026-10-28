@@ -102,12 +102,12 @@
   color: #9299a2;
 }
 
-/* сетка коллекции: 3 колонки по 115, между ними 8, отступы 8/16/32 */
+/* сетка коллекции: 3 колонки по 115, между ними 8, отступы 16/16/32 */
 .cards-collection-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  padding: 8px 16px 32px;
+  padding: 16px 16px 32px;
 }
 
 /* карта уже в колоде — прозрачность 24% */
