@@ -291,6 +291,7 @@
 .lb-rewards {
   position: relative;
   z-index: 2;
+  transform-origin: 50% 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -532,10 +533,16 @@
   margin: 0;
 }
 
-/* монеты дубля летят без карты: «+ N» стоит в обёртке как есть */
-.lb-fly-item > .lb-qty {
-  position: static;
+/* копия награды стоит в левом верхнем углу обёртки (если сетка уменьшена,
+   копия уменьшена так же — transform-origin 0 0) */
+.lb-fly-item > * {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
   transform: none;
+  transform-origin: 0 0;
 }
 
 .lb-fly-coin {
@@ -548,12 +555,11 @@
 }
 
 /* «Забрать» 345×56 r16, 17/400 −0.41 */
-/* низкие экраны (нет в макете): ужимаем сетку, чтобы 5 наград не уходили под «Забрать» */
+/* низкие экраны (нет в макете): заголовок выше, а сетка наград целиком
+   пропорционально уменьшается (fitRewards в js/shop.js) — ячейки остаются
+   132×156 и 277×126, как в макете */
 @media (max-height: 760px) {
   .lb-title { margin-top: 32px; margin-bottom: 8px; }
-  .lb-cell { height: 132px; }
-  .lb-cell.is-bonus { height: 104px; margin-bottom: 4px; }
-  .lb-cell-art { width: 72px; height: 72px; }
 }
 
 .lb-claim {

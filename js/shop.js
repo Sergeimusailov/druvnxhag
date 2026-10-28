@@ -177,6 +177,8 @@ const DUP_TIP_KEY = 'v2.dupTipSeen';
 // счётчик подпрыгивает на каждую и в конце докручивается до нового значения
 // награда с экрана наград: копия встаёт ровно на место оригинала (оригинал
 // прячется), поэтому, пока фон и ячейки гаснут, награда остаётся на экране
+let lbScale = 1;
+
 function liftReward(art, dup) {
   const app = document.querySelector('.v2-app');
   const a = app.getBoundingClientRect();
@@ -187,7 +189,9 @@ function liftReward(art, dup) {
   wrap.style.top = `${rect.top - a.top}px`;
   wrap.style.width = `${rect.width}px`;
   wrap.style.height = `${rect.height}px`;
-  wrap.appendChild(art.cloneNode(true));
+  const clone = art.cloneNode(true);
+  if (lbScale < 1) clone.style.transform = `scale(${lbScale})`;
+  wrap.appendChild(clone);
   app.appendChild(wrap);
   art.style.visibility = 'hidden';
   return { wrap, rect };
@@ -587,6 +591,20 @@ function runShields() {
   tick();
 }
 
+// низкий экран: если сетка наград не помещается до кнопки «Забрать»,
+// уменьшаем её целиком (пропорции ячеек как в макете)
+function fitRewards() {
+  lbScale = 1;
+  lbRewardsEl.style.transform = '';
+  lbRewardsEl.style.marginBottom = '';
+  const h = lbRewardsEl.offsetHeight;
+  const avail = lbClaimEl.offsetTop - lbRewardsEl.offsetTop - 16;
+  if (h <= avail || !h) return;
+  lbScale = Math.max(0.6, avail / h);
+  lbRewardsEl.style.transform = `scale(${lbScale})`;
+  lbRewardsEl.style.marginBottom = `${-h * (1 - lbScale)}px`;
+}
+
 function rewardCellHTML(r) {
   if (r.kind === 'bonus') {
     return `<div class="lb-cell is-bonus"><div class="lb-cell-in"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div><span class="lb-cell-cover">${shieldsSVG('bonus')}</span></div>`;
@@ -724,6 +742,7 @@ async function openLootbox(box) {
 
   // 4. ячейки-«рубашки» появляются
   lbRewardsEl.innerHTML = rewards.map(rewardCellHTML).join('');
+  fitRewards();
   const cells = Array.from(lbRewardsEl.children);
   lbRewardsEl.querySelectorAll('.lb-frame-prev').forEach((el) => {
     const r = rewards.find((x) => x.kind === 'frame' && !x.back);
