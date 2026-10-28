@@ -3,37 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610281729"></script>
+  <script src="js/device-frame.js?v=202610281734"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610281729"></script>
+  <script src="js/version.js?v=202610281734"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610281729">
-  <link rel="stylesheet" href="css/v2.css?v=202610281729">
-  <link rel="stylesheet" href="css/profile.css?v=202610281729">
-  <link rel="stylesheet" href="css/tasks.css?v=202610281729">
-  <link rel="stylesheet" href="css/gifts.css?v=202610281729">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610281729">
-  <link rel="stylesheet" href="css/shop.css?v=202610281729">
-  <link rel="stylesheet" href="css/v22.css?v=202610281729">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610281729">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610281729">
-  <link rel="stylesheet" href="css/ny24.css?v=202610281729">
-  <link rel="stylesheet" href="css/tooltip24.css?v=202610281729">
-  <link rel="stylesheet" href="css/cosmetics24.css?v=202610281729">
-  <link rel="stylesheet" href="css/profile24.css?v=202610281729">
-  <link rel="stylesheet" href="css/v3.css?v=202610281729">
-  <link rel="stylesheet" href="css/event.css?v=202610281729">
+  <link rel="stylesheet" href="css/match.css?v=202610281734">
+  <link rel="stylesheet" href="css/v2.css?v=202610281734">
+  <link rel="stylesheet" href="css/profile.css?v=202610281734">
+  <link rel="stylesheet" href="css/tasks.css?v=202610281734">
+  <link rel="stylesheet" href="css/gifts.css?v=202610281734">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610281734">
+  <link rel="stylesheet" href="css/shop.css?v=202610281734">
+  <link rel="stylesheet" href="css/v22.css?v=202610281734">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610281734">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610281734">
+  <link rel="stylesheet" href="css/ny24.css?v=202610281734">
+  <link rel="stylesheet" href="css/tooltip24.css?v=202610281734">
+  <link rel="stylesheet" href="css/cosmetics24.css?v=202610281734">
+  <link rel="stylesheet" href="css/profile24.css?v=202610281734">
+  <link rel="stylesheet" href="css/v3.css?v=202610281734">
+  <link rel="stylesheet" href="css/event.css?v=202610281734">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
     <defs>
-      <!-- контур карты по макету: белый 70% снаружи рамки (card24HTML) -->
-      <filter id="card24-outline" x="-5%" y="-5%" width="110%" height="110%">
-        <feMorphology in="SourceAlpha" operator="dilate" radius="1" result="grow"/>
-        <feFlood flood-color="#fff" flood-opacity="0.7"/>
-        <feComposite in2="grow" operator="in" result="line"/>
-        <feMerge><feMergeNode in="line"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
       <mask id="card-mask-def" maskUnits="userSpaceOnUse" x="0" y="0" width="118" height="118" fill="black">
         <rect fill="white" width="118" height="118"/>
         <path d="M105 1C111.627 1 117 6.37258 117 13V105C117 111.627 111.627 117 105 117H13C6.37258 117 1 111.627 1 105V13C1 6.37258 6.37258 1 13 1H105ZM13 9C10.7909 9 9 10.7909 9 13V45.664C9 45.8502 9.14978 46.0017 9.33594 46.0039C16.3604 46.1821 22 51.9326 22 59C22 65.5022 17.2264 70.8894 10.9926 71.8483C9.90082 72.0162 9 72.8954 9 74V105C9 107.209 10.7909 109 13 109H44C45.1046 109 45.9838 108.099 46.1517 107.007C47.1106 100.774 52.4978 96 59 96C65.5022 96 70.8894 100.774 71.8483 107.007C72.0162 108.099 72.8954 109 74 109H105C107.209 109 109 107.209 109 105V74C109 72.8954 108.099 72.0162 107.007 71.8483C100.774 70.8894 96 65.5022 96 59C96 52.4978 100.774 47.1106 107.007 46.1517C108.099 45.9838 109 45.1046 109 44V13C109 10.7909 107.209 9 105 9H72.336C72.1498 9 71.9983 9.14978 71.9961 9.33594C71.8179 16.3604 66.0674 22 59 22C51.9326 22 46.1821 16.3604 46.0039 9.33594C46.0017 9.14978 45.8502 9 45.664 9H13Z"/>
@@ -187,20 +180,10 @@
         </div>
 
         <h2 class="cards-title cards-collection-title">Коллекция</h2>
-        <!-- коллекции (условно): чипсы как в настройках профиля -->
-        <div class="v2-chip-row cards-chip-row" id="cardsChipRow">
-          <span class="v2-chip-indicator"></span>
-          <button class="v2-chip v2-chip-active" data-tab="veg">Овощная</button>
-          <button class="v2-chip" data-tab="fruit">Фруктовая</button>
-          <button class="v2-chip" data-tab="ny">Новогодняя</button>
-        </div>
-        <div class="v2-tab-content">
-          <div class="v2-tab-track" id="cardsTabTrack">
-            <div class="v2-tab-panel"><div class="cards-coll-head"><b>Овощная</b><span data-count></span></div><div class="cards-collection-grid" data-collection="veg"></div></div>
-            <div class="v2-tab-panel"><div class="cards-coll-head"><b>Фруктовая</b><span data-count></span></div><div class="cards-collection-grid" data-collection="fruit"></div></div>
-            <div class="v2-tab-panel"><div class="cards-coll-head"><b>Новогодняя</b><span data-count></span></div><div class="cards-collection-grid" data-collection="ny"></div></div>
-          </div>
-        </div>
+        <!-- коллекции подряд: заголовок и «открыто N из M», ниже карты -->
+        <div class="cards-coll" data-collection="veg"><div class="cards-coll-head"><b>Овощная</b><span data-count></span></div><div class="cards-collection-grid"></div></div>
+        <div class="cards-coll" data-collection="fruit"><div class="cards-coll-head"><b>Фруктовая</b><span data-count></span></div><div class="cards-collection-grid"></div></div>
+        <div class="cards-coll" data-collection="ny"><div class="cards-coll-head"><b>Новогодняя</b><span data-count></span></div><div class="cards-collection-grid"></div></div>
       </section>
 
       <!-- Магазин: лутбоксы за монеты (прототип) -->
@@ -798,23 +781,23 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610281729"></script>
-  <script src="js/v2.js?v=202610281729"></script>
-  <script src="js/tooltip24.js?v=202610281729"></script>
-  <script src="js/sheets.js?v=202610281729"></script>
-  <script src="js/profile.js?v=202610281729"></script>
-  <script src="js/cosmetics24.js?v=202610281729"></script>
-  <script src="js/profile24.js?v=202610281729"></script>
-  <script src="js/t-ads.js?v=202610281729"></script>
-  <script src="js/tasks22.js?v=202610281729"></script>
-  <script src="js/tasks.js?v=202610281729"></script>
-  <script src="js/card-custom.js?v=202610281729"></script>
-  <script src="js/cards-v2.js?v=202610281729"></script>
-  <script src="js/shop-shields.js?v=202610281729"></script>
-  <script src="js/shop.js?v=202610281729"></script>
-  <script src="js/gifts.js?v=202610281729"></script>
-  <script src="js/event.js?v=202610281729"></script>
-  <script src="js/events22.js?v=202610281729"></script>
-  <script src="js/v3.js?v=202610281729"></script>
+  <script src="js/cards.js?v=202610281734"></script>
+  <script src="js/v2.js?v=202610281734"></script>
+  <script src="js/tooltip24.js?v=202610281734"></script>
+  <script src="js/sheets.js?v=202610281734"></script>
+  <script src="js/profile.js?v=202610281734"></script>
+  <script src="js/cosmetics24.js?v=202610281734"></script>
+  <script src="js/profile24.js?v=202610281734"></script>
+  <script src="js/t-ads.js?v=202610281734"></script>
+  <script src="js/tasks22.js?v=202610281734"></script>
+  <script src="js/tasks.js?v=202610281734"></script>
+  <script src="js/card-custom.js?v=202610281734"></script>
+  <script src="js/cards-v2.js?v=202610281734"></script>
+  <script src="js/shop-shields.js?v=202610281734"></script>
+  <script src="js/shop.js?v=202610281734"></script>
+  <script src="js/gifts.js?v=202610281734"></script>
+  <script src="js/event.js?v=202610281734"></script>
+  <script src="js/events22.js?v=202610281734"></script>
+  <script src="js/v3.js?v=202610281734"></script>
 </body>
 </html>

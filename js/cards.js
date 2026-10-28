@@ -135,19 +135,13 @@ function cardInnerHTML(card) {
   `;
 }
 
-// Карта по макету (Figma 11507:49800): рамка #252525 с белым контуром 70%
-// снаружи, цифры 18/600 в кружках, которые выступают за край карты.
-// Элемент включает выступы: тело карты 116 из 126 (viewBox -5 -5 126 126),
-// картинка — с отступом 5/126. Фон карты — фон самой картинки.
-const CARD24_FRAME_PATH = [
-  'M12 0H104A12 12 0 0 1 116 12V104A12 12 0 0 1 104 116H12A12 12 0 0 1 0 104V12A12 12 0 0 1 12 0Z',
-  'M12 8A4 4 0 0 0 8 12V104A4 4 0 0 0 12 108H104A4 4 0 0 0 108 104V12A4 4 0 0 0 104 8Z',
-  ...[[58, 8], [58, 108], [8, 58], [108, 58]].map(([x, y]) => `M${x - 13} ${y}a13 13 0 1 1 26 0a13 13 0 1 1 -26 0Z`),
-].join('');
-
+// Карта по макету (Figma 17100:203091): картинка + маска поверх неё
+// (assets/card24-mask.svg — рамка #252525 с вырезами под цифры и белым
+// контуром 70%, обрезана по квадрату 116 r12) + цифры 18/600. Фон карты —
+// фон самой картинки.
 function card24HTML(card) {
   return `<img class="card24-art" src="${card.pic}" alt="" loading="lazy">`
-    + `<svg class="card24-frame" viewBox="-5 -5 126 126" aria-hidden="true"><path d="${CARD24_FRAME_PATH}" filter="url(#card24-outline)"/></svg>`
+    + '<img class="card24-mask" src="assets/card24-mask.svg" alt="">'
     + `<span class="card24-num is-top">${card.top}</span><span class="card24-num is-left">${card.left}</span>`
     + `<span class="card24-num is-right">${card.right}</span><span class="card24-num is-bottom">${card.bottom}</span>`;
 }

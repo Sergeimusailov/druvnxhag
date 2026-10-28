@@ -63,16 +63,15 @@
   padding: 0 16px 20px;
 }
 
-/* пустая ячейка: #1c1c1e, обводка белая 40% внутрь, r8 — по телу карты */
+/* пустая ячейка: #1c1c1e, обводка белая 40% внутрь, r8 */
 .cards-slot-empty {
   aspect-ratio: 1;
-  margin: 3.97%;
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .cards-collection-title {
-  margin: 24px 16px 0;
+  margin: 32px 16px 0;
 }
 
 /* заголовок коллекции — как секции в профиле: 20/600 +0.38, справа
@@ -82,7 +81,11 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 16px 0;
+  padding: 24px 16px 0;
+}
+
+.cards-coll + .cards-coll .cards-coll-head {
+  padding-top: 8px;
 }
 
 .cards-coll-head b {
@@ -131,8 +134,9 @@
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* ---------- Карта по макету (Figma 11507:49800, card24HTML) ----------
-   элемент 126 условных единиц: тело 116 + выступы кружков по 5 */
+/* ---------- Карта по макету (Figma 17100:203091, card24HTML) ----------
+   картинка 116×116 r12, сверху маска-рамка, цифры 18/600 +0.26 #f6f7f8
+   с тенью 0 0 1 чёрная 32%; центры цифр — 10 и 106 из 116 */
 .card24 {
   position: relative;
   aspect-ratio: 1;
@@ -145,29 +149,22 @@
   transform: scale(0.94);
 }
 
-.card24-art {
-  position: absolute;
-  inset: 3.97%;
-  width: 92.06%;
-  height: 92.06%;
-  border-radius: 9.52cqw;
-  object-fit: cover;
-}
-
-.card24-frame {
+.card24-art,
+.card24-mask {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  overflow: visible;
-  fill: #252525;
+  border-radius: 10.34cqw;
 }
 
-/* цифры 18/600 +0.26, #f6f7f8, тень 0 0 1 чёрная 32%; центры кружков —
-   (5 + 8) и (5 + 108) из 126 */
+.card24-art {
+  object-fit: cover;
+}
+
 .card24-num {
   position: absolute;
-  font-size: 14.29cqw;
+  font-size: 15.52cqw;
   line-height: 1;
   font-weight: 600;
   letter-spacing: 0.0143em;
@@ -177,10 +174,10 @@
   pointer-events: none;
 }
 
-.card24-num.is-top { left: 50%; top: 10.32%; }
-.card24-num.is-bottom { left: 50%; top: 89.68%; }
-.card24-num.is-left { left: 10.32%; top: 50%; }
-.card24-num.is-right { left: 89.68%; top: 50%; }
+.card24-num.is-top { left: 50%; top: 8.62%; }
+.card24-num.is-bottom { left: 50%; top: 91.38%; }
+.card24-num.is-left { left: 8.62%; top: 50%; }
+.card24-num.is-right { left: 91.38%; top: 50%; }
 
 .visually-hidden {
   position: absolute;
@@ -191,33 +188,6 @@
   white-space: nowrap;
 }
 
-/* навигация по коллекциям — чипсы как в настройках профиля: 36px, 13/600
-   −0.08, выбранный белый с тёмным текстом, остальные #333, слева, листаются */
-.cards-chip-row {
-  justify-content: flex-start;
-  padding: 12px 16px 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.cards-chip-row::-webkit-scrollbar {
-  display: none;
-}
-
-.cards-chip-row .v2-chip {
-  flex: none;
-  background: #333;
-  color: #f6f7f8;
-}
-
-.cards-chip-row .v2-chip-active {
-  background: transparent;
-  color: #333;
-}
-
-.cards-chip-row .v2-chip-indicator {
-  background: #fff;
-}
 
 .cards-collection-grid {
   padding: 0 16px 16px;
@@ -253,7 +223,7 @@
 }
 
 /* шторка карты (Figma 12081:108027, нельзя добавить — 12112:79294):
-   карта 287 (с выступами 312) по центру, отступ сверху 20; кнопка 200×56
+   карта 287 по центру, отступ сверху 20; кнопка 200×56
    r16 по центру; неактивная — белая 10%, текст 30%; подсказка 15/400 −0.24 */
 .card-sheet {
   display: flex;
@@ -263,8 +233,8 @@
 }
 
 .card-sheet-card {
-  width: min(312px, calc(100% - 32px));
-  margin-top: 8px;
+  width: min(287px, calc(100% - 32px));
+  margin-top: 20px;
   cursor: default;
 }
 

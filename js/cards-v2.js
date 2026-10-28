@@ -3,7 +3,7 @@
 // сохраняется сразу при каждом изменении (кнопки «Сохранить» нет).
 (() => {
   const deckGridEl = document.getElementById('cardsDeckGrid');
-  const collectionEls = Array.from(document.querySelectorAll('#cardsTabTrack .cards-collection-grid'));
+  const collectionEls = Array.from(document.querySelectorAll('#cardsScreen .cards-coll .cards-collection-grid'));
   const badgeEl = document.getElementById('cardsDeckBadge');
   const sheet = document.getElementById('cardSheet');
   const backdrop = document.getElementById('cardSheetBackdrop');
@@ -18,7 +18,7 @@
   const byName = (name) => CARD_ROSTER.find((c) => c.name === name);
 
   // коллекции: у каждой карты своя (card.col) — овощная, фруктовая,
-  // новогодняя; порядок панелей — как у чипсов. Внутри — от эпических к обычным
+  // новогодняя; идут подряд в этом порядке. Внутри — от эпических к обычным
   const COLLECTION_IDS = ['veg', 'fruit', 'ny'];
   const RARITY_ORDER = ['purple', 'blue', 'green'];
   // где получить закрытую карту: через одну — за задания или в сундуках магазина
@@ -74,7 +74,7 @@
       const grid = collectionEls[i];
       const cards = CARD_ROSTER.filter((c) => c.col === id)
         .sort((a, b) => RARITY_ORDER.indexOf(cardRarity(a)) - RARITY_ORDER.indexOf(cardRarity(b)));
-      grid.parentElement.querySelector('[data-count]').textContent = `${cards.filter((c) => owned.has(c.name)).length} из ${cards.length}`;
+      grid.parentElement.querySelector('[data-count]').textContent = `открыто ${cards.filter((c) => owned.has(c.name)).length} из ${cards.length}`;
       grid.innerHTML = '';
       cards.forEach((card) => {
         if (!owned.has(card.name)) {
@@ -146,6 +146,5 @@
   // карты открываются в магазине — перерисовываем коллекцию при входе в раздел
   document.addEventListener('v2:screen', (e) => { if (e.detail.screen === 'cards') render(); });
 
-  createChipTabs(document.getElementById('cardsChipRow'), document.getElementById('cardsTabTrack'));
   render();
 })();
