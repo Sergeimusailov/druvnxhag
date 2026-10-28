@@ -149,6 +149,27 @@
   transform: scale(0.94);
 }
 
+/* долгое нажатие: без системного меню, выделения, перетаскивания картинки
+   и двойного тапа-зума; вертикальный скролл работает как обычно */
+.card24 {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card24 img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* пока держат палец — карта плавно утапливается (за 0,45 с) */
+.card24.is-pressing {
+  transform: scale(0.9);
+  transition: transform 0.45s ease-out, opacity 0.2s ease;
+}
+
 .card24-art,
 .card24-mask {
   position: absolute;

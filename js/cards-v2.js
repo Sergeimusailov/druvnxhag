@@ -51,14 +51,87 @@
     return el;
   }
 
+  // Долгое нажатие (0,45 с) на открытую карту — добавить в колоду или убрать
+  // из неё, без шторки. Сдвиг пальца больше 8px или начало скролла отменяют
+  // нажатие, поэтому листать коллекцию можно как обычно; клик после долгого
+  // нажатия гасится. Системное меню, выделение и зум карты выключены в CSS.
+  const LONG_MS = 450;
+  let pressSkipClick = false;
+
+  function onPress(el, onTap, onLong) {
+    let timer = 0;
+    let start = null;
+    let moved = false;
+    const cancel = () => {
+      clearTimeout(timer);
+      timer = 0;
+      el.classList.remove('is-pressing');
+    };
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      start = { x: e.clientX, y: e.clientY };
+      moved = false;
+      el.classList.add('is-pressing');
+      timer = setTimeout(() => {
+        timer = 0;
+        el.classList.remove('is-pressing');
+        pressSkipClick = true;
+        if (navigator.vibrate) navigator.vibrate(15);
+        onLong();
+      }, LONG_MS);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 8) {
+        moved = true;
+        cancel();
+      }
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => el.addEventListener(t, () => {
+      cancel();
+      if (t === 'pointercancel') moved = true;
+    }));
+    el.addEventListener('contextmenu', (e) => e.preventDefault());
+    el.addEventListener('click', () => {
+      if (pressSkipClick) { pressSkipClick = false; return; }
+      if (moved) return;
+      onTap();
+    });
+  }
+  document.getElementById('cardsScreen').addEventListener('scroll', () => {
+    document.querySelectorAll('#cardsScreen .card24.is-pressing').forEach((c) => c.classList.remove('is-pressing'));
+  }, { passive: true, capture: true });
+
+  // карта, которую только что добавили или убрали, «подпрыгивает» на новом месте
+  let bumpName = null;
+
+  function toggleDeck(card, el) {
+    if (deck.includes(card.name)) {
+      deck = deck.filter((n) => n !== card.name);
+    } else if (deck.length >= DECK_SIZE) {
+      Tooltip24.show(el, { title: 'Колода заполнена', text: 'Удалите карту из колоды, чтобы добавить новую.', timeout: 2500 });
+      el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+      return;
+    } else {
+      deck.push(card.name);
+    }
+    saveDeckNames(deck);
+    bumpName = card.name;
+    render();
+  }
+
+  function bump(el) {
+    el.animate([{ transform: 'scale(0.85)' }, { transform: 'scale(1.08)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  }
+
   function render() {
     deckGridEl.innerHTML = '';
     for (let i = 0; i < DECK_SIZE; i++) {
       const name = deck[i];
       if (name) {
         const el = cardEl(byName(name));
-        el.addEventListener('click', () => openCard(byName(name)));
+        onPress(el, () => openCard(byName(name)), () => toggleDeck(byName(name), el));
         deckGridEl.appendChild(el);
+        if (bumpName === name) bump(el);
       } else {
         const empty = document.createElement('div');
         empty.className = 'cards-slot-empty';
@@ -88,10 +161,12 @@
           return;
         }
         const el = cardEl(card, deck.includes(card.name) ? ' in-deck' : '');
-        el.addEventListener('click', () => openCard(card));
+        onPress(el, () => openCard(card), () => toggleDeck(card, el));
         grid.appendChild(el);
+        if (bumpName === card.name && !deck.includes(card.name)) bump(el);
       });
     });
+    bumpName = null;
   }
 
   function openCard(card) {
