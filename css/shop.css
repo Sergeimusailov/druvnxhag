@@ -275,6 +275,7 @@
   font-weight: 700;
   letter-spacing: 0.36px;
   color: #f6f7f8;
+  margin-bottom: 20px;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -391,14 +392,31 @@
   height: 18px;
 }
 
-/* дубль: карта погашена, внизу «+N» монет (улетят в счётчик по «Забрать») */
+/* дубль (Figma 17056:193778): карта 80×80 в цвете, под ней «+ 12» 17/700
+   −0.41 #ffb249 с обводкой 3px #202020 снаружи и монета 24 справа, между ними 2.
+   Монеты улетят в счётчик по «Забрать» */
+.lb-cell.is-dup .lb-cell-art {
+  width: 80px;
+  height: 80px;
+  margin-top: -6px;
+}
+
 .lb-cell.is-dup .lb-card {
-  filter: grayscale(1) brightness(0.55);
-  opacity: 0.75;
+  width: 80px;
 }
 
 .lb-cell.is-dup .lb-qty {
-  color: #ffcf3d;
+  top: 86px;
+  bottom: auto;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  color: #ffb249;
+}
+
+.lb-cell.is-dup .lb-qty img {
+  width: 24px;
+  height: 24px;
 }
 
 /* рамка-превью 88×88: рамка 8px внутрь, внутри чёрное */
@@ -532,6 +550,20 @@
   pointer-events: none;
 }
 
+.lb-fly-item {
+  position: absolute;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.lb-fly-item > * {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+}
+
 .lb-fly-coin {
   position: absolute;
   z-index: 70;
@@ -544,7 +576,7 @@
 /* «Забрать» 345×56 r16, 17/400 −0.41 */
 /* низкие экраны (нет в макете): ужимаем сетку, чтобы 5 наград не уходили под «Забрать» */
 @media (max-height: 760px) {
-  .lb-title { margin-top: 32px; }
+  .lb-title { margin-top: 32px; margin-bottom: 8px; }
   .lb-cell { height: 132px; }
   .lb-cell.is-bonus { height: 104px; margin-bottom: 4px; }
   .lb-cell-art { width: 72px; height: 72px; }
