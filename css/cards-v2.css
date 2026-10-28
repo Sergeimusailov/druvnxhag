@@ -170,16 +170,22 @@
   transition: transform 0.45s ease-out, opacity 0.2s ease;
 }
 
-.card24-art,
 .card24-mask {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 10.34cqw;
 }
 
+/* картинка меньше карты на 4 из 116 с каждой стороны: рамка закрывает её
+   на 8, а под внешним краем рамки ничего нет — иначе при сглаживании края
+   цвет картинки просвечивает светлой каймой */
 .card24-art {
+  position: absolute;
+  inset: 3.45%;
+  width: 93.1%;
+  height: 93.1%;
+  border-radius: 6.9cqw;
   object-fit: cover;
 }
 
