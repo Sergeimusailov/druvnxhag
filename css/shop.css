@@ -599,50 +599,57 @@
 
 /* ---------- 2.3: витрина по макету Figma 16908:32749 («Магазин сундуков») ---------- */
 
-/* балансы — бейджи 28px: #2c2c2e, иконка 16, число 13/600 */
+/* счётчики (Figma 17178:205483): 32px, #2c2c2e, r12, отступы 4/8, иконка 24,
+   число 15/600 −0.24 (поле 3px по бокам, не уже 8px); между ними 16; монеты первыми */
 .shop-head {
   padding: 0;
 }
 
 .shop-balances {
   display: flex;
-  gap: 12px;
+  gap: 16px;
 }
 
 .shop-balance {
   display: inline-flex;
   align-items: center;
   gap: 0;
-  height: 28px;
-  padding: 0 10px 0 6px;
-  border-radius: 100px;
+  height: 32px;
+  min-width: 76px;
+  padding: 4px 8px;
+  border-radius: 12px;
   background: #2c2c2e;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: none;
-  font-size: 13px;
-  line-height: 16px;
+  font-size: 15px;
+  line-height: 18px;
   font-weight: 600;
-  letter-spacing: -0.08px;
-  color: #fff;
+  letter-spacing: -0.24px;
+  color: #f6f7f8;
   font-variant-numeric: tabular-nums;
 }
 
 .shop-balance img {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
-/* описание под балансами: 15/400, отступы 20/24 */
+.shop-balance span {
+  min-width: 14px;
+  padding: 0 3px;
+  text-align: center;
+}
+
+/* описание под балансами: 15/400 −0.24 #9299a2, отступы 20/24 */
 .shop-sub24 {
   padding: 20px 24px;
   font-size: 15px;
   line-height: 18px;
   letter-spacing: -0.24px;
   text-align: center;
-  color: #f6f7f8;
+  color: #9299a2;
 }
 
 /* бенто (Figma 16908:32749 / 16966:62702): большая карточка эпического,
@@ -676,19 +683,19 @@
   transform: scale(0.98);
 }
 
-/* большая: 180px, отступы 0/16/16, название и бейдж сверху слева, кнопка снизу */
+/* большая: 180px, отступы 16/24/24, название и бейдж сверху слева, кнопка снизу */
 .shop-tile.is-hero {
   height: 180px;
-  padding: 12px 16px 16px;
+  padding: 16px 24px 24px;
   align-items: flex-start;
 }
 
-/* средние: 219px, отступы 0/8/8, всё по центру, кнопка на всю ширину снизу */
+/* средние: 219px, отступы 12/8/16, всё по центру, кнопка-цена снизу по центру */
 .shop-tile.is-small {
   flex: 1;
   min-width: 0;
   height: 219px;
-  padding: 12px 8px 8px;
+  padding: 12px 8px 16px;
   align-items: center;
 }
 
@@ -722,7 +729,7 @@
 /* название: эпический 20/600 +0.38, средние 17/600 −0.41 */
 .shop-tile-name {
   font-size: 17px;
-  line-height: 22px;
+  line-height: 24px;
   font-weight: 600;
   letter-spacing: -0.41px;
   color: #f6f7f8;
@@ -763,31 +770,28 @@
   margin-left: -74px;
 }
 
-/* бейдж «Остался: 1» / таймер: белый 10%, эпический 20px 13/600, средние 16px 11/600 */
+/* бейдж «Остался: 1» / таймер (Figma 16908:32749): 20px, белый 10%, r100,
+   отступы 0/6, текст 13/600 −0.08 #f6f7f8; у эпического 8 под названием, у средних 4 */
 .shop-tile-badge {
   display: inline-flex;
   align-items: center;
   gap: 2px;
   height: 20px;
   margin-top: 8px;
-  padding: 0 4px;
+  padding: 0 6px;
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.1);
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16px;
   font-weight: 600;
   letter-spacing: -0.08px;
-  color: #9299a2;
+  color: #f6f7f8;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
 .shop-tile.is-small .shop-tile-badge {
-  height: 16px;
   margin-top: 4px;
-  font-size: 11px;
-  line-height: 13px;
-  letter-spacing: -0.1px;
 }
 
 .shop-tile-badge .shop-timer {
@@ -795,62 +799,48 @@
   color: #f6f7f8;
 }
 
-.shop-tile.is-small .shop-timer svg {
-  width: 10px;
-  height: 10px;
+.shop-tile-badge .shop-timer svg {
+  width: 12px;
+  height: 12px;
 }
 
-/* кнопка-цена (Figma 16908:29698): жёлтая, иконка валюты справа от цены;
-   у средних 32px на всю ширину (13/600 + монета 16), у эпического
-   «Открыть за N» 44px r16 (15/400 −0.24 + ключ 24) */
+/* кнопка-цена (Figma 16908:32749): белая пилюля 32px, отступы 4/16, текст 13/600
+   −0.08 #333 (поле 2px по бокам), иконка валюты 24 справа; у средних — только
+   цена (86×32 по центру), у эпического «Открыть за N» */
 .shop-tile-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 0;
   height: 32px;
   margin-top: auto;
-  padding: 0 10px;
+  padding: 4px 16px;
   border-radius: 100px;
-  background: #ffdd2d;
+  background: #fff;
   font-size: 13px;
   line-height: 16px;
   font-weight: 600;
   letter-spacing: -0.08px;
   color: #333;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
+.shop-tile-btn span {
+  padding: 0 2px;
+}
+
 .shop-tile-btn img {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
-.shop-tile.is-small .shop-tile-btn {
-  align-self: stretch;
-}
-
-.shop-tile-btn.is-big {
-  height: 44px;
-  gap: 8px;
-  padding: 0 20px 0 24px;
-  border-radius: 16px;
-  font-size: 15px;
-  line-height: 20px;
-  font-weight: 400;
-  letter-spacing: -0.24px;
-}
-
-.shop-tile-btn.is-big img {
-  width: 24px;
-  height: 24px;
-}
-
-/* сундуки на сегодня закончились — кнопка #333, цена и иконка приглушены */
+/* сундуки на сегодня закончились (Figma 16966:62702) — кнопка #333,
+   текст #9299a2, иконка 40% */
 .shop-tile-btn.is-off {
   background: #333;
-  color: rgba(255, 255, 255, 0.3);
+  color: #9299a2;
 }
 
 .shop-tile-btn.is-off img {
@@ -899,7 +889,7 @@
   position: relative;
   isolation: isolate;
   margin: -32px -24px 0;
-  padding: 40px 24px 0;
+  padding: 24px 24px 0;
 }
 
 /* свечение сверху: эллипс 482×267 цвета сундука (у эпического #5d25b0), размытие 86 */
@@ -921,6 +911,7 @@
   display: flex;
   justify-content: center;
   height: 180px;
+  margin-top: 2px;
   pointer-events: none;
 }
 
@@ -931,27 +922,18 @@
   animation: shopLevitate 3.2s ease-in-out infinite;
 }
 
-/* бейдж доступности 16px: 11/700 −0.1 #9299a2 (таймер — светлый) */
+/* бейдж доступности сверху (Figma 16966:64164): 24px, белый 10%, текст 13/600 −0.08 */
 .shop-detail-badge.shop-tile-badge {
   display: flex;
   width: fit-content;
-  height: 16px;
-  margin: 2px auto 0;
-  padding: 0 4px;
-  font-size: 11px;
-  line-height: 13px;
-  font-weight: 700;
-  letter-spacing: -0.1px;
+  height: 24px;
+  margin: 4px auto 0;
+  padding: 0 8px;
 }
 
-.shop-detail-badge .shop-timer svg {
-  width: 10px;
-  height: 10px;
-}
-
-/* заголовок 20/600 +0.38, под ним «Шансы выпадения наград» 13/400 −0.08 */
+/* заголовок «Награды в сундуке» 20/600 +0.38 */
 .shop-detail-title {
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 20px;
   line-height: 24px;
   font-weight: 600;
@@ -960,38 +942,33 @@
   color: #f6f7f8;
 }
 
-.shop-detail-sub {
-  margin-top: 4px;
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: -0.08px;
-  text-align: center;
-  color: #f6f7f8;
-}
-
-/* награды: карточки 84×100 по центру, между ними 8, отступы 16 / 32 */
+/* награды: карточки 104×136 рядами по 3 (+2) по центру, между ними 8, отступы 20 */
 .shop-prizes {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  padding: 16px 0 32px;
+  margin-top: 2px;
+  padding: 20px 0;
   list-style: none;
 }
 
-/* карточка: #1c1c1e, обводка белая 10% внутрь, r16, отступы 8/12;
-   картинка из макета на всю карточку, текст поверх */
+/* карточка: #1c1c1e, обводка белая 10%, r16, отступы 8/8/12; картинка из макета
+   на всю карточку (r12), внизу название 13/600 −0.08 и подпись 12/400 #9299a2 */
 .shop-prize {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 84px;
-  height: 100px;
-  padding: 8px 12px;
+  justify-content: flex-end;
+  align-items: center;
+  width: 104px;
+  height: 136px;
+  padding: 8px 8px 12px;
   border-radius: 16px;
   background: #1c1c1e;
   overflow: hidden;
   isolation: isolate;
+  text-align: center;
   cursor: pointer;
   transition: transform 0.15s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
@@ -1015,33 +992,30 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  border-radius: 12px;
   object-fit: cover;
 }
 
-/* карты зелёного и синего сундуков — фиолетовая рубашка из макета, перекрашенная */
-.shop-prize-card-blue .shop-prize-img {
-  filter: hue-rotate(-55deg) saturate(1.1);
-}
-
+/* одиночная обычная карта в макете крупнее остальных и заходит под подпись — чуть меньше */
 .shop-prize-card-green .shop-prize-img {
-  filter: hue-rotate(-140deg) saturate(1.1);
+  transform: scale(0.82);
+  transform-origin: 50% 8%;
 }
 
-/* шанс 15/600 −0.24, «до N» 11/400 #9299a2 */
-.shop-prize-chance {
-  font-size: 15px;
-  line-height: 18px;
+.shop-prize-title {
+  font-size: 13px;
+  line-height: 16px;
   font-weight: 600;
-  letter-spacing: -0.24px;
+  letter-spacing: -0.08px;
   color: #f6f7f8;
-  font-variant-numeric: tabular-nums;
 }
 
 .shop-prize-sub {
   margin-top: 2px;
-  font-size: 11px;
-  line-height: 13px;
+  font-size: 12px;
+  line-height: 14px;
   color: #9299a2;
+  font-variant-numeric: tabular-nums;
 }
 
 /* низ шторки: кнопка 56, r16, иконка 24 + «Открыть за N» 17/400 −0.41 */

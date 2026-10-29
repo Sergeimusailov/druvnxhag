@@ -125,7 +125,7 @@ function taskHTML(task) {
   }
   return `<div class="task${claimable ? ' is-claimable' : ''}" data-task="${task.id}">
     <div class="task-body"><p class="task-title">${task.title}</p>${extra}</div>
-    <div class="task-reward"><img src="${taskBoltIcon(task.tab)}" alt="Очки"><span>${claimable || task.showPlus ? '+' : ''}${task.reward}</span></div>
+    <div class="task-reward"><img src="${taskRewardIcon(task.tab)}" alt="Очки"><span>${claimable || task.showPlus ? '+' : ''}${task.reward}</span></div>
   </div>`;
 }
 
@@ -398,7 +398,7 @@ async function claimTask(tab, taskId) {
       flyBolt(from, to, i * 65, () => {
         tag.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
         burstAt(to);
-      }, taskBoltIcon(tab))
+      }, taskRewardIcon(tab))
     );
   }
 

@@ -4,13 +4,15 @@
 // Открытие — экран как у подарка в «Заданиях»: бокс падает, трясётся,
 // крышка слетает, предметы вылетают рубашкой вверх и переворачиваются.
 
-// 2.3 (описание магазина, витрина по макету Figma 16908:32749): три сундука — обычный (зелёный) и редкий (синий) за
-// монеты, эпический (фиолетовый) за ключи (вторая
-// софт-валюта). При открытии выпадает от 2 до 5 наград: каждая из пяти
-// (карта, монеты, ключи, бонус, косметика) разыгрывается со своим шансом.
-// Ключи выпадают из обычного и редкого сундуков и даются за сундуки-вехи в
-// «Заданиях». У каждого сундука суточный лимит покупок. Состав и шансы
-// и шансы — в шторке сундука (тап по плитке) и в «?».
+// 2.3 (витрина и карточка сундука по макету Figma 16908:29698): три сундука —
+// обычный (зелёный) и редкий (синий) за монеты, эпический (фиолетовый) за
+// ключи (вторая софт-валюта). Первые четыре награды гарантированы — карта,
+// ключи, монеты и стиль (рамка аватара или рубашка колоды); пятая, бонус от
+// партнёров, выпадает с шансом. Ключи выпадают из каждого сундука и даются за
+// сундуки-вехи в «Заданиях». У каждого сундука суточный лимит покупок. Состав
+// наград — в шторке сундука (тап по плитке) и в «?».
+// card.alt — карта цвета сундука или (с шансом altChance) на ступень ниже:
+// из эпического — эпическая или редкая, из редкого — редкая или обычная
 const LOOTBOXES = [
   {
     id: 'green',
@@ -21,11 +23,11 @@ const LOOTBOXES = [
     limit: 5,
     colors: ['#8ff07a', '#2e9e3f', '#1d5e27'],
     table: [
-      { kind: 'card', rarity: 'green', chance: 80 },
-      { kind: 'coins', min: 20, max: 60, chance: 70 },
-      { kind: 'tokens', min: 5, max: 10, chance: 30 },
-      { kind: 'bonus', chance: 15 },
-      { kind: 'frame', chance: 5 },
+      { kind: 'card', rarity: 'green' },
+      { kind: 'tokens', min: 2, max: 10 },
+      { kind: 'coins', min: 30, max: 100 },
+      { kind: 'frame' },
+      { kind: 'bonus', chance: 20 },
     ],
   },
   {
@@ -37,11 +39,11 @@ const LOOTBOXES = [
     limit: 3,
     colors: ['#8cc8ff', '#2f6fe0', '#1a3c8c'],
     table: [
-      { kind: 'card', rarity: 'blue', chance: 85 },
-      { kind: 'coins', min: 60, max: 150, chance: 70 },
-      { kind: 'tokens', min: 10, max: 20, chance: 40 },
-      { kind: 'bonus', chance: 20 },
-      { kind: 'frame', chance: 10 },
+      { kind: 'card', rarity: 'blue', alt: 'green', altChance: 50 },
+      { kind: 'tokens', min: 5, max: 25 },
+      { kind: 'coins', min: 80, max: 250 },
+      { kind: 'frame' },
+      { kind: 'bonus', chance: 35 },
     ],
   },
   {
@@ -53,11 +55,11 @@ const LOOTBOXES = [
     limit: 1,
     colors: ['#d7a6ff', '#7b34e0', '#3f1683'],
     table: [
-      { kind: 'card', rarity: 'purple', chance: 90 },
-      { kind: 'coins', min: 150, max: 300, chance: 75 },
-      { kind: 'tokens', min: 20, max: 40, chance: 40 },
-      { kind: 'bonus', chance: 30 },
-      { kind: 'frame', chance: 25 },
+      { kind: 'card', rarity: 'purple', alt: 'blue', altChance: 50 },
+      { kind: 'tokens', min: 15, max: 50 },
+      { kind: 'coins', min: 200, max: 500 },
+      { kind: 'frame' },
+      { kind: 'bonus', chance: 50 },
     ],
   },
 ];
@@ -157,17 +159,6 @@ function saveInventory(inv) {
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// взвешенный выбор по шансам (добор до минимума наград)
-function rollEntry(table) {
-  const total = table.reduce((sum, e) => sum + e.chance, 0);
-  let r = Math.random() * total;
-  for (const e of table) {
-    r -= e.chance;
-    if (r < 0) return e;
-  }
-  return table[0];
-}
-
 // taken — имена карт, уже выпавших в этом боксе: внутри одного бокса без повторов
 // дубль карты распыляется в монеты (прототип, экономика — позже)
 const DUP_COINS = { green: 20, blue: 50, purple: 100 };
@@ -224,16 +215,17 @@ function flyReward({ wrap, rect }, target, delay = 0) {
 
 function makeReward(entry, taken = new Set()) {
   if (entry.kind === 'card') {
-    // прототип: из эпического — новая фиолетовая карта (пока есть неоткрытые),
-    // из обычного и редкого — всегда дубль уже открытой карты
-    const all = CARD_ROSTER.filter((c) => cardRarity(c) === entry.rarity && !taken.has(c.name));
+    // прототип: эпическая карта — всегда новая (пока есть неоткрытые),
+    // остальные — дубль уже открытой карты
+    const rarity = entry.alt && Math.random() * 100 < entry.altChance ? entry.alt : entry.rarity;
+    const all = CARD_ROSTER.filter((c) => cardRarity(c) === rarity && !taken.has(c.name));
     const owned = ownedCardNames();
     const fresh = all.filter((c) => !owned.has(c.name));
-    const pool = entry.rarity === 'purple' ? fresh : all.filter((c) => owned.has(c.name));
+    const pool = rarity === 'purple' ? fresh : all.filter((c) => owned.has(c.name));
     const card = pick(pool.length ? pool : all);
     taken.add(card.name);
     const dup = owned.has(card.name);
-    return { kind: 'card', rarity: entry.rarity, card, dup, dupCoins: dup ? DUP_COINS[entry.rarity] : 0 };
+    return { kind: 'card', rarity, card, dup, dupCoins: dup ? DUP_COINS[rarity] : 0 };
   }
   if (entry.kind === 'coins') {
     const amount = Math.round((entry.min + Math.random() * (entry.max - entry.min)) / 10) * 10;
@@ -251,14 +243,10 @@ function makeReward(entry, taken = new Set()) {
   return { kind: 'bonus', name: pick(BONUS_NAMES) };
 }
 
-// каждая награда разыгрывается со своим шансом; выпало меньше двух —
-// добираем по шансам из оставшихся (максимум — все пять)
-const MIN_REWARDS = 2;
+// награды без chance выпадают всегда, бонус — со своим шансом
 function rollBox(box) {
-  const got = box.table.filter((e) => Math.random() * 100 < e.chance);
-  while (got.length < MIN_REWARDS) got.push(rollEntry(box.table.filter((e) => !got.includes(e))));
   const taken = new Set();
-  return box.table.filter((e) => got.includes(e)).map((e) => makeReward(e, taken));
+  return box.table.filter((e) => !e.chance || Math.random() * 100 < e.chance).map((e) => makeReward(e, taken));
 }
 
 /* ---------- Отрисовка магазина ---------- */
@@ -350,7 +338,7 @@ function tileHTML(box, hero) {
       <div class="shop-tile-art">${chestArt(box)}</div>
       <h2 class="shop-tile-name">${box.short}</h2>
       <span class="shop-tile-badge">${badge}</span>
-      <span class="shop-tile-btn${hero ? ' is-big' : ''}${limit ? ' is-off' : ''}">${hero ? 'Открыть за ' : ''}${box.price}<img src="${CURRENCY[box.currency].icon}" alt=""></span>
+      <span class="shop-tile-btn${limit ? ' is-off' : ''}"><span>${hero ? 'Открыть за ' : ''}${box.price}</span><img src="${CURRENCY[box.currency].icon}" alt=""></span>
     </article>`;
 }
 
@@ -397,27 +385,31 @@ const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopD
 
 
 
-// награда — карточка 108×132: шанс 20/600, у монет и ключей под ним «до N»,
-// картинка из макета на всю карточку. Карты зелёного и синего сундуков —
-// та же рубашка, перекрашенная фильтром
-const PRIZE_ART = { card: 'card', coins: 'coins', tokens: 'key', bonus: 'bonus', frame: 'cosmetic' };
-// порядок карточек как в макете: карта, бонус, ключи, монеты, косметика
-const PRIZE_ORDER = ['card', 'bonus', 'tokens', 'coins', 'frame'];
+// награда — карточка 104×136 (Figma 16966:64164): картинка из макета на всю
+// карточку (Figma 17214:21966 «Раздел награды»: у карт своя картинка на каждый
+// сундук), внизу название 13/600 и подпись 12/400 #9299a2 («до N шт.», у бонуса —
+// шанс). Порядок как в таблице: карта, ключи, монеты, стили, бонус
+const PRIZE_ART = { coins: 'coins', tokens: 'keys', bonus: 'bonus', frame: 'styles' };
+const CARD_PRIZE_TITLE = { purple: 'Эпическая или редкая', blue: 'Редкая или обычная', green: 'Обычная' };
+function prizeTitle(e) {
+  if (e.kind === 'card') return CARD_PRIZE_TITLE[e.rarity];
+  return { tokens: 'Ключи', coins: 'Монеты', frame: 'Стили карт и&nbsp;профиля', bonus: 'Бонус' }[e.kind];
+}
 function rewardPreview(e) {
   const key = e.kind === 'card' ? `card-${e.rarity}` : e.kind;
-  const sub = e.kind === 'coins' || e.kind === 'tokens' ? `<span class="shop-prize-sub">до ${e.max}</span>` : '';
+  const sub = e.kind === 'coins' || e.kind === 'tokens' ? `до ${e.max} шт.` : e.chance ? `Шанс ${e.chance}%` : '';
   return `<li class="shop-prize shop-prize-${key}" data-prize-tip="${key}" role="button" tabindex="0">
-    <img class="shop-prize-img" src="assets/shop-prize-${PRIZE_ART[e.kind]}.png" alt="">
-    <span class="shop-prize-chance">${e.chance}%</span>${sub}
+    <img class="shop-prize-img" src="assets/shop-prize2-${e.kind === 'card' ? key : PRIZE_ART[e.kind]}.png" alt="">
+    <span class="shop-prize-title">${prizeTitle(e)}</span>${sub ? `<span class="shop-prize-sub">${sub}</span>` : ''}
   </li>`;
 }
 
-// подсказка по тапу на награду — общий тултип, коротко, как в макете
+// подсказка по тапу на награду — общий тултип над карточкой, как в макете
 // (Figma 16908:29698 «Подсказка в наградам»)
 function prizeTip(key) {
   return {
     'card-green': 'Обычная карта. Если такая уже есть, дубль превратится в монеты',
-    'card-blue': 'Редкая карта. Если такая уже есть, дубль превратится в монеты',
+    'card-blue': 'Редкая или обычная карта. Дубль превратится в монеты',
     'card-purple': 'Редкая или эпическая карта',
     coins: 'Монеты, за которые открываются обычный и редкий сундуки',
     tokens: 'Ключи, которые открывают фиолетовый сундук',
@@ -443,11 +435,11 @@ function renderDetail(box) {
   shopDetailEl.style.setProperty('--glow', SHEET_GLOW[box.id]);
   shopDetailBody.innerHTML = `
     <span class="shop-detail-star" aria-hidden="true"></span>
-    <div class="shop-detail-art">${chestArt(box)}</div>
     <span class="shop-tile-badge shop-detail-badge">${badge}</span>
-    <h2 class="shop-detail-title">${box.name}</h2>
-    <p class="shop-detail-sub">Шансы выпадения наград</p>
-    <ul class="shop-prizes">${[...box.table].sort((x, y) => PRIZE_ORDER.indexOf(x.kind) - PRIZE_ORDER.indexOf(y.kind)).map(rewardPreview).join('')}</ul>`;
+    <div class="shop-detail-art">${chestArt(box)}</div>
+    <h2 class="shop-detail-title">Награды в сундуке</h2>
+    <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>`;
+  shopDetailEl.setAttribute('aria-label', box.name);
   shopDetailFoot.innerHTML = btn;
 }
 
@@ -465,7 +457,7 @@ function closeDetail() {
 shopDetailEl.addEventListener('click', (e) => {
   const prize = e.target.closest('.shop-prize');
   if (prize) {
-    Tooltip24.show(prize, { text: prizeTip(prize.dataset.prizeTip) });
+    Tooltip24.show(prize, { text: prizeTip(prize.dataset.prizeTip), above: true });
     return;
   }
   const btn = e.target.closest('[data-open]');
@@ -486,19 +478,21 @@ const shopInfoSheet = bottomSheet(document.getElementById('shopInfoSheet'), docu
 const SHOP_FAQ_CHEVRON = '<svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1.5 1.5 6.5 7l-5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function shopFaq() {
-  const chances = LOOTBOXES.map((box) => {
-    const name = (e) => (e.kind === 'card' ? 'карта' : e.kind === 'coins' ? 'монеты' : e.kind === 'tokens' ? 'ключи' : e.kind === 'frame' ? 'косметика' : 'бонус');
-    return `${box.name}: ${box.table.map((e) => `${name(e)} ${e.chance}%`).join(', ')}.`;
+  const bonus = LOOTBOXES.map((box) => `${box.short.toLowerCase()} — ${box.table.find((e) => e.kind === 'bonus').chance}%`).join(', ');
+  const ranges = LOOTBOXES.map((box) => {
+    const t = box.table.find((e) => e.kind === 'tokens');
+    const c = box.table.find((e) => e.kind === 'coins');
+    return `${box.name}: ключи ${t.min}–${t.max}, монеты ${c.min}–${c.max}.`;
   }).join('<br>');
   const limits = LOOTBOXES.map((box) => `${box.short.toLowerCase()} — ${box.limit}`).join(', ');
   return [
     ['Как получить новые карты?', 'Карты не продаются напрямую — они выпадают только из сундуков. Чем дороже сундук, тем реже карта внутри.'],
-    ['Чем отличаются сундуки?', `Обычный и редкий открываются за монеты, эпический — за ключи. Из каждого выпадает карта своего цвета: зелёная, синяя или фиолетовая.`],
-    ['Что выпадет из сундука?', 'От 2 до 5 наград: карта, монеты, ключи, бонус и косметика — рамка аватара или рубашка колоды. Каждая выпадает со своим шансом. Чтобы увидеть шансы, нажмите на сундук.'],
-    ['С какими шансами выпадают награды?', chances],
-    ['Где взять ключи?', 'Они выпадают из обычного и редкого сундуков и даются за сундуки на шкале в разделе «Задания».'],
+    ['Чем отличаются сундуки?', 'Обычный и редкий открываются за монеты, эпический — за ключи. Из обычного выпадает обычная карта, из редкого — редкая или обычная, из эпического — эпическая или редкая.'],
+    ['Что выпадет из сундука?', `Четыре награды гарантированно: карта, ключи, монеты и стиль — рамка аватара или рубашка колоды. Пятая — бонус от партнёров — выпадает с шансом: ${bonus}.`],
+    ['Сколько ключей и монет внутри?', ranges],
+    ['Где взять ключи?', 'Они выпадают из каждого сундука и даются за сундуки на шкале в разделе «Задания».'],
     ['Сколько сундуков можно открыть за день?', `У каждого сундука свой лимит: ${limits}. Он обновляется каждый день в полночь — до обновления на сундуке виден таймер.`],
-    ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и ключи — в баланс, бонусы — в раздел «Бонусы», косметика — в настройки профиля.'],
+    ['Куда попадают награды?', 'Карты — в коллекцию в разделе «Карты», монеты и ключи — в баланс, бонусы — в раздел «Бонусы», стили — в настройки профиля.'],
     ['Что такое бонус?', 'Предложение от партнёров: кешбэк, скидка или бесплатная доставка. Его можно активировать в разделе «Бонусы».'],
   ];
 }

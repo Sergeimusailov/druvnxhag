@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610282054"></script>
+  <script src="js/device-frame.js?v=202610291926"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610282054"></script>
+  <script src="js/version.js?v=202610291926"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610282054">
-  <link rel="stylesheet" href="css/v2.css?v=202610282054">
-  <link rel="stylesheet" href="css/profile.css?v=202610282054">
-  <link rel="stylesheet" href="css/tasks.css?v=202610282054">
-  <link rel="stylesheet" href="css/gifts.css?v=202610282054">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610282054">
-  <link rel="stylesheet" href="css/shop.css?v=202610282054">
-  <link rel="stylesheet" href="css/v22.css?v=202610282054">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610282054">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610282054">
-  <link rel="stylesheet" href="css/ny24.css?v=202610282054">
-  <link rel="stylesheet" href="css/tooltip24.css?v=202610282054">
-  <link rel="stylesheet" href="css/cosmetics24.css?v=202610282054">
-  <link rel="stylesheet" href="css/profile24.css?v=202610282054">
-  <link rel="stylesheet" href="css/v3.css?v=202610282054">
-  <link rel="stylesheet" href="css/event.css?v=202610282054">
+  <link rel="stylesheet" href="css/match.css?v=202610291926">
+  <link rel="stylesheet" href="css/v2.css?v=202610291926">
+  <link rel="stylesheet" href="css/profile.css?v=202610291926">
+  <link rel="stylesheet" href="css/tasks.css?v=202610291926">
+  <link rel="stylesheet" href="css/gifts.css?v=202610291926">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610291926">
+  <link rel="stylesheet" href="css/shop.css?v=202610291926">
+  <link rel="stylesheet" href="css/v22.css?v=202610291926">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610291926">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610291926">
+  <link rel="stylesheet" href="css/ny24.css?v=202610291926">
+  <link rel="stylesheet" href="css/tooltip24.css?v=202610291926">
+  <link rel="stylesheet" href="css/cosmetics24.css?v=202610291926">
+  <link rel="stylesheet" href="css/profile24.css?v=202610291926">
+  <link rel="stylesheet" href="css/v3.css?v=202610291926">
+  <link rel="stylesheet" href="css/event.css?v=202610291926">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -200,12 +200,12 @@
 
         <div class="shop-head">
           <div class="shop-balances">
-            <button class="shop-balance shop-balance-tokens" data-balance="tokens" aria-label="Ключи — что это"><img src="assets/shop-key-192.png" alt="" width="16" height="16"><span id="shopTokens">0</span></button>
-            <button class="shop-balance" data-balance="coins" aria-label="Монеты — что это"><img src="assets/shop-coin.png" alt="" width="16" height="16"><span id="shopCoins">0</span></button>
+            <button class="shop-balance" data-balance="coins" aria-label="Монеты — что это"><img src="assets/shop-coin.png" alt="" width="24" height="24"><span id="shopCoins">0</span></button>
+            <button class="shop-balance shop-balance-tokens" data-balance="tokens" aria-label="Ключи — что это"><img src="assets/shop-key-192.png" alt="" width="24" height="24"><span id="shopTokens">0</span></button>
           </div>
         </div>
 
-        <p class="shop-sub24">Из сундуков могут выпасть награды с определенным шансом. Состав наград и шансов смотрите внутри</p>
+        <p class="shop-sub24">Из сундуков выпадает 4 гарантированные награды и 1 дополнительная. Подробнее внутри сундуков</p>
         <div class="shop-boxes" id="shopBoxes"></div>
         <button class="shop-demo" id="shopDemoCoins">Демо: +500 монет и +30 ключей</button>
         <!-- версия 3: рекламный баннер под сундуками -->
@@ -386,7 +386,7 @@
     <button class="ev-fab" id="eventFab" aria-label="Вернуться в новогоднее событие" hidden>
       <span class="ev-fab-ring"><span class="ev-fab-hex"><span></span></span><img class="ev-fab-prize" id="eventFabPrize" src="" alt=""><img class="ev-fab-extra" id="eventFabExtra" src="" alt="" hidden><span class="ev-fab-qty" id="eventFabQty"></span></span>
       <span class="ev-fab-bar"><span class="ev-fab-fill" id="eventFabFill"></span><span class="ev-fab-text" id="eventFabText"></span></span>
-      <img class="ev-fab-snow" src="assets/v2-snow-pts.png" alt="Снежинки">
+      <img class="ev-fab-snow" src="assets/v2-snow-pts2.png" alt="Снежинки">
       <span class="e22-badge ev-fab-badge" id="eventFabBadge" hidden></span>
     </button>
 
@@ -576,7 +576,7 @@
         <div class="v2-appbar">
           <button class="v2-icon-btn v2-glass" id="e22Back" aria-label="Назад"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg></button>
           <div class="v2-appbar-title" id="e22Title"></div>
-          <span class="e23-snowbar" id="e23Snowbar" aria-hidden="true"><span class="e23-hex-in"><img src="assets/v2-snow-pts.png" alt=""><span id="e23SnowbarCount"></span></span></span>
+          <span class="e23-snowbar" id="e23Snowbar" aria-hidden="true"><span class="e23-hex-in"><img src="assets/v2-snow-pts2.png" alt=""><span id="e23SnowbarCount"></span></span></span>
           <span class="e22-tickets" id="e22Tickets"><img src="assets/v2-ticket-icon.png" alt="Билеты"><span id="e22TicketCount">12</span></span>
           <button class="v2-icon-btn v2-glass ny24-help" id="ny24Help" aria-label="Ответы на вопросы" style="color: #e8e8e8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33936 7.72565C5.54822 4.35296 8.44774 1.68005 11.994 1.68005C15.6759 1.68005 18.6606 4.56139 18.6606 8.11569C18.6606 11.3385 16.2067 14.008 13.0042 14.4779L13 16.5001H9L9.00421 13.5762C9.00421 11.9607 10.3205 10.651 11.994 10.6509C13.4445 10.6509 14.6203 9.51568 14.6203 8.1155C14.6203 6.71532 13.4445 5.58025 11.994 5.58025C10.6809 5.58025 9.59288 6.51055 9.39862 7.72565H5.33936ZM11.5859 22.5001H9L9.00421 19.8653C9.00421 19.1113 9.59694 18.5001 10.3779 18.5001H13.0042L13 21.135C13 21.8889 12.3669 22.5001 11.5859 22.5001Z" fill="currentColor"/></svg></button>
           <button class="v2-icon-btn v2-glass" id="e22Info" aria-label="Об событии" style="color: #e8e8e8">
@@ -781,23 +781,23 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610282054"></script>
-  <script src="js/v2.js?v=202610282054"></script>
-  <script src="js/tooltip24.js?v=202610282054"></script>
-  <script src="js/sheets.js?v=202610282054"></script>
-  <script src="js/profile.js?v=202610282054"></script>
-  <script src="js/cosmetics24.js?v=202610282054"></script>
-  <script src="js/profile24.js?v=202610282054"></script>
-  <script src="js/t-ads.js?v=202610282054"></script>
-  <script src="js/tasks22.js?v=202610282054"></script>
-  <script src="js/tasks.js?v=202610282054"></script>
-  <script src="js/card-custom.js?v=202610282054"></script>
-  <script src="js/cards-v2.js?v=202610282054"></script>
-  <script src="js/shop-shields.js?v=202610282054"></script>
-  <script src="js/shop.js?v=202610282054"></script>
-  <script src="js/gifts.js?v=202610282054"></script>
-  <script src="js/event.js?v=202610282054"></script>
-  <script src="js/events22.js?v=202610282054"></script>
-  <script src="js/v3.js?v=202610282054"></script>
+  <script src="js/cards.js?v=202610291926"></script>
+  <script src="js/v2.js?v=202610291926"></script>
+  <script src="js/tooltip24.js?v=202610291926"></script>
+  <script src="js/sheets.js?v=202610291926"></script>
+  <script src="js/profile.js?v=202610291926"></script>
+  <script src="js/cosmetics24.js?v=202610291926"></script>
+  <script src="js/profile24.js?v=202610291926"></script>
+  <script src="js/t-ads.js?v=202610291926"></script>
+  <script src="js/tasks22.js?v=202610291926"></script>
+  <script src="js/tasks.js?v=202610291926"></script>
+  <script src="js/card-custom.js?v=202610291926"></script>
+  <script src="js/cards-v2.js?v=202610291926"></script>
+  <script src="js/shop-shields.js?v=202610291926"></script>
+  <script src="js/shop.js?v=202610291926"></script>
+  <script src="js/gifts.js?v=202610291926"></script>
+  <script src="js/event.js?v=202610291926"></script>
+  <script src="js/events22.js?v=202610291926"></script>
+  <script src="js/v3.js?v=202610291926"></script>
 </body>
 </html>
