@@ -698,4 +698,6 @@ function initGame() {
 
 document.getElementById('infoBtn').addEventListener('click', () => {});
 
-initGame();
+// перед матчем — экран поиска соперника (js/matchmaking24.js)
+if (window.MATCH_GATE) window.MATCH_GATE.then(initGame);
+else initGame();
