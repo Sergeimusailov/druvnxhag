@@ -11,6 +11,7 @@
   const sheetCard = document.getElementById('cardSheetCard');
   const sheetBtn = document.getElementById('cardSheetBtn');
   const sheetHint = document.getElementById('cardSheetHint');
+  const sheetLock = document.getElementById('cardSheetLock');
 
   let deck = getSavedDeckNames().filter((name) => CARD_ROSTER.some((c) => c.name === name));
   let sheetAction = null;
@@ -150,7 +151,7 @@
         el = cardEl(card, ' is-locked');
         el.insertAdjacentHTML('beforeend', `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`);
         el.setAttribute('aria-label', `${card.name} — карта не открыта`);
-        el.addEventListener('click', () => Tooltip24.show(el, lockedTip(card)));
+        el.addEventListener('click', () => openLocked(card));
       }
       elCache.set(key, el);
     }
@@ -200,8 +201,11 @@
   function openCard(card) {
     sheetTitle.textContent = card.name;
     sheetCard.innerHTML = card24HTML(card);
+    sheetCard.classList.remove('is-locked');
     if (typeof applyCardCustom === 'function') applyCardCustom(sheetCard, card.name);
     sheetCard.dataset.card = card.name;
+    sheet.classList.remove('is-locked-card');
+    sheetLock.hidden = true;
     sheetHint.textContent = '';
     sheetBtn.disabled = false;
     sheetBtn.classList.remove('is-remove');
@@ -222,6 +226,27 @@
     backdrop.classList.add('is-open');
   }
 
+  // закрытая карта — та же шторка: карта с замком, заголовок и текст из
+  // lockedTip(), большая кнопка во всю ширину ведёт в задания или магазин
+  function openLocked(card) {
+    const tip = lockedTip(card);
+    sheetTitle.textContent = card.name;
+    sheetCard.innerHTML = card24HTML(card) + `<span class="card-lock" aria-hidden="true">${LOCK_SVG}</span>`;
+    sheetCard.classList.add('is-locked');
+    sheetCard.dataset.card = card.name;
+    sheet.classList.add('is-locked-card');
+    sheetLock.hidden = false;
+    document.getElementById('cardSheetLockTitle').textContent = tip.title;
+    document.getElementById('cardSheetLockText').textContent = tip.text;
+    sheetHint.textContent = '';
+    sheetBtn.disabled = false;
+    sheetBtn.classList.remove('is-remove');
+    sheetBtn.textContent = tip.action.label;
+    sheetAction = () => { closeCard(); tip.action.onClick(); return false; };
+    sheet.classList.add('is-open');
+    backdrop.classList.add('is-open');
+  }
+
   function closeCard() {
     sheet.classList.remove('is-open');
     backdrop.classList.remove('is-open');
@@ -229,7 +254,7 @@
 
   sheetBtn.addEventListener('click', () => {
     if (!sheetAction) return;
-    sheetAction();
+    if (sheetAction() === false) return;
     saveDeckNames(deck);
     closeCard();
     render();

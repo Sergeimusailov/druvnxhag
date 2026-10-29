@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="js/device-frame.js?v=202610291928"></script>
+  <script src="js/device-frame.js?v=202610291933"></script>
   <title>Арена Карт</title>
-  <script src="js/version.js?v=202610291928"></script>
+  <script src="js/version.js?v=202610291933"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/match.css?v=202610291928">
-  <link rel="stylesheet" href="css/v2.css?v=202610291928">
-  <link rel="stylesheet" href="css/profile.css?v=202610291928">
-  <link rel="stylesheet" href="css/tasks.css?v=202610291928">
-  <link rel="stylesheet" href="css/gifts.css?v=202610291928">
-  <link rel="stylesheet" href="css/cards-v2.css?v=202610291928">
-  <link rel="stylesheet" href="css/shop.css?v=202610291928">
-  <link rel="stylesheet" href="css/v22.css?v=202610291928">
-  <link rel="stylesheet" href="css/t-ads.css?v=202610291928">
-  <link rel="stylesheet" href="css/tasks24.css?v=202610291928">
-  <link rel="stylesheet" href="css/ny24.css?v=202610291928">
-  <link rel="stylesheet" href="css/tooltip24.css?v=202610291928">
-  <link rel="stylesheet" href="css/cosmetics24.css?v=202610291928">
-  <link rel="stylesheet" href="css/profile24.css?v=202610291928">
-  <link rel="stylesheet" href="css/v3.css?v=202610291928">
-  <link rel="stylesheet" href="css/event.css?v=202610291928">
+  <link rel="stylesheet" href="css/match.css?v=202610291933">
+  <link rel="stylesheet" href="css/v2.css?v=202610291933">
+  <link rel="stylesheet" href="css/profile.css?v=202610291933">
+  <link rel="stylesheet" href="css/tasks.css?v=202610291933">
+  <link rel="stylesheet" href="css/gifts.css?v=202610291933">
+  <link rel="stylesheet" href="css/cards-v2.css?v=202610291933">
+  <link rel="stylesheet" href="css/shop.css?v=202610291933">
+  <link rel="stylesheet" href="css/v22.css?v=202610291933">
+  <link rel="stylesheet" href="css/t-ads.css?v=202610291933">
+  <link rel="stylesheet" href="css/tasks24.css?v=202610291933">
+  <link rel="stylesheet" href="css/ny24.css?v=202610291933">
+  <link rel="stylesheet" href="css/tooltip24.css?v=202610291933">
+  <link rel="stylesheet" href="css/cosmetics24.css?v=202610291933">
+  <link rel="stylesheet" href="css/profile24.css?v=202610291933">
+  <link rel="stylesheet" href="css/v3.css?v=202610291933">
+  <link rel="stylesheet" href="css/event.css?v=202610291933">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute">
@@ -726,6 +726,8 @@
       <button class="v2-sheet-close" id="cardSheetClose" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.58579 8L3.29289 4.70711C2.90237 4.31658 2.90237 3.68342 3.29289 3.29289C3.68342 2.90237 4.31658 2.90237 4.70711 3.29289L8 6.58579L11.2929 3.29289C11.6834 2.90237 12.3166 2.90237 12.7071 3.29289C13.0976 3.68342 13.0976 4.31658 12.7071 4.70711L9.41421 8L12.7071 11.2929C13.0976 11.6834 13.0976 12.3166 12.7071 12.7071C12.3166 13.0976 11.6834 13.0976 11.2929 12.7071L8 9.41421L4.70711 12.7071C4.31658 13.0976 3.68342 13.0976 3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929L6.58579 8Z" fill="currentColor"/></svg></button>
       <h2 class="v2-sheet-title visually-hidden" id="cardSheetTitle"></h2>
       <div class="card24 card-sheet-card" id="cardSheetCard"></div>
+      <!-- закрытая карта: где её получить (тот же текст, что был в тултипе) -->
+      <div class="card-sheet-lock" id="cardSheetLock" hidden><b id="cardSheetLockTitle"></b><span id="cardSheetLockText"></span></div>
       <div class="card-sheet-actions">
         <button class="v2-cta card-sheet-btn" id="cardSheetBtn"></button>
         <!-- версия 3: переход в кастомизацию карты -->
@@ -781,23 +783,23 @@
     </section>
   </main>
 
-  <script src="js/cards.js?v=202610291928"></script>
-  <script src="js/v2.js?v=202610291928"></script>
-  <script src="js/tooltip24.js?v=202610291928"></script>
-  <script src="js/sheets.js?v=202610291928"></script>
-  <script src="js/profile.js?v=202610291928"></script>
-  <script src="js/cosmetics24.js?v=202610291928"></script>
-  <script src="js/profile24.js?v=202610291928"></script>
-  <script src="js/t-ads.js?v=202610291928"></script>
-  <script src="js/tasks22.js?v=202610291928"></script>
-  <script src="js/tasks.js?v=202610291928"></script>
-  <script src="js/card-custom.js?v=202610291928"></script>
-  <script src="js/cards-v2.js?v=202610291928"></script>
-  <script src="js/shop-shields.js?v=202610291928"></script>
-  <script src="js/shop.js?v=202610291928"></script>
-  <script src="js/gifts.js?v=202610291928"></script>
-  <script src="js/event.js?v=202610291928"></script>
-  <script src="js/events22.js?v=202610291928"></script>
-  <script src="js/v3.js?v=202610291928"></script>
+  <script src="js/cards.js?v=202610291933"></script>
+  <script src="js/v2.js?v=202610291933"></script>
+  <script src="js/tooltip24.js?v=202610291933"></script>
+  <script src="js/sheets.js?v=202610291933"></script>
+  <script src="js/profile.js?v=202610291933"></script>
+  <script src="js/cosmetics24.js?v=202610291933"></script>
+  <script src="js/profile24.js?v=202610291933"></script>
+  <script src="js/t-ads.js?v=202610291933"></script>
+  <script src="js/tasks22.js?v=202610291933"></script>
+  <script src="js/tasks.js?v=202610291933"></script>
+  <script src="js/card-custom.js?v=202610291933"></script>
+  <script src="js/cards-v2.js?v=202610291933"></script>
+  <script src="js/shop-shields.js?v=202610291933"></script>
+  <script src="js/shop.js?v=202610291933"></script>
+  <script src="js/gifts.js?v=202610291933"></script>
+  <script src="js/event.js?v=202610291933"></script>
+  <script src="js/events22.js?v=202610291933"></script>
+  <script src="js/v3.js?v=202610291933"></script>
 </body>
 </html>

@@ -267,6 +267,51 @@
   display: none;
 }
 
+/* закрытая карта (решено по смыслу, макета нет): под картой заголовок 20/600
+   +0.38 и текст 15/400 −0.24 #9299a2 — те же, что были в тултипе; кнопка
+   56px во всю ширину (отступы 16), карандаша кастомизации нет */
+.card-sheet-lock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 24px 0;
+  text-align: center;
+}
+
+.card-sheet-lock[hidden] {
+  display: none;
+}
+
+.card-sheet-lock b {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
+}
+
+.card-sheet-lock span {
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #9299a2;
+}
+
+.card-sheet.is-locked-card .card-sheet-actions .card-sheet-btn {
+  flex: 1;
+  width: auto;
+}
+
+.v2-sheet.card-sheet.is-locked-card .card-sheet-edit.v3-only {
+  display: none !important;
+}
+
+/* замок на большой карте в шторке — крупнее, чем в сетке */
+.card-sheet-card .card-lock svg {
+  width: 40px;
+  height: 48px;
+}
+
 /* версия 2: кнопка шторки 200px по центру (в версии 3 рядом карандаш) */
 [data-app="2"] .card-sheet-actions {
   justify-content: center;
