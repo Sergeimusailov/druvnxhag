@@ -153,6 +153,22 @@ window.MATCH_GATE = (() => {
     });
   }
 
+  // появление матча: клетки поля плавно проявляются по очереди, карты руки
+  // по одной приплывают снизу вверх с небольшой задержкой
+  function introMatch() {
+    if (reduce) return;
+    document.querySelectorAll('#board .cell').forEach((c, i) => {
+      c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 200 + i * 50, easing: 'ease-out', fill: 'backwards' });
+    });
+    document.querySelectorAll('#hand .hand-slot').forEach((s, i) => {
+      s.animate([
+        { transform: 'translateY(160px)', opacity: 0 },
+        { transform: 'translateY(-6px)', opacity: 1, offset: 0.75 },
+        { transform: 'none', opacity: 1 },
+      ], { duration: 650, delay: 500 + i * 140, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'backwards' });
+    });
+  }
+
   let start;
   const gate = new Promise((r) => { start = r; });
   (async () => {
@@ -189,6 +205,7 @@ window.MATCH_GATE = (() => {
     start();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     root.classList.add('is-leaving');
+    introMatch();
     await Promise.all([flyToMatch('you'), flyToMatch('opp'), wait(700)]);
     document.documentElement.classList.remove('mm24-on');
     root.remove();
