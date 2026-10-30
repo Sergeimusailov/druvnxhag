@@ -353,19 +353,6 @@ html.mm24-on body {
   filter: grayscale(0.8) brightness(0.6) blur(0.5px);
 }
 
-.mm24-scan span {
-  position: relative;
-  font-size: 40px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-  animation: mm24Q 0.9s ease-in-out infinite;
-}
-
-@keyframes mm24Q {
-  50% { transform: scale(1.15); }
-}
-
 .mm24-dots i {
   font-style: normal;
   animation: mm24Dot 1.2s infinite;
