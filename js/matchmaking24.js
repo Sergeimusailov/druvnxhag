@@ -1,13 +1,14 @@
-// Поиск соперника перед матчем (по смыслу, как в Marvel Snap; макета нет).
+// Поиск соперника перед матчем (по смыслу, по референсу Marvel Snap; макета нет).
 // «Найти матч» на главной ведёт на match.html — сначала поверх поля экран
-// поиска: шапка как в матче («‹», «Поиск соперника», «?»). Игроки — тот же
-// компонент, что в матче (аватар в рамке, рубашка колоды в углу, имя), только
-// крупнее и со статусом: я — слева вверху, соперник — справа внизу; в центре
-// скрещённые мечи и под ними статус. Пока ищем, на месте соперника радар с
-// перебором аватарок. Через 2–3 с соперник найден: радар гаснет, соперник
-// въезжает справа налево, мечи вспыхивают жёлтым, «Соперник найден!». Потом
-// «Начинаем матч» с лоадером, и экран плавно гаснет, а аватары перелетают на
-// свои места в шапке матча.
+// поиска: шапка как в матче («‹», «Поиск соперника», «?»). Игрок — аватар в
+// рамке с рубашкой колоды в верхнем углу и плашка с именем и статусом: я —
+// сверху (аватар слева, синяя плашка вправо), соперник — снизу зеркально
+// (красная плашка слева, аватар справа). В центре — скрещённые мечи в
+// светящемся круге с диагональным сиянием, под ними статус. Пока ищем, на месте
+// соперника радар с перебором аватарок. Через 2–3 с соперник найден: радар
+// гаснет, соперник въезжает справа налево, мечи вспыхивают жёлтым, «Соперник
+// найден!». Потом «Начинаем матч» с лоадером; игроки разъезжаются влево и
+// вправо, экран гаснет, а матч под ним проявляется.
 // match.js ждёт window.MATCH_GATE и только потом вызывает initGame().
 // Подключается после cosmetics24.js и match24.js, до match.js. Работает в
 // версиях 2 и 3; ?nosearch — сразу в матч (для проверок).
@@ -18,7 +19,7 @@ window.MATCH_GATE = (() => {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const get = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   // имя и аватар — те же, что в шапке матча (в версии 2 их уже подставил
-  // match24.js из профиля, в версии 3 — свои), чтобы аватар долетал «в себя»
+  // match24.js из профиля, в версии 3 — свои)
   const fromMatch = (sel, prop) => { const el = document.querySelector(sel); return el ? el[prop] : ''; };
   const avatar = fromMatch('.avatar-you', 'src') || get('v2.profileAvatar') || 'assets/v2-avatar-photo.svg';
   const youName = fromMatch('.player-you .player-name', 'textContent') || 'Александр К.';
@@ -32,15 +33,14 @@ window.MATCH_GATE = (() => {
   const BACK_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg>';
   const HELP_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33936 7.72565C5.54822 4.35296 8.44774 1.68005 11.994 1.68005C15.6759 1.68005 18.6606 4.56139 18.6606 8.11569C18.6606 11.3385 16.2067 14.008 13.0042 14.4779L13 16.5001H9L9.00421 13.5762C9.00421 11.9607 10.3205 10.651 11.994 10.6509C13.4445 10.6509 14.6203 9.51568 14.6203 8.1155C14.6203 6.71532 13.4445 5.58025 11.994 5.58025C10.6809 5.58025 9.59288 6.51055 9.39862 7.72565H5.33936ZM11.5859 22.5001H9L9.00421 19.8653C9.00421 19.1113 9.59694 18.5001 10.3779 18.5001H13.0042L13 21.135C13 21.8889 12.3669 22.5001 11.5859 22.5001Z" fill="currentColor"/></svg>';
 
-  // игрок — как в матче: аватар в рамке, рубашка колоды в верхнем углу, имя; плюс статус
+  // игрок — аватар в рамке, рубашка колоды в верхнем углу, рядом плашка с именем и статусом
   const playerHTML = (who, img, name, sub, deckId) => `
     <div class="mm24-player mm24-${who}">
+      <div class="mm24-plate"><b class="mm24-name">${name}</b><span class="mm24-sub">${sub}</span></div>
       <div class="mm24-ava">
         <span class="m24-frame mm24-frame"><img class="avatar" src="${img}" alt=""></span>
         <span class="mm24-deck">${C ? C.backHTML(deckId) : ''}</span>
       </div>
-      <b class="mm24-name">${name}</b>
-      <span class="mm24-sub">${sub}</span>
     </div>`;
 
   const SEARCH_AVAS = Array.from({ length: 16 }, (_, i) => `assets/avatars-sq/sq-${String(i + 1).padStart(2, '0')}.png`);
@@ -116,31 +116,6 @@ window.MATCH_GATE = (() => {
     }
   }
 
-  // аватар (рамка + рубашка) перелетает на место аватара в шапке матча;
-  // аватар матча на это время спрятан и проявляется, когда долетели
-  function flyToMatch(who) {
-    const src = root.querySelector(`.mm24-${who} .mm24-ava`);
-    const player = document.querySelector(who === 'you' ? '.player-you' : '.player-opponent');
-    const dst = player && (player.querySelector('.m24-frame') || player.querySelector('.avatar'));
-    const wrap = player && player.querySelector('.avatar-wrap');
-    if (!src || !dst) return Promise.resolve();
-    if (wrap) wrap.style.visibility = 'hidden';
-    const a = src.querySelector('.mm24-frame').getBoundingClientRect();
-    const b = dst.getBoundingClientRect();
-    const k = b.width / a.width;
-    const dx = b.left - a.left;
-    const dy = b.top - a.top;
-    return src.animate([
-      { transform: 'none' },
-      { transform: `translate(${dx}px, ${dy}px) scale(${k})` },
-    ], { duration: reduce ? 1 : 750, easing: 'cubic-bezier(0.5, 0, 0.2, 1)', fill: 'forwards' }).finished.then(() => {
-      if (wrap) {
-        wrap.style.visibility = '';
-        wrap.animate([{ opacity: 0.6 }, { opacity: 1 }], { duration: 200 });
-      }
-    });
-  }
-
   // появление матча: клетки поля плавно проявляются по очереди, карты руки
   // по одной приплывают снизу вверх с небольшой задержкой
   function introMatch() {
@@ -180,13 +155,15 @@ window.MATCH_GATE = (() => {
     root.classList.add('is-start');
     await wait(1800);
 
-    // под экраном запускается матч; фон и подписи гаснут,
-    // аватары перелетают на свои места в шапке матча
+    // игроки разъезжаются влево и вправо, экран гаснет —
+    // под ним запускается матч и проявляется
+    root.classList.add('is-leaving');
+    await wait(450);
     start();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    root.classList.add('is-leaving');
+    root.classList.add('is-gone');
     introMatch();
-    await Promise.all([flyToMatch('you'), flyToMatch('opp'), wait(700)]);
+    await wait(650);
     document.documentElement.classList.remove('mm24-on');
     root.remove();
   })();
