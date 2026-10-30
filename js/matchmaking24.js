@@ -1,11 +1,11 @@
 // Поиск соперника перед матчем (по смыслу, как в Marvel Snap; макета нет).
 // «Найти матч» на главной ведёт на match.html — сначала поверх поля экран
-// поиска: шапка как в матче («‹», по центру статус, «?»). Игроки — тот же
+// поиска: шапка как в матче («‹», «Поиск соперника», «?»). Игроки — тот же
 // компонент, что в матче (аватар в рамке, рубашка колоды в углу, имя), только
-// крупнее и со статусом: я — слева вверху, соперник — справа внизу; между
-// нами диагональный разделитель. Пока ищем, на месте соперника радар с
+// крупнее и со статусом: я — слева вверху, соперник — справа внизу; в центре
+// скрещённые мечи и под ними статус. Пока ищем, на месте соперника радар с
 // перебором аватарок. Через 2–3 с соперник найден: радар гаснет, соперник
-// въезжает справа налево, разделитель вспыхивает, «Соперник найден!». Потом
+// въезжает справа налево, мечи вспыхивают жёлтым, «Соперник найден!». Потом
 // «Начинаем матч» с лоадером, и экран плавно гаснет, а аватары перелетают на
 // свои места в шапке матча.
 // match.js ждёт window.MATCH_GATE и только потом вызывает initGame().
@@ -53,15 +53,13 @@ window.MATCH_GATE = (() => {
     <div class="mm24-bar">
       <a class="m24-btn mm24-back" href="${isV3 ? 'v2.html?app=3' : 'v2.html'}" aria-label="Отменить поиск">${BACK_SVG}</a>
       <div class="mm24-title">
-        <div class="mm24-title-text" id="mm24Title">Поиск соперника</div>
-        <div class="mm24-status" id="mm24Status">0:00</div>
+        <div class="mm24-title-text">Поиск соперника</div>
       </div>
       <button class="m24-btn mm24-help" id="mm24Help" aria-label="Ответы на вопросы"${isV3 ? ' hidden' : ''}>${HELP_SVG}</button>
     </div>
-    <div class="mm24-split" aria-hidden="true"><span class="mm24-split-line"></span></div>
     <div class="mm24-center">
-      <span class="mm24-loader" aria-hidden="true"></span>
-      <div class="mm24-msg" id="mm24Msg" role="status"></div>
+      <span class="mm24-vs"><svg class="mm24-swords" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><g transform="translate(32 31) rotate(45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g><g transform="translate(32 31) rotate(-45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g></svg></span>
+      <div class="mm24-msg-row"><span class="mm24-loader" aria-hidden="true"></span><div class="mm24-msg" id="mm24Msg" role="status">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div></div>
     </div>
     ${playerHTML('you', avatar, youName, status, back)}
     <div class="mm24-opp-slot">
@@ -70,7 +68,6 @@ window.MATCH_GATE = (() => {
         <span class="mm24-sweep"></span>
         <span class="mm24-scan"><img id="mm24Scan" src="${SEARCH_AVAS[0]}" alt=""><span>?</span></span>
       </div>
-      <div class="mm24-searching">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div>
       ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', 'classic')}
     </div>`;
   document.body.appendChild(root);
@@ -87,17 +84,9 @@ window.MATCH_GATE = (() => {
     if (faq) faq.click();
   });
 
-  const titleEl = root.querySelector('#mm24Title');
-  const statusEl = root.querySelector('#mm24Status');
   const msgEl = root.querySelector('#mm24Msg');
   const scanImg = root.querySelector('#mm24Scan');
   const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 300) : ms));
-
-  function setTitle(title, sub) {
-    titleEl.textContent = title;
-    statusEl.textContent = sub;
-    titleEl.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
-  }
 
   function showMsg(text, cls) {
     msgEl.className = `mm24-msg ${cls}`;
@@ -109,18 +98,17 @@ window.MATCH_GATE = (() => {
     ], { duration: 420, easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
   }
 
-  // искры вдоль разделителя, когда соперник найден
+  // искры из мечей, когда соперник найден
   function burst() {
-    const c = root.querySelector('.mm24-split');
+    const c = root.querySelector('.mm24-vs');
     const colors = ['#ffdd2d', '#fff', '#ff5c5c', '#6fa8ff'];
     for (let i = 0; i < 20; i++) {
       const s = document.createElement('span');
       s.className = 'mm24-spark';
       s.style.background = colors[i % colors.length];
-      s.style.left = `${10 + Math.random() * 80}%`;
       c.appendChild(s);
       const a = Math.random() * Math.PI * 2;
-      const d = 30 + Math.random() * 60;
+      const d = 50 + Math.random() * 60;
       s.animate([
         { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
         { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0.2)`, opacity: 0 },
@@ -172,30 +160,22 @@ window.MATCH_GATE = (() => {
   let start;
   const gate = new Promise((r) => { start = r; });
   (async () => {
-    // таймер поиска и перебор аватарок в радаре
-    const t0 = performance.now();
-    const clock = setInterval(() => {
-      const s = Math.floor((performance.now() - t0) / 1000);
-      statusEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-    }, 250);
+    // перебор аватарок в радаре
     let k = 0;
     const shuffle = setInterval(() => { scanImg.src = SEARCH_AVAS[(k = (k + 1) % SEARCH_AVAS.length)]; }, 140);
 
     await wait(2000 + Math.random() * 1000);
-    clearInterval(clock);
     clearInterval(shuffle);
 
-    // нашли: радар гаснет, соперник въезжает справа налево, разделитель вспыхивает
+    // нашли: радар гаснет, соперник въезжает справа налево, мечи скрещиваются со вспышкой
     root.classList.add('is-found');
     if (navigator.vibrate) navigator.vibrate([20, 40, 30]);
-    setTitle('Соперник найден', 'Готовимся к матчу');
     await wait(500);
     burst();
     showMsg('Соперник найден!', 'is-found');
     await wait(2200);
 
     // «Начинаем матч» и лоадер — время рассмотреть соперника
-    setTitle('Начинаем матч', 'Раздаём карты');
     showMsg('Начинаем матч', 'is-start');
     root.classList.add('is-start');
     await wait(1800);
