@@ -1,6 +1,6 @@
 // Поиск соперника перед матчем (по смыслу, по референсу Marvel Snap; макета нет).
 // «Найти матч» на главной ведёт на match.html — сначала поверх поля экран
-// поиска: шапка как в матче («‹», «Поиск соперника», «?»). Игрок — аватар в
+// поиска: шапка как в матче («‹» с подтверждением выхода, «Поиск соперника»). Игрок — аватар в
 // рамке с рубашкой колоды в верхнем углу и плашка с именем и статусом: я —
 // сверху (аватар слева, синяя плашка вправо), соперник — снизу зеркально
 // (красная плашка слева, аватар справа). В центре — скрещённые мечи в
@@ -31,7 +31,6 @@ window.MATCH_GATE = (() => {
   const C = typeof COSMETICS24 !== 'undefined' ? COSMETICS24 : null;
 
   const BACK_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg>';
-  const HELP_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33936 7.72565C5.54822 4.35296 8.44774 1.68005 11.994 1.68005C15.6759 1.68005 18.6606 4.56139 18.6606 8.11569C18.6606 11.3385 16.2067 14.008 13.0042 14.4779L13 16.5001H9L9.00421 13.5762C9.00421 11.9607 10.3205 10.651 11.994 10.6509C13.4445 10.6509 14.6203 9.51568 14.6203 8.1155C14.6203 6.71532 13.4445 5.58025 11.994 5.58025C10.6809 5.58025 9.59288 6.51055 9.39862 7.72565H5.33936ZM11.5859 22.5001H9L9.00421 19.8653C9.00421 19.1113 9.59694 18.5001 10.3779 18.5001H13.0042L13 21.135C13 21.8889 12.3669 22.5001 11.5859 22.5001Z" fill="currentColor"/></svg>';
 
   // игрок — аватар в рамке, рубашка колоды в верхнем углу, рядом плашка с именем и статусом
   const playerHTML = (who, img, name, sub, deckId) => `
@@ -55,7 +54,7 @@ window.MATCH_GATE = (() => {
       <div class="mm24-title">
         <div class="mm24-title-text">Поиск соперника</div>
       </div>
-      <button class="m24-btn mm24-help" id="mm24Help" aria-label="Ответы на вопросы"${isV3 ? ' hidden' : ''}>${HELP_SVG}</button>
+      <span aria-hidden="true"></span>
     </div>
     <div class="mm24-center">
       <span class="mm24-vs"><svg class="mm24-swords" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><g transform="translate(32 31) rotate(45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g><g transform="translate(32 31) rotate(-45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g></svg></span>
@@ -78,15 +77,18 @@ window.MATCH_GATE = (() => {
   else root.querySelector('.mm24-you .mm24-frame').style.setProperty('--pf-frame', '#2265d3');
   root.querySelector('.mm24-opp .mm24-frame').style.setProperty('--pf-frame', '#e32d2d');
 
-  // «?» — та же шторка ответов на вопросы, что в матче (версия 2)
-  root.querySelector('#mm24Help').addEventListener('click', () => {
-    const faq = document.getElementById('infoBtn');
-    if (faq) faq.click();
+  // «‹» — подтверждение выхода (js/leave24.js): без наград за матч
+  const backEl = root.querySelector('.mm24-back');
+  backEl.addEventListener('click', (e) => {
+    e.preventDefault();
+    LEAVE24.confirm(backEl, backEl.href);
   });
 
   const msgEl = root.querySelector('#mm24Msg');
   const scanImg = root.querySelector('#mm24Scan');
   const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 300) : ms));
+  // пока открыто меню «Выйти из матча?», поиск стоит на месте
+  const hold = async () => { while (LEAVE24.isOpen()) await new Promise((r) => setTimeout(r, 100)); };
 
   function showMsg(text, cls) {
     msgEl.className = `mm24-msg ${cls}`;
@@ -140,6 +142,7 @@ window.MATCH_GATE = (() => {
     const shuffle = setInterval(() => { scanImg.src = SEARCH_AVAS[(k = (k + 1) % SEARCH_AVAS.length)]; }, 140);
 
     await wait(2000 + Math.random() * 1000);
+    await hold();
     clearInterval(shuffle);
 
     // нашли: радар гаснет, соперник въезжает справа налево, мечи скрещиваются со вспышкой
@@ -150,11 +153,13 @@ window.MATCH_GATE = (() => {
     showMsg('Соперник найден!', 'is-found');
     await wait(2200);
 
+    await hold();
     // «Начинаем матч» и лоадер — время рассмотреть соперника
     showMsg('Начинаем матч', 'is-start');
     root.classList.add('is-start');
     await wait(1800);
 
+    await hold();
     // игроки разъезжаются влево и вправо, экран гаснет —
     // под ним запускается матч и проявляется
     root.classList.add('is-leaving');

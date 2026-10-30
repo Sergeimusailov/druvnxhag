@@ -1,0 +1,113 @@
+/* Подтверждение выхода (js/leave24.js): стеклянное меню как контекстное меню
+   iOS 26 — раскрывается из кнопки «‹», пружинит; макета нет, по смыслу. */
+
+/* лёгкое затемнение за меню, тап по нему — закрыть */
+.lv24-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.lv24-veil.is-open {
+  opacity: 1;
+}
+
+/* меню 270: стекло #242428 88% с размытием 40, r24, тонкая светлая кромка */
+.lv24-menu {
+  position: fixed;
+  z-index: 301;
+  width: 270px;
+  padding: 6px;
+  border-radius: 24px;
+  background: rgba(36, 36, 40, 0.88);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 20px 50px rgba(0, 0, 0, 0.55);
+  color: #f6f7f8;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  opacity: 0;
+  transform: scale(0.3);
+  filter: blur(6px);
+  transition:
+    transform 0.22s cubic-bezier(0.4, 0, 0.6, 1),
+    opacity 0.18s ease,
+    filter 0.18s ease;
+}
+
+.lv24-menu.is-open {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    transform 0.42s cubic-bezier(0.25, 1.45, 0.45, 1),
+    opacity 0.2s ease,
+    filter 0.25s ease;
+}
+
+/* заголовок 15/600, пояснение 13/400 60% */
+.lv24-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px 12px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.14);
+}
+
+.lv24-head b {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+}
+
+.lv24-head span {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  color: rgba(246, 247, 248, 0.6);
+}
+
+/* пункты 48px: подпись 17/400 −0.41 слева, иконка 22 справа; нажатие — подсветка r18 */
+.lv24-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  margin-top: 2px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  font: inherit;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.41px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lv24-item:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.lv24-item.is-danger {
+  color: #ff453a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv24-menu,
+  .lv24-menu.is-open {
+    transition: opacity 0.15s ease;
+    transform: none;
+    filter: none;
+  }
+}

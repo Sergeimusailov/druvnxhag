@@ -103,8 +103,8 @@ html.mm24-on body {
   opacity: 0;
 }
 
-/* шапка — как .match-topbar в версии 2: стеклянные кнопки 44, заголовок
-   «Поиск соперника» 17/600 (статус не дублируем — он под мечами) */
+/* шапка — как .match-topbar в версии 2: стеклянная «‹» 44, заголовок
+   «Поиск соперника» 17/600 (статус не дублируем — он под мечами), справа пусто */
 .mm24-bar {
   position: absolute;
   top: 18px;
@@ -117,11 +117,6 @@ html.mm24-on body {
 
 .mm24-back {
   text-decoration: none;
-}
-
-.mm24-help[hidden] {
-  display: flex;
-  visibility: hidden;
 }
 
 .mm24-title {
