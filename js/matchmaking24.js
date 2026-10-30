@@ -56,18 +56,20 @@ window.MATCH_GATE = (() => {
       </div>
       <span aria-hidden="true"></span>
     </div>
-    <div class="mm24-center">
-      <span class="mm24-vs"><svg class="mm24-swords" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><g transform="translate(32 31) rotate(45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g><g transform="translate(32 31) rotate(-45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g></svg></span>
-      <div class="mm24-msg-row"><span class="mm24-loader" aria-hidden="true"></span><div class="mm24-msg" id="mm24Msg" role="status">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div></div>
-    </div>
-    ${playerHTML('you', avatar, youName, status, back)}
-    <div class="mm24-opp-slot">
-      <div class="mm24-radar" aria-hidden="true">
-        <span class="mm24-ring"></span><span class="mm24-ring"></span><span class="mm24-ring"></span>
-        <span class="mm24-sweep"></span>
-        <span class="mm24-scan"><img id="mm24Scan" src="${SEARCH_AVAS[0]}" alt=""></span>
+    <div class="mm24-stage">
+      ${playerHTML('you', avatar, youName, status, back)}
+      <div class="mm24-center">
+        <span class="mm24-vs"><svg class="mm24-swords" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><g transform="translate(32 31) rotate(45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g><g transform="translate(32 31) rotate(-45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g></svg></span>
+        <div class="mm24-msg-row"><span class="mm24-loader" aria-hidden="true"></span><div class="mm24-msg" id="mm24Msg" role="status">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div></div>
       </div>
-      ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', 'classic')}
+      <div class="mm24-opp-slot">
+        <div class="mm24-radar" aria-hidden="true">
+          <span class="mm24-ring"></span><span class="mm24-ring"></span><span class="mm24-ring"></span>
+          <span class="mm24-sweep"></span>
+          <span class="mm24-scan"><img id="mm24Scan" src="${SEARCH_AVAS[0]}" alt=""></span>
+        </div>
+        ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', 'classic')}
+      </div>
     </div>`;
   document.body.appendChild(root);
   document.documentElement.classList.add('mm24-on');

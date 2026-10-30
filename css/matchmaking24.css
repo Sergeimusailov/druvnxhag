@@ -79,7 +79,7 @@ html.mm24-on body {
 
 .mm24.is-leaving .mm24-center {
   opacity: 0;
-  transform: translateY(-50%) scale(0.8);
+  transform: scale(0.8);
 }
 
 .mm24.is-leaving .mm24-you {
@@ -135,16 +135,26 @@ html.mm24-on body {
    красная плашка слева, аватар справа. Рамка аватара 112 (r35), рубашка колоды
    60 во внутреннем верхнем углу с наклоном 18° (как в шапке матча). Плашка 80px,
    r20, заходит под аватар */
-.mm24-player {
+/* игрок, мечи и соперник — колонкой с равными промежутками между низом шапки
+   и низом экрана (на коротких экранах тоже не слипаются) */
+.mm24-stage {
   position: absolute;
+  top: 78px;
   left: 16px;
   right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.mm24-player {
+  position: relative;
   display: flex;
   align-items: center;
 }
 
 .mm24-you {
-  top: 21%;
   flex-direction: row-reverse;
   animation: mm24InLeft 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
 }
@@ -156,6 +166,7 @@ html.mm24-on body {
 .mm24-ava {
   position: relative;
   z-index: 1;
+  isolation: isolate;
   flex-shrink: 0;
   width: 112px;
   height: 112px;
@@ -199,9 +210,13 @@ html.mm24-on body {
   transform: rotate(18deg);
 }
 
+/* isolation — режим наложения у эффектных рубашек (cb24-foil) смешивается
+   только внутри карты: иначе Safari на iOS рисует под аватаром тёмный квадрат */
 .mm24-deck .cb24 {
   position: absolute;
   inset: 0;
+  isolation: isolate;
+  overflow: hidden;
   border-radius: 18%;
   box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--cb, #888) 45%, #fff), 0 4px 10px rgba(0, 0, 0, 0.5);
 }
@@ -263,14 +278,13 @@ html.mm24-on body {
 
 /* ---------- место соперника снизу: радар поиска справа → игрок ---------- */
 .mm24-opp-slot {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 21%;
+  position: relative;
+  flex-shrink: 0;
   height: 112px;
 }
 
 .mm24-opp-slot .mm24-player {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -373,16 +387,12 @@ html.mm24-on body {
    искры. Статус под кругом 17/600 −0.41: «Ищем соперника…» 60%, «Соперник
    найден!» белым, «Начинаем матч» жёлтым с лоадером */
 .mm24-center {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   isolation: isolate;
-  transform: translateY(-50%);
 }
 
 /* луч через центр круга и мягкое сияние за ним */
