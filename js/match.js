@@ -627,8 +627,9 @@ async function endGame() {
   showResultScreen(winnerOwner);
 }
 
+// «Забрать» на экране результата — на главную (v2.html; в версии 3 — v2.html?app=3)
 resultClaimBtnEl.addEventListener('click', () => {
-  window.location.href = 'index.html';
+  window.location.href = document.documentElement.dataset.app === '3' ? 'v2.html?app=3' : 'v2.html';
 });
 
 function makeDraggable(cardEl, card) {
