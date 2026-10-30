@@ -1,10 +1,13 @@
 // Поиск соперника перед матчем (по смыслу, как в Marvel Snap; макета нет).
 // «Найти матч» на главной ведёт на match.html — сначала поверх поля экран
-// поиска: шапка как в матче («‹», по центру статус, «?»), мой профиль в
-// левом нижнем углу (аватар, рамка, статус и рубашка колоды из профиля), в правом верхнем — радар поиска с перебором аватарок.
-// Через 2–3 с соперник «найден»: радар гаснет, карточка соперника плавно
-// въезжает справа налево, VS ударяет со вспышкой и искрами, «Соперник
-// найден!», затем «Начало матча» — экран растворяется и стартует обычный матч.
+// поиска: шапка как в матче («‹», по центру статус, «?»). Игроки — тот же
+// компонент, что в матче (аватар в рамке, рубашка колоды в углу, имя), только
+// крупнее и со статусом: я — слева вверху, соперник — справа внизу; между
+// нами диагональный разделитель. Пока ищем, на месте соперника радар с
+// перебором аватарок. Через 2–3 с соперник найден: радар гаснет, соперник
+// въезжает справа налево, разделитель вспыхивает, «Соперник найден!». Потом
+// «Начинаем матч» с лоадером, и экран плавно гаснет, а аватары перелетают на
+// свои места в шапке матча.
 // match.js ждёт window.MATCH_GATE и только потом вызывает initGame().
 // Подключается после cosmetics24.js и match24.js, до match.js. Работает в
 // версиях 2 и 3; ?nosearch — сразу в матч (для проверок).
@@ -14,7 +17,13 @@ window.MATCH_GATE = (() => {
   const isV3 = document.documentElement.dataset.app === '3';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const get = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
-  const avatar = get('v2.profileAvatar') || 'assets/v2-avatar-photo.svg';
+  // имя и аватар — те же, что в шапке матча (в версии 2 их уже подставил
+  // match24.js из профиля, в версии 3 — свои), чтобы аватар долетал «в себя»
+  const fromMatch = (sel, prop) => { const el = document.querySelector(sel); return el ? el[prop] : ''; };
+  const avatar = fromMatch('.avatar-you', 'src') || get('v2.profileAvatar') || 'assets/v2-avatar-photo.svg';
+  const youName = fromMatch('.player-you .player-name', 'textContent') || 'Александр К.';
+  const oppAvatar = fromMatch('.avatar-opp', 'src') || 'assets/Ava01.png';
+  const oppName = fromMatch('.player-opponent .player-name', 'textContent') || 'Константин К.';
   const frame = get('v2.profileFrame') || 'white';
   const back = get('v2.profileBack') || 'classic';
   const status = get(isV3 ? 'v3.profileStatus' : 'v2.profileStatus') || get('v2.profileStatus') || 'Т-Ранжира';
@@ -23,17 +32,15 @@ window.MATCH_GATE = (() => {
   const BACK_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12C5.01082 11.635 5.14061 11.3237 5.43265 11.0446L13.8692 2.85424C14.0964 2.61808 14.3992 2.5 14.7453 2.5C15.4484 2.5 16 3.03672 16 3.73446C16 4.07797 15.8594 4.38927 15.6214 4.63616L8.0177 12L15.6214 19.3638C15.8594 19.6 16 19.9113 16 20.2548C16 20.9633 15.4484 21.5 14.7453 21.5C14.3992 21.5 14.0964 21.3819 13.8692 21.1458L5.43265 12.9554C5.14061 12.6763 5 12.365 5 12Z" fill="currentColor"/></svg>';
   const HELP_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.33936 7.72565C5.54822 4.35296 8.44774 1.68005 11.994 1.68005C15.6759 1.68005 18.6606 4.56139 18.6606 8.11569C18.6606 11.3385 16.2067 14.008 13.0042 14.4779L13 16.5001H9L9.00421 13.5762C9.00421 11.9607 10.3205 10.651 11.994 10.6509C13.4445 10.6509 14.6203 9.51568 14.6203 8.1155C14.6203 6.71532 13.4445 5.58025 11.994 5.58025C10.6809 5.58025 9.59288 6.51055 9.39862 7.72565H5.33936ZM11.5859 22.5001H9L9.00421 19.8653C9.00421 19.1113 9.59694 18.5001 10.3779 18.5001H13.0042L13 21.135C13 21.8889 12.3669 22.5001 11.5859 22.5001Z" fill="currentColor"/></svg>';
 
-  // колода игрока — три рубашки веером (рубашка из профиля / стандартная)
-  const deckHTML = (id) => (C ? `<span class="mm24-deck">${C.backHTML(id).repeat(3)}</span>` : '');
-
-  const profileHTML = (who, img, name, sub, deckId) => `
-    <div class="mm24-card mm24-${who}">
-      <span class="m24-frame mm24-frame"><img class="avatar" src="${img}" alt=""></span>
-      <div class="mm24-info">
-        <b class="mm24-name">${name}</b>
-        <span class="mm24-sub">${sub}</span>
-        ${deckHTML(deckId)}
+  // игрок — как в матче: аватар в рамке, рубашка колоды в верхнем углу, имя; плюс статус
+  const playerHTML = (who, img, name, sub, deckId) => `
+    <div class="mm24-player mm24-${who}">
+      <div class="mm24-ava">
+        <span class="m24-frame mm24-frame"><img class="avatar" src="${img}" alt=""></span>
+        <span class="mm24-deck">${C ? C.backHTML(deckId) : ''}</span>
       </div>
+      <b class="mm24-name">${name}</b>
+      <span class="mm24-sub">${sub}</span>
     </div>`;
 
   const SEARCH_AVAS = Array.from({ length: 16 }, (_, i) => `assets/avatars-sq/sq-${String(i + 1).padStart(2, '0')}.png`);
@@ -51,29 +58,28 @@ window.MATCH_GATE = (() => {
       </div>
       <button class="m24-btn mm24-help" id="mm24Help" aria-label="Ответы на вопросы"${isV3 ? ' hidden' : ''}>${HELP_SVG}</button>
     </div>
-    <div class="mm24-stage">
-      <div class="mm24-slot">
-        <div class="mm24-radar" aria-hidden="true">
-          <span class="mm24-ring"></span><span class="mm24-ring"></span><span class="mm24-ring"></span>
-          <span class="mm24-sweep"></span>
-          <span class="mm24-scan"><img id="mm24Scan" src="${SEARCH_AVAS[0]}" alt=""><span>?</span></span>
-        </div>
-        <div class="mm24-searching">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div>
-        ${profileHTML('opp', 'assets/Ava01.png', 'Константин К.', 'Делай, как надо', 'classic')}
+    <div class="mm24-split" aria-hidden="true"><span class="mm24-split-line"></span></div>
+    <div class="mm24-center">
+      <span class="mm24-loader" aria-hidden="true"></span>
+      <div class="mm24-msg" id="mm24Msg" role="status"></div>
+    </div>
+    ${playerHTML('you', avatar, youName, status, back)}
+    <div class="mm24-opp-slot">
+      <div class="mm24-radar" aria-hidden="true">
+        <span class="mm24-ring"></span><span class="mm24-ring"></span><span class="mm24-ring"></span>
+        <span class="mm24-sweep"></span>
+        <span class="mm24-scan"><img id="mm24Scan" src="${SEARCH_AVAS[0]}" alt=""><span>?</span></span>
       </div>
-      <div class="mm24-center">
-        <div class="mm24-vs" aria-hidden="true">VS</div>
-        <div class="mm24-msg" id="mm24Msg" role="status"></div>
-      </div>
-      ${profileHTML('you', avatar, 'Александр К.', status, back)}
+      <div class="mm24-searching">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div>
+      ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', 'classic')}
     </div>`;
   document.body.appendChild(root);
   document.documentElement.classList.add('mm24-on');
 
-  if (C) {
-    C.applyFrame(root.querySelector('.mm24-you .mm24-frame'), frame);
-    root.querySelector('.mm24-opp .mm24-frame').style.setProperty('--pf-frame', '#e32d2d');
-  }
+  // рамки как в матче: в версии 2 — из профиля, в версии 3 — синяя; у соперника красная
+  if (C && !isV3) C.applyFrame(root.querySelector('.mm24-you .mm24-frame'), frame);
+  else root.querySelector('.mm24-you .mm24-frame').style.setProperty('--pf-frame', '#2265d3');
+  root.querySelector('.mm24-opp .mm24-frame').style.setProperty('--pf-frame', '#e32d2d');
 
   // «?» — та же шторка ответов на вопросы, что в матче (версия 2)
   root.querySelector('#mm24Help').addEventListener('click', () => {
@@ -87,9 +93,9 @@ window.MATCH_GATE = (() => {
   const scanImg = root.querySelector('#mm24Scan');
   const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 300) : ms));
 
-  function setTitle(title, status) {
+  function setTitle(title, sub) {
     titleEl.textContent = title;
-    statusEl.textContent = status;
+    statusEl.textContent = sub;
     titleEl.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
   }
 
@@ -98,27 +104,53 @@ window.MATCH_GATE = (() => {
     msgEl.textContent = text;
     msgEl.animate([
       { opacity: 0, transform: 'scale(0.6)' },
-      { opacity: 1, transform: 'scale(1.12)', offset: 0.6 },
+      { opacity: 1, transform: 'scale(1.1)', offset: 0.6 },
       { opacity: 1, transform: 'scale(1)' },
     ], { duration: 420, easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
   }
 
-  // искры из центра при «Соперник найден»
+  // искры вдоль разделителя, когда соперник найден
   function burst() {
-    const c = root.querySelector('.mm24-center');
+    const c = root.querySelector('.mm24-split');
     const colors = ['#ffdd2d', '#fff', '#ff5c5c', '#6fa8ff'];
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 20; i++) {
       const s = document.createElement('span');
       s.className = 'mm24-spark';
       s.style.background = colors[i % colors.length];
+      s.style.left = `${10 + Math.random() * 80}%`;
       c.appendChild(s);
-      const a = (Math.PI * 2 * i) / 18 + Math.random() * 0.3;
-      const d = 70 + Math.random() * 70;
+      const a = Math.random() * Math.PI * 2;
+      const d = 30 + Math.random() * 60;
       s.animate([
         { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
         { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0.2)`, opacity: 0 },
-      ], { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }).finished.then(() => s.remove());
+      ], { duration: 700 + Math.random() * 400, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }).finished.then(() => s.remove());
     }
+  }
+
+  // аватар (рамка + рубашка) перелетает на место аватара в шапке матча;
+  // аватар матча на это время спрятан и проявляется, когда долетели
+  function flyToMatch(who) {
+    const src = root.querySelector(`.mm24-${who} .mm24-ava`);
+    const player = document.querySelector(who === 'you' ? '.player-you' : '.player-opponent');
+    const dst = player && (player.querySelector('.m24-frame') || player.querySelector('.avatar'));
+    const wrap = player && player.querySelector('.avatar-wrap');
+    if (!src || !dst) return Promise.resolve();
+    if (wrap) wrap.style.visibility = 'hidden';
+    const a = src.querySelector('.mm24-frame').getBoundingClientRect();
+    const b = dst.getBoundingClientRect();
+    const k = b.width / a.width;
+    const dx = b.left - a.left;
+    const dy = b.top - a.top;
+    return src.animate([
+      { transform: 'none' },
+      { transform: `translate(${dx}px, ${dy}px) scale(${k})` },
+    ], { duration: reduce ? 1 : 750, easing: 'cubic-bezier(0.5, 0, 0.2, 1)', fill: 'forwards' }).finished.then(() => {
+      if (wrap) {
+        wrap.style.visibility = '';
+        wrap.animate([{ opacity: 0.6 }, { opacity: 1 }], { duration: 200 });
+      }
+    });
   }
 
   let start;
@@ -137,24 +169,27 @@ window.MATCH_GATE = (() => {
     clearInterval(clock);
     clearInterval(shuffle);
 
-    // нашли: радар гаснет, соперник въезжает справа налево, VS бьёт со вспышкой
+    // нашли: радар гаснет, соперник въезжает справа налево, разделитель вспыхивает
     root.classList.add('is-found');
     if (navigator.vibrate) navigator.vibrate([20, 40, 30]);
     setTitle('Соперник найден', 'Готовимся к матчу');
-    await wait(450);
+    await wait(500);
     burst();
     showMsg('Соперник найден!', 'is-found');
-    await wait(1500);
+    await wait(2200);
 
-    setTitle('Начало матча', 'Удачи!');
-    showMsg('Начало матча', 'is-start');
+    // «Начинаем матч» и лоадер — время рассмотреть соперника
+    setTitle('Начинаем матч', 'Раздаём карты');
+    showMsg('Начинаем матч', 'is-start');
     root.classList.add('is-start');
-    await wait(1100);
+    await wait(1800);
 
-    // экран растворяется — под ним уже запущен обычный матч
+    // под экраном запускается матч; фон и подписи гаснут,
+    // аватары перелетают на свои места в шапке матча
     start();
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     root.classList.add('is-leaving');
-    await wait(600);
+    await Promise.all([flyToMatch('you'), flyToMatch('opp'), wait(700)]);
     document.documentElement.classList.remove('mm24-on');
     root.remove();
   })();
