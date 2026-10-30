@@ -1047,7 +1047,23 @@
 
 .shop-open:disabled {
   background: rgba(255, 255, 255, 0.1);
-  color: rgba(246, 247, 248, 0.6);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.shop-open:disabled img {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+/* недоступно: подсказка под кнопкой — 17/400 −0.41 #fab619, отступ 16 */
+.shop-open-note {
+  margin-top: 16px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  text-align: center;
+  color: #fab619;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

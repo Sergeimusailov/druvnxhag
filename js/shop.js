@@ -421,16 +421,20 @@ function prizeTip(key) {
 // свечение сверху шторки — цвета сундука (у эпического из макета #5d25b0)
 const SHEET_GLOW = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
 
+// Недоступно (Figma 17249:23559 — закончились, 17249:23846 — не хватает валюты):
+// кнопка та же «Открыть за N», но неактивная, под ней жёлтая подсказка 17/400
+// «Будет доступен через ЧЧ:ММ:СС» или «Не хватает N ключей/монет»; бейдж
+// у закончившегося сундука — «Закончились»
 function renderDetail(box) {
   const st = boxState(box);
   const icon = `<img src="${CURRENCY[box.currency].icon}" alt="">`;
-  let btn;
-  if (st.can) btn = `<button class="bs-cta shop-open" data-open="${box.id}">Открыть за ${box.price}${icon}</button>`;
-  else if (st.reason === 'limit') btn = `<button class="bs-cta shop-open" disabled>Будет доступен через <span data-shop-timer>${limitTimer()}</span></button>`;
-  else btn = `<button class="bs-cta shop-open" disabled>Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}</button>`;
-  // доступность — тот же бейдж, что на плитке: «Остался: N» или часы с таймером
+  let note = '';
+  if (st.reason === 'limit') note = `Будет доступен через <span data-shop-timer>${limitTimer()}</span>`;
+  else if (st.reason === 'money') note = `Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}`;
+  const btn = `<button class="bs-cta shop-open"${st.can ? ` data-open="${box.id}"` : ' disabled'}>Открыть за ${box.price}${icon}</button>`
+    + (note ? `<p class="shop-open-note">${note}</p>` : '');
   const badge = st.reason === 'limit'
-    ? timerBadge()
+    ? 'Закончились'
     : `${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}`;
   shopDetailEl.style.setProperty('--glow', SHEET_GLOW[box.id]);
   shopDetailBody.innerHTML = `
