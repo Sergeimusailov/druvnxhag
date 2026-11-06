@@ -1,5 +1,13 @@
 /* Экран результата матча в версии 2 (js/result24.js, Figma 17424:119405) */
 
+/* пока открыт экран результата, страница матча под ним не прокручивается
+   (на телефоне экран «ездил» вместе со страницей) */
+html.r24-on,
+html.r24-on body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 .r24 {
   position: fixed;
   top: 0;
@@ -13,6 +21,8 @@
   translate: -50% 0;
   isolation: isolate;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
   color: #f6f7f8;
   font-family: var(--font-sf, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
   opacity: 0;
@@ -91,8 +101,10 @@
 }
 
 .r24-art {
-  width: 345px;
-  max-width: calc(100% - 48px);
+  /* на низких экранах иллюстрация уменьшается, чтобы всё влезло без прокрутки
+     (остальное по высоте занимает ~420px) */
+  width: min(345px, calc(100% - 48px), calc((100dvh - 420px) * 1.39));
+  min-width: 140px;
   aspect-ratio: 345 / 248;
 }
 

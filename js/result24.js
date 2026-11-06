@@ -181,6 +181,10 @@
     root.classList.toggle('is-win', isWin);
     root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
+    // страница матча под экраном не прокручивается; если она уже была
+    // прокручена (демо-кнопки внизу), возвращаем её наверх
+    window.scrollTo(0, 0);
+    document.documentElement.classList.add('r24-on');
 
     // заголовок, иллюстрация, монеты и кнопки появляются по очереди
     const pop = (el, frames, delay, duration = 500) => (reduce ? null : el.animate(frames, { duration, delay, easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)', fill: 'backwards' }));
