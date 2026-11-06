@@ -4,60 +4,58 @@
 // Открытие — экран как у подарка в «Заданиях»: бокс падает, трясётся,
 // крышка слетает, предметы вылетают рубашкой вверх и переворачиваются.
 
-// 2.3 (витрина и карточка сундука по макету Figma 16908:29698): три сундука —
-// обычный (зелёный) и редкий (синий) за монеты, эпический (фиолетовый) за
-// ключи (вторая софт-валюта). Первые четыре награды гарантированы — карта,
-// ключи, монеты и стиль (рамка аватара или рубашка колоды); пятая, бонус от
-// партнёров, выпадает с шансом. Ключи выпадают из каждого сундука и даются за
-// сундуки-вехи в «Заданиях». У каждого сундука суточный лимит покупок. Состав
-// наград — в шторке сундука (тап по плитке) и в «?».
-// card.alt — карта цвета сундука или (с шансом altChance) на ступень ниже:
-// из эпического — эпическая или редкая, из редкого — редкая или обычная
+// 2.3 (витрина, карточка и открытие сундука по макету Figma 16908:29698): три
+// сундука — обычный (зелёный) и редкий (синий) за монеты, эпический
+// (фиолетовый) за ключи (вторая софт-валюта). Состав по макету «Состав
+// сундуков» (17359:51278 / 51565 / 51852): награды без chance выпадают всегда,
+// бонус от партнёров — с шансом.
+//   эпический — карта редкая или эпическая, монеты 100–500, оформление, бонус 50%;
+//   редкий    — карта обычная или редкая, ключи 10–50, оформление, бонус 50%;
+//   обычный   — карта обычная, ключи 10–50, бонус 50%.
+// card.alt — карта цвета сундука или (с шансом altChance) на ступень ниже.
+// Ключи выпадают из обычного и редкого сундуков и даются за сундуки-вехи в
+// «Заданиях». У каждого сундука суточный лимит покупок.
 const LOOTBOXES = [
   {
     id: 'green',
     name: 'Обычный сундук',
     short: 'Обычный',
-    price: 100,
+    price: 500,
     currency: 'coins',
-    limit: 5,
+    limit: 3,
     colors: ['#8ff07a', '#2e9e3f', '#1d5e27'],
     table: [
       { kind: 'card', rarity: 'green' },
-      { kind: 'tokens', min: 2, max: 10 },
-      { kind: 'coins', min: 30, max: 100 },
-      { kind: 'frame' },
-      { kind: 'bonus', chance: 20 },
+      { kind: 'tokens', min: 10, max: 50 },
+      { kind: 'bonus', chance: 50 },
     ],
   },
   {
     id: 'blue',
     name: 'Редкий сундук',
     short: 'Редкий',
-    price: 250,
+    price: 700,
     currency: 'coins',
     limit: 3,
     colors: ['#8cc8ff', '#2f6fe0', '#1a3c8c'],
     table: [
       { kind: 'card', rarity: 'blue', alt: 'green', altChance: 50 },
-      { kind: 'tokens', min: 5, max: 25 },
-      { kind: 'coins', min: 80, max: 250 },
+      { kind: 'tokens', min: 10, max: 50 },
       { kind: 'frame' },
-      { kind: 'bonus', chance: 35 },
+      { kind: 'bonus', chance: 50 },
     ],
   },
   {
     id: 'purple',
     name: 'Эпический сундук',
     short: 'Эпический',
-    price: 30,
+    price: 50,
     currency: 'tokens',
     limit: 1,
     colors: ['#d7a6ff', '#7b34e0', '#3f1683'],
     table: [
       { kind: 'card', rarity: 'purple', alt: 'blue', altChance: 50 },
-      { kind: 'tokens', min: 15, max: 50 },
-      { kind: 'coins', min: 200, max: 500 },
+      { kind: 'coins', min: 100, max: 500 },
       { kind: 'frame' },
       { kind: 'bonus', chance: 50 },
     ],
@@ -133,7 +131,6 @@ const lbOverlayEl = document.getElementById('lbOverlay');
 const lbStageEl = document.getElementById('lbStage');
 const lbBoxEl = document.getElementById('lbBox');
 const lbFlashEl = lbStageEl.querySelector('.lb-flash');
-const lbRaysEl = document.getElementById('lbRays');
 const lbCloseEl = document.getElementById('lbClose');
 const lbTitleEl = document.getElementById('lbTitle');
 const lbRewardsEl = document.getElementById('lbRewards');
@@ -251,10 +248,12 @@ function rollBox(box) {
 
 /* ---------- Отрисовка магазина ---------- */
 
-// лутбокс — сундук в цветах редкости (SVG, чтобы перекрашивать без ассетов)
-// картинка сундука из макета (Figma 16908:29024); класс lb-svg — общие стили и анимации
+// картинка сундука из макета (компонент «Сундуки XL», Figma 17424:170016):
+// закрытый — для витрины, карточки и начала открытия, открытый со свечением —
+// после вспышки. Класс lb-svg — общие стили и анимации
+const chestSrc = (id, open) => `assets/chest24-${id}${open ? '-open' : ''}.webp`;
 function chestArt(box) {
-  return `<img class="lb-svg lb-chest-img" src="assets/shop-chest-${box.id}.png" alt="">`;
+  return `<img class="lb-svg lb-chest-img" src="${chestSrc(box.id)}" alt="">`;
 }
 
 function boxSVG(box, uid) {
@@ -310,16 +309,6 @@ function boxState(box) {
 const timerBadge = () => `<span class="shop-timer">${CLOCK_SVG}<span data-shop-timer>${limitTimer()}</span></span>`;
 
 
-// 21-лучевая звезда из макета (фиолетовое свечение за эпическим сундуком)
-const HERO_STAR = (() => {
-  const pts = [];
-  for (let k = 0; k < 42; k++) {
-    const r = k % 2 ? 84 : 220;
-    const a = (Math.PI * k) / 21 - Math.PI / 2;
-    pts.push(`${(220 + r * Math.cos(a)).toFixed(1)},${(220 + r * Math.sin(a)).toFixed(1)}`);
-  }
-  return `<svg class="shop-tile-glow" viewBox="0 0 440 440" aria-hidden="true"><polygon points="${pts.join(' ')}" fill="#5d25b0"/></svg>`;
-})();
 const TILE_GLOW = { green: '#1eca85', blue: '#3d8aff' };
 
 // бенто по макету (Figma 16908:32749 — доступны, 16966:62702 — закончились):
@@ -334,7 +323,7 @@ function tileHTML(box, hero) {
   const badge = limit ? timerBadge() : `${word}: ${st.left}`;
   return `
     <article class="shop-tile ${hero ? 'is-hero' : 'is-small'} shop-box-${box.id}${limit ? ' is-limit' : ''}" data-view="${box.id}" role="button" tabindex="0" aria-label="${box.name}, ${box.price} ${plural(box.price, CURRENCY[box.currency])}" style="--glow:${TILE_GLOW[box.id] || 'transparent'}">
-      ${hero ? HERO_STAR : '<span class="shop-tile-glow"></span>'}
+      <span class="shop-tile-glow"></span>
       <div class="shop-tile-art">${chestArt(box)}</div>
       <h2 class="shop-tile-name">${box.short}</h2>
       <span class="shop-tile-badge">${badge}</span>
@@ -385,22 +374,25 @@ const shopDetailSheet = bottomSheet(shopDetailEl, document.getElementById('shopD
 
 
 
-// награда — карточка 104×136 (Figma 16966:64164): картинка из макета на всю
-// карточку (Figma 17214:21966 «Раздел награды»: у карт своя картинка на каждый
-// сундук), внизу название 13/600 и подпись 12/400 #9299a2 («до N шт.», у бонуса —
-// шанс). Порядок как в таблице: карта, ключи, монеты, стили, бонус
+// награда — карточка 128×148 в две колонки (Figma 17359:51278 / 51565 / 51852):
+// картинка из макета на всю карточку (у карт своя на каждый сундук — Figma
+// 17214:21966 «Раздел награды»), внизу название 13/600 и подпись #9299a2
+// (11/400 у карты и оформления, 12/400 у количества и шанса)
 const PRIZE_ART = { coins: 'coins', tokens: 'keys', bonus: 'bonus', frame: 'styles' };
-const CARD_PRIZE_TITLE = { purple: 'Эпическая или редкая', blue: 'Редкая или обычная', green: 'Обычная' };
-function prizeTitle(e) {
-  if (e.kind === 'card') return CARD_PRIZE_TITLE[e.rarity];
-  return { tokens: 'Ключи', coins: 'Монеты', frame: 'Стили карт и&nbsp;профиля', bonus: 'Бонус' }[e.kind];
+const CARD_PRIZE_SUB = { purple: 'Редкая или эпическая', blue: 'Обычная или редкая', green: 'Обычная' };
+function prizeText(e) {
+  if (e.kind === 'card') return ['Карта', CARD_PRIZE_SUB[e.rarity], 'is-text'];
+  if (e.kind === 'coins') return ['Монеты', `${e.min} — ${e.max} шт.`];
+  if (e.kind === 'tokens') return ['Ключи', `${e.min} — ${e.max} шт.`];
+  if (e.kind === 'frame') return ['Оформление', 'Рамки, рубашки, профиль', 'is-text'];
+  return ['Бонус', `Шанс выпадения ${e.chance}%`];
 }
 function rewardPreview(e) {
   const key = e.kind === 'card' ? `card-${e.rarity}` : e.kind;
-  const sub = e.kind === 'coins' || e.kind === 'tokens' ? `до ${e.max} шт.` : e.chance ? `Шанс ${e.chance}%` : '';
+  const [title, sub, cls] = prizeText(e);
   return `<li class="shop-prize shop-prize-${key}" data-prize-tip="${key}" role="button" tabindex="0">
     <img class="shop-prize-img" src="assets/shop-prize2-${e.kind === 'card' ? key : PRIZE_ART[e.kind]}.png" alt="">
-    <span class="shop-prize-title">${prizeTitle(e)}</span>${sub ? `<span class="shop-prize-sub">${sub}</span>` : ''}
+    <span class="shop-prize-title">${title}</span><span class="shop-prize-sub ${cls || ''}">${sub}</span>
   </li>`;
 }
 
@@ -409,11 +401,11 @@ function rewardPreview(e) {
 function prizeTip(key) {
   return {
     'card-green': 'Обычная карта. Если такая уже есть, дубль превратится в монеты',
-    'card-blue': 'Редкая или обычная карта. Дубль превратится в монеты',
+    'card-blue': 'Обычная или редкая карта. Если такая уже есть, дубль превратится в монеты',
     'card-purple': 'Редкая или эпическая карта',
     coins: 'Монеты, за которые открываются обычный и редкий сундуки',
     tokens: 'Ключи, которые открывают эпический сундук',
-    frame: 'Эпическая рамка аватара или рубашка колоды',
+    frame: 'Рамка аватара, рубашка колоды или оформление профиля',
     bonus: 'Скидка или кешбэк от партнёров — появится в «Бонусах»',
   }[key];
 }
@@ -433,9 +425,8 @@ function renderDetail(box) {
   else if (st.reason === 'money') note = `Не хватает ${st.need} ${plural(st.need, CURRENCY[box.currency])}`;
   const btn = `<button class="bs-cta shop-open"${st.can ? ` data-open="${box.id}"` : ' disabled'}>Открыть за ${box.price}${icon}</button>`
     + (note ? `<p class="shop-open-note">${note}</p>` : '');
-  const badge = st.reason === 'limit'
-    ? 'Закончились'
-    : `${plural(st.left, { one: 'Остался', few: 'Осталось', many: 'Осталось' })}: ${st.left}`;
+  // бейдж «Осталось сундуков: N» (Figma 17359:51278), у закончившегося — «Закончились»
+  const badge = st.reason === 'limit' ? 'Закончились' : `Осталось сундуков: ${st.left}`;
   shopDetailEl.style.setProperty('--glow', SHEET_GLOW[box.id]);
   shopDetailBody.innerHTML = `
     <span class="shop-detail-star" aria-hidden="true"></span>
@@ -534,59 +525,59 @@ function animateBalance(el, from, to) {
   el.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
 }
 
-/* ---------- Открытие (Figma 16908:29698 «Открытие сундука», «Награды») ---------- */
-// Быстро: сундук влетает и вздрагивает, лучи за ним с поворотом «наезжают
-// в камеру», вспышка — и на месте сундука появляются закрытые ячейки наград.
-// Ячейки раскрываются по очереди, с паузой (интрига): на закрытой ячейке
-// мерцают «щиты», затем внутри проявляется награда — как лут в Arc Raiders /
-// DMZ, без переворота и без блика поверх. В эпическом сундуке карта и бонус
-// открываются «легендарно»: пауза дольше, ячейка пульсирует, вспышка и
-// конфетти. В обычном и редком — простое раскрытие.
+/* ---------- Открытие (Figma 16908:29698, секция «Открытие сундука» 17056:193993) ---------- */
+// Шаги: закрытый сундук на свечении в свой цвет → в синий и зелёный сверху в
+// прорезь падают монетки (иконка монет из счётчика), в фиолетовый в замочную
+// скважину влетает ключ и поворачивается → сундук трясётся от 1 до 3 с, всё
+// сильнее → вспышка, сундук открыт и светится → из него вылетают подарки и
+// встают в сетку наград («Награды», бонус широкой плиткой сверху, остальные
+// 128×148 по две в ряд) → «Забрать». Тот же лейаут потом берём в «Задания»
+// (с другими картинками сундуков). В эпическом сундуке карта и бонус
+// приземляются «легендарно» — со вспышкой и конфетти.
 
-const RARITY_TITLE = { green: 'Обычная карта', blue: 'Редкая карта', purple: 'Эпическая карта' };
-// свечение ячеек (у эпического #bb00ff из макета) и лучей (#5d25b0)
+const CARD_RARITY_NAME = { green: 'Обычная', blue: 'Редкая', purple: 'Эпическая' };
+// свечение ячеек наград (у эпического #bb00ff из макета)
 const LB_GLOW = { purple: '#bb00ff', blue: '#3d8aff', green: '#1eca85' };
-const LB_RAY = { purple: '#5d25b0', blue: '#1f4fae', green: '#0f7a50' };
-// порядок как в макете: бонус сверху во всю ширину, дальше карта, монеты, ключи, косметика
+// подсветка за сундуком (Figma «Подсветка»): 15-лучевая звезда 513×317 с
+// размытием 42 и 6-лучевая 597×369 с размытием 24, цвета из макета
+const LB_STARS = {
+  blue: ['#2c74d9', '#3d89a9'],
+  purple: ['#7338b1', '#c286bf'],
+  green: ['#408a67', '#51902e'],
+};
+// где сундук стоит в блоке 540×540 (компонент «Сундуки XL», Figma 17424:170016):
+// [x, y, ширина, высота] закрытого и открытого, прорезь для монет / скважина
+const LB_XL = {
+  blue: { closed: [128, 142, 269, 274], open: [30, -33, 480, 480], slot: [262, 194], mouth: [270, 250] },
+  green: { closed: [115, 126, 294, 303], open: [32, -29, 477, 477], slot: [262, 199], mouth: [270, 250] },
+  purple: { closed: [129, 153, 266, 266], open: [44, -19, 448, 448], hole: [209, 310], mouth: [262, 250] },
+};
+// порядок как в макете: бонус сверху во всю ширину, дальше карта, монеты/ключи, оформление
 const LB_ORDER = ['bonus', 'card', 'coins', 'tokens', 'frame'];
 const CONFETTI_COLORS = ['#ffdd2d', '#ff5c8a', '#42cf9b', '#3d8aff', '#b36bff', '#ffffff'];
 
-// закрытая ячейка — узор из «щитов» (LB_SHIELDS из js/shop-shields.js,
-// Figma 17100:199395). Пока ячейки закрыты, щиты по случайному порядку
-// плавно светлеют до одного из серых оттенков макета и гаснут обратно до
-// самого тёмного (#0c0c0c)
-function shieldsSVG(kind) {
-  const { vb, shields } = LB_SHIELDS[kind];
-  return `<svg class="lb-shields" viewBox="${vb}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${shields.map(([c, d]) => `<path d="${d}" fill="${c}"/>`).join('')}</svg>`;
+function starPoints(n, rx, ry, inner) {
+  const pts = [];
+  for (let k = 0; k < n * 2; k++) {
+    const r = k % 2 ? inner : 1;
+    const a = (Math.PI * k) / n - Math.PI / 2;
+    pts.push(`${(rx + rx * r * Math.cos(a)).toFixed(1)},${(ry + ry * r * Math.sin(a)).toFixed(1)}`);
+  }
+  return pts.join(' ');
 }
 
-const SHIELD_DARK = '#0c0c0c';
-const SHIELD_GREYS = ['#202020', '#202020', '#323232', '#363636', '#363636', '#757575', '#878787'];
-let shieldTimer = 0;
-
-function stopShields() {
-  clearTimeout(shieldTimer);
-  shieldTimer = 0;
-}
-
-function runShields() {
-  stopShields();
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const tick = () => {
-    const paths = lbRewardsEl.querySelectorAll('.lb-cell:not(.is-open) .lb-shields path:not([data-lit])');
-    if (!paths.length && !lbRewardsEl.querySelector('.lb-cell:not(.is-open)')) return;
-    for (let i = 0; i < 3 && paths.length; i++) {
-      const p = paths[Math.floor(Math.random() * paths.length)];
-      p.dataset.lit = '1';
-      p.style.fill = SHIELD_GREYS[Math.floor(Math.random() * SHIELD_GREYS.length)];
-      setTimeout(() => {
-        p.style.fill = SHIELD_DARK;
-        setTimeout(() => p.removeAttribute('data-lit'), 450);
-      }, 450 + Math.random() * 450);
-    }
-    shieldTimer = setTimeout(tick, 80);
-  };
-  tick();
+function chestStageHTML(box) {
+  const [c1, c2] = LB_STARS[box.id];
+  const g = LB_XL[box.id];
+  const pos = ([x, y, w, h]) => `left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
+  return `
+    <div class="lb-glow" aria-hidden="true">
+      <svg class="lb-star lb-star-a" viewBox="0 0 597 369"><polygon points="${starPoints(6, 298.5, 184.5, 0.162)}" fill="${c2}"/></svg>
+      <svg class="lb-star lb-star-b" viewBox="0 0 513 317"><polygon points="${starPoints(15, 256.5, 158.5, 0.382)}" fill="${c1}"/></svg>
+    </div>
+    <img class="lb-chest lb-chest-closed" src="${chestSrc(box.id)}" alt="" style="${pos(g.closed)}">
+    <img class="lb-chest lb-chest-open" src="${chestSrc(box.id, true)}" alt="" style="${pos(g.open)}">
+    <div class="lb-fx"></div>`;
 }
 
 // низкий экран: если сетка наград не помещается до кнопки «Забрать»,
@@ -605,7 +596,6 @@ function fitRewards() {
     lbRewardsEl.style.marginBottom = `${-h * (1 - lbScale)}px`;
   }
   // заголовок «Награды» и сетка — по центру между крестиком и «Забрать»
-  // (решено по смыслу: когда наград мало, внизу не остаётся пустоты)
   const top = lbCloseEl.offsetTop + lbCloseEl.offsetHeight + 8;
   const bottom = lbClaimEl.offsetTop - 16;
   const content = lbRewardsEl.offsetTop + h * lbScale - lbTitleEl.offsetTop;
@@ -613,27 +603,34 @@ function fitRewards() {
   if (free > 0) lbTitleEl.style.marginTop = `${Math.round(top + free / 2)}px`;
 }
 
+// ячейка награды (Figma 17056:193930): 128×148, картинка на всю ячейку,
+// внизу название 13/600 и подпись 11/400 #9299a2; бонус — 268×124, текст
+// 17/600 слева, подарок 120×90 справа внизу; дубль — «Уже есть / + N монет»
 function rewardCellHTML(r) {
   if (r.kind === 'bonus') {
-    return `<div class="lb-cell is-bonus"><div class="lb-cell-in"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div><span class="lb-cell-cover">${shieldsSVG('bonus')}</span></div>`;
+    return `<div class="lb-cell is-bonus"><p class="lb-bonus-title">${r.name}</p><img class="lb-bonus-img" src="assets/v2-prize-gift.png" alt=""></div>`;
   }
   let title;
+  let sub;
   let art;
   if (r.kind === 'card') {
-    // дубль: «Уже есть», карта погашена, внизу «+N» монет
-    title = r.dup ? 'Уже есть' : RARITY_TITLE[r.rarity];
-    art = `<div class="card24 lb-card">${card24HTML(r.card)}</div>${r.dup ? `<span class="lb-qty">+ ${r.dupCoins}<img src="assets/shop-coin.png" alt=""></span>` : ''}`;
+    title = r.dup ? 'Уже есть' : 'Карта';
+    sub = r.dup ? `+ ${r.dupCoins} ${plural(r.dupCoins, CURRENCY.coins)}` : CARD_RARITY_NAME[r.rarity];
+    art = `<div class="card24 lb-card">${card24HTML(r.card)}</div>`;
   } else if (r.kind === 'coins') {
     title = 'Монеты';
-    art = `<img src="assets/v2-ny-coins.png" alt=""><span class="lb-qty">× ${r.amount}</span>`;
+    sub = `${r.amount} шт.`;
+    art = '<img class="lb-cell-img" src="assets/shop-prize2-coins.png" alt="">';
   } else if (r.kind === 'tokens') {
     title = 'Ключи';
-    art = `<img src="${CURRENCY.tokens.icon}" alt=""><span class="lb-qty">× ${r.amount}</span>`;
+    sub = `${r.amount} шт.`;
+    art = '<img class="lb-cell-img" src="assets/shop-prize2-keys.png" alt="">';
   } else {
-    title = r.back ? 'Рубашка' : 'Рамка';
-    art = r.back ? `<div class="lb-back">${COSMETICS24.backHTML(r.id)}</div>` : '<span class="lb-frame-prev"></span>';
+    title = 'Оформление';
+    sub = r.back ? 'Рубашка карты' : 'Рамка аватара';
+    art = '<img class="lb-cell-img" src="assets/shop-prize2-styles.png" alt="">';
   }
-  return `<div class="lb-cell${r.dup ? ' is-dup' : ''}"><div class="lb-cell-in"><p class="lb-cell-title">${title}</p><div class="lb-cell-art">${art}</div></div><span class="lb-cell-cover">${shieldsSVG('cell')}</span></div>`;
+  return `<div class="lb-cell lb-cell-${r.kind}${r.dup ? ' is-dup' : ''}"><div class="lb-cell-art">${art}</div><p class="lb-cell-title">${title}</p><span class="lb-cell-sub">${sub}</span></div>`;
 }
 
 let lbBusy = false;
@@ -666,22 +663,164 @@ function confettiFrom(cell) {
   }
 }
 
-async function revealCell(cell, legend) {
-  cell.classList.add('is-scanning');
-  if (legend) cell.classList.add('is-legend');
-  await lbWait(legend ? 1600 : 1200);
-  cell.classList.remove('is-scanning');
-  cell.classList.add('is-open');
+// блик в точке блока 540×540 (прорезь, скважина)
+function lbGlint(x, y, size = 46) {
+  const g = document.createElement('span');
+  g.className = 'lb-glint';
+  g.style.left = `${x}px`;
+  g.style.top = `${y}px`;
+  g.style.width = g.style.height = `${size}px`;
+  lbBoxEl.querySelector('.lb-fx').appendChild(g);
+  g.animate([
+    { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0 },
+    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.35 },
+    { transform: 'translate(-50%, -50%) scale(1.6)', opacity: 0 },
+  ], { duration: 420, easing: 'ease-out' }).finished.then(() => g.remove());
+}
+
+// сундук коротко «принимает» монету или ключ — чуть оседает
+function lbBump() {
   if (lbSkip) return;
-  cell.animate([{ transform: 'scale(1)' }, { transform: `scale(${legend ? 1.12 : 1.06})` }, { transform: 'scale(1)' }], { duration: legend ? 450 : 320, easing: 'ease-out' });
-  if (legend) {
-    lbFlashEl.animate([
-      { transform: 'scale(0.4)', opacity: 0 },
-      { transform: 'scale(4)', opacity: 0.7, offset: 0.3 },
-      { transform: 'scale(7)', opacity: 0 },
-    ], { duration: 600, easing: 'ease-out' });
-    confettiFrom(cell);
+  lbBoxEl.querySelector('.lb-chest-closed').animate([
+    { transform: 'none' },
+    { transform: 'translateY(5px) scale(1.02, 0.97)' },
+    { transform: 'none' },
+  ], { duration: 220, easing: 'ease-out' });
+}
+
+// синий и зелёный: монетки по одной падают сверху в прорезь и исчезают в ней
+// (монета в окне, нижний край которого — прорезь)
+async function dropCoins(box) {
+  const [sx, sy] = LB_XL[box.id].slot;
+  const fx = lbBoxEl.querySelector('.lb-fx');
+  const coins = 4;
+  const flights = [];
+  for (let i = 0; i < coins; i++) {
+    const win = document.createElement('div');
+    win.className = 'lb-coin-win';
+    win.style.left = `${sx}px`;
+    win.style.top = `${sy}px`;
+    win.innerHTML = `<img class="lb-coin" src="${CURRENCY.coins.icon}" alt="">`;
+    fx.appendChild(win);
+    const coin = win.firstChild;
+    const drift = (i % 2 ? 1 : -1) * (6 + Math.random() * 10);
+    flights.push(lbAnim(coin, [
+      { transform: `translate(${drift}px, -330px) rotate(${drift * 2}deg) scaleX(1)`, opacity: 0 },
+      { transform: `translate(${drift * 0.3}px, -150px) rotate(${drift}deg) scaleX(0.8)`, opacity: 1, offset: 0.55 },
+      { transform: 'translate(0, -100px) rotate(0) scaleX(0.5)', opacity: 1, offset: 0.8 },
+      { transform: 'translate(0, 12px) rotate(0) scaleX(0.5)', opacity: 1 },
+    ], { duration: 620, delay: i * 260, easing: 'cubic-bezier(0.45, 0, 0.9, 0.6)', fill: 'both' }).then(() => {
+      win.remove();
+      lbGlint(sx, sy, 54);
+      lbBump();
+    }));
   }
+  await Promise.all(flights);
+  await lbWait(200);
+}
+
+// фиолетовый: ключ влетает по дуге в замочную скважину, поворачивается и тает
+async function insertKey(box) {
+  const [hx, hy] = LB_XL[box.id].hole;
+  const fx = lbBoxEl.querySelector('.lb-fx');
+  const key = document.createElement('img');
+  key.className = 'lb-key';
+  key.src = CURRENCY.tokens.icon;
+  key.alt = '';
+  key.style.left = `${hx}px`;
+  key.style.top = `${hy}px`;
+  fx.appendChild(key);
+  await lbAnim(key, [
+    { transform: 'translate(-50%, -50%) translate(-170px, -300px) rotate(-70deg) scale(1.3)', opacity: 0 },
+    { transform: 'translate(-50%, -50%) translate(-150px, -90px) rotate(-30deg) scale(1.15)', opacity: 1, offset: 0.5 },
+    { transform: 'translate(-50%, -50%) rotate(0) scale(0.8)', opacity: 1 },
+  ], { duration: 700, easing: 'cubic-bezier(0.3, 0, 0.3, 1)', fill: 'forwards' });
+  lbBump();
+  // поворот ключа в замке — щелчок
+  await lbAnim(key, [
+    { transform: 'translate(-50%, -50%) rotate(0) scale(0.8)' },
+    { transform: 'translate(-50%, -50%) rotate(100deg) scale(0.8)', offset: 0.7 },
+    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.8)' },
+  ], { duration: 380, easing: 'cubic-bezier(0.3, 0, 0.3, 1.4)', fill: 'forwards' });
+  lbGlint(hx, hy, 70);
+  await lbAnim(key, [
+    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.8)', opacity: 1 },
+    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.3)', opacity: 0 },
+  ], { duration: 260, easing: 'ease-in', fill: 'forwards' });
+  key.remove();
+  await lbWait(150);
+}
+
+// тряска 1–3 с, всё сильнее; подсветка разгорается
+async function shakeChest() {
+  const dur = 1000 + Math.random() * 2000;
+  const steps = Math.max(10, Math.round(dur / 70));
+  const frames = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const s = i % 2 ? 1 : -1;
+    const amp = 1 + 7 * t * t;
+    frames.push({ transform: `translate(${(s * amp * 0.8).toFixed(1)}px, ${(-amp * 0.3 * Math.random()).toFixed(1)}px) rotate(${(s * amp * 0.9).toFixed(1)}deg) scale(${(1 + 0.08 * t).toFixed(3)})` });
+  }
+  lbBoxEl.querySelector('.lb-glow').animate([
+    { transform: 'scale(1) rotate(0)', opacity: 1, filter: 'brightness(1)' },
+    { transform: 'scale(1.3) rotate(25deg)', opacity: 1, filter: 'brightness(1.6)' },
+  ], { duration: dur, easing: 'ease-in', fill: 'forwards' });
+  await lbAnim(lbBoxEl.querySelector('.lb-chest-closed'), frames, { duration: dur, easing: 'linear' });
+}
+
+// вспышка: закрытый сундук сменяется открытым со свечением
+async function openChest() {
+  const closed = lbBoxEl.querySelector('.lb-chest-closed');
+  const open = lbBoxEl.querySelector('.lb-chest-open');
+  if (!lbSkip) {
+    lbFlashEl.animate([
+      { transform: 'scale(0.3)', opacity: 0 },
+      { transform: 'scale(9)', opacity: 1, offset: 0.25 },
+      { transform: 'scale(14)', opacity: 0 },
+    ], { duration: 700, easing: 'ease-out' });
+  }
+  await lbWait(150);
+  closed.style.opacity = '0';
+  open.style.opacity = '1';
+  if (navigator.vibrate) navigator.vibrate(30);
+  await lbAnim(open, [
+    { transform: 'scale(1.18)' },
+    { transform: 'scale(0.96)', offset: 0.6 },
+    { transform: 'none' },
+  ], { duration: 520, easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)' });
+}
+
+// подарки вылетают из открытого сундука и встают на свои места в сетке
+async function flyOutRewards(box, rewards, cells) {
+  const [mx, my] = LB_XL[box.id].mouth;
+  const xl = lbBoxEl.getBoundingClientRect();
+  const k = xl.width / 540;
+  const ox = xl.left + mx * k;
+  const oy = xl.top + my * k;
+  // сундук и подсветка гаснут, пока подарки летят
+  lbBoxEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.9)' }], { duration: lbSkip ? 1 : 500, delay: lbSkip ? 0 : 250, easing: 'ease-in', fill: 'forwards' });
+  const epic = box.id === 'purple';
+  const lands = cells.map((cell, i) => {
+    const r = cell.getBoundingClientRect();
+    const dx = ox - (r.left + r.width / 2);
+    const dy = oy - (r.top + r.height / 2);
+    const legend = epic && (rewards[i].kind === 'card' || rewards[i].kind === 'bonus');
+    if (lbSkip) { cell.style.opacity = '1'; return Promise.resolve(); }
+    return cell.animate([
+      { transform: `translate(${dx}px, ${dy}px) scale(0.15)`, opacity: 0 },
+      { transform: `translate(${dx * 0.45}px, ${dy * 0.45 - 90}px) scale(0.75)`, opacity: 1, offset: 0.55 },
+      { transform: 'translate(0, -6px) scale(1.04)', opacity: 1, offset: 0.85 },
+      { transform: 'none', opacity: 1 },
+    ], { duration: 720, delay: 120 + i * 170, easing: 'cubic-bezier(0.25, 0.8, 0.35, 1)', fill: 'backwards' }).finished.then(() => {
+      cell.style.opacity = '1';
+      if (legend && !lbSkip) {
+        lbFlashEl.animate([{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'scale(4)', opacity: 0.6, offset: 0.3 }, { transform: 'scale(7)', opacity: 0 }], { duration: 600, easing: 'ease-out' });
+        confettiFrom(cell);
+      }
+    }).catch(() => { cell.style.opacity = '1'; });
+  });
+  await Promise.all(lands);
 }
 
 async function openLootbox(box) {
@@ -698,14 +837,12 @@ async function openLootbox(box) {
     animateCoins(coins, coins - box.price);
   }
   const rewards = rollBox(box).sort((x, y) => LB_ORDER.indexOf(x.kind) - LB_ORDER.indexOf(y.kind));
-  const epic = box.id === 'purple';
 
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
   lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
   lbOverlayEl.style.setProperty('--lb-glow', LB_GLOW[box.id]);
-  lbOverlayEl.style.setProperty('--lb-ray', LB_RAY[box.id]);
-  lbBoxEl.innerHTML = chestArt(box);
-  lbRaysEl.innerHTML = HERO_STAR.replace('class="shop-tile-glow"', '');
+  lbBoxEl.innerHTML = chestStageHTML(box);
+  lbBoxEl.style.opacity = '';
   lbRewardsEl.innerHTML = '';
   lbTitleEl.classList.remove('is-visible');
   lbClaimEl.classList.remove('is-visible');
@@ -713,67 +850,34 @@ async function openLootbox(box) {
   lbOverlayEl.classList.add('is-open');
   lbOverlayEl.setAttribute('aria-hidden', 'false');
 
-  // 1. сундук влетает, лучи за ним медленно крутятся
-  lbRaysEl.animate([{ transform: 'scale(0.5) rotate(-20deg)', opacity: 0 }, { transform: 'scale(1) rotate(0)', opacity: 1 }], { duration: 400, easing: 'ease-out', fill: 'forwards' });
-  await lbAnim(lbBoxEl, [
-    { transform: 'translateY(-60px) scale(0.6)', opacity: 0 },
-    { transform: 'translateY(8px) scale(1.04)', opacity: 1, offset: 0.7 },
+  // 1. закрытый сундук на свечении своего цвета
+  lbBoxEl.querySelector('.lb-glow').animate([{ transform: 'scale(0.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+  await lbAnim(lbBoxEl.querySelector('.lb-chest-closed'), [
+    { transform: 'translateY(-50px) scale(0.7)', opacity: 0 },
+    { transform: 'translateY(6px) scale(1.03)', opacity: 1, offset: 0.7 },
     { transform: 'none', opacity: 1 },
-  ], { duration: 420, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+  ], { duration: 480, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+  await lbWait(350);
 
-  // 2. сундук вздрагивает, лучи с поворотом наезжают в камеру
-  lbRaysEl.animate([
-    { transform: 'scale(1) rotate(0)', opacity: 1 },
-    { transform: 'scale(1.4) rotate(50deg)', opacity: 1, offset: 0.5 },
-    { transform: 'scale(5) rotate(170deg)', opacity: 0 },
-  ], { duration: 1000, easing: 'cubic-bezier(0.55, 0, 0.75, 0.2)', fill: 'forwards' });
-  await lbAnim(lbBoxEl, [
-    { transform: 'rotate(0) scale(1)' },
-    { transform: 'rotate(-5deg) scale(1.03)', offset: 0.15 },
-    { transform: 'rotate(5deg) scale(1.05)', offset: 0.3 },
-    { transform: 'rotate(-7deg) scale(1.08)', offset: 0.45 },
-    { transform: 'rotate(7deg) scale(1.1)', offset: 0.6 },
-    { transform: 'rotate(-4deg) scale(1.14)', offset: 0.75 },
-    { transform: 'rotate(0) scale(1.18)' },
-  ], { duration: 620, easing: 'ease-in' });
+  // 2. монетки в прорезь (синий, зелёный) или ключ в скважину (фиолетовый)
+  if (box.currency === 'tokens') await insertKey(box);
+  else await dropCoins(box);
 
-  // 3. вспышка, сундук растворяется
-  if (!lbSkip) {
-    lbFlashEl.animate([
-      { transform: 'scale(0.3)', opacity: 0 },
-      { transform: 'scale(8)', opacity: 1, offset: 0.3 },
-      { transform: 'scale(14)', opacity: 0 },
-    ], { duration: 650, easing: 'ease-out' });
-  }
-  lbBoxEl.animate([{ opacity: 1, transform: 'scale(1.18)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: lbSkip ? 1 : 300, easing: 'ease-in', fill: 'forwards' });
-  await lbWait(220);
+  // 3. тряска 1–3 с
+  await shakeChest();
 
-  // 4. ячейки-«рубашки» появляются
+  // 4. вспышка — сундук открыт
+  await openChest();
+  await lbWait(600);
+
+  // 5. подарки вылетают и встают в сетку наград
   lbRewardsEl.innerHTML = rewards.map(rewardCellHTML).join('');
   fitRewards();
   const cells = Array.from(lbRewardsEl.children);
-  lbRewardsEl.querySelectorAll('.lb-frame-prev').forEach((el) => {
-    const r = rewards.find((x) => x.kind === 'frame' && !x.back);
-    if (r) COSMETICS24.applyFrame(el, r.id);
-  });
+  cells.forEach((c) => { c.style.opacity = '0'; });
   lbTitleEl.classList.add('is-visible');
-  runShields();
-  cells.forEach((c, i) => {
-    if (lbSkip) return;
-    c.animate([
-      { opacity: 0, transform: 'translateY(18px) scale(0.85)' },
-      { opacity: 1, transform: 'none' },
-    ], { duration: 340, delay: i * 70, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.2)', fill: 'backwards' });
-  });
-  await lbWait(340 + cells.length * 70 + 250);
-
-  // 5. раскрываем по очереди
-  for (let i = 0; i < cells.length; i++) {
-    const r = rewards[i];
-    const legend = epic && (r.kind === 'card' || r.kind === 'bonus');
-    await revealCell(cells[i], legend);
-    await lbWait(legend ? 800 : 600);
-  }
+  await flyOutRewards(box, rewards, cells);
+  await lbWait(300);
 
   // первый дубль в жизни — объясняем механику тултипом над ячейкой
   const dupCell = cells.find((c) => c.classList.contains('is-dup'));
@@ -795,14 +899,14 @@ async function openLootbox(box) {
   });
   Tooltip24.hide();
   // каждая награда прямо с экрана улетает в свой раздел: монеты, ключи и
-  // дубль (он стал монетами) — в счётчики, карта — в «Карты», косметика —
+  // дубль (он стал монетами) — в счётчики, карта — в «Карты», оформление —
   // в «Игру» (профиль), бонус — в «Призы». Фон, ячейки и кнопка гаснут
   // вокруг наград, сами награды остаются на месте до вылета
   const coinsBox = document.querySelector('.shop-balance[data-balance="coins"]');
   const tokensBox = document.querySelector('.shop-balance[data-balance="tokens"]');
   const tab = (nav) => document.querySelector(`.v2-tab[data-nav="${nav}"] .v2-tab-icon`);
-  // у дубля улетают только монеты «+ N», карта гаснет вместе с экраном
-  const artOf = (cell, r) => cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : r.dup ? '.lb-qty' : '.lb-cell-art');
+  // у дубля улетают только монеты «+ N монет», карта гаснет вместе с экраном
+  const artOf = (cell, r) => cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : r.dup ? '.lb-cell-sub' : '.lb-cell-art');
   const lifted = cells.map((cell, i) => liftReward(artOf(cell, rewards[i]), rewards[i].dup));
   renderShop();
   const fade = lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' }).finished.then(() => {
@@ -811,8 +915,8 @@ async function openLootbox(box) {
     lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
     lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
     lbRewardsEl.innerHTML = '';
+    lbBoxEl.innerHTML = '';
     lbBusy = false;
-    stopShields();
   });
   await Promise.all([fade, ...rewards.map((r, i) => {
     const delay = 250 + i * 200;

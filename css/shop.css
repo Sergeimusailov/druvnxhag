@@ -196,32 +196,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(55% 32% at 50% 46%, color-mix(in srgb, var(--lb-ray) 45%, transparent), transparent 75%),
     linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
     #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
-}
-
-/* лучи за сундуком: размытая 21-лучевая звезда цвета сундука; при открытии
-   с поворотом «наезжают в камеру» (js: openLootbox) */
-.lb-rays {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  width: 420px;
-  height: 420px;
-  margin: -210px 0 0 -210px;
-  filter: blur(10px);
-  pointer-events: none;
-}
-
-.lb-rays svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.lb-rays polygon {
-  fill: var(--lb-ray);
 }
 
 .lb-close {
@@ -231,51 +207,135 @@
   z-index: 3;
 }
 
+/* сцена — блок 540×540 как компонент «Сундуки XL» (Figma 17424:170016),
+   по центру экрана (в макете верх блока на 153 из 850); в нём подсветка,
+   закрытый и открытый сундук на своих местах, монетки/ключ и блики */
 .lb-stage {
   position: absolute;
-  top: 45%;
+  top: calc(50% - 272px);
   left: 50%;
-  width: 290px;
-  height: 290px;
-  margin: -145px 0 0 -145px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 540px;
+  height: 540px;
+  margin-left: -270px;
   pointer-events: none;
 }
 
-.lb-box .lb-svg {
-  display: block;
-  width: 290px;
-  height: 290px;
-  object-fit: contain;
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
+.lb-box {
+  position: absolute;
+  inset: 0;
 }
 
+/* подсветка (Figma «Подсветка»): 6-лучевая звезда 597×369 с размытием 24
+   и 15-лучевая 513×317 с размытием 42, цвета сундука; центр — по центру сундука */
+.lb-glow {
+  position: absolute;
+  left: 270px;
+  top: 282px;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.lb-star {
+  position: absolute;
+  display: block;
+}
+
+.lb-star-a {
+  left: -298px;
+  top: -184px;
+  width: 597px;
+  height: 369px;
+  filter: blur(12px);
+}
+
+.lb-star-b {
+  left: -256px;
+  top: -158px;
+  width: 513px;
+  height: 317px;
+  filter: blur(21px);
+}
+
+.lb-chest {
+  position: absolute;
+  display: block;
+  object-fit: contain;
+}
+
+.lb-chest-closed {
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
+}
+
+.lb-chest-open {
+  opacity: 0;
+}
+
+.lb-fx {
+  position: absolute;
+  inset: 0;
+}
+
+/* монетка (иконка из счётчика монет) падает в прорезь: окно над прорезью,
+   всё ниже его края не видно — монета «проваливается» внутрь */
+.lb-coin-win {
+  position: absolute;
+  width: 160px;
+  height: 420px;
+  margin: -420px 0 0 -80px;
+  overflow: hidden;
+}
+
+/* монета 104 — крупная, у прорези сплющивается до ширины щели */
+.lb-coin {
+  position: absolute;
+  left: 28px;
+  bottom: -104px;
+  width: 104px;
+  height: 104px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* ключ (иконка из счётчика ключей) влетает в скважину */
+.lb-key {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+}
+
+.lb-glint {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0.6) 30%, transparent 70%);
+  pointer-events: none;
+}
+
+/* вспышка открытия — из центра сундука */
 .lb-flash {
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: 270px;
+  top: 282px;
   width: 60px;
   height: 60px;
   margin: -30px 0 0 -30px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--lb-ray) 60%, #fff) 40%, transparent 70%);
+  background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--lb-glow) 50%, #fff) 40%, transparent 70%);
   opacity: 0;
   pointer-events: none;
 }
 
-/* «Награды» 30/700 +0.36 — под шапкой, как в макете */
+/* «Награды» 30/600 +0.36 (Figma 17056:193930) */
 .lb-title {
   position: relative;
   z-index: 2;
   margin-top: 74px;
   font-size: 30px;
   line-height: 36px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.36px;
   color: #f6f7f8;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -286,8 +346,8 @@
   transform: none;
 }
 
-/* сетка наград: ширина 277, бонус во всю ширину сверху (отступ 20),
-   остальные ячейки 132×156 по две в ряд, между ними 12; нечётная — по центру */
+/* сетка наград 268: бонус во всю ширину сверху (отступ 20), остальные
+   ячейки 128×148 по две в ряд, между ними 12; нечётная — по центру */
 .lb-rewards {
   position: relative;
   z-index: 2;
@@ -296,169 +356,99 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  width: 277px;
-  margin-top: 16px;
+  width: 268px;
 }
 
-/* ячейка: чёрная, обводка белая 10% снаружи, r16, свечение цвета сундука */
+/* ячейка: чёрная, обводка белая 10% внутрь, r16, свечение цвета сундука 25%;
+   картинка на всю ячейку, внизу название 13/600 −0.08 и подпись 11/400 #9299a2 */
 .lb-cell {
   position: relative;
-  width: 132px;
-  height: 156px;
-  border-radius: 16px;
-  background: #000;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 16px color-mix(in srgb, var(--lb-glow) 40%, transparent);
-}
-
-.lb-cell.is-bonus {
-  width: 277px;
-  height: 126px;
-  margin-bottom: 8px;
-  border-radius: 24px;
-}
-
-.lb-cell-in {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  padding: 12px 12px 24px;
-  border-radius: inherit;
+  width: 128px;
+  height: 148px;
+  padding: 8px 8px 12px;
+  border-radius: 16px;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 16px color-mix(in srgb, var(--lb-glow) 25%, transparent);
+  text-align: center;
+}
+
+.lb-cell-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 12px;
   overflow: hidden;
-  opacity: 0;
-  transform: scale(0.85);
-  filter: blur(6px);
-  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
+  pointer-events: none;
 }
 
-.lb-cell.is-open .lb-cell-in {
-  opacity: 1;
-  transform: none;
-  filter: none;
+.lb-cell-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(0.84);
+  transform-origin: 50% 4%;
 }
 
-/* название 13/600 −0.08 */
+.lb-cell-art .lb-card {
+  width: 76px;
+  margin-top: 14px;
+}
+
+.lb-cell-title,
+.lb-cell-sub {
+  position: relative;
+  z-index: 1;
+}
+
 .lb-cell-title {
   font-size: 13px;
   line-height: 16px;
   font-weight: 600;
   letter-spacing: -0.08px;
   color: #f6f7f8;
-  text-align: center;
   white-space: nowrap;
 }
 
-/* картинка 88×88, количество «× 240» 20/700 с обводкой 3px #202020 снаружи */
-.lb-cell-art {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 88px;
-  height: 88px;
-}
-
-.lb-cell-art > img {
-  width: 88px;
-  height: 88px;
-  object-fit: contain;
-}
-
-.lb-cell-art .lb-card {
-  width: 88px;
-}
-
-.lb-qty {
-  position: absolute;
-  left: 50%;
-  bottom: -2px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 700;
-  letter-spacing: 0.38px;
-  color: #fff;
+.lb-cell-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 13px;
+  color: #9299a2;
   white-space: nowrap;
-  transform: translateX(-50%);
-  -webkit-text-stroke: 6px #202020;
-  paint-order: stroke fill;
 }
 
-.lb-qty img {
-  width: 18px;
-  height: 18px;
-}
-
-/* дубль (Figma 17056:193778): карта 80×80 в цвете, под ней «+ 12» 17/700
-   −0.41 #ffb249 с обводкой 3px #202020 снаружи и монета 24 справа, между ними 2.
-   Монеты улетят в счётчик по «Забрать» */
-.lb-cell.is-dup .lb-cell-art,
-.lb-fly-item.is-dup .lb-cell-art {
-  width: 80px;
-  height: 80px;
-  margin-top: -6px;
-}
-
-.lb-cell.is-dup .lb-card,
-.lb-fly-item.is-dup .lb-card {
-  width: 80px;
-}
-
-.lb-cell.is-dup .lb-qty,
-.lb-fly-item.is-dup .lb-qty {
-  top: 86px;
-  bottom: auto;
-  font-size: 17px;
-  line-height: 20px;
-  letter-spacing: -0.41px;
+/* дубль: «Уже есть», подпись «+ N монет» — монеты улетят в счётчик */
+.lb-cell.is-dup .lb-cell-sub,
+.lb-fly-item.is-dup .lb-cell-sub {
   color: #ffb249;
+  font-weight: 600;
 }
 
-.lb-cell.is-dup .lb-qty img,
-.lb-fly-item.is-dup .lb-qty img {
-  width: 24px;
-  height: 24px;
-}
-
-/* рамка-превью 88×88: рамка 8px внутрь, внутри чёрное */
-.lb-frame-prev {
-  position: relative;
-  width: 88px;
-  height: 88px;
-  border-radius: 14px;
-  background: var(--pf-frame, #fff);
-  isolation: isolate;
-}
-
-.lb-frame-prev::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  z-index: 1;
-  border-radius: 7px;
-  background: #000;
-}
-
-.lb-back {
-  position: relative;
-  width: 66px;
-  height: 88px;
-}
-
-/* бонус: «SOKOLOV Beauty: скидка 15%» 17/700 −0.41 слева, подарок 120×90 справа внизу */
-.lb-cell.is-bonus .lb-cell-in {
+/* бонус 268×124 (Figma tmCombo): r24, обводка белая 10% снаружи, свечение
+   40%; «SOKOLOV Beauty: скидка 15%» 17/600 −0.41 слева, подарок 120×90 справа внизу */
+.lb-cell.is-bonus {
   align-items: flex-start;
+  justify-content: flex-start;
+  width: 268px;
+  height: 124px;
+  margin-bottom: 8px;
   padding: 16px 100px 18px 20px;
+  border-radius: 24px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 16px color-mix(in srgb, var(--lb-glow) 40%, transparent);
+  text-align: left;
 }
 
 .lb-bonus-title {
   font-size: 17px;
   line-height: 20px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.41px;
   color: #f6f7f8;
 }
@@ -470,47 +460,6 @@
   width: 120px;
   height: 90px;
   object-fit: contain;
-}
-
-/* закрытая ячейка («рубашка»): чёрная, с узором из «щитов»;
-   при раскрытии блика нет — ячейка просто гаснет */
-.lb-cell-cover {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  overflow: hidden;
-  background: #000;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* узор «щитов» (Figma 17100:199395): цвет каждого щита плавно меняется
-   (runShields в js/shop.js) */
-.lb-shields {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.lb-shields path {
-  transition: fill 0.45s ease-in-out;
-}
-
-/* «легендарная» ячейка (карта и бонус в эпическом сундуке): перелив дольше,
-   ячейка светится и пульсирует */
-.lb-cell.is-legend.is-scanning {
-  animation: lbLegendGlow 0.5s ease-in-out infinite;
-}
-
-.lb-cell.is-open .lb-cell-cover {
-  opacity: 0;
-  transform: scale(1.06);
-  pointer-events: none;
-}
-
-@keyframes lbLegendGlow {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 16px color-mix(in srgb, var(--lb-glow) 50%, transparent); }
-  50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--lb-glow) 80%, #fff), 0 0 40px color-mix(in srgb, var(--lb-glow) 90%, transparent); }
 }
 
 /* конфетти легендарной награды и монетки дубля */
@@ -557,7 +506,7 @@
 /* «Забрать» 345×56 r16, 17/400 −0.41 */
 /* низкие экраны (нет в макете): заголовок выше, а сетка наград целиком
    пропорционально уменьшается (fitRewards в js/shop.js) — ячейки остаются
-   132×156 и 277×126, как в макете */
+   128×148 и 268×124, как в макете */
 @media (max-height: 760px) {
   .lb-title { margin-top: 32px; margin-bottom: 8px; }
 }
@@ -591,11 +540,6 @@
   transform: scale(0.97);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lb-cell.is-legend.is-scanning {
-    animation: none;
-  }
-}
 
 /* ---------- 2.3: витрина по макету Figma 16908:32749 («Магазин сундуков») ---------- */
 
@@ -690,17 +634,17 @@
   align-items: flex-start;
 }
 
-/* средние: 219px, отступы 12/8/16, всё по центру, кнопка-цена снизу по центру */
+/* средние: 240px, отступы 12/8/12, всё по центру, кнопка-цена снизу по центру */
 .shop-tile.is-small {
   flex: 1;
   min-width: 0;
-  height: 219px;
-  padding: 12px 8px 16px;
+  height: 240px;
+  padding: 12px 8px 12px;
   align-items: center;
 }
 
-/* свечения: у эпического — размытая 21-лучевая звезда #5d25b0 296px,
-   у средних — пятно 135px с размытием 60 по центру над карточкой */
+/* свечения: у эпического — эллипс 482×267 #6d20a8 60% с размытием 86
+   (Figma 16908:32749), у средних — пятно 135px с размытием 60 по центру над карточкой */
 .shop-tile-glow {
   position: absolute;
   z-index: -2;
@@ -708,11 +652,13 @@
 }
 
 .shop-tile.is-hero .shop-tile-glow {
-  right: -63px;
-  top: -54px;
-  width: 296px;
-  height: 296px;
-  filter: blur(9.5px);
+  left: 220px;
+  top: -116px;
+  width: 482px;
+  height: 267px;
+  border-radius: 50%;
+  background: rgba(109, 32, 168, 0.6);
+  filter: blur(43px);
 }
 
 .shop-tile.is-small .shop-tile-glow {
@@ -747,10 +693,13 @@
   pointer-events: none;
 }
 
+/* картинка крупнее блока, как в макете: 168 в 146 у эпического, 165 в 148 у средних */
 .shop-tile-art .lb-svg {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 115%;
+  height: 115%;
+  margin: -7.5%;
+  object-fit: contain;
   filter: none;
 }
 
@@ -764,7 +713,7 @@
 
 .shop-tile.is-small .shop-tile-art {
   left: 50%;
-  top: 69px;
+  top: 71px;
   width: 148px;
   height: 148px;
   margin-left: -74px;
@@ -814,7 +763,7 @@
   gap: 0;
   height: 32px;
   margin-top: auto;
-  padding: 4px 16px;
+  padding: 4px 20px;
   border-radius: 100px;
   background: #fff;
   font-size: 13px;
@@ -911,13 +860,16 @@
   display: flex;
   justify-content: center;
   height: 180px;
-  margin-top: 2px;
+  margin-top: 8px;
   pointer-events: none;
 }
 
+/* в макете картинка 206 в блоке 180 (выходит за него на 13 с каждой стороны) */
 .shop-detail-art .lb-svg {
-  width: 180px;
-  height: 180px;
+  flex-shrink: 0;
+  width: 206px;
+  height: 206px;
+  margin-top: -13px;
   object-fit: contain;
   animation: shopLevitate 3.2s ease-in-out infinite;
 }
@@ -933,7 +885,7 @@
 
 /* заголовок «Награды в сундуке» 20/600 +0.38 */
 .shop-detail-title {
-  margin-top: 2px;
+  margin-top: 8px;
   font-size: 20px;
   line-height: 24px;
   font-weight: 600;
@@ -948,21 +900,22 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin-top: 2px;
-  padding: 20px 0;
+  margin-top: 0;
+  padding: 10px 0 2px;
   list-style: none;
 }
 
-/* карточка: #1c1c1e, обводка белая 10%, r16, отступы 8/8/12; картинка из макета
-   на всю карточку (r12), внизу название 13/600 −0.08 и подпись 12/400 #9299a2 */
+/* карточка 128×148 (Figma 17359:51278): #1c1c1e, обводка белая 10%, r16,
+   отступы 8/8/12; картинка из макета на всю карточку (r12), внизу название
+   13/600 −0.08 и подпись #9299a2 — 12/400, у карты и оформления 11/400 */
 .shop-prize {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  width: 104px;
-  height: 136px;
+  width: 128px;
+  height: 148px;
   padding: 8px 8px 12px;
   border-radius: 16px;
   background: #1c1c1e;
@@ -997,9 +950,16 @@
 }
 
 /* одиночная обычная карта в макете крупнее остальных и заходит под подпись — чуть меньше */
+/* картинка в плитке 128×148 — как в макете, чуть меньше и ближе к верху,
+   чтобы не заходить под подписи; одиночная обычная карта ещё меньше */
+.shop-prize .shop-prize-img {
+  transform: scale(0.84);
+  transform-origin: 50% 4%;
+}
+
 .shop-prize-card-green .shop-prize-img {
-  transform: scale(0.82);
-  transform-origin: 50% 8%;
+  transform: scale(0.7);
+  transform-origin: 50% 6%;
 }
 
 .shop-prize-title {
@@ -1016,6 +976,12 @@
   line-height: 14px;
   color: #9299a2;
   font-variant-numeric: tabular-nums;
+}
+
+.shop-prize-sub.is-text {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 13px;
 }
 
 /* низ шторки: кнопка 56, r16, иконка 24 + «Открыть за N» 17/400 −0.41 */
@@ -1085,18 +1051,8 @@
   50% { transform: translateY(-8px) rotate(1.5deg); }
 }
 
-/* красная звезда за эпическим медленно вращается вокруг своей оси */
-.shop-tile.is-hero .shop-tile-glow {
-  animation: shopStarSpin 24s linear infinite;
-}
-
-@keyframes shopStarSpin {
-  to { transform: rotate(360deg); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .shop-tile-art .lb-svg,
-  .shop-tile.is-hero .shop-tile-glow {
+  .shop-tile-art .lb-svg {
     animation: none;
   }
 }
