@@ -1,0 +1,338 @@
+/* Экран результата матча в версии 2 (js/result24.js, Figma 17424:119405) */
+
+.r24 {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 430px;
+  translate: -50% 0;
+  isolation: isolate;
+  overflow: hidden;
+  color: #f6f7f8;
+  font-family: var(--font-sf, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0s 0.35s;
+}
+
+.r24.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease;
+}
+
+/* фон — картинка приложения, притушенная на 70% (image 10981) */
+.r24-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    #000 url('../assets/v2-bg.png') center / cover no-repeat;
+}
+
+.r24-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.r24-confetti i {
+  position: absolute;
+  border-radius: 1px;
+}
+
+/* шапка как в матче: стеклянный крестик 44 слева */
+.r24-bar {
+  display: flex;
+  flex-shrink: 0;
+  padding: 18px 16px 0;
+}
+
+.r24-close {
+  text-decoration: none;
+}
+
+/* контент по центру между шапкой и кнопками, между блоками 24 */
+.r24-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px 0;
+}
+
+/* заголовок (tui-header Medium): SF Pro Display Bold 30 +0.36, #f6f7f8, отступы 2/24;
+   под ним через 2 иллюстрация 345×248 */
+.r24-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.r24-title {
+  margin: 0;
+  padding: 2px 24px;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: 0.36px;
+  text-align: center;
+}
+
+.r24-art {
+  width: 345px;
+  max-width: calc(100% - 48px);
+  aspect-ratio: 345 / 248;
+}
+
+.r24-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* «Получено монет ⓘ» + плашка — одна большая кнопка (решено по смыслу:
+   по тапу на любую её часть — шторка «Лимит монет»); поле нажатия шире
+   плашки на 12 с каждой стороны */
+.r24-coins {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: -12px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 24px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0.35, 1), background 0.18s ease;
+}
+
+.r24-coins:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* подпись SF Pro Text Bold 17 −0.41 + кнопка «i» 22 (белый 10%, иконка 12 #9299a2), между ними 8 */
+.r24-coins-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 700;
+  letter-spacing: -0.41px;
+  color: #fff;
+}
+
+.r24-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #9299a2;
+}
+
+/* плашка 56: #1c1c1e, обводка белая 10% внутри, r16, отступы 4/16/4/9,
+   монета 48, «× N» SF Pro Rounded Bold 30 +0.36 */
+.r24-plate {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 4px 16px 4px 9px;
+  border-radius: 16px;
+  background: #1c1c1e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.r24-plate img {
+  width: 48px;
+  height: 48px;
+}
+
+.r24-plate b {
+  font-family: ui-rounded, "SF Pro Rounded", var(--font-sf, sans-serif);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: 0.36px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* низ: две кнопки 56 (tui-floating-container two-actions), между ними 8,
+   отступы 16 сверху, 24 по бокам, 58 снизу */
+.r24-foot {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 16px 24px max(58px, calc(24px + env(safe-area-inset-bottom, 0px)));
+}
+
+.r24-cta,
+.r24-flat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: -0.41px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.r24-cta {
+  background: #ffdd2d;
+  color: #333;
+}
+
+.r24-flat {
+  color: #66a3ff;
+}
+
+.r24-cta:active,
+.r24-flat:active {
+  transform: scale(0.97);
+}
+
+.r24-flat:active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* шторка «Лимит монет» (tui-bottom-sheet): #1c1c1e, отступы 48 по бокам;
+   бейдж «Сброс через» 20, заголовок 20/700, описание 15/400, полоса 12 */
+.bs.r24-sheet {
+  align-items: center;
+  padding: 36px 48px max(82px, calc(48px + env(safe-area-inset-bottom, 0px)));
+  text-align: center;
+}
+
+.r24-reset {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px 0 4px;
+  border: 0;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6f7f8;
+  font: inherit;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.r24-reset svg {
+  margin-right: 2px;
+}
+
+.r24-sheet-title {
+  margin: 24px 0 0;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: 0.38px;
+  color: #fff;
+}
+
+.r24-sheet-text {
+  margin: 8px 0 0;
+  padding: 0 16px;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: -0.24px;
+  color: #fff;
+}
+
+.r24-track {
+  align-self: stretch;
+  height: 12px;
+  margin-top: 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.r24-track span {
+  display: block;
+  height: 100%;
+  border-radius: 20px;
+  background: #428bf9;
+  transition: width 0.6s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+
+.r24-track-labels {
+  display: flex;
+  align-self: stretch;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.08px;
+  color: #f6f7f8;
+}
+
+/* затемнение под шторкой — чёрный 50% (tui-bottom-sheet) */
+.r24 .bs-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* тултипы поверх экрана результата */
+.tip24 {
+  z-index: 400;
+}
+
+/* демо-кнопки в самом низу матча (по смыслу, для проверки макета) */
+.r24-demo {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.r24-demo button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .r24,
+  .r24.is-open {
+    transition: none;
+  }
+}
