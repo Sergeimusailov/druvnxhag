@@ -1,0 +1,15 @@
+[
+  "js/vendor/anime.umd.min.js",
+  "js/cards.js",
+  "js/sheets.js",
+  "js/cosmetics24.js",
+  "js/match24.js",
+  "js/leave24.js",
+  "js/matchmaking24.js",
+  "js/match.js",
+  "js/match-result3.js",
+  "js/tooltip24.js",
+  "js/result24.js",
+  "js/t-ads.js",
+  "js/match-effects3.js"
+]
