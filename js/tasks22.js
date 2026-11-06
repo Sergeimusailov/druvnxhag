@@ -5,15 +5,17 @@
 // Подключается до tasks.js; tasks.js сам зовёт TASKS22 в версии 2.2.
 
 // 2.3 (Figma 16423:43060): очки шкалы — звёзды. Награда в карточке задания
-// и летящие звёзды — общая бонусная звезда (17035:120826), в бейдже шкалы —
-// «Звезда 1» у ежедневных и «Звезда 2» у еженедельных; в старых версиях — молния
+// и летящие звёзды — та же звезда, что в бейдже шкалы:
+// «Звезда 1» (зелёная) у ежедневных и «Звезда 2» (фиолетовая) у еженедельных; в старых версиях — молния
 function taskBoltIcon(tab) {
   if (!isAppVersion('2.3')) return 'assets/v2-bolt.png';
-  return tab === 'weekly' ? 'assets/v2-star-weekly2.png' : 'assets/v2-star-daily2.png';
+  return tab === 'weekly' ? 'assets/v2-star-weekly3.webp' : 'assets/v2-star-daily3.webp';
 }
 
+// награда в карточке задания — та же звезда, что в бирке шкалы:
+// у ежедневных зелёная, у еженедельных фиолетовая (Figma 16423:42940)
 function taskRewardIcon(tab) {
-  return isAppVersion('2.3') ? 'assets/v2-task-star.png' : taskBoltIcon(tab);
+  return taskBoltIcon(tab);
 }
 
 const CURRENCY_ICONS = {

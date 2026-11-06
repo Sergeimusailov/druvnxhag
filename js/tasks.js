@@ -98,7 +98,10 @@ function milestoneState(tab, i) {
 function milestoneHTML(tab, i) {
   const state = milestoneState(tab, i);
   const left = `${pointsToFraction(MILESTONES[i]) * 100}%`;
-  const src = state === 'is-open' ? 'assets/v2-chest-open.png' : 'assets/v2-chest-closed.png';
+  // 2.3: сундуки из макета (Figma 16047:43513) — у ежедневных зелёный, у еженедельных фиолетовый
+  const src = isAppVersion('2.3')
+    ? `assets/tchest24-${tab}${state === 'is-open' ? '-open' : ''}.webp`
+    : state === 'is-open' ? 'assets/v2-chest-open.png' : 'assets/v2-chest-closed.png';
   return `<button class="tchest ${state}" data-milestone="${i}" style="left:${left}" aria-label="Сундук за ${MILESTONES[i]} очков"${state === 'is-ready' ? '' : ' tabindex="-1"'}>
     <img class="tchest-glow" src="assets/v2-chest-glow.svg" alt="">
     <img class="tchest-img" src="${src}" alt="">
@@ -691,6 +694,12 @@ tasksScreenEl.addEventListener('click', (e) => {
 });
 
 let chestOpening = false;
+// состав сундуков-вех в 2.3 (по экрану наград из макета 17396:106699 / 106615;
+// количества — по смыслу): ежедневный — ключи и монеты, еженедельный — ещё оформление
+const TASK_CHESTS = {
+  daily: { table: [{ kind: 'tokens', min: 2, max: 5 }, { kind: 'coins', min: 50, max: 150 }] },
+  weekly: { table: [{ kind: 'tokens', min: 5, max: 15 }, { kind: 'coins', min: 100, max: 300 }, { kind: 'frame' }] },
+};
 async function openChest(chestEl) {
   if (!chestEl.classList.contains('is-ready')) {
     openSheet();
@@ -700,13 +709,15 @@ async function openChest(chestEl) {
   chestOpening = true;
   const tab = chestEl.closest('.tasks-panel').dataset.panel;
   const i = Number(chestEl.dataset.milestone);
-  await openGiftOverlay({ chest: true });
-  TASK_TABS[tab].claimed.add(MILESTONES[i]);
-  // 2.3: за сундук-веху — ключи для фиолетового сундука в магазине
-  if (isAppVersion('2.3') && typeof addTokens === 'function') {
-    addTokens(10);
-    showProfileToast('+10 ключей');
+  if (isAppVersion('2.3') && typeof playLootbox === 'function') {
+    // 2.3: тот же экран открытия, что в магазине, но без монет и ключа в
+    // начале и без бонуса: свечение → тряска → вспышка → награды вылетают
+    hideChestTip(false);
+    await playLootbox({ id: tab, order: ['tokens', 'coins', 'frame'] }, rollBox(TASK_CHESTS[tab]));
+  } else {
+    await openGiftOverlay({ chest: true });
   }
+  TASK_TABS[tab].claimed.add(MILESTONES[i]);
   chestEl.outerHTML = milestoneHTML(tab, i);
   const fresh = panelEls[tab].querySelector(`.tchest[data-milestone="${i}"]`);
   fresh.animate([{ transform: 'translateX(-50%) scale(0.6)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });

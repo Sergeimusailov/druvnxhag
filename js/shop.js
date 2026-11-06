@@ -537,13 +537,16 @@ function animateBalance(el, from, to) {
 
 const CARD_RARITY_NAME = { green: 'Обычная', blue: 'Редкая', purple: 'Эпическая' };
 // свечение ячеек наград (у эпического #bb00ff из макета)
-const LB_GLOW = { purple: '#bb00ff', blue: '#3d8aff', green: '#1eca85' };
+// сундуки заданий: дейли — зелёный, викли — фиолетовый (Figma 16423:42940)
+const LB_GLOW = { purple: '#bb00ff', blue: '#3d8aff', green: '#1eca85', daily: '#4acf16', weekly: '#bb00ff' };
 // подсветка за сундуком (Figma «Подсветка»): 15-лучевая звезда 513×317 с
 // размытием 42 и 6-лучевая 597×369 с размытием 24, цвета из макета
 const LB_STARS = {
   blue: ['#2c74d9', '#3d89a9'],
   purple: ['#7338b1', '#c286bf'],
   green: ['#408a67', '#51902e'],
+  daily: ['#46a70a', '#219645'],
+  weekly: ['#ae5be8', '#8850eb'],
 };
 // где сундук стоит в блоке 540×540 (компонент «Сундуки XL», Figma 17424:170016):
 // [x, y, ширина, высота] закрытого и открытого, прорезь для монет / скважина
@@ -551,6 +554,8 @@ const LB_XL = {
   blue: { closed: [128, 142, 269, 274], open: [30, -33, 480, 480], slot: [262, 194], mouth: [270, 250] },
   green: { closed: [115, 126, 294, 303], open: [32, -29, 477, 477], slot: [262, 199], mouth: [270, 250] },
   purple: { closed: [129, 153, 266, 266], open: [44, -19, 448, 448], hole: [209, 310], mouth: [262, 250] },
+  daily: { closed: [125, 83, 290, 360], open: [63, -38, 414, 514], mouth: [270, 250] },
+  weekly: { closed: [125, 83, 290, 360], open: [63, -38, 414, 514], mouth: [270, 250] },
 };
 // порядок как в макете: бонус сверху во всю ширину, дальше карта, монеты/ключи, оформление
 const LB_ORDER = ['bonus', 'card', 'coins', 'tokens', 'frame'];
@@ -770,7 +775,7 @@ async function shakeChest() {
 }
 
 // вспышка: закрытый сундук сменяется открытым со свечением
-async function openChest() {
+async function lbOpenChest() {
   const closed = lbBoxEl.querySelector('.lb-chest-closed');
   const open = lbBoxEl.querySelector('.lb-chest-open');
   if (!lbSkip) {
@@ -800,7 +805,7 @@ async function flyOutRewards(box, rewards, cells) {
   const oy = xl.top + my * k;
   // сундук и подсветка гаснут, пока подарки летят
   lbBoxEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.9)' }], { duration: lbSkip ? 1 : 500, delay: lbSkip ? 0 : 250, easing: 'ease-in', fill: 'forwards' });
-  const epic = box.id === 'purple';
+  const epic = box.id === 'purple' || box.id === 'weekly';
   const lands = cells.map((cell, i) => {
     const r = cell.getBoundingClientRect();
     const dx = ox - (r.left + r.width / 2);
@@ -836,7 +841,19 @@ async function openLootbox(box) {
     setCoins(coins - box.price);
     animateCoins(coins, coins - box.price);
   }
-  const rewards = rollBox(box).sort((x, y) => LB_ORDER.indexOf(x.kind) - LB_ORDER.indexOf(y.kind));
+  const rewards = rollBox(box);
+  box.insert = box.currency === 'tokens' ? 'key' : 'coins';
+  await playLootbox(box, rewards);
+}
+
+// экран открытия сундука — общий для магазина и сундуков заданий
+// (box.id — цвет: green/blue/purple/daily/weekly; box.insert — 'coins',
+// 'key' или ничего). Возвращается, когда награды разлетелись и экран закрылся
+async function playLootbox(box, list) {
+  lbBusy = true;
+  lbSkip = false;
+  const order = box.order || LB_ORDER;
+  const rewards = list.slice().sort((x, y) => order.indexOf(x.kind) - order.indexOf(y.kind));
 
   lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
   lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
@@ -860,14 +877,14 @@ async function openLootbox(box) {
   await lbWait(350);
 
   // 2. монетки в прорезь (синий, зелёный) или ключ в скважину (фиолетовый)
-  if (box.currency === 'tokens') await insertKey(box);
-  else await dropCoins(box);
+  if (box.insert === 'key') await insertKey(box);
+  else if (box.insert === 'coins') await dropCoins(box);
 
   // 3. тряска 1–3 с
   await shakeChest();
 
   // 4. вспышка — сундук открыт
-  await openChest();
+  await lbOpenChest();
   await lbWait(600);
 
   // 5. подарки вылетают и встают в сетку наград
@@ -902,9 +919,11 @@ async function openLootbox(box) {
   // дубль (он стал монетами) — в счётчики, карта — в «Карты», оформление —
   // в «Игру» (профиль), бонус — в «Призы». Фон, ячейки и кнопка гаснут
   // вокруг наград, сами награды остаются на месте до вылета
-  const coinsBox = document.querySelector('.shop-balance[data-balance="coins"]');
-  const tokensBox = document.querySelector('.shop-balance[data-balance="tokens"]');
   const tab = (nav) => document.querySelector(`.v2-tab[data-nav="${nav}"] .v2-tab-icon`);
+  // счётчики магазина; если открываем не из магазина — летим в таб «Магазин»
+  const visible = (el) => (el && el.offsetParent ? el : null);
+  const coinsBox = visible(document.querySelector('.shop-balance[data-balance="coins"]')) || tab('shop');
+  const tokensBox = visible(document.querySelector('.shop-balance[data-balance="tokens"]')) || tab('shop');
   // у дубля улетают только монеты «+ N монет», карта гаснет вместе с экраном
   const artOf = (cell, r) => cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : r.dup ? '.lb-cell-sub' : '.lb-cell-art');
   const lifted = cells.map((cell, i) => liftReward(artOf(cell, rewards[i]), rewards[i].dup));

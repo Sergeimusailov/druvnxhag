@@ -59,20 +59,33 @@
   backdrop-filter: blur(10px);
 }
 
-/* шкала: тонкая светлая обводка и фиолетовое свечение сверху */
+/* шкала: тонкая светлая обводка и свечение сверху — у ежедневных зелёное
+   (#5eff2d → #102d08 на 85% → #1c1c1e, Figma 16423:43074) */
 [data-version="2.3"] .tprog {
   margin-top: 20px;
-  background:
-    radial-gradient(ellipse 115% 140% at 50% -30%, rgba(115, 45, 255, 0.75), rgba(115, 45, 255, 0.12) 75%, rgba(115, 45, 255, 0) 100%),
-    #1c1c1e;
+  background: radial-gradient(278px 132px at 50% -83px, #5eff2d 0%, #102d08 85%, #1c1c1e 100%);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* еженедельные: то же, но свечение зелёное #4acf16 (Figma 16434:47664) */
-[data-version="2.3"] .tasks-panel.is-weekly .tprog {
-  background:
-    radial-gradient(ellipse 115% 140% at 50% -30%, rgba(74, 207, 22, 0.75), rgba(74, 207, 22, 0.12) 75%, rgba(74, 207, 22, 0) 100%),
-    #1c1c1e;
+/* еженедельные: свечение фиолетовое #732dff → #231542 (Figma 16434:47664) */
+[data-version="2.3"] .tasks-panel[data-panel="weekly"] .tprog {
+  background: radial-gradient(278px 132px at 50% -83px, #732dff 0%, #231542 85%, #1c1c1e 100%);
+}
+
+/* сундуки на шкале (Figma 16047:43513): картинка с тенью, закрытый 32×41
+   от 4/2, открытый 46×58 от −2/−12 (в картинке запас 3px под тень) */
+[data-version="2.3"] .tchest-img {
+  left: 1px;
+  top: -1px;
+  width: 38px;
+  height: 47px;
+}
+
+[data-version="2.3"] .tchest.is-open .tchest-img {
+  left: -5px;
+  top: -15px;
+  width: 52px;
+  height: 64px;
 }
 
 /* бирка очков: жёлтая стрелка 43×34, звезда 28px, число SF 17/600 с обводкой 2px #333 */
