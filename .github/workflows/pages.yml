@@ -1,10 +1,11 @@
-# Сборка (Rsbuild) и публикация на GitHub Pages при каждом пуше в main.
+# Сборка (Rsbuild) и публикация на GitHub Pages при каждом пуше в основную ветку
+# (сейчас это claude/github-integration-setup-69if34; main — на будущее).
 # Один раз в настройках репозитория: Settings → Pages → Source: «GitHub Actions».
 name: Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/github-integration-setup-69if34]
   workflow_dispatch:
 
 permissions:

@@ -11,7 +11,8 @@
 [anime.js](https://animejs.com) v4.5.0 (UMD-сборка), положенная локально в `js/vendor/`.
 
 **Хостинг:** статика на GitHub Pages. Публикуется собранная версия (`dist/`) через
-GitHub Actions (`.github/workflows/pages.yml`) при каждом пуше в `main`; в
+GitHub Actions (`.github/workflows/pages.yml`) при каждом пуше в основную ветку
+(`claude/github-integration-setup-69if34`); в
 настройках репозитория Settings → Pages → Source должно быть «GitHub Actions».
 Серверной части нет.
 
