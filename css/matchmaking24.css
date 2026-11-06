@@ -62,46 +62,45 @@ html.mm24-on body {
   opacity: 0.38;
 }
 
-/* уход в матч: игроки разъезжаются влево и вправо, мечи и шапка гаснут
-   (is-leaving), затем гаснет фон — под ним проявляется матч (is-gone) */
-.mm24.is-leaving {
+/* уход в матч (js/matchmaking24.js, splitAway): шов по лучу через мечи
+   вспыхивает (is-seam), лоадер гаснет; затем две копии экрана, обрезанные
+   по диагонали, разъезжаются вверх и вниз (is-split), под ними — матч */
+.mm24.is-seam {
   pointer-events: none;
 }
 
-.mm24-bar,
-.mm24-center {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.mm24.is-seam .mm24-center::before {
+  height: 4px;
+  opacity: 1;
+  background: linear-gradient(90deg, rgba(150, 170, 255, 0.9), #fff 50%, rgba(220, 150, 255, 0.9));
+  box-shadow: 0 0 18px #fff, 0 0 40px rgba(170, 140, 255, 0.9);
+  transition: box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
-.mm24.is-leaving .mm24-bar {
+.mm24.is-seam .mm24-loader {
   opacity: 0;
 }
 
-.mm24.is-leaving .mm24-center {
-  opacity: 0;
-  transform: scale(0.8);
+/* копии половин: без повторных анимаций появления, всё в конечном виде */
+.mm24.is-split {
+  pointer-events: none;
 }
 
-.mm24.is-leaving .mm24-you {
-  animation: none;
-  transform: translateX(-120%);
-  opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.5s ease-in;
+.mm24.is-split,
+.mm24.is-split * {
+  animation: none !important;
+  transition: none !important;
 }
 
-.mm24.is-leaving .mm24-opp-slot {
-  transform: translateX(120%);
-  opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.5s ease-in;
+.mm24.is-split .mm24-opp-slot .mm24-player {
+  transform: none;
+  opacity: 1;
 }
 
-.mm24-bg {
-  transition: opacity 0.6s ease;
-}
-
-.mm24.is-gone .mm24-bg {
+.mm24.is-split .mm24-radar {
   opacity: 0;
 }
+
 
 /* шапка — как .match-topbar в версии 2: стеклянная «‹» 44, заголовок
    «Поиск соперника» 17/600 (статус не дублируем — он под мечами), справа пусто */

@@ -7,8 +7,9 @@
 // светящемся круге с диагональным сиянием, под ними статус. Пока ищем, на месте
 // соперника радар с перебором затемнённых аватарок. Через 2–3 с соперник найден: радар
 // гаснет, соперник въезжает справа налево, мечи вспыхивают жёлтым, «Соперник
-// найден!». Потом «Начинаем матч» с лоадером; игроки разъезжаются влево и
-// вправо, экран гаснет, а матч под ним проявляется.
+// найден!». Потом «Начинаем матч» с лоадером; шов по диагонали через мечи
+// вспыхивает, и экран разъезжается по нему вверх и вниз, как шторки, —
+// под ним уже матч.
 // match.js ждёт window.MATCH_GATE и только потом вызывает initGame().
 // Подключается после cosmetics24.js и match24.js, до match.js. Работает в
 // версиях 2 и 3; ?nosearch — сразу в матч (для проверок).
@@ -162,17 +163,52 @@ window.MATCH_GATE = (() => {
     await wait(1800);
 
     await hold();
-    // игроки разъезжаются влево и вправо, экран гаснет —
-    // под ним запускается матч и проявляется
-    root.classList.add('is-leaving');
-    await wait(450);
+    // шов по диагонали (по лучу через мечи) вспыхивает, экран разъезжается
+    // по нему как шторки — верх уходит вверх, низ вниз, — а под ним уже матч
+    root.classList.add('is-seam');
+    await wait(320);
     start();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    root.classList.add('is-gone');
-    introMatch();
-    await wait(650);
+    await splitAway();
     document.documentElement.classList.remove('mm24-on');
-    root.remove();
   })();
+
+  // две копии экрана, обрезанные по диагонали; оригинал убираем сразу
+  async function splitAway() {
+    const box = root.getBoundingClientRect();
+    const vs = root.querySelector('.mm24-vs').getBoundingClientRect();
+    const W = box.width;
+    const H = box.height;
+    const cx = vs.left + vs.width / 2 - box.left;
+    const cy = vs.top + vs.height / 2 - box.top;
+    const k = Math.tan((14 * Math.PI) / 180); // луч .mm24-center::before — rotate(-14deg)
+    const yL = cy + cx * k;
+    const yR = cy - (W - cx) * k;
+    const halves = ['top', 'bottom'].map((side) => {
+      const h = root.cloneNode(true);
+      h.removeAttribute('id');
+      h.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+      h.classList.add('is-split');
+      h.style.clipPath = side === 'top'
+        ? `polygon(0 0, ${W}px 0, ${W}px ${yR}px, 0 ${yL}px)`
+        : `polygon(0 ${yL}px, ${W}px ${yR}px, ${W}px ${H}px, 0 ${H}px)`;
+      document.body.appendChild(h);
+      return h;
+    });
+    root.remove();
+    introMatch();
+    if (reduce) {
+      await Promise.all(halves.map((h) => h.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished));
+    } else {
+      const far = Math.max(yL, yR) + 40;
+      const farB = H - Math.min(yL, yR) + 40;
+      const opts = { duration: 1000, easing: 'cubic-bezier(0.65, 0, 0.25, 1)', fill: 'forwards' };
+      await Promise.all([
+        halves[0].animate([{ transform: 'translateY(0)' }, { transform: 'translateY(6px)', offset: 0.12 }, { transform: `translateY(${-far}px)` }], opts).finished,
+        halves[1].animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-6px)', offset: 0.12 }, { transform: `translateY(${farB}px)` }], opts).finished,
+      ]);
+    }
+    halves.forEach((h) => h.remove());
+  }
   return gate;
 })();
