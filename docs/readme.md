@@ -16,6 +16,9 @@ GitHub Actions (`.github/workflows/pages.yml`) при каждом пуше в �
 настройках репозитория Settings → Pages → Source должно быть «GitHub Actions».
 Серверной части нет.
 
+**Анимации:** спецификация всех анимаций версии 2 (тайминги, кривые, последовательности) —
+[`docs/animations-v2.md`](animations-v2.md).
+
 ### Сборка (Rsbuild)
 
 - `npm install` — один раз; `npm run dev` — дев-сервер с автообновлением;
