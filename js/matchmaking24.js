@@ -74,6 +74,8 @@ window.MATCH_GATE = (() => {
     </div>`;
   document.body.appendChild(root);
   document.documentElement.classList.add('mm24-on');
+  // на iPhone экран не тянется «резинкой» вместе со страницей
+  root.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
 
   // рамки как в матче: в версии 2 — из профиля, в версии 3 — синяя; у соперника красная
   if (C && !isV3) C.applyFrame(root.querySelector('.mm24-you .mm24-frame'), frame);

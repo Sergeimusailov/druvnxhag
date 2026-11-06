@@ -87,6 +87,10 @@
       <div class="r24-track-labels"><span>Получено монет</span><span id="r24Got"></span></div>
     </section>`;
   document.body.appendChild(root);
+  // Safari на iPhone не понимает touch-action: none и тянет страницу
+  // «резинкой» — гасим само движение пальца; тапы и смахивание шторки
+  // (pointer-события) продолжают работать
+  root.addEventListener('touchmove', (e) => { if (e.cancelable && !e.target.closest('.bs')) e.preventDefault(); }, { passive: false });
 
   const $ = (id) => document.getElementById(id);
   const sheet = bottomSheet($('r24Sheet'), $('r24Backdrop'), { onClose: () => { clearInterval(timerId); Tooltip24.hide(); } });
