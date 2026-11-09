@@ -1,5 +1,6 @@
 [
   "js/vendor/anime.umd.min.js",
+  "js/anim24.js",
   "js/cards.js",
   "js/sheets.js",
   "js/cosmetics24.js",

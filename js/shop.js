@@ -189,24 +189,32 @@ function liftReward(art, dup) {
 // иконку таба); цель подпрыгивает и вспыхивает
 function flyReward({ wrap, rect }, target, delay = 0) {
   if (!target) {
-    return wrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay, fill: 'both' }).finished.then(() => wrap.remove());
+    return anime.animate(wrap, { opacity: [1, 0], duration: 300, delay }).then(() => wrap.remove());
   }
   const t = (target.querySelector('img, .v2-tab-icon') || target).getBoundingClientRect();
   const dx = t.left + t.width / 2 - (rect.left + rect.width / 2);
   const dy = t.top + t.height / 2 - (rect.top + rect.height / 2);
   const k = Math.min(1, 24 / Math.max(rect.width, rect.height));
-  return wrap.animate([
-    { transform: 'none', opacity: 1 },
-    { transform: 'translateY(-14px) scale(1.06)', opacity: 1, offset: 0.2 },
-    { transform: `translate(${dx}px, ${dy}px) scale(${k})`, opacity: 1, offset: 0.9 },
-    { transform: `translate(${dx}px, ${dy}px) scale(${k * 0.5})`, opacity: 0 },
-  ], { duration: 950, delay, easing: 'cubic-bezier(0.5, 0, 0.3, 1)', fill: 'both' }).finished.then(() => {
+  return anime.animate(wrap, {
+    keyframes: {
+      '0%': { x: 0, y: 0, scale: 1, opacity: 1 },
+      '20%': { x: 0, y: -14, scale: 1.06, opacity: 1 },
+      '90%': { x: dx, y: dy, scale: k, opacity: 1 },
+      '100%': { x: dx, y: dy, scale: k * 0.5, opacity: 0 },
+    },
+    duration: 950,
+    delay,
+    ease: 'cubicBezier(0.5, 0, 0.3, 1)',
+  }).then(() => {
     wrap.remove();
-    target.animate([
-      { transform: 'scale(1)', filter: 'none' },
-      { transform: 'scale(1.25)', filter: 'drop-shadow(0 0 8px #ffdd2d)' },
-      { transform: 'scale(1)', filter: 'none' },
-    ], { duration: 420, easing: 'ease-out' });
+    A24.play(target, {
+      keyframes: [
+        { scale: 1.25, filter: 'drop-shadow(0 0 8px #ffdd2d)' },
+        { scale: 1, filter: 'drop-shadow(0 0 0px #ffdd2d)' },
+      ],
+      duration: 420,
+      ease: A24.EASE.out,
+    });
   });
 }
 
@@ -331,6 +339,13 @@ function tileHTML(box, hero) {
     </article>`;
 }
 
+// сундук левитирует: вверх на 8px с покачиванием ±1.5°, цикл 3200 (туда-обратно);
+// phase — сдвиг по фазе в мс, чтобы соседние сундуки не двигались синхронно
+function levitate(el, phase = 0) {
+  const anim = A24.loop(el, { y: [0, -8], rotate: [-1.5, 1.5], duration: 1600, alternate: true, ease: A24.EASE.inOut });
+  if (anim && phase) anim.seek(phase);
+}
+
 function renderShop() {
   shopCoinsEl.textContent = getCoins();
   shopTokensEl.textContent = getTokens();
@@ -338,6 +353,8 @@ function renderShop() {
   const hero = LOOTBOXES.find((b) => b.currency === 'tokens');
   const rest = LOOTBOXES.filter((b) => b !== hero).reverse();
   shopBoxesEl.innerHTML = tileHTML(hero, true) + `<div class="shop-row">${rest.map((b) => tileHTML(b, false)).join('')}</div>`;
+  // сундуки на плитках левитируют, по фазе вразнобой
+  shopBoxesEl.querySelectorAll('.shop-tile-art .lb-svg').forEach((img, i) => levitate(img, i * 1100));
   if (shopDetailBox) renderDetail(shopDetailBox);
 }
 
@@ -436,6 +453,7 @@ function renderDetail(box) {
     <ul class="shop-prizes">${box.table.map(rewardPreview).join('')}</ul>`;
   shopDetailEl.setAttribute('aria-label', box.name);
   shopDetailFoot.innerHTML = btn;
+  levitate(shopDetailBody.querySelector('.shop-detail-art .lb-svg'));
 }
 
 function openDetail(box) {
@@ -522,7 +540,7 @@ function animateBalance(el, from, to) {
     if (t < 1) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-  el.parentElement.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  A24.pulse(el.parentElement, 1.12, 360);
 }
 
 /* ---------- Открытие (Figma 16908:29698, секция «Открытие сундука» 17056:193993) ---------- */
@@ -640,9 +658,16 @@ function rewardCellHTML(r) {
 
 let lbBusy = false;
 let lbSkip = false;
-// пауза, которую «Закрыть» во время открытия пропускает
-const lbWait = (ms) => (lbSkip ? Promise.resolve() : wait(ms));
-const lbAnim = (el, frames, opts) => (lbSkip ? Promise.resolve() : el.animate(frames, opts).finished.catch(() => {}));
+let lbTimeline = null;
+
+// элемент, центрированный по точке: сдвиг на половину размера — CSS-свойством
+// translate, а движение (x, y, scale, rotate) пишет anime.js в transform
+function lbCentered(el, x, y) {
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.style.translate = '-50% -50%';
+  return el;
+}
 
 // конфетти из центра ячейки: разлетаются вверх и в стороны и осыпаются
 function confettiFrom(cell) {
@@ -651,181 +676,213 @@ function confettiFrom(cell) {
   const cx = r.left + r.width / 2 - a.left;
   const cy = r.top + r.height / 2 - a.top;
   for (let i = 0; i < 46; i++) {
-    const c = document.createElement('span');
+    const c = lbCentered(document.createElement('span'), cx, cy);
     c.className = 'lb-confetti';
-    c.style.left = `${cx}px`;
-    c.style.top = `${cy}px`;
     c.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
     lbOverlayEl.appendChild(c);
     const vx = (Math.random() - 0.5) * 340;
     const vy = -140 - Math.random() * 200;
     const rot = (Math.random() - 0.5) * 900;
-    c.animate([
-      { transform: 'translate(-50%, -50%) rotate(0) scale(0.4)', opacity: 1 },
-      { transform: `translate(calc(-50% + ${vx * 0.8}px), calc(-50% + ${vy}px)) rotate(${rot * 0.5}deg) scale(1)`, opacity: 1, offset: 0.35 },
-      { transform: `translate(calc(-50% + ${vx}px), calc(-50% + ${vy + 320}px)) rotate(${rot}deg) scale(0.9)`, opacity: 0 },
-    ], { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)', fill: 'forwards' }).finished.then(() => c.remove());
+    anime.animate(c, {
+      keyframes: {
+        '0%': { x: 0, y: 0, rotate: 0, scale: 0.4, opacity: 1 },
+        '35%': { x: vx * 0.8, y: vy, rotate: rot * 0.5, scale: 1, opacity: 1 },
+        '100%': { x: vx, y: vy + 320, rotate: rot, scale: 0.9, opacity: 0 },
+      },
+      duration: 1300 + Math.random() * 500,
+      ease: 'cubicBezier(0.2, 0.6, 0.4, 1)',
+      onComplete: () => c.remove(),
+    });
   }
 }
 
 // блик в точке блока 540×540 (прорезь, скважина)
 function lbGlint(x, y, size = 46) {
-  const g = document.createElement('span');
+  if (lbSkip) return;
+  const g = lbCentered(document.createElement('span'), x, y);
   g.className = 'lb-glint';
-  g.style.left = `${x}px`;
-  g.style.top = `${y}px`;
   g.style.width = g.style.height = `${size}px`;
   lbBoxEl.querySelector('.lb-fx').appendChild(g);
-  g.animate([
-    { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0 },
-    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.35 },
-    { transform: 'translate(-50%, -50%) scale(1.6)', opacity: 0 },
-  ], { duration: 420, easing: 'ease-out' }).finished.then(() => g.remove());
+  anime.animate(g, {
+    keyframes: { '0%': { scale: 0.2, opacity: 0 }, '35%': { scale: 1, opacity: 1 }, '100%': { scale: 1.6, opacity: 0 } },
+    duration: 420,
+    ease: A24.EASE.out,
+    onComplete: () => g.remove(),
+  });
 }
 
 // сундук коротко «принимает» монету или ключ — чуть оседает
 function lbBump() {
   if (lbSkip) return;
-  lbBoxEl.querySelector('.lb-chest-closed').animate([
-    { transform: 'none' },
-    { transform: 'translateY(5px) scale(1.02, 0.97)' },
-    { transform: 'none' },
-  ], { duration: 220, easing: 'ease-out' });
+  A24.play(lbBoxEl.querySelector('.lb-chest-closed'), {
+    keyframes: [{ y: 5, scaleX: 1.02, scaleY: 0.97 }, { y: 0, scaleX: 1, scaleY: 1 }],
+    duration: 220,
+    ease: A24.EASE.out,
+  });
 }
 
-// синий и зелёный: монетки по одной падают сверху в прорезь и исчезают в ней
+// вспышка из центра сундука
+function lbFlash(peak, end, peakOpacity, duration) {
+  if (lbSkip) return;
+  anime.animate(lbFlashEl, {
+    keyframes: { '0%': { scale: 0.3, opacity: 0 }, '25%': { scale: peak, opacity: peakOpacity }, '100%': { scale: end, opacity: 0 } },
+    duration,
+    ease: A24.EASE.out,
+  });
+}
+
+// --- шаги открытия: каждый добавляет свои анимации в таймлайн с момента t
+//     и возвращает момент, когда шаг закончился ---
+
+// 1. закрытый сундук падает на свечение своего цвета
+function lbIntro(tl, t) {
+  tl.add(lbBoxEl.querySelector('.lb-glow'), { scale: [0.5, 1], opacity: [0, 1], duration: 500, ease: A24.EASE.out }, t);
+  tl.add(lbBoxEl.querySelector('.lb-chest-closed'), {
+    keyframes: { '0%': { y: -50, scale: 0.7, opacity: 0 }, '70%': { y: 6, scale: 1.03, opacity: 1 }, '100%': { y: 0, scale: 1, opacity: 1 } },
+    duration: 480,
+    ease: 'cubicBezier(0.2, 0.8, 0.3, 1)',
+  }, t);
+  return t + 480 + 350;
+}
+
+// 2а. синий и зелёный: монетки по одной падают в прорезь и исчезают в ней
 // (монета в окне, нижний край которого — прорезь)
-async function dropCoins(box) {
+function lbCoins(tl, t, box) {
   const [sx, sy] = LB_XL[box.id].slot;
   const fx = lbBoxEl.querySelector('.lb-fx');
-  const coins = 4;
-  const flights = [];
-  for (let i = 0; i < coins; i++) {
+  let last = t;
+  for (let i = 0; i < 4; i++) {
     const win = document.createElement('div');
     win.className = 'lb-coin-win';
     win.style.left = `${sx}px`;
     win.style.top = `${sy}px`;
-    win.innerHTML = `<img class="lb-coin" src="${CURRENCY.coins.icon}" alt="">`;
+    win.innerHTML = `<img class="lb-coin" src="${CURRENCY.coins.icon}" alt="" style="opacity:0">`;
     fx.appendChild(win);
-    const coin = win.firstChild;
     const drift = (i % 2 ? 1 : -1) * (6 + Math.random() * 10);
-    flights.push(lbAnim(coin, [
-      { transform: `translate(${drift}px, -330px) rotate(${drift * 2}deg) scaleX(1)`, opacity: 0 },
-      { transform: `translate(${drift * 0.3}px, -150px) rotate(${drift}deg) scaleX(0.8)`, opacity: 1, offset: 0.55 },
-      { transform: 'translate(0, -100px) rotate(0) scaleX(0.5)', opacity: 1, offset: 0.8 },
-      { transform: 'translate(0, 12px) rotate(0) scaleX(0.5)', opacity: 1 },
-    ], { duration: 620, delay: i * 260, easing: 'cubic-bezier(0.45, 0, 0.9, 0.6)', fill: 'both' }).then(() => {
-      win.remove();
-      lbGlint(sx, sy, 54);
-      lbBump();
-    }));
+    const at = t + i * 260;
+    tl.add(win.firstChild, {
+      keyframes: {
+        '0%': { x: drift, y: -330, rotate: drift * 2, scaleX: 1, opacity: 0 },
+        '55%': { x: drift * 0.3, y: -150, rotate: drift, scaleX: 0.8, opacity: 1 },
+        '80%': { x: 0, y: -100, rotate: 0, scaleX: 0.5, opacity: 1 },
+        '100%': { x: 0, y: 12, rotate: 0, scaleX: 0.5, opacity: 1 },
+      },
+      duration: 620,
+      ease: 'cubicBezier(0.45, 0, 0.9, 0.6)',
+    }, at);
+    tl.call(() => { win.remove(); lbGlint(sx, sy, 54); lbBump(); }, at + 620);
+    last = at + 620;
   }
-  await Promise.all(flights);
-  await lbWait(200);
+  return last + 200;
 }
 
-// фиолетовый: ключ влетает по дуге в замочную скважину, поворачивается и тает
-async function insertKey(box) {
+// 2б. эпический: ключ влетает по дуге в скважину, поворачивается и тает
+function lbKey(tl, t, box) {
   const [hx, hy] = LB_XL[box.id].hole;
-  const fx = lbBoxEl.querySelector('.lb-fx');
-  const key = document.createElement('img');
+  const key = lbCentered(document.createElement('img'), hx, hy);
   key.className = 'lb-key';
   key.src = CURRENCY.tokens.icon;
   key.alt = '';
-  key.style.left = `${hx}px`;
-  key.style.top = `${hy}px`;
-  fx.appendChild(key);
-  await lbAnim(key, [
-    { transform: 'translate(-50%, -50%) translate(-170px, -300px) rotate(-70deg) scale(1.3)', opacity: 0 },
-    { transform: 'translate(-50%, -50%) translate(-150px, -90px) rotate(-30deg) scale(1.15)', opacity: 1, offset: 0.5 },
-    { transform: 'translate(-50%, -50%) rotate(0) scale(0.8)', opacity: 1 },
-  ], { duration: 700, easing: 'cubic-bezier(0.3, 0, 0.3, 1)', fill: 'forwards' });
-  lbBump();
+  key.style.opacity = '0';
+  lbBoxEl.querySelector('.lb-fx').appendChild(key);
+  tl.add(key, {
+    keyframes: {
+      '0%': { x: -170, y: -300, rotate: -70, scale: 1.3, opacity: 0 },
+      '50%': { x: -150, y: -90, rotate: -30, scale: 1.15, opacity: 1 },
+      '100%': { x: 0, y: 0, rotate: 0, scale: 0.8, opacity: 1 },
+    },
+    duration: 700,
+    ease: 'cubicBezier(0.3, 0, 0.3, 1)',
+  }, t);
+  tl.call(lbBump, t + 700);
   // поворот ключа в замке — щелчок
-  await lbAnim(key, [
-    { transform: 'translate(-50%, -50%) rotate(0) scale(0.8)' },
-    { transform: 'translate(-50%, -50%) rotate(100deg) scale(0.8)', offset: 0.7 },
-    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.8)' },
-  ], { duration: 380, easing: 'cubic-bezier(0.3, 0, 0.3, 1.4)', fill: 'forwards' });
-  lbGlint(hx, hy, 70);
-  await lbAnim(key, [
-    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.8)', opacity: 1 },
-    { transform: 'translate(-50%, -50%) rotate(90deg) scale(0.3)', opacity: 0 },
-  ], { duration: 260, easing: 'ease-in', fill: 'forwards' });
-  key.remove();
-  await lbWait(150);
+  tl.add(key, { keyframes: { '0%': { rotate: 0 }, '70%': { rotate: 100 }, '100%': { rotate: 90 } }, duration: 380, ease: 'cubicBezier(0.3, 0, 0.3, 1.4)' }, t + 700);
+  tl.call(() => lbGlint(hx, hy, 70), t + 1080);
+  tl.add(key, { scale: 0.3, opacity: 0, duration: 260, ease: A24.EASE.in }, t + 1080);
+  tl.call(() => key.remove(), t + 1340);
+  return t + 1340 + 150;
 }
 
-// тряска 1–3 с, всё сильнее; подсветка разгорается
-async function shakeChest() {
+// 3. тряска 1–3 с, всё сильнее; подсветка разгорается
+function lbShake(tl, t) {
   const dur = 1000 + Math.random() * 2000;
   const steps = Math.max(10, Math.round(dur / 70));
-  const frames = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
+  const keyframes = [];
+  for (let i = 1; i <= steps; i++) {
+    const k = i / steps;
     const s = i % 2 ? 1 : -1;
-    const amp = 1 + 7 * t * t;
-    frames.push({ transform: `translate(${(s * amp * 0.8).toFixed(1)}px, ${(-amp * 0.3 * Math.random()).toFixed(1)}px) rotate(${(s * amp * 0.9).toFixed(1)}deg) scale(${(1 + 0.08 * t).toFixed(3)})` });
+    const amp = 1 + 7 * k * k;
+    keyframes.push({ x: s * amp * 0.8, y: -amp * 0.3 * Math.random(), rotate: s * amp * 0.9, scale: 1 + 0.08 * k, duration: dur / steps });
   }
-  lbBoxEl.querySelector('.lb-glow').animate([
-    { transform: 'scale(1) rotate(0)', opacity: 1, filter: 'brightness(1)' },
-    { transform: 'scale(1.3) rotate(25deg)', opacity: 1, filter: 'brightness(1.6)' },
-  ], { duration: dur, easing: 'ease-in', fill: 'forwards' });
-  await lbAnim(lbBoxEl.querySelector('.lb-chest-closed'), frames, { duration: dur, easing: 'linear' });
+  tl.add(lbBoxEl.querySelector('.lb-chest-closed'), { keyframes, ease: 'linear' }, t);
+  tl.add(lbBoxEl.querySelector('.lb-glow'), { scale: 1.3, rotate: 25, filter: ['brightness(1)', 'brightness(1.6)'], duration: dur, ease: A24.EASE.in }, t);
+  return t + dur;
 }
 
-// вспышка: закрытый сундук сменяется открытым со свечением
-async function lbOpenChest() {
+// 4. вспышка: закрытый сундук сменяется открытым со свечением
+function lbOpen(tl, t) {
   const closed = lbBoxEl.querySelector('.lb-chest-closed');
   const open = lbBoxEl.querySelector('.lb-chest-open');
-  if (!lbSkip) {
-    lbFlashEl.animate([
-      { transform: 'scale(0.3)', opacity: 0 },
-      { transform: 'scale(9)', opacity: 1, offset: 0.25 },
-      { transform: 'scale(14)', opacity: 0 },
-    ], { duration: 700, easing: 'ease-out' });
-  }
-  await lbWait(150);
-  closed.style.opacity = '0';
-  open.style.opacity = '1';
-  if (navigator.vibrate) navigator.vibrate(30);
-  await lbAnim(open, [
-    { transform: 'scale(1.18)' },
-    { transform: 'scale(0.96)', offset: 0.6 },
-    { transform: 'none' },
-  ], { duration: 520, easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)' });
+  tl.call(() => lbFlash(9, 14, 1, 700), t);
+  tl.set(closed, { opacity: 0 }, t + 150);
+  tl.set(open, { opacity: 1 }, t + 150);
+  tl.call(() => { if (!lbSkip && navigator.vibrate) navigator.vibrate(30); }, t + 150);
+  tl.add(open, { keyframes: { '0%': { scale: 1.18 }, '60%': { scale: 0.96 }, '100%': { scale: 1 } }, duration: 520, ease: 'cubicBezier(0.3, 1.3, 0.5, 1)' }, t + 150);
+  return t + 150 + 520 + 600;
 }
 
-// подарки вылетают из открытого сундука и встают на свои места в сетке
-async function flyOutRewards(box, rewards, cells) {
+// 5. подарки вылетают из открытого сундука и встают на свои места в сетке
+function lbFlyOut(tl, t, box, rewards, cells) {
   const [mx, my] = LB_XL[box.id].mouth;
   const xl = lbBoxEl.getBoundingClientRect();
   const k = xl.width / 540;
   const ox = xl.left + mx * k;
   const oy = xl.top + my * k;
+  tl.add(lbTitleEl, { y: [8, 0], opacity: [0, 1], duration: 300, ease: A24.EASE.ease }, t);
   // сундук и подсветка гаснут, пока подарки летят
-  lbBoxEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.9)' }], { duration: lbSkip ? 1 : 500, delay: lbSkip ? 0 : 250, easing: 'ease-in', fill: 'forwards' });
+  tl.add(lbBoxEl, { opacity: 0, scale: 0.9, duration: 500, ease: A24.EASE.in }, t + 250);
   const epic = box.id === 'purple' || box.id === 'weekly';
-  const lands = cells.map((cell, i) => {
+  let last = t;
+  cells.forEach((cell, i) => {
     const r = cell.getBoundingClientRect();
-    const dx = ox - (r.left + r.width / 2);
-    const dy = oy - (r.top + r.height / 2);
-    const legend = epic && (rewards[i].kind === 'card' || rewards[i].kind === 'bonus');
-    if (lbSkip) { cell.style.opacity = '1'; return Promise.resolve(); }
-    return cell.animate([
-      { transform: `translate(${dx}px, ${dy}px) scale(0.15)`, opacity: 0 },
-      { transform: `translate(${dx * 0.45}px, ${dy * 0.45 - 90}px) scale(0.75)`, opacity: 1, offset: 0.55 },
-      { transform: 'translate(0, -6px) scale(1.04)', opacity: 1, offset: 0.85 },
-      { transform: 'none', opacity: 1 },
-    ], { duration: 720, delay: 120 + i * 170, easing: 'cubic-bezier(0.25, 0.8, 0.35, 1)', fill: 'backwards' }).finished.then(() => {
-      cell.style.opacity = '1';
-      if (legend && !lbSkip) {
-        lbFlashEl.animate([{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'scale(4)', opacity: 0.6, offset: 0.3 }, { transform: 'scale(7)', opacity: 0 }], { duration: 600, easing: 'ease-out' });
+    const dx = (ox - (r.left + r.width / 2)) / lbScale;
+    const dy = (oy - (r.top + r.height / 2)) / lbScale;
+    const at = t + 120 + i * 170;
+    tl.add(cell, {
+      keyframes: {
+        '0%': { x: dx, y: dy, scale: 0.15, opacity: 0 },
+        '55%': { x: dx * 0.45, y: dy * 0.45 - 90, scale: 0.75, opacity: 1 },
+        '85%': { x: 0, y: -6, scale: 1.04, opacity: 1 },
+        '100%': { x: 0, y: 0, scale: 1, opacity: 1 },
+      },
+      duration: 720,
+      ease: 'cubicBezier(0.25, 0.8, 0.35, 1)',
+    }, at);
+    // «легендарные» (эпическая карта, бонус) приземляются со вспышкой и конфетти
+    if (epic && (rewards[i].kind === 'card' || rewards[i].kind === 'bonus')) {
+      tl.call(() => {
+        if (lbSkip) return;
+        lbFlash(4, 7, 0.6, 600);
         confettiFrom(cell);
-      }
-    }).catch(() => { cell.style.opacity = '1'; });
+      }, at + 720);
+    }
+    last = at + 720;
   });
-  await Promise.all(lands);
+  return last + 300;
+}
+
+// кнопка «Забрать» выезжает снизу; по окончании — состояние из CSS (.is-visible)
+function lbShowClaim() {
+  anime.animate(lbClaimEl, {
+    y: [20, 0],
+    opacity: [0, 1],
+    duration: 300,
+    ease: A24.EASE.spring,
+    onComplete: (self) => {
+      lbClaimEl.classList.add('is-visible');
+      anime.cleanInlineStyles(self);
+    },
+  });
 }
 
 async function openLootbox(box) {
@@ -848,53 +905,46 @@ async function openLootbox(box) {
 
 // экран открытия сундука — общий для магазина и сундуков заданий
 // (box.id — цвет: green/blue/purple/daily/weekly; box.insert — 'coins',
-// 'key' или ничего). Возвращается, когда награды разлетелись и экран закрылся
+// 'key' или ничего). Вся последовательность — один таймлайн anime.js;
+// «Закрыть» во время него — timeline.complete(), всё встаёт в конечное
+// состояние. Возвращается, когда награды разлетелись и экран закрылся
 async function playLootbox(box, list) {
   lbBusy = true;
   lbSkip = false;
   const order = box.order || LB_ORDER;
   const rewards = list.slice().sort((x, y) => order.indexOf(x.kind) - order.indexOf(y.kind));
 
-  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
+  anime.remove(lbOverlayEl.querySelectorAll('*'));
   lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
   lbOverlayEl.style.setProperty('--lb-glow', LB_GLOW[box.id]);
   lbBoxEl.innerHTML = chestStageHTML(box);
-  lbBoxEl.style.opacity = '';
-  lbRewardsEl.innerHTML = '';
+  lbBoxEl.removeAttribute('style');
+  lbTitleEl.removeAttribute('style');
+  lbClaimEl.removeAttribute('style');
   lbTitleEl.classList.remove('is-visible');
   lbClaimEl.classList.remove('is-visible');
   lbOverlayEl.style.opacity = '';
-  lbOverlayEl.classList.add('is-open');
-  lbOverlayEl.setAttribute('aria-hidden', 'false');
-
-  // 1. закрытый сундук на свечении своего цвета
-  lbBoxEl.querySelector('.lb-glow').animate([{ transform: 'scale(0.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 500, easing: 'ease-out', fill: 'forwards' });
-  await lbAnim(lbBoxEl.querySelector('.lb-chest-closed'), [
-    { transform: 'translateY(-50px) scale(0.7)', opacity: 0 },
-    { transform: 'translateY(6px) scale(1.03)', opacity: 1, offset: 0.7 },
-    { transform: 'none', opacity: 1 },
-  ], { duration: 480, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
-  await lbWait(350);
-
-  // 2. монетки в прорезь (синий, зелёный) или ключ в скважину (фиолетовый)
-  if (box.insert === 'key') await insertKey(box);
-  else if (box.insert === 'coins') await dropCoins(box);
-
-  // 3. тряска 1–3 с
-  await shakeChest();
-
-  // 4. вспышка — сундук открыт
-  await lbOpenChest();
-  await lbWait(600);
-
-  // 5. подарки вылетают и встают в сетку наград
+  // сетка наград рисуется сразу (невидимой) — пути вылета считаются от неё
   lbRewardsEl.innerHTML = rewards.map(rewardCellHTML).join('');
-  fitRewards();
   const cells = Array.from(lbRewardsEl.children);
   cells.forEach((c) => { c.style.opacity = '0'; });
+  lbOverlayEl.classList.add('is-open');
+  lbOverlayEl.setAttribute('aria-hidden', 'false');
+  fitRewards();
+  startChestGlow();
+
+  const tl = anime.createTimeline({ autoplay: true });
+  lbTimeline = tl;
+  let t = lbIntro(tl, 0);
+  if (box.insert === 'key') t = lbKey(tl, t, box);
+  else if (box.insert === 'coins') t = lbCoins(tl, t, box);
+  t = lbShake(tl, t);
+  t = lbOpen(tl, t);
+  t = lbFlyOut(tl, t, box, rewards, cells);
+  tl.call(() => {}, t);
+  await tl;
+  lbTimeline = null;
   lbTitleEl.classList.add('is-visible');
-  await flyOutRewards(box, rewards, cells);
-  await lbWait(300);
 
   // первый дубль в жизни — объясняем механику тултипом над ячейкой
   const dupCell = cells.find((c) => c.classList.contains('is-dup'));
@@ -908,7 +958,7 @@ async function playLootbox(box, list) {
   }
 
   applyRewards(rewards);
-  lbClaimEl.classList.add('is-visible');
+  lbShowClaim();
   await new Promise((resolve) => {
     const done = () => { lbClaimEl.removeEventListener('click', done); lbCloseEl.removeEventListener('click', done); resolve(); };
     lbClaimEl.addEventListener('click', done);
@@ -928,10 +978,10 @@ async function playLootbox(box, list) {
   const artOf = (cell, r) => cell.querySelector(r.kind === 'bonus' ? '.lb-bonus-img' : r.dup ? '.lb-cell-sub' : '.lb-cell-art');
   const lifted = cells.map((cell, i) => liftReward(artOf(cell, rewards[i]), rewards[i].dup));
   renderShop();
-  const fade = lbOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' }).finished.then(() => {
+  const fade = anime.animate(lbOverlayEl, { opacity: [1, 0], duration: 300, ease: A24.EASE.in }).then(() => {
     lbOverlayEl.classList.remove('is-open');
     lbOverlayEl.setAttribute('aria-hidden', 'true');
-    lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => an.cancel());
+    anime.remove(lbOverlayEl.querySelectorAll('*'));
     lbOverlayEl.querySelectorAll('.lb-confetti').forEach((c) => c.remove());
     lbRewardsEl.innerHTML = '';
     lbBoxEl.innerHTML = '';
@@ -958,13 +1008,25 @@ async function playLootbox(box, list) {
   })]);
 }
 
+// подсветка за сундуком живёт всё время, пока открыт экран: большая звезда
+// покачивается ±12° и «дышит», малая — навстречу и мерцает. Анимации на самих
+// звёздах — не мешают появлению и разгоранию (они на контейнере .lb-glow)
+function startChestGlow() {
+  A24.loop(lbBoxEl.querySelector('.lb-star-a'), {
+    rotate: [-12, 12], scale: [0.96, 1.12], opacity: [0.8, 1],
+    duration: 2500, alternate: true, ease: A24.EASE.inOut,
+  });
+  A24.loop(lbBoxEl.querySelector('.lb-star-b'), {
+    rotate: [10, -14], scale: [1.06, 0.9], opacity: [1, 0.6],
+    duration: 1800, alternate: true, ease: A24.EASE.inOut,
+  });
+}
+
 // «Закрыть» во время открытия — пропустить анимацию и сразу показать награды
 lbCloseEl.addEventListener('click', () => {
-  if (lbClaimEl.classList.contains('is-visible')) return;
+  if (!lbTimeline) return;
   lbSkip = true;
-  lbOverlayEl.getAnimations({ subtree: true }).forEach((an) => {
-    if (an.effect && an.effect.getComputedTiming().iterations !== Infinity) an.finish();
-  });
+  lbTimeline.complete();
 });
 
 function applyRewards(rewards) {
@@ -985,7 +1047,7 @@ shopBoxesEl.addEventListener('click', (e) => {
   const tile = e.target.closest('.shop-tile');
   if (!tile) return;
   const box = LOOTBOXES.find((b) => tile.classList.contains(`shop-box-${b.id}`));
-  tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+  A24.pulse(tile, 0.96, 220);
   openDetail(box);
 });
 

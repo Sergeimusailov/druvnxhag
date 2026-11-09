@@ -1,4 +1,6 @@
 [
+  "js/vendor/anime.umd.min.js",
+  "js/anim24.js",
   "js/cards.js",
   "js/v2.js",
   "js/tooltip24.js",
