@@ -21,7 +21,6 @@
   const REWARD = { win: 50, loss: 25 };
   const DAY_KEY = 'v2.matchCoinsDay';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const sleep = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
 
   /* ---------- Дневной лимит ---------- */
 
@@ -99,7 +98,8 @@
   function openLimits() {
     Tooltip24.hide();
     const got = loadDay();
-    $('r24Fill').style.width = `${Math.min(1, got / LIMIT) * 100}%`;
+    // полоса «Получено монет» заполняется: ширина 0 → доля, 600
+    anime.animate($('r24Fill'), { width: ['0%', `${Math.min(1, got / LIMIT) * 100}%`], duration: 600, ease: 'cubicBezier(0.3, 0.8, 0.3, 1)' });
     $('r24Got').textContent = `${got} / ${LIMIT}`;
     $('r24Timer').textContent = untilMidnight();
     clearInterval(timerId);
@@ -125,6 +125,7 @@
     c.style.height = `${w * (Math.random() < 0.5 ? 1 : 2.2)}px`;
     c.style.left = `${x}px`;
     c.style.top = `${y}px`;
+    c.style.translate = '-50% -50%';
     c.style.background = COLORS[Math.floor(Math.random() * COLORS.length)];
     if (Math.random() < 0.25) c.style.borderRadius = '50%';
     layer.appendChild(c);
@@ -146,23 +147,34 @@
       const dx = Math.cos(a) * d;
       const dy = Math.sin(a) * d * 0.8;
       const rot = (Math.random() - 0.5) * 1080;
-      c.animate([
-        { transform: 'translate(-50%, -50%) rotate(0) scale(0.3)', opacity: 1 },
-        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot * 0.4}deg) scale(1)`, opacity: 1, offset: 0.3 },
-        { transform: `translate(calc(-50% + ${dx * 1.15}px), calc(-50% + ${dy + 260}px)) rotate(${rot}deg) scale(0.9)`, opacity: 0 },
-      ], { duration: 2200 + Math.random() * 1200, delay: Math.random() * 120, easing: 'cubic-bezier(0.15, 0.7, 0.4, 1)', fill: 'both' })
-        .finished.then(() => c.remove());
+      anime.animate(c, {
+        keyframes: {
+          '0%': { x: 0, y: 0, rotate: 0, scale: 0.3, opacity: 1 },
+          '30%': { x: dx, y: dy, rotate: rot * 0.4, scale: 1, opacity: 1 },
+          '100%': { x: dx * 1.15, y: dy + 260, rotate: rot, scale: 0.9, opacity: 0 },
+        },
+        duration: 2200 + Math.random() * 1200,
+        delay: Math.random() * 120,
+        ease: 'cubicBezier(0.15, 0.7, 0.4, 1)',
+        onComplete: () => c.remove(),
+      });
     }
     // потом ещё пару секунд конфетти падает сверху, покачиваясь
     for (let i = 0; i < 46; i++) {
       const c = piece(layer, Math.random() * box.width, -20);
+      c.style.opacity = '0';
       const sway = (Math.random() - 0.5) * 80;
-      c.animate([
-        { transform: 'translateY(0) rotate(0)', opacity: 1 },
-        { transform: `translate(${sway}px, ${box.height * 0.5}px) rotate(${(Math.random() - 0.5) * 540}deg)`, opacity: 1, offset: 0.6 },
-        { transform: `translate(${-sway * 0.5}px, ${box.height * 0.85}px) rotate(${(Math.random() - 0.5) * 900}deg)`, opacity: 0 },
-      ], { duration: 3000 + Math.random() * 1800, delay: 300 + Math.random() * 2200, easing: 'linear', fill: 'both' })
-        .finished.then(() => c.remove());
+      anime.animate(c, {
+        keyframes: {
+          '0%': { x: 0, y: 0, rotate: 0, opacity: 1 },
+          '60%': { x: sway, y: box.height * 0.5, rotate: (Math.random() - 0.5) * 540, opacity: 1 },
+          '100%': { x: -sway * 0.5, y: box.height * 0.85, rotate: (Math.random() - 0.5) * 900, opacity: 0 },
+        },
+        duration: 3000 + Math.random() * 1800,
+        delay: 300 + Math.random() * 2200,
+        ease: 'linear',
+        onComplete: () => c.remove(),
+      });
     }
   }
 
@@ -183,36 +195,43 @@
     $('r24Again').textContent = isWin ? 'Ещё матч' : 'Реванш';
     $('r24Amount').textContent = '× 0';
     root.classList.toggle('is-win', isWin);
-    root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
     // страница матча под экраном не прокручивается; если она уже была
     // прокручена (демо-кнопки внизу), возвращаем её наверх
     window.scrollTo(0, 0);
     document.documentElement.classList.add('r24-on');
 
-    // заголовок, иллюстрация, монеты и кнопки появляются по очереди
-    const pop = (el, frames, delay, duration = 500) => (reduce ? null : el.animate(frames, { duration, delay, easing: 'cubic-bezier(0.3, 1.3, 0.5, 1)', fill: 'backwards' }));
-    pop(root.querySelector('.r24-title'), [{ transform: 'translateY(-16px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 150);
-    pop(root.querySelector('.r24-art'), [{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'none', opacity: 1 }], 300, 650);
-    pop($('r24Coins'), [{ transform: 'translateY(20px) scale(0.9)', opacity: 0 }, { transform: 'none', opacity: 1 }], 650);
-    pop(root.querySelector('.r24-foot'), [{ transform: 'translateY(30px)', opacity: 0 }, { transform: 'none', opacity: 1 }], 850);
-    if (isWin) setTimeout(confetti, reduce ? 0 : 450);
-
-    // монеты набегают от 0 до полученных
-    await sleep(900);
-    const t0 = performance.now();
-    const dur = reduce ? 0 : 600;
-    await new Promise((resolve) => {
-      (function tick(now) {
-        const t = dur ? Math.min(1, (now - t0) / dur) : 1;
-        $('r24Amount').textContent = `× ${Math.round(gain * (1 - (1 - t) ** 3))}`;
-        if (t < 1) requestAnimationFrame(tick); else resolve();
-      })(t0);
-    });
-    if (gain && !reduce) root.querySelector('.r24-plate').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+    // появление — один таймлайн: экран проявляется (350), по очереди
+    // выплывают заголовок, иллюстрация, плашка монет и кнопки (пружина),
+    // на победе — залп конфетти, число монет набегает, плашка пульсирует,
+    // затем подсказка о лимите
+    const title = root.querySelector('.r24-title');
+    const art = root.querySelector('.r24-art');
+    const coins = $('r24Coins');
+    const foot = root.querySelector('.r24-foot');
+    const plate = root.querySelector('.r24-plate');
+    const items = [[title, { opacity: [0, 1], y: [-16, 0] }, 150, 500], [art, { opacity: [0, 1], scale: [0.4, 1] }, 300, 650], [coins, { opacity: [0, 1], y: [20, 0], scale: [0.9, 1] }, 650, 500], [foot, { opacity: [0, 1], y: [30, 0] }, 850, 500]];
+    anime.set(items.map(([el]) => el), { opacity: 0 });
+    const counter = { n: 0 };
+    const tl = anime.createTimeline({ defaults: { ease: 'cubicBezier(0.3, 1.3, 0.5, 1)' } });
+    A24.reveal(root, 'is-open', true, { opacity: 0 }, { opacity: 1 }, 350);
+    items.forEach(([el, props, at, duration]) => tl.add(el, { ...props, duration }, at));
+    if (isWin) tl.call(confetti, 450);
+    tl.add(counter, {
+      n: gain,
+      duration: 600,
+      ease: 'out(3)',
+      onUpdate: () => { $('r24Amount').textContent = `× ${Math.round(counter.n)}`; },
+    }, 900);
+    if (gain) tl.add(plate, { keyframes: [{ scale: 1.08 }, { scale: 1 }], duration: 300, ease: A24.EASE.out }, 1500);
+    tl.call(() => {}, 1900);
+    if (reduce) tl.complete();
+    await tl;
+    $('r24Amount').textContent = `× ${gain}`;
+    items.forEach(([el, props]) => A24.clear(el, props));
+    A24.clear(plate, { scale: 1 });
 
     // лимит: половина и больше — подсказка о лимите, исчерпан — что ждать сброса
-    await sleep(400);
     if (got >= LIMIT) {
       Tooltip24.show($('r24Info'), { text: 'Лимит за сегодня исчерпан. Подождите, когда лимит сбросится', above: true });
     } else if (got >= LIMIT / 2) {

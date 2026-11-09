@@ -60,6 +60,7 @@ window.MATCH_GATE = (() => {
     <div class="mm24-stage">
       ${playerHTML('you', avatar, youName, status, back)}
       <div class="mm24-center">
+        <span class="mm24-beam" aria-hidden="true"></span><span class="mm24-halo" aria-hidden="true"></span>
         <span class="mm24-vs"><svg class="mm24-swords" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><g transform="translate(32 31) rotate(45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g><g transform="translate(32 31) rotate(-45)"><path d="M0-29 4.5-22.5V7h-9v-29.5Z"/><path d="M0-25V5" stroke="#000" stroke-opacity=".22" stroke-width="1.6" stroke-linecap="round"/><rect x="-11" y="7" width="22" height="5" rx="2.5"/><rect x="-2.6" y="12" width="5.2" height="10" rx="1.6"/><circle cy="25.5" r="4"/></g></svg></span>
         <div class="mm24-msg-row"><span class="mm24-loader" aria-hidden="true"></span><div class="mm24-msg" id="mm24Msg" role="status">Ищем соперника<span class="mm24-dots"><i>.</i><i>.</i><i>.</i></span></div></div>
       </div>
@@ -95,48 +96,97 @@ window.MATCH_GATE = (() => {
   // пока открыто меню «Выйти из матча?», поиск стоит на месте
   const hold = async () => { while (LEAVE24.isOpen()) await new Promise((r) => setTimeout(r, 100)); };
 
+  const $m = (sel) => root.querySelector(sel);
+  const E = A24.EASE;
+
   function showMsg(text, cls) {
     msgEl.className = `mm24-msg ${cls}`;
     msgEl.textContent = text;
-    msgEl.animate([
-      { opacity: 0, transform: 'scale(0.6)' },
-      { opacity: 1, transform: 'scale(1.1)', offset: 0.6 },
-      { opacity: 1, transform: 'scale(1)' },
-    ], { duration: 420, easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)' });
+    A24.play(msgEl, {
+      keyframes: { '0%': { opacity: 0, scale: 0.6 }, '60%': { opacity: 1, scale: 1.1 }, '100%': { opacity: 1, scale: 1 } },
+      duration: 420,
+      ease: 'cubicBezier(0.3, 1.4, 0.5, 1)',
+    });
   }
 
   // искры из мечей, когда соперник найден
   function burst() {
-    const c = root.querySelector('.mm24-vs');
+    if (reduce) return;
+    const c = $m('.mm24-vs');
     const colors = ['#ffdd2d', '#fff', '#ff5c5c', '#6fa8ff'];
     for (let i = 0; i < 20; i++) {
       const s = document.createElement('span');
       s.className = 'mm24-spark';
       s.style.background = colors[i % colors.length];
+      s.style.translate = '-50% -50%';
       c.appendChild(s);
       const a = Math.random() * Math.PI * 2;
       const d = 50 + Math.random() * 60;
-      s.animate([
-        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-        { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0.2)`, opacity: 0 },
-      ], { duration: 700 + Math.random() * 400, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }).finished.then(() => s.remove());
+      anime.animate(s, {
+        x: [0, Math.cos(a) * d],
+        y: [0, Math.sin(a) * d],
+        scale: [1, 0.2],
+        opacity: [1, 0],
+        duration: 700 + Math.random() * 400,
+        ease: 'cubicBezier(0.2, 0.7, 0.3, 1)',
+        onComplete: () => s.remove(),
+      });
     }
   }
 
-  // появление матча: клетки поля плавно проявляются по очереди, карты руки
-  // по одной приплывают снизу вверх с небольшой задержкой
+  // пока ищем: я въезжаю слева; радар (кольца расходятся, луч вращается),
+  // три точки мигают по очереди, круг с мечами «дышит»
+  const loops = [];
+  anime.animate($m('.mm24-you'), { x: ['-130%', '0%'], opacity: [0, 1], duration: reduce ? 0 : 600, ease: 'cubicBezier(0.2, 0.9, 0.3, 1.15)' });
+  root.querySelectorAll('.mm24-ring').forEach((ring, i) => loops.push(A24.loop(ring, { scale: [0.9, 1.7], opacity: [0.9, 0], duration: 1800, delay: i * 600, ease: E.out })));
+  loops.push(A24.loop($m('.mm24-sweep'), { rotate: [0, 360], duration: 1200, ease: 'linear' }));
+  root.querySelectorAll('.mm24-dots i').forEach((dot, i) => loops.push(A24.loop(dot, {
+    keyframes: { '0%': { opacity: 0.2 }, '30%': { opacity: 1 }, '60%': { opacity: 0.2 }, '100%': { opacity: 0.2 } },
+    duration: 1200,
+    delay: i * 200,
+    ease: 'linear',
+  })));
+  const breath = A24.loop($m('.mm24-vs'), { scale: [1, 1.05], duration: 800, alternate: true, ease: E.inOut });
+
+  // соперник найден — один таймлайн: радар сжимается и гаснет, красное свечение
+  // проявляется, соперник въезжает справа, луч «выстреливает», мечи с размаху
+  // врезаются, я вздрагиваю, искры и надпись
+  function foundTimeline() {
+    loops.forEach((l) => l && l.cancel());
+    if (breath) breath.revert();
+    const tl = anime.createTimeline({ defaults: { ease: E.ease } });
+    tl.add($m('.mm24-radar'), { scale: 0.4, opacity: 0, duration: 300 }, 0)
+      .add($m('.mm24-glow.is-opp'), { opacity: [0, 0.38], duration: 800 }, 0)
+      .add($m('.mm24-opp-slot .mm24-player'), {
+        keyframes: { '0%': { x: '140%', opacity: 0 }, '50%': { x: '70%', opacity: 1 }, '100%': { x: '0%', opacity: 1 } },
+        duration: 800,
+        ease: 'cubicBezier(0.2, 0.9, 0.3, 1.1)',
+      }, 150)
+      .add($m('.mm24-halo'), { opacity: [0.4, 1], duration: 500 }, 0)
+      .add($m('.mm24-beam'), { scaleX: [0, 1], opacity: [0.3, 1], filter: ['brightness(2)', 'brightness(1)'], duration: 600, ease: 'cubicBezier(0.2, 0.8, 0.3, 1)' }, 400)
+      .add($m('.mm24-vs'), { scale: [2.2, 1], rotate: [-25, 0], opacity: [0, 1], duration: 500, ease: 'cubicBezier(0.3, 1.5, 0.5, 1)' }, 400)
+      .add($m('.mm24-swords'), { opacity: [0.45, 1], duration: 300 }, 400)
+      .add($m('.mm24-you'), { keyframes: { '20%': { x: -4, y: 2 }, '40%': { x: 4, y: -2 }, '60%': { x: -3, y: 1 }, '80%': { x: 2, y: -1 }, '100%': { x: 0, y: 0 } }, duration: 350, ease: E.inOut }, 450)
+      .call(() => { burst(); showMsg('Соперник найден!', 'is-found'); }, 500);
+    if (reduce) tl.complete();
+    return tl;
+  }
+
+  // появление матча: клетки поля плавно проявляются по очереди (600, +50),
+  // карты руки по одной приплывают снизу (650, +140)
   function introMatch() {
     if (reduce) return;
-    document.querySelectorAll('#board .cell').forEach((c, i) => {
-      c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 200 + i * 50, easing: 'ease-out', fill: 'backwards' });
-    });
-    document.querySelectorAll('#hand .hand-slot').forEach((s, i) => {
-      s.animate([
-        { transform: 'translateY(160px)', opacity: 0 },
-        { transform: 'translateY(-6px)', opacity: 1, offset: 0.75 },
-        { transform: 'none', opacity: 1 },
-      ], { duration: 650, delay: 500 + i * 140, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'backwards' });
-    });
+    const cells = document.querySelectorAll('#board .cell');
+    const slots = document.querySelectorAll('#hand .hand-slot');
+    anime.set(cells, { opacity: 0 });
+    anime.set(slots, { opacity: 0, y: 160 });
+    cells.forEach((c, i) => A24.play(c, { opacity: [0, 1], duration: 600, delay: 200 + i * 50, ease: E.out }));
+    slots.forEach((s, i) => A24.play(s, {
+      keyframes: { '0%': { y: 160, opacity: 0 }, '75%': { y: -6, opacity: 1 }, '100%': { y: 0, opacity: 1 } },
+      duration: 650,
+      delay: 500 + i * 140,
+      ease: 'cubicBezier(0.2, 0.8, 0.3, 1)',
+    }));
   }
 
   let start;
@@ -150,25 +200,29 @@ window.MATCH_GATE = (() => {
     await hold();
     clearInterval(shuffle);
 
-    // нашли: радар гаснет, соперник въезжает справа налево, мечи скрещиваются со вспышкой
+    // нашли
     root.classList.add('is-found');
     if (navigator.vibrate) navigator.vibrate([20, 40, 30]);
-    await wait(500);
-    burst();
-    showMsg('Соперник найден!', 'is-found');
-    await wait(2200);
+    foundTimeline();
+    // надпись «Соперник найден!» — на 500, «Начинаем матч» — через 2200 после неё
+    await wait(2700);
 
     await hold();
     // «Начинаем матч» и лоадер — время рассмотреть соперника
     showMsg('Начинаем матч', 'is-start');
     root.classList.add('is-start');
+    const spin = A24.loop($m('.mm24-loader'), { rotate: [0, 360], duration: 800, ease: 'linear' });
     await wait(1800);
 
     await hold();
-    // шов по диагонали (по лучу через мечи) вспыхивает, экран разъезжается
-    // по нему как шторки — верх уходит вверх, низ вниз, — а под ним уже матч
+    // шов по диагонали (по лучу через мечи) вспыхивает белым, лоадер гаснет —
+    // и экран разъезжается по нему как шторки: верх вверх, низ вниз, под ним матч
     root.classList.add('is-seam');
-    await wait(320);
+    const seam = anime.createTimeline({ defaults: { duration: 300, ease: E.ease } });
+    seam.add($m('.mm24-beam'), { height: 4, boxShadow: ['0 0 14px rgba(170, 140, 255, 0.9)', '0 0 18px #fff, 0 0 40px rgba(170, 140, 255, 0.9)'] }, 0)
+      .add($m('.mm24-loader'), { opacity: 0 }, 0);
+    await seam;
+    if (spin) spin.cancel();
     start();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     await splitAway();
@@ -178,12 +232,12 @@ window.MATCH_GATE = (() => {
   // две копии экрана, обрезанные по диагонали; оригинал убираем сразу
   async function splitAway() {
     const box = root.getBoundingClientRect();
-    const vs = root.querySelector('.mm24-vs').getBoundingClientRect();
+    const vs = $m('.mm24-vs').getBoundingClientRect();
     const W = box.width;
     const H = box.height;
     const cx = vs.left + vs.width / 2 - box.left;
     const cy = vs.top + vs.height / 2 - box.top;
-    const k = Math.tan((14 * Math.PI) / 180); // луч .mm24-center::before — rotate(-14deg)
+    const k = Math.tan((14 * Math.PI) / 180); // луч .mm24-beam — rotate(-14deg)
     const yL = cy + cx * k;
     const yR = cy - (W - cx) * k;
     const halves = ['top', 'bottom'].map((side) => {
@@ -197,18 +251,19 @@ window.MATCH_GATE = (() => {
       document.body.appendChild(h);
       return h;
     });
+    anime.remove(root.querySelectorAll('*'));
     root.remove();
     introMatch();
     if (reduce) {
-      await Promise.all(halves.map((h) => h.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished));
+      await anime.animate(halves, { opacity: [1, 0], duration: 300, ease: 'linear' });
     } else {
+      // шторки: сначала чуть навстречу (6px к 12% времени), потом за край, 1000
       const far = Math.max(yL, yR) + 40;
       const farB = H - Math.min(yL, yR) + 40;
-      const opts = { duration: 1000, easing: 'cubic-bezier(0.65, 0, 0.25, 1)', fill: 'forwards' };
-      await Promise.all([
-        halves[0].animate([{ transform: 'translateY(0)' }, { transform: 'translateY(6px)', offset: 0.12 }, { transform: `translateY(${-far}px)` }], opts).finished,
-        halves[1].animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-6px)', offset: 0.12 }, { transform: `translateY(${farB}px)` }], opts).finished,
-      ]);
+      const split = anime.createTimeline({ defaults: { duration: 1000, ease: 'cubicBezier(0.65, 0, 0.25, 1)' } });
+      split.add(halves[0], { keyframes: { '0%': { y: 0 }, '12%': { y: 6 }, '100%': { y: -far } } }, 0)
+        .add(halves[1], { keyframes: { '0%': { y: 0 }, '12%': { y: -6 }, '100%': { y: farB } } }, 0);
+      await split;
     }
     halves.forEach((h) => h.remove());
   }

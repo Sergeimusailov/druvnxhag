@@ -27,13 +27,12 @@ html.r24-on body {
   font-family: var(--font-sf, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.35s ease, visibility 0s 0.35s;
+  /* появление — anime.js (js/result24.js) */
 }
 
 .r24.is-open {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.35s ease;
 }
 
 /* фон — картинка приложения, притушенная на 70% (image 10981) */
@@ -295,7 +294,6 @@ html.r24-on body {
   height: 100%;
   border-radius: 20px;
   background: #428bf9;
-  transition: width 0.6s cubic-bezier(0.3, 0.8, 0.3, 1);
 }
 
 .r24-track-labels {
@@ -342,9 +340,3 @@ html.r24-on body {
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .r24,
-  .r24.is-open {
-    transition: none;
-  }
-}

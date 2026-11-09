@@ -131,7 +131,7 @@ if (MATCH24) {
     liked = !liked;
     try { localStorage.setItem(LIKE_KEY, liked ? '1' : '0'); } catch (e) { /* ignore */ }
     renderLike();
-    if (liked) likeBtn.querySelector('svg').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(0.9)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+    if (liked) A24.play(likeBtn.querySelector('svg'), { keyframes: [{ scale: 1.35 }, { scale: 0.9 }, { scale: 1 }], duration: 420, ease: A24.EASE.out });
   });
 
   const oppSheet = bottomSheet(document.getElementById('m24Opp'), document.getElementById('m24Backdrop'));

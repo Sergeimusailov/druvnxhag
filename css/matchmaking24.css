@@ -41,7 +41,6 @@ html.mm24-on body {
   height: 380px;
   border-radius: 50%;
   filter: blur(80px);
-  transition: opacity 0.8s ease;
 }
 
 .mm24-glow.is-you {
@@ -58,47 +57,26 @@ html.mm24-on body {
   opacity: 0;
 }
 
-.mm24.is-found .mm24-glow.is-opp {
-  opacity: 0.38;
-}
-
-/* уход в матч (js/matchmaking24.js, splitAway): шов по лучу через мечи
-   вспыхивает (is-seam), лоадер гаснет; затем две копии экрана, обрезанные
-   по диагонали, разъезжаются вверх и вниз (is-split), под ними — матч */
+/* Всё движение экрана — anime.js (js/matchmaking24.js): появление, радар,
+   «найден» (таймлайн), лоадер, шов и разъезд по диагонали. Шов: луч
+   вспыхивает белым (is-seam), затем две копии экрана, обрезанные по
+   диагонали (is-split), разъезжаются вверх и вниз — под ними матч */
 .mm24.is-seam {
   pointer-events: none;
 }
 
-.mm24.is-seam .mm24-center::before {
-  height: 4px;
-  opacity: 1;
+.mm24.is-seam .mm24-beam {
   background: linear-gradient(90deg, rgba(150, 170, 255, 0.9), #fff 50%, rgba(220, 150, 255, 0.9));
-  box-shadow: 0 0 18px #fff, 0 0 40px rgba(170, 140, 255, 0.9);
-  transition: box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
-.mm24.is-seam .mm24-loader {
-  opacity: 0;
-}
-
-/* копии половин: без повторных анимаций появления, всё в конечном виде */
+/* копии половин — снимок экрана как есть, без переходов */
 .mm24.is-split {
   pointer-events: none;
 }
 
 .mm24.is-split,
 .mm24.is-split * {
-  animation: none !important;
   transition: none !important;
-}
-
-.mm24.is-split .mm24-opp-slot .mm24-player {
-  transform: none;
-  opacity: 1;
-}
-
-.mm24.is-split .mm24-radar {
-  opacity: 0;
 }
 
 
@@ -157,11 +135,6 @@ html.mm24-on body {
 
 .mm24-you {
   flex-direction: row-reverse;
-  animation: mm24InLeft 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
-}
-
-@keyframes mm24InLeft {
-  from { transform: translateX(-130%); opacity: 0; }
 }
 
 .mm24-ava {
@@ -296,16 +269,6 @@ html.mm24-on body {
   opacity: 0;
 }
 
-.mm24.is-found .mm24-opp-slot .mm24-player {
-  animation: mm24InRight 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.15s both;
-}
-
-@keyframes mm24InRight {
-  from { transform: translateX(140%); opacity: 0; }
-  50% { opacity: 1; }
-  to { transform: none; opacity: 1; }
-}
-
 /* радар на месте будущего аватара: кольца, луч, мелькающие аватарки с «?» */
 .mm24-radar {
   position: absolute;
@@ -313,7 +276,6 @@ html.mm24-on body {
   right: 0;
   width: 112px;
   height: 112px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .mm24-ring {
@@ -321,15 +283,7 @@ html.mm24-on body {
   inset: 0;
   border-radius: 35px;
   border: 2px solid rgba(255, 221, 45, 0.6);
-  animation: mm24Ring 1.8s ease-out infinite;
-}
-
-.mm24-ring:nth-child(2) { animation-delay: 0.6s; }
-.mm24-ring:nth-child(3) { animation-delay: 1.2s; }
-
-@keyframes mm24Ring {
-  from { transform: scale(0.9); opacity: 0.9; }
-  to { transform: scale(1.7); opacity: 0; }
+  opacity: 0;
 }
 
 .mm24-sweep {
@@ -337,11 +291,6 @@ html.mm24-on body {
   inset: -16px;
   border-radius: 50%;
   background: conic-gradient(from 0deg, rgba(255, 221, 45, 0.45), rgba(255, 221, 45, 0) 25%, transparent);
-  animation: mm24Spin 1.2s linear infinite;
-}
-
-@keyframes mm24Spin {
-  to { transform: rotate(360deg); }
 }
 
 .mm24-scan {
@@ -368,20 +317,7 @@ html.mm24-on body {
 
 .mm24-dots i {
   font-style: normal;
-  animation: mm24Dot 1.2s infinite;
-}
-
-.mm24-dots i:nth-child(2) { animation-delay: 0.2s; }
-.mm24-dots i:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes mm24Dot {
-  0%, 60%, 100% { opacity: 0.2; }
-  30% { opacity: 1; }
-}
-
-.mm24.is-found .mm24-radar {
-  transform: scale(0.4);
-  opacity: 0;
+  opacity: 0.2;
 }
 
 /* ---------- центр: мечи в светящемся круге, диагональное сияние, статус ---------- */
@@ -399,49 +335,34 @@ html.mm24-on body {
   isolation: isolate;
 }
 
-/* луч через центр круга и мягкое сияние за ним */
-.mm24-center::before,
-.mm24-center::after {
-  content: '';
+/* луч через центр круга и мягкое сияние за ним (элементы, а не ::before /
+   ::after — их двигает anime.js) */
+.mm24-beam,
+.mm24-halo {
   position: absolute;
   z-index: -1;
   top: 52px;
   left: 50%;
   pointer-events: none;
-  transition: opacity 0.5s ease;
 }
 
-.mm24-center::before {
+.mm24-beam {
   width: 900px;
   height: 3px;
   margin: -1.5px 0 0 -450px;
   background: linear-gradient(90deg, transparent 8%, rgba(110, 140, 255, 0.8) 38%, #fff 50%, rgba(205, 120, 255, 0.8) 62%, transparent 92%);
   box-shadow: 0 0 14px rgba(170, 140, 255, 0.9);
-  transform: rotate(-14deg);
+  rotate: -14deg;
   opacity: 0.3;
 }
 
-.mm24-center::after {
+.mm24-halo {
   width: 340px;
   height: 220px;
   margin: -110px 0 0 -170px;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(150, 80, 255, 0.45), transparent);
   opacity: 0.4;
-}
-
-.mm24.is-found .mm24-center::before {
-  opacity: 1;
-  animation: mm24Beam 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.4s both;
-}
-
-.mm24.is-found .mm24-center::after {
-  opacity: 1;
-}
-
-@keyframes mm24Beam {
-  from { transform: rotate(-14deg) scaleX(0); filter: brightness(2); }
-  to { transform: rotate(-14deg) scaleX(1); filter: none; }
 }
 
 .mm24-vs {
@@ -458,7 +379,7 @@ html.mm24-on body {
     0 0 24px rgba(160, 90, 255, 0.35),
     inset 0 0 18px rgba(160, 90, 255, 0.3);
   color: #fff;
-  animation: mm24Breath 1.6s ease-in-out infinite;
+  /* смена свечения при «найден» — цвет, остаётся CSS-переходом */
   transition: box-shadow 0.4s ease;
 }
 
@@ -467,11 +388,6 @@ html.mm24-on body {
   width: 64px;
   height: 64px;
   opacity: 0.45;
-  transition: opacity 0.3s ease;
-}
-
-@keyframes mm24Breath {
-  50% { transform: scale(1.05); }
 }
 
 .mm24.is-found .mm24-vs {
@@ -481,17 +397,10 @@ html.mm24-on body {
     0 0 36px rgba(200, 110, 255, 0.9),
     0 0 80px rgba(90, 130, 255, 0.55),
     inset 0 0 22px rgba(200, 110, 255, 0.5);
-  animation: mm24Slam 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) 0.4s both;
 }
 
 .mm24.is-found .mm24-swords {
-  opacity: 1;
   filter: drop-shadow(0 0 10px rgba(255, 221, 45, 0.7)) drop-shadow(0 2px 0 #b88a00);
-}
-
-@keyframes mm24Slam {
-  from { transform: scale(2.2) rotate(-25deg); opacity: 0; }
-  to { transform: none; opacity: 1; }
 }
 
 .mm24-spark {
@@ -538,23 +447,10 @@ html.mm24-on body {
   border-radius: 50%;
   border: 2px solid rgba(255, 221, 45, 0.25);
   border-top-color: #ffdd2d;
-  animation: mm24Spin 0.8s linear infinite;
 }
 
 .mm24.is-start .mm24-loader {
   display: block;
-}
-
-/* лёгкая встряска в момент «найден» */
-.mm24.is-found .mm24-you {
-  animation: mm24Shake 0.35s ease-in-out 0.45s;
-}
-
-@keyframes mm24Shake {
-  20% { transform: translate(-4px, 2px); }
-  40% { transform: translate(4px, -2px); }
-  60% { transform: translate(-3px, 1px); }
-  80% { transform: translate(2px, -1px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

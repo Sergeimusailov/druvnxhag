@@ -123,6 +123,8 @@ function playLandAnimation(cardEl) {
 }
 
 function flipCardToFront(cardEl, card) {
+  // карту могли успеть сыграть, пока она летела в руку, — переворачивать нечего
+  if (!cardEl) return Promise.resolve();
   return new Promise((resolve) => {
     anime.animate(cardEl, {
       scaleX: [1, 0],
@@ -323,7 +325,13 @@ function highlightCaptureNumbers(events) {
     const dEl = boardEl.querySelector(`.cell[data-index="${ev.index}"] .card .num-${def}`);
     [aEl, dEl].forEach((el) => {
       if (el) {
+        // число подсвечивается жёлтым (класс) и пульсирует: scale 1 → 1.35 → 1,
+        // 900, ease-in-out. Центр по left — на время пульса свойством translate,
+        // потому что transform пишет anime.js
         el.classList.add('num-capture-hl');
+        el.style.animation = 'none';
+        el.style.translate = '-50% 0';
+        anime.animate(el, { keyframes: [{ scale: 1.35 }, { scale: 1 }], duration: CAPTURE_HL_MS, ease: 'inOutQuad' });
         captureHlEls.push(el);
       }
     });
@@ -331,7 +339,11 @@ function highlightCaptureNumbers(events) {
 }
 
 function clearCaptureHighlights() {
-  captureHlEls.forEach((el) => el.classList.remove('num-capture-hl'));
+  captureHlEls.forEach((el) => {
+    anime.remove(el);
+    el.classList.remove('num-capture-hl');
+    ['animation', 'translate', 'transform'].forEach((p) => el.style.removeProperty(p));
+  });
   captureHlEls = [];
 }
 
@@ -493,14 +505,22 @@ function chooseOpponentMove() {
 function startOppThinkingStatus() {
   let i = 0;
   oppStatusTextEl.textContent = OPP_THINKING_MESSAGES[i];
-  oppStatusEl.classList.add('visible');
+  // статус проявляется (200), три точки мигают по очереди (цикл 1400, сдвиг 200)
+  A24.reveal(oppStatusEl, 'visible', true, { opacity: 0 }, { opacity: 1 }, 200);
+  const dots = Array.from(oppStatusEl.querySelectorAll('.dots span')).map((d, k) => A24.loop(d, {
+    keyframes: { '0%': { opacity: 0.2 }, '40%': { opacity: 1 }, '80%': { opacity: 0.2 }, '100%': { opacity: 0.2 } },
+    duration: 1400,
+    delay: k * 200,
+    ease: 'linear',
+  }));
   const interval = setInterval(() => {
     i = (i + 1) % OPP_THINKING_MESSAGES.length;
     oppStatusTextEl.textContent = OPP_THINKING_MESSAGES[i];
   }, 1300);
   return () => {
     clearInterval(interval);
-    oppStatusEl.classList.remove('visible');
+    dots.forEach((d) => d && d.revert());
+    A24.reveal(oppStatusEl, 'visible', false, { opacity: 0 }, { opacity: 1 }, 200);
   };
 }
 
@@ -561,7 +581,8 @@ function dimLoserCards(loserOwner) {
   state.board.forEach((cell, index) => {
     if (!cell || cell.owner !== loserOwner) return;
     const cardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
-    if (cardEl) cardEl.classList.add('mr-dim');
+    // карты проигравшего тускнеют, 400
+    if (cardEl) anime.animate(cardEl, { filter: ['brightness(1) saturate(1)', 'brightness(0.55) saturate(0.75)'], duration: RESULT_DIM_MS, ease: A24.EASE.ease });
   });
 }
 
@@ -570,8 +591,17 @@ function glowWinnerCards(winnerOwner) {
     if (!cell || cell.owner !== winnerOwner) return;
     const cardEl = boardEl.querySelector(`.cell[data-index="${index}"] .card`);
     if (!cardEl) return;
-    cardEl.style.setProperty('--mr-glow-color', RESULT_OWNER_COLOR[winnerOwner]);
-    cardEl.classList.add('mr-glow');
+    // у карт победителя — импульс свечения цвета владельца, 700
+    const hex = RESULT_OWNER_COLOR[winnerOwner];
+    const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
+    A24.play(cardEl, {
+      keyframes: [
+        { boxShadow: `0 0 15px 6px rgba(${rgb}, 1)` },
+        { boxShadow: `0 0 0px 0px rgba(${rgb}, 0)` },
+      ],
+      duration: RESULT_GLOW_MS,
+      ease: 'inOutQuad',
+    });
   });
 }
 

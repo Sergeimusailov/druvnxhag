@@ -15,9 +15,15 @@ const LEAVE24 = (() => {
     if (!open) return;
     const { menu, veil } = open;
     open = null;
-    menu.classList.remove('is-open');
-    veil.classList.remove('is-open');
-    setTimeout(() => { menu.remove(); veil.remove(); }, 260);
+    // схлопывается обратно в кнопку: scale → 0.3, opacity и blur, 220 / 180
+    anime.remove([menu, veil]);
+    anime.animate(veil, { opacity: 0, duration: 250, ease: A24.EASE.ease });
+    anime.animate(menu, {
+      scale: { to: 0.3, duration: 220, ease: 'cubicBezier(0.4, 0, 0.6, 1)' },
+      opacity: { to: 0, duration: 180, ease: A24.EASE.ease },
+      filter: { to: 'blur(6px)', duration: 180, ease: A24.EASE.ease },
+      onComplete: () => { menu.remove(); veil.remove(); },
+    });
   }
 
   function confirm(anchor, href) {
@@ -52,9 +58,12 @@ const LEAVE24 = (() => {
       else close();
     });
     open = { menu, veil };
-    requestAnimationFrame(() => {
-      menu.classList.add('is-open');
-      veil.classList.add('is-open');
+    // раскрывается из кнопки с пружиной: scale 0.3 → 1 (420), opacity (200), blur 6 → 0 (250)
+    anime.animate(veil, { opacity: [0, 1], duration: 250, ease: A24.EASE.ease });
+    anime.animate(menu, {
+      scale: { from: 0.3, to: 1, duration: 420, ease: 'cubicBezier(0.25, 1.45, 0.45, 1)' },
+      opacity: { from: 0, to: 1, duration: 200, ease: A24.EASE.ease },
+      filter: { from: 'blur(6px)', to: 'blur(0px)', duration: 250, ease: A24.EASE.ease },
     });
   }
 

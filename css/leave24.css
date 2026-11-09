@@ -8,11 +8,6 @@
   z-index: 300;
   background: rgba(0, 0, 0, 0.35);
   opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.lv24-veil.is-open {
-  opacity: 1;
 }
 
 /* меню 270: стекло #242428 88% с размытием 40, r24, тонкая светлая кромка */
@@ -31,23 +26,10 @@
     0 20px 50px rgba(0, 0, 0, 0.55);
   color: #f6f7f8;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  /* закрытое состояние; раскрытие из кнопки и схлопывание — anime.js (js/leave24.js) */
   opacity: 0;
   transform: scale(0.3);
   filter: blur(6px);
-  transition:
-    transform 0.22s cubic-bezier(0.4, 0, 0.6, 1),
-    opacity 0.18s ease,
-    filter 0.18s ease;
-}
-
-.lv24-menu.is-open {
-  opacity: 1;
-  transform: none;
-  filter: none;
-  transition:
-    transform 0.42s cubic-bezier(0.25, 1.45, 0.45, 1),
-    opacity 0.2s ease,
-    filter 0.25s ease;
 }
 
 /* заголовок 15/600, пояснение 13/400 60% */
@@ -103,11 +85,3 @@
   color: #ff453a;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lv24-menu,
-  .lv24-menu.is-open {
-    transition: opacity 0.15s ease;
-    transform: none;
-    filter: none;
-  }
-}
