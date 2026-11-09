@@ -120,7 +120,7 @@ function renderEntries22(pulse) {
     widgetBadge.textContent = n;
     widgetBadge.hidden = !n;
     if (grew && pulse) {
-      widgetBadge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 400, easing: 'ease-out', fill: 'backwards' });
+      A24.popIn(widgetBadge, 1.5, 420, 400);
     }
   }
   renderEventFab23();
@@ -150,7 +150,7 @@ function renderEntries22(pulse) {
     [['ny', nyCount, prevNy], ['daily', dailyCount, prevDaily]].forEach(([id, count, prev]) => {
       const badge = e22Entries.querySelector(`[data-event="${id}"] .e22-badge`);
       if (badge && (!prev || prev.textContent !== String(count))) {
-        badge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 400, easing: 'ease-out', fill: 'backwards' });
+        A24.popIn(badge, 1.5, 420, 400);
       }
     });
   }
@@ -195,15 +195,43 @@ function renderEventFab23() {
     text.textContent = `${ev.points}/${next}`;
   }
   // полоска доезжает плавно, когда снежинки пришли из заданий
-  fill.animate([{ width: `${(eventFabFrac ?? frac) * 100}%` }, { width: `${frac * 100}%` }], { duration: 700, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' });
+  anime.animate(fill, { width: [`${(eventFabFrac ?? frac) * 100}%`, `${frac * 100}%`], duration: 700, ease: 'cubicBezier(0.45, 0, 0.25, 1)' });
   eventFabFrac = frac;
   eventFab.classList.toggle('is-claimable', !!claimable);
+  setEventFabGlow(!!claimable);
   // красный счётчик — тот же, что на виджете события на главной, и так же «впрыгивает»
   const badge = document.getElementById('eventFabBadge');
   const grew = claimable && (badge.hidden || Number(badge.textContent) < claimable);
   badge.hidden = !claimable;
   badge.textContent = claimable;
-  if (grew && !eventFab.hidden) badge.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 420, delay: 300, easing: 'ease-out', fill: 'backwards' });
+  if (grew && !eventFab.hidden) A24.popIn(badge, 1.5, 420, 300);
+}
+
+// приз на кнопке события покачивается (цикл 2400); если есть что забрать —
+// кольцо пульсирует жёлтым свечением (цикл 1400). В 2.3 по макету кнопка —
+// шестиугольник со статичным свечением, без этих анимаций
+let eventFabBob = null;
+let eventFabGlowAnim = null;
+function animateEventFab() {
+  if (eventFabBob || isAppVersion('2.3')) return;
+  eventFabBob = A24.loop(eventFab.querySelector('.ev-fab-prize'), {
+    y: [0, -3], rotate: [-4, 4], duration: 1200, alternate: true, ease: A24.EASE.inOut,
+  });
+}
+function setEventFabGlow(on) {
+  if (!eventFab || isAppVersion('2.3')) return;
+  if (on && !eventFabGlowAnim) {
+    eventFabGlowAnim = A24.loop(eventFab.querySelector('.ev-fab-ring'), {
+      boxShadow: [
+        'inset 0 0 0 3px rgba(255, 255, 255, 0.85), 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 14px rgba(255, 221, 45, 0.4)',
+        'inset 0 0 0 3px rgba(255, 255, 255, 0.85), 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 26px rgba(255, 221, 45, 0.85)',
+      ],
+      duration: 700, alternate: true, ease: A24.EASE.inOut,
+    });
+  } else if (!on && eventFabGlowAnim) {
+    eventFabGlowAnim.revert();
+    eventFabGlowAnim = null;
+  }
 }
 
 function syncEventFab23(screen) {
@@ -211,12 +239,15 @@ function syncEventFab23(screen) {
   const show = isAppVersion('2.3') && screen === 'tasks';
   if (show === !eventFab.hidden) return;
   eventFab.hidden = !show;
-  if (show) eventFab.animate([{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)' }], { duration: 380, easing: 'ease-out' });
+  if (show) {
+    A24.play(eventFab, { keyframes: { '0%': { scale: 0.4, opacity: 0 }, '70%': { scale: 1.08, opacity: 1 }, '100%': { scale: 1, opacity: 1 } }, duration: 380, ease: A24.EASE.out });
+    animateEventFab();
+  }
 }
 
 document.addEventListener('v2:screen', (e) => syncEventFab23(e.detail.screen));
 eventFab?.addEventListener('click', () => {
-  eventFab.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
+  A24.pulse(eventFab, 0.92, 200);
   openEvent22('ny');
 });
 
@@ -419,19 +450,18 @@ async function animateTrack22(ev) {
     const r = levelEl.getBoundingClientRect();
     const box = e22Scroll.getBoundingClientRect();
     if (r.bottom > box.bottom - 24) e22Scroll.scrollTo({ top: e22Scroll.scrollTop + r.bottom - box.bottom + 80, behavior: 'smooth' });
-    await fill.animate(
-      [{ height: `${e22FillHeight(level - 1)}px` }, { height: `${e22FillHeight(level)}px` }],
-      { duration: 520, easing: 'cubic-bezier(0.45, 0, 0.25, 1)', fill: 'forwards' }
-    ).finished;
+    await anime.animate(fill, { height: [e22FillHeight(level - 1), e22FillHeight(level)], duration: 520, ease: 'cubicBezier(0.45, 0, 0.25, 1)' });
     fill.style.height = `${e22FillHeight(level)}px`;
-    fill.getAnimations().forEach((a) => a.cancel());
     ev.shown = level;
     levelEl.outerHTML = e22LevelHTML(ev, level);
     const fresh = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
     const card = fresh.querySelector('.ev-card');
     card.classList.add('is-activated');
-    card.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });
-    fresh.querySelector('.ev-node').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' });
+    A24.pulse(card, 1.12, 360, A24.EASE.spring);
+    A24.pulse(fresh.querySelector('.ev-node'), 1.4, 320);
+    // шестиугольник награды коротко вспыхивает сиреневым свечением
+    const hexImg = card.querySelector('.ev-card-hex');
+    if (hexImg) A24.play(hexImg, { filter: ['drop-shadow(0 0 0px rgba(188, 161, 255, 0))', 'drop-shadow(0 0 16px rgba(188, 161, 255, 0.95))', 'drop-shadow(0 0 0px rgba(188, 161, 255, 0))'], duration: 1100, ease: A24.EASE.out });
     await wait(260);
   }
   e22Animating = false;
@@ -586,25 +616,22 @@ async function playSnow23(ev) {
   if (!dots.length) dots = [e23Preview.querySelector('.e23-tasks')];
   const flights = [];
   dots.forEach((dot, di) => {
-    dot.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 320, delay: di * 160, easing: 'ease-out' });
+    A24.play(dot, { keyframes: [{ scale: 1.25 }, { scale: 1 }], duration: 320, delay: di * 160, ease: A24.EASE.out });
     const src = centerOf(dot);
     for (let i = 0; i < 3; i++) {
       flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, src, target, di * 160 + i * 80).then(() => {
-        hex.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 240, easing: 'ease-out' });
+        A24.pulse(hex, 1.15, 240);
         burstAt(target);
       }));
     }
   });
   // число растёт, пока летят снежинки
-  const start = performance.now();
-  const total = 900 + dots.length * 160;
-  await new Promise((resolve) => {
-    (function tick(now) {
-      const t = Math.min(1, Math.max(0, (now - start) / total));
-      updateSnowbar23(Math.round(from + (to - from) * easeOutCubic(t)));
-      if (t < 1) requestAnimationFrame(tick);
-      else resolve();
-    })(start);
+  const counter = { n: from };
+  await anime.animate(counter, {
+    n: to,
+    duration: 900 + dots.length * 160,
+    ease: 'out(3)',
+    onUpdate: () => updateSnowbar23(Math.round(counter.n)),
   });
   await Promise.all(flights);
   ev.seenPoints = to;
@@ -731,7 +758,7 @@ function updateRewardsDot22() {
   const n = EVENTS22.claimable(ev) + Math.max(0, EVENTS22.reached(ev) - ev.shown);
   const appeared = n && e22RewardsDot.hidden;
   e22RewardsDot.hidden = !n;
-  if (appeared) e22RewardsDot.animate([{ transform: 'scale(0)' }, { transform: 'scale(1.8)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+  if (appeared) A24.popIn(e22RewardsDot, 1.8, 420);
 }
 
 // «Забрать» в задании события: снежинки улетают во вкладку «Награды»
@@ -745,13 +772,13 @@ e22TasksPanel.addEventListener('click', async (e) => {
   e22TaskBusy = true;
   btn.disabled = true;
   const tile = row.querySelector('.task-reward');
-  tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  A24.squash(tile);
   const from = centerOf(row.querySelector('.t22-reward img'));
   const to = centerOf(e22RewardsChip);
   const flights = [];
   for (let i = 0; i < 5; i++) {
     flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, from, to, i * 70).then(() => {
-      e22RewardsChip.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
+      A24.pulse(e22RewardsChip, 1.12, 240);
       burstAt(to);
     }));
   }
@@ -778,7 +805,7 @@ e22Track.addEventListener('click', async (e) => {
   e22ClaimBusy = true;
   const level = Number(btn.dataset.level);
   const card = btn.closest('.ev-card');
-  await card.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.92)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' }).finished;
+  await A24.play(card, { keyframes: { '0%': { scale: 1 }, '33%': { scale: 0.92 }, '66%': { scale: 1.06 }, '100%': { scale: 1 } }, duration: 320, ease: A24.EASE.out });
   const counter = document.getElementById('e22Tickets');
   const isTicket = ev.rewards[level - 1] === 'ticket' && ev.tickets !== undefined && counter.offsetParent;
   if (isTicket) {
@@ -788,7 +815,7 @@ e22Track.addEventListener('click', async (e) => {
     const flights = [];
     for (let i = 0; i < 4; i++) {
       flights.push(TASKS22.flyIcon('assets/v2-ticket-icon.png', from, to, i * 90).then(() => {
-        counter.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' });
+        A24.pulse(counter, 1.2, 260);
         burstAt(to);
       }));
     }
@@ -804,15 +831,20 @@ e22Track.addEventListener('click', async (e) => {
     fly.className = 'e22-fly-down';
     fly.style.left = `${from.x}px`;
     fly.style.top = `${from.y}px`;
+    fly.style.translate = '-50% -50%';
     fxLayerEl.appendChild(fly);
     burstAt(from);
     item.style.visibility = 'hidden';
     const dropY = appEl.getBoundingClientRect().height - from.y + 80;
-    await fly.animate([
-      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-      { transform: 'translate(-50%, calc(-50% - 36px)) scale(1.25)', opacity: 1, offset: 0.25 },
-      { transform: `translate(-50%, calc(-50% + ${dropY}px)) scale(0.6) rotate(18deg)`, opacity: 0.2 },
-    ], { duration: 750, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' }).finished;
+    await anime.animate(fly, {
+      keyframes: {
+        '0%': { y: 0, scale: 1, rotate: 0, opacity: 1 },
+        '25%': { y: -36, scale: 1.25, rotate: 0, opacity: 1 },
+        '100%': { y: dropY, scale: 0.6, rotate: 18, opacity: 0.2 },
+      },
+      duration: 750,
+      ease: 'cubicBezier(0.5, 0, 0.75, 0.4)',
+    });
     fly.remove();
   }
   ev.claimed.add(level);
@@ -823,7 +855,8 @@ e22Track.addEventListener('click', async (e) => {
   }
   const levelEl = e22Track.querySelector(`.ev-level[data-level="${level}"]`);
   levelEl.outerHTML = e22LevelHTML(ev, level);
-  e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`).classList.add('is-pop');
+  // карточка «поп»: scale 1 → 1.08 (40%) → 1, 400, пружина
+  A24.play(e22Track.querySelector(`.ev-level[data-level="${level}"] .ev-card`), { keyframes: { '0%': { scale: 1 }, '40%': { scale: 1.08 }, '100%': { scale: 1 } }, duration: 400, ease: A24.EASE.spring });
   if (isAppVersion('2.2')) updateRewardsDot22();
   e22ClaimBusy = false;
 });
@@ -834,7 +867,7 @@ document.getElementById('v2HomePromo')?.addEventListener('click', () => openNyFr
 e22Entries.addEventListener('click', (e) => {
   const entry = e.target.closest('[data-event]');
   if (!entry) return;
-  entry.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.95)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+  A24.pulse(entry, 0.95, 220);
   openEvent22(entry.dataset.event);
 });
 

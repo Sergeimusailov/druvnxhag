@@ -42,16 +42,34 @@ if (!isApp3()) {
 
   // в профиле нет нижней навигации — он открывается поверх разделов
   const appEl24 = document.querySelector('.v2-app');
-  document.addEventListener('v2:screen', (e) => appEl24.classList.toggle('is-profile24', e.detail.screen === 'profile'));
+  // нижняя навигация уезжает вниз и гаснет (300 / 200, ios), при выходе — обратно
+  const navEls24 = ['.v2-tabbar', '.v2-edge-fade'].map((sel) => appEl24.querySelector(sel)).filter(Boolean);
+  document.addEventListener('v2:screen', (e) => {
+    const hide = e.detail.screen === 'profile';
+    if (hide === appEl24.classList.contains('is-profile24')) return;
+    anime.remove(navEls24);
+    const anim = (from, to) => navEls24.forEach((el) => {
+      const h = el.offsetHeight;
+      A24.play(el, { y: [from * h, to * h], opacity: [1 - from, 1 - to], duration: e.detail.animate === false ? 0 : 300, ease: A24.EASE.ios });
+    });
+    if (hide) {
+      anim(0, 1);
+      setTimeout(() => appEl24.classList.add('is-profile24'), e.detail.animate === false ? 0 : 300);
+    } else {
+      appEl24.classList.remove('is-profile24');
+      anim(1, 0);
+    }
+  });
 
   /* ---------- Тост ---------- */
 
   const toast24 = document.getElementById('pfToast24');
   function showToast24(text) {
     document.getElementById('pfToast24Text').textContent = text;
-    toast24.classList.add('is-visible');
+    // выезжает сверху (y −80 → 0, 350, пружина), висит 1800, уезжает обратно
+    A24.reveal(toast24, 'is-visible', true, { y: -80 }, { y: 0 }, 350, A24.EASE.spring);
     clearTimeout(showToast24.timer);
-    showToast24.timer = setTimeout(() => toast24.classList.remove('is-visible'), 1800);
+    showToast24.timer = setTimeout(() => A24.reveal(toast24, 'is-visible', false, { y: -80 }, { y: 0 }, 350, A24.EASE.spring), 1800);
   }
   // «Поделиться» без системного шера копирует ссылку — тост в новом стиле
   showProfileToast = showToast24;
@@ -61,10 +79,12 @@ if (!isApp3()) {
   const tip = document.getElementById('profileNotifyTip');
   document.getElementById('profileNotifyHint').addEventListener('click', (e) => {
     e.stopPropagation();
-    tip.classList.toggle('is-open');
+    toggleTip(!tip.classList.contains('is-open') || !!tip.dataset.a24Hiding);
   });
-  document.addEventListener('click', () => tip.classList.remove('is-open'));
-  document.addEventListener('v2:screen', () => tip.classList.remove('is-open'));
+  // подсказка: opacity + y −4 → 0, 200
+  function toggleTip(on) { A24.reveal(tip, 'is-open', on, { opacity: 0, y: -4 }, { opacity: 1, y: 0 }, 200); }
+  document.addEventListener('click', () => toggleTip(false));
+  document.addEventListener('v2:screen', () => toggleTip(false));
 
   document.getElementById('profileNotifySwitch').addEventListener('change', (e) => {
     if (e.target.checked) showToast24('Уведомления подключены');
@@ -102,7 +122,8 @@ if (!isApp3()) {
   function markSelection24() {
     settingsEl.querySelectorAll('[data-kind]').forEach((el) => el.classList.toggle('is-selected', pending[el.dataset.kind] === el.dataset.id));
     const changed = Object.keys(pending).some((k) => pending[k] !== saved[k]);
-    saveBar.classList.toggle('is-visible', changed);
+    // «Сохранить» выезжает снизу: opacity + y 24 → 0 (300, ios)
+    A24.reveal(saveBar, 'is-visible', changed, { opacity: 0, y: 24 }, { opacity: 1, y: 0 }, 300, A24.EASE.ios);
   }
 
   settingsEl.addEventListener('click', (e) => {

@@ -43,13 +43,14 @@ function showProfileToast(text) {
 const psetTabs = createChipTabs(document.getElementById('psetChipRow'), document.getElementById('psetTabTrack'));
 
 document.getElementById('profileSettingsBtn').addEventListener('click', () => {
-  profileSettingsEl.classList.add('is-open');
+  // экран настроек — фейд 250
+  A24.reveal(profileSettingsEl, 'is-open', true, { opacity: 0 }, { opacity: 1 }, 250);
   profileSettingsEl.setAttribute('aria-hidden', 'false');
   psetTabs.select('avatars');
 });
 
 document.getElementById('profileSettingsBack').addEventListener('click', () => {
-  profileSettingsEl.classList.remove('is-open');
+  A24.reveal(profileSettingsEl, 'is-open', false, { opacity: 0 }, { opacity: 1 }, 250);
   profileSettingsEl.setAttribute('aria-hidden', 'true');
 });
 
@@ -60,7 +61,7 @@ document.getElementById('psetAvatars').addEventListener('click', (e) => {
   if (!btn) return;
   applyAvatar(btn.dataset.avatar);
   storageSet(AVATAR_KEY, btn.dataset.avatar);
-  btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+  A24.pulse(btn, 1.1, 300);
 });
 
 const notifySwitch = document.getElementById('profileNotifySwitch');

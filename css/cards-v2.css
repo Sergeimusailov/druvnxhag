@@ -164,11 +164,7 @@
   pointer-events: none;
 }
 
-/* пока держат палец — карта плавно утапливается (за 0,45 с) */
-.card24.is-pressing {
-  transform: scale(0.9);
-  transition: transform 0.45s ease-out, opacity 0.2s ease;
-}
+/* пока держат палец — карта плавно утапливается: anime.js (onPress в js/cards-v2.js) */
 
 .card24-mask {
   position: absolute;

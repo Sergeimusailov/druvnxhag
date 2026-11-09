@@ -16,7 +16,7 @@
   opacity: 0;
   transform: translateY(-4px);
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  /* появление и скрытие — anime.js (js/tooltip24.js) */
 }
 
 .tip24.is-above {

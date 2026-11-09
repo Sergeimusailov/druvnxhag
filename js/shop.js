@@ -878,9 +878,9 @@ function lbShowClaim() {
     opacity: [0, 1],
     duration: 300,
     ease: A24.EASE.spring,
-    onComplete: (self) => {
+    onComplete: () => {
       lbClaimEl.classList.add('is-visible');
-      anime.cleanInlineStyles(self);
+      A24.clear(lbClaimEl, { y: 0, opacity: 0 });
     },
   });
 }

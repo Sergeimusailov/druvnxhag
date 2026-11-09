@@ -40,10 +40,7 @@
   padding-bottom: 40px;
 }
 
-[data-app="2"] .v2-tabbar {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0.35, 1), opacity 0.2s ease;
-}
-
+/* уезд и возврат навигации — anime.js (js/profile24.js) */
 [data-app="2"] .v2-app.is-profile24 .v2-edge-fade,
 [data-app="2"] .v2-app.is-profile24 .v2-tabbar {
   transform: translateY(100%);
@@ -189,7 +186,7 @@
   opacity: 0;
   transform: translateY(-4px);
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  /* появление — anime.js (js/profile24.js) */
 }
 
 [data-app="2"] .pf-tooltip::before {
@@ -227,13 +224,14 @@
   letter-spacing: -0.24px;
   color: #f6f7f8;
   white-space: nowrap;
-  transform: translate(-50%, -80px);
-  transition: transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
+  /* центр по left — свойством translate; выезд — anime.js (js/profile24.js) */
+  translate: -50% 0;
+  transform: translateY(-80px);
   pointer-events: none;
 }
 
 .pf-toast24.is-visible {
-  transform: translate(-50%, 0);
+  transform: none;
 }
 
 .pf-toast24-icon svg {
@@ -421,7 +419,7 @@
   opacity: 0;
   transform: translateY(24px);
   pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.32, 0.72, 0.35, 1);
+  /* появление — anime.js (js/profile24.js) */
 }
 
 .pset-save24.is-visible {

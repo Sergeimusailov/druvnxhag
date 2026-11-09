@@ -55,8 +55,8 @@
 
   const sheet = document.getElementById('fxSheet');
   const backdrop = document.getElementById('fxBackdrop');
-  const open = () => { sheet.classList.add('is-open'); backdrop.classList.add('is-open'); };
-  const close = () => { sheet.classList.remove('is-open'); backdrop.classList.remove('is-open'); };
+  const open = () => sheetShow(sheet, backdrop);
+  const close = () => { if (sheet.classList.contains('is-open')) sheetHide(sheet, backdrop); };
   document.getElementById('fxClose').addEventListener('click', close);
   backdrop.addEventListener('click', close);
   attachSheetSwipe(sheet, close);

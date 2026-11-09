@@ -255,15 +255,12 @@
   background: #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.25s ease,
-    visibility 0s linear 0.25s;
 }
 
+/* открытие и закрытие — фейд anime.js (js/profile.js) */
 .pset.is-open {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.25s ease;
 }
 
 .pset-scroll {

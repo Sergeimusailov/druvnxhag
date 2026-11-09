@@ -100,16 +100,14 @@ const TASKS22 = {
     el.className = 'fx-bolt';
     fxLayerEl.appendChild(el);
     const ctrl = { x: (from.x + to.x) / 2 + (Math.random() - 0.5) * 120, y: Math.min(from.y, to.y) - 60 - Math.random() * 60 };
-    const frames = [{ transform: `translate(${from.x}px, ${from.y}px) scale(0.4)`, opacity: 0, offset: 0 }];
     const pop = { x: from.x + (Math.random() - 0.5) * 50, y: from.y - 20 - Math.random() * 20 };
-    frames.push({ transform: `translate(${pop.x}px, ${pop.y}px) scale(1.15)`, opacity: 1, offset: 0.22 });
-    for (let k = 1; k <= 12; k++) {
-      const t = (k / 12) ** 2;
-      const x = (1 - t) ** 2 * pop.x + 2 * (1 - t) * t * ctrl.x + t * t * to.x;
-      const y = (1 - t) ** 2 * pop.y + 2 * (1 - t) * t * ctrl.y + t * t * to.y;
-      frames.push({ transform: `translate(${x}px, ${y}px) scale(${1.15 - 0.65 * t})`, opacity: 1, offset: 0.22 + 0.78 * (k / 12) });
-    }
-    return el.animate(frames, { duration: 900, delay, fill: 'both' }).finished.then(() => el.remove());
+    el.style.opacity = '0';
+    return anime.animate(el, {
+      keyframes: A24.arc(from, pop, ctrl, to, { popAt: 0.22, scaleFrom: 0.4, scalePop: 1.15, scaleTo: 0.5 }),
+      duration: 900,
+      delay,
+      ease: 'linear',
+    }).then(() => el.remove());
   },
 
   busy: false,
@@ -123,7 +121,7 @@ const TASKS22 = {
     const row = panel.querySelector(`[data-task="${taskId}"]`);
     row.querySelector('.t22-claim').disabled = true;
     const tile = row.querySelector('.t22-rewards');
-    tile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+    A24.squash(tile);
 
     const gameTab = document.querySelector('.v2-tab[data-nav="game"]');
     const to = centerOf(gameTab.querySelector('.v2-tab-icon'));
@@ -144,7 +142,7 @@ const TASKS22 = {
     }, 260);
 
     await Promise.all(flights);
-    gameTab.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+    A24.pulse(gameTab, 1.18, 300);
     burstAt(to);
     task.rewards.forEach(([cur, n]) => {
       if (cur === 'coins') addCoins(n);

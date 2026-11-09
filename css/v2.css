@@ -109,9 +109,7 @@ a {
   flex-shrink: 0;
 }
 
-.v2-screen.is-sliding {
-  transition: opacity 0.25s ease;
-}
+/* смена разделов (кроссфейд) — anime.js, showScreen() в js/v2.js */
 
 .v2-screen::-webkit-scrollbar {
   display: none;
@@ -335,14 +333,7 @@ a {
   border-radius: 100px;
   background: rgba(255, 255, 255, 0.15);
   pointer-events: none;
-  transition:
-    transform 0.45s cubic-bezier(0.34, 1.32, 0.42, 1),
-    width 0.45s cubic-bezier(0.34, 1.32, 0.42, 1),
-    opacity 0.25s ease;
-}
-
-.v2-tab-highlight.is-hidden {
-  opacity: 0;
+  /* переезд и затухание — anime.js, moveTabHighlight() в js/v2.js */
 }
 
 .v2-tab {
@@ -411,9 +402,7 @@ a {
   width: 0;
   border-radius: 30px;
   background: #428bf9;
-  transition:
-    transform 0.38s cubic-bezier(0.34, 1.32, 0.42, 1),
-    width 0.38s cubic-bezier(0.34, 1.32, 0.42, 1);
+  /* переезд — anime.js, createChipTabs() в js/v2.js */
   pointer-events: none;
 }
 
@@ -498,14 +487,9 @@ a {
   overflow: hidden;
 }
 
-.v2-tab-content.is-switching {
-  transition: height 0.4s cubic-bezier(0.32, 0.72, 0.35, 1);
-}
-
 .v2-tab-track {
   display: flex;
   align-items: flex-start;
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 .v2-tab-panel {
@@ -549,7 +533,7 @@ a {
   background: rgba(0, 0, 0, 0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  /* появление — anime.js, sheetShow() в js/sheets.js */
 }
 
 .v2-sheet-backdrop.is-open {
@@ -570,16 +554,12 @@ a {
   border-bottom: none;
   background: #000;
   transform: translateY(105%);
-  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0.35, 1);
+  /* выезд и уезд — anime.js, sheetShow() / sheetHide() в js/sheets.js */
   touch-action: none;
 }
 
 .v2-sheet.is-open {
   transform: translateY(0);
-}
-
-.v2-sheet.is-dragging {
-  transition: none;
 }
 
 .v2-sheet-glow {

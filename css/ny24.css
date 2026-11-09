@@ -552,7 +552,7 @@
   background: rgba(0, 0, 0, 0.6);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  /* появление — anime.js, sheetShow() в js/sheets.js */
 }
 
 .bs-backdrop.is-open {
@@ -575,7 +575,7 @@
   color: #f6f7f8;
   transform: translateY(105%);
   overflow: hidden;
-  transition: transform 0.45s cubic-bezier(0.32, 0.72, 0.35, 1);
+  /* выезд и уезд — anime.js, sheetShow() / sheetHide() в js/sheets.js */
 }
 
 /* шапка шторки тянется пальцем, список листается сам: touch-action: none
@@ -587,10 +587,6 @@
 
 .bs.is-open {
   transform: translateY(0);
-}
-
-.bs.is-dragging {
-  transition: none;
 }
 
 .bs-tall {

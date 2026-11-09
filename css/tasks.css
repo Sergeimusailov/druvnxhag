@@ -82,13 +82,8 @@
   overflow: hidden;
 }
 
-.tasks-fill.is-filling {
-  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* блик, пробегающий по заполняющейся шкале */
-.tasks-fill::after {
-  content: '';
+/* заполнение и блик — anime.js (fillProgress в js/tasks.js) */
+.tasks-fill-shine {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -96,15 +91,6 @@
   width: 50%;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
   opacity: 0;
-}
-
-.tasks-fill.is-filling::after {
-  animation: tasksFillShine 0.9s ease-out;
-}
-
-@keyframes tasksFillShine {
-  0% { left: -60%; opacity: 1; }
-  100% { left: 110%; opacity: 0; }
 }
 
 .tasks-dot {
@@ -328,12 +314,7 @@
 .task.is-claimable .task-reward {
   background: #ffdd2d;
   box-shadow: 0 0 8px rgba(255, 221, 45, 0.35);
-  animation: tasksRewardIdle 1.6s ease-in-out infinite;
-}
-
-@keyframes tasksRewardIdle {
-  0%, 100% { box-shadow: 0 0 8px rgba(255, 221, 45, 0.35); }
-  50% { box-shadow: 0 0 18px rgba(255, 221, 45, 0.6); }
+  /* пульсация свечения — anime.js (animateClaimableReward в js/tasks.js) */
 }
 
 .task-reward img {
@@ -420,9 +401,9 @@
   inset: 0;
   background: #000;
   opacity: 0;
-  transition: opacity 0.35s ease;
 }
 
+/* появление экрана подарка и всё движение на нём — anime.js (openGiftOverlay в js/tasks.js) */
 .gift-overlay.is-open .gift-overlay-bg {
   opacity: 1;
 }
@@ -430,7 +411,6 @@
 .gift-overlay-appbar {
   position: relative;
   opacity: 0;
-  transition: opacity 0.3s ease 0.2s;
 }
 
 .gift-overlay.is-open .gift-overlay-appbar {
@@ -469,21 +449,6 @@
 
 .gift-overlay.is-open .gift-burst {
   opacity: 1;
-  transition: opacity 0.5s ease 0.15s;
-}
-
-.gift-overlay.is-open .gift-burst-1 {
-  animation: giftBurstSpin 14s linear infinite;
-}
-
-.gift-overlay.is-open .gift-burst-2 {
-  animation: giftBurstSpin 9s linear infinite reverse;
-}
-
-@keyframes giftBurstSpin {
-  from { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.08); }
-  to { transform: rotate(360deg) scale(1); }
 }
 
 .gift-overlay-gift {
@@ -491,16 +456,6 @@
   display: block;
   width: 264px;
   height: 264px;
-}
-
-.gift-overlay-gift.is-idle {
-  animation: giftIdle 1.2s ease-in-out infinite;
-}
-
-@keyframes giftIdle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-6px) rotate(-3deg); }
-  75% { transform: translateY(-6px) rotate(3deg); }
 }
 
 .gift-flash {
@@ -526,17 +481,6 @@
   letter-spacing: -0.24px;
   color: rgba(255, 255, 255, 0.7);
   opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.gift-overlay-hint.is-visible {
-  opacity: 1;
-  animation: giftHintPulse 1.2s ease-in-out infinite;
-}
-
-@keyframes giftHintPulse {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
 }
 
 .gift-overlay-title {
@@ -549,7 +493,6 @@
   color: #f6f7f8;
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.32, 0.72, 0.35, 1);
 }
 
 .gift-overlay-title.is-visible {
@@ -588,7 +531,6 @@
   opacity: 0;
   transform: translateY(20px);
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.32, 0.42, 1);
 }
 
 .gift-claim-btn.is-visible {
@@ -740,7 +682,8 @@
   top: 13px;
   width: 40px;
   height: 48px;
-  transform: translateX(-50%);
+  /* центр по left — свойством translate: transform пишет anime.js */
+  translate: -50% 0;
   z-index: 2;
   cursor: default;
 }
@@ -786,26 +729,15 @@
 
 .tchest.is-ready .tchest-glow {
   opacity: 1;
-  animation: tchestGlow 3s ease-in-out infinite;
 }
 
-.tchest.is-ready .tchest-img {
-  animation: tchestHop 1.6s ease-in-out infinite;
-}
-
+/* подпрыгивание и свечение готового сундука — anime.js (animateReadyChest
+   в js/tasks.js); keyframes tchestHop оставлены для версии 3 (.pf-level-gift) */
 @keyframes tchestHop {
   0%, 55%, 100% { transform: translateY(0) rotate(0); }
   65% { transform: translateY(-6px) rotate(-6deg); }
   75% { transform: translateY(0) rotate(4deg); }
   83% { transform: translateY(-2px) rotate(-2deg); }
-}
-
-/* подсветка покачивается из стороны в сторону и чуть «дышит» */
-@keyframes tchestGlow {
-  0%, 100% { transform: rotate(-8deg) scale(1); opacity: 1; }
-  25% { transform: rotate(0deg) scale(1.06); opacity: 0.9; }
-  50% { transform: rotate(8deg) scale(1); opacity: 1; }
-  75% { transform: rotate(0deg) scale(1.06); opacity: 0.9; }
 }
 
 /* открытый (получен) — крупнее по макету: картинка выше */

@@ -63,19 +63,29 @@
     let timer = 0;
     let start = null;
     let moved = false;
+    // пока палец держат, карта плавно утапливается до 0.9 за 450 (ease-out);
+    // отпустили или сдвинули — возвращается (150, ios)
+    const sink = () => anime.animate(el, { scale: 0.9, duration: LONG_MS, ease: A24.EASE.out });
+    const rise = () => {
+      if (!el.classList.contains('is-pressing')) return;
+      el.classList.remove('is-pressing');
+      anime.remove(el);
+      A24.play(el, { scale: 1, duration: 150, ease: A24.EASE.ios });
+    };
     const cancel = () => {
       clearTimeout(timer);
       timer = 0;
-      el.classList.remove('is-pressing');
+      rise();
     };
     el.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
       start = { x: e.clientX, y: e.clientY };
       moved = false;
       el.classList.add('is-pressing');
+      sink();
       timer = setTimeout(() => {
         timer = 0;
-        el.classList.remove('is-pressing');
+        rise();
         pressSkipClick = true;
         if (navigator.vibrate) navigator.vibrate(15);
         onLong();
@@ -99,7 +109,11 @@
     });
   }
   document.getElementById('cardsScreen').addEventListener('scroll', () => {
-    document.querySelectorAll('#cardsScreen .card24.is-pressing').forEach((c) => c.classList.remove('is-pressing'));
+    document.querySelectorAll('#cardsScreen .card24.is-pressing').forEach((c) => {
+      c.classList.remove('is-pressing');
+      anime.remove(c);
+      A24.play(c, { scale: 1, duration: 150, ease: A24.EASE.ios });
+    });
   }, { passive: true, capture: true });
 
   // карта, которую только что добавили или убрали, «подпрыгивает» на новом месте
@@ -110,7 +124,8 @@
       deck = deck.filter((n) => n !== card.name);
     } else if (deck.length >= DECK_SIZE) {
       Tooltip24.show(el, { title: 'Колода заполнена', text: 'Удалите карту из колоды, чтобы добавить новую.', timeout: 2500 });
-      el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+      // колода полная — карта «мотает головой»: x 0 → −6 → 6 → −3 → 0, 320
+      A24.play(el, { keyframes: [{ x: -6 }, { x: 6 }, { x: -3 }, { x: 0 }], duration: 320, ease: A24.EASE.ease });
       return;
     } else {
       deck.push(card.name);
@@ -121,7 +136,7 @@
   }
 
   function bump(el) {
-    el.animate([{ transform: 'scale(0.85)' }, { transform: 'scale(1.08)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+    A24.play(el, { keyframes: { '0%': { scale: 0.85 }, '60%': { scale: 1.08 }, '100%': { scale: 1 } }, duration: 360, ease: A24.EASE.out });
   }
 
   // Элементы карт создаются один раз и при перерисовке только переставляются
@@ -222,8 +237,7 @@
       sheetBtn.textContent = 'Добавить в колоду';
       sheetAction = () => { deck.push(card.name); };
     }
-    sheet.classList.add('is-open');
-    backdrop.classList.add('is-open');
+    sheetShow(sheet, backdrop);
   }
 
   // закрытая карта — та же шторка: карта с замком, заголовок и текст из
@@ -243,13 +257,12 @@
     sheetBtn.classList.remove('is-remove');
     sheetBtn.textContent = tip.action.label;
     sheetAction = () => { closeCard(); tip.action.onClick(); return false; };
-    sheet.classList.add('is-open');
-    backdrop.classList.add('is-open');
+    sheetShow(sheet, backdrop);
   }
 
   function closeCard() {
-    sheet.classList.remove('is-open');
-    backdrop.classList.remove('is-open');
+    if (!sheet.classList.contains('is-open')) return;
+    sheetHide(sheet, backdrop);
   }
 
   sheetBtn.addEventListener('click', () => {

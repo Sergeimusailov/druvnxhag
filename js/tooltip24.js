@@ -15,8 +15,15 @@ const Tooltip24 = (() => {
     clearTimeout(timer);
     if (!tip) return;
     const old = tip;
-    old.classList.remove('is-visible');
-    setTimeout(() => old.remove(), 200);
+    // гаснет, чуть отъезжая от элемента: opacity + y 4px, 200
+    anime.remove(old);
+    anime.animate(old, {
+      opacity: 0,
+      y: old.classList.contains('is-above') ? 4 : -4,
+      duration: 200,
+      ease: A24.EASE.ease,
+      onComplete: () => old.remove(),
+    });
     tip = null;
     anchor = null;
   }
@@ -53,7 +60,18 @@ const Tooltip24 = (() => {
     tip.style.top = `${top}px`;
     tip.style.setProperty('--tail', `${Math.min(Math.max(cx - left, 20), tip.offsetWidth - 20)}px`);
     anchor = el;
-    requestAnimationFrame(() => tip && tip.classList.add('is-visible'));
+    // появляется, придвигаясь к элементу на 4px: opacity + y, 200
+    const shown = tip;
+    anime.animate(shown, {
+      opacity: [0, 1],
+      y: [below ? -4 : 4, 0],
+      duration: 200,
+      ease: A24.EASE.ease,
+      onComplete: () => {
+        shown.classList.add('is-visible');
+        A24.clear(shown, { opacity: 0, y: 0 });
+      },
+    });
     if (timeout) timer = setTimeout(hide, timeout);
   }
 

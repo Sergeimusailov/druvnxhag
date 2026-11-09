@@ -1343,7 +1343,7 @@
   height: 50px;
   object-fit: contain;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
-  animation: evFabBob 2.4s ease-in-out infinite;
+  /* анимация — anime.js (js/events22.js) */
 }
 
 .ev-fab-prize[src*="avatars/"] {
@@ -1413,7 +1413,7 @@
 
 /* приз можно забрать — круг светится, полоска полная */
 .ev-fab.is-claimable .ev-fab-ring {
-  animation: evFabGlow 1.4s ease-in-out infinite;
+  /* анимация — anime.js (js/events22.js) */
 }
 
 @keyframes evFabGlow {
@@ -1653,7 +1653,8 @@
   padding: 2px;
   background: #fff;
   clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
-  transform: translateX(-50%);
+  /* центр по left — свойством translate: transform пишет anime.js */
+  translate: -50% 0;
 }
 
 .e23-hex-in {

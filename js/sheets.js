@@ -4,6 +4,61 @@
 //   sheet.open(); sheet.close();
 // Шапка (заголовок, описание) закреплена, листается только список .bs-scroll.
 // Смахнуть шторку можно за шапку, а за список — когда он прокручен в самый верх.
+//
+// Движение — anime.js (js/anim24.js): sheetShow / sheetHide — выезд снизу и
+// уезд вниз по оси y в пикселях (от высоты шторки), фон — opacity. Пока палец
+// тянет шторку, её y ставится напрямую (anime.set), и при отпускании она
+// уезжает или возвращается ровно с этого места.
+//   .bs       — 450 (фон 350), кривая ios
+//   .v2-sheet — 420 (фон 300), кривая ios
+
+const sheetY = new WeakMap(); // текущий сдвиг шторки вниз, px (во время перетаскивания)
+
+function sheetTiming(sheetEl) {
+  return sheetEl.classList.contains('v2-sheet') ? [420, 300] : [450, 350];
+}
+
+function sheetShow(sheetEl, backdropEl) {
+  const [ms, backMs] = sheetTiming(sheetEl);
+  anime.remove(sheetEl);
+  const from = sheetY.has(sheetEl) ? sheetY.get(sheetEl) : sheetEl.offsetHeight * 1.05;
+  sheetY.delete(sheetEl);
+  sheetEl.classList.add('is-open');
+  A24.play(sheetEl, { y: [from, 0], duration: ms, ease: A24.EASE.ios });
+  if (backdropEl) {
+    anime.remove(backdropEl);
+    backdropEl.classList.add('is-open');
+    A24.play(backdropEl, { opacity: [0, 1], duration: backMs, ease: A24.EASE.ease });
+  }
+}
+
+function sheetHide(sheetEl, backdropEl) {
+  const [ms, backMs] = sheetTiming(sheetEl);
+  anime.remove(sheetEl);
+  const from = sheetY.has(sheetEl) ? sheetY.get(sheetEl) : 0;
+  sheetY.delete(sheetEl);
+  anime.animate(sheetEl, {
+    y: [from, sheetEl.offsetHeight * 1.05],
+    duration: ms,
+    ease: A24.EASE.ios,
+    onComplete: () => {
+      sheetEl.classList.remove('is-open');
+      A24.clear(sheetEl, { y: 0 });
+    },
+  });
+  if (backdropEl) {
+    anime.remove(backdropEl);
+    anime.animate(backdropEl, {
+      opacity: [1, 0],
+      duration: backMs,
+      ease: A24.EASE.ease,
+      onComplete: () => {
+        backdropEl.classList.remove('is-open');
+        A24.clear(backdropEl, { opacity: 0 });
+      },
+    });
+  }
+}
 
 function attachSheetSwipe(sheetEl, close) {
   let startY = null;
@@ -18,7 +73,9 @@ function attachSheetSwipe(sheetEl, close) {
   };
   const move = (y) => {
     dy = Math.max(0, y - startY);
-    sheetEl.style.transform = `translateY(${dy}px)`;
+    anime.remove(sheetEl);
+    anime.set(sheetEl, { y: dy });
+    sheetY.set(sheetEl, dy);
   };
   const end = () => {
     if (startY === null) return;
@@ -26,7 +83,11 @@ function attachSheetSwipe(sheetEl, close) {
     sheetEl.classList.remove('is-dragging');
     const fast = dy > 40 && dy / Math.max(1, performance.now() - t0) > 0.6;
     if (dy > sheetEl.offsetHeight * 0.25 || fast) close();
-    else sheetEl.style.transform = '';
+    else {
+      // не дотянули — шторка возвращается на место
+      sheetY.delete(sheetEl);
+      A24.play(sheetEl, { y: [dy, 0], duration: sheetTiming(sheetEl)[0], ease: A24.EASE.ios });
+    }
   };
 
   // шапка шторки (всё, кроме прокручиваемого списка) — тянем пальцем или мышью
@@ -75,18 +136,17 @@ function attachSheetSwipe(sheetEl, close) {
 }
 
 function bottomSheet(sheetEl, backdropEl, opts = {}) {
+  let shown = false;
   function open() {
-    sheetEl.style.transform = '';
-    sheetEl.classList.add('is-open');
+    shown = true;
     sheetEl.setAttribute('aria-hidden', 'false');
-    if (backdropEl) backdropEl.classList.add('is-open');
+    sheetShow(sheetEl, backdropEl);
   }
   function close() {
-    if (!sheetEl.classList.contains('is-open')) return;
-    sheetEl.style.transform = '';
-    sheetEl.classList.remove('is-open');
+    if (!shown) return;
+    shown = false;
     sheetEl.setAttribute('aria-hidden', 'true');
-    if (backdropEl) backdropEl.classList.remove('is-open');
+    sheetHide(sheetEl, backdropEl);
     if (opts.onClose) opts.onClose();
   }
   attachSheetSwipe(sheetEl, close);

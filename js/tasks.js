@@ -145,7 +145,7 @@ function renderPanel(tab) {
     <div class="tasks-timer"><span class="tasks-timer-badge">${CLOCK_SVG}<span data-timer="${tab}"></span></span></div>
     <div class="tprog">
       <div class="tprog-area">
-        <div class="tprog-track"><div class="tasks-fill" style="width:${fraction * 100}%"></div></div>
+        <div class="tprog-track"><div class="tasks-fill" style="width:${fraction * 100}%"><span class="tasks-fill-shine"></span></div></div>
         ${MILESTONES.map((_, i) => milestoneHTML(tab, i)).join('')}
       </div>
       ${isAppVersion('2.3')
@@ -157,7 +157,19 @@ function renderPanel(tab) {
     <h2 class="tasks-done-title"${done.length ? '' : ' hidden'}>Выполненные</h2>
     <div class="tasks-list" data-list="done">${done.map(taskHTML).join('')}</div>
   `;
+  panelEls[tab].querySelectorAll('.tchest.is-ready').forEach(animateReadyChest);
+  panelEls[tab].querySelectorAll('.task.is-claimable .task-reward').forEach(animateClaimableReward);
   updateTimers();
+}
+
+// плитка награды у выполненного задания мягко пульсирует жёлтым свечением, цикл 1600
+function animateClaimableReward(tile) {
+  A24.loop(tile, {
+    boxShadow: ['0 0 8px rgba(255, 221, 45, 0.35)', '0 0 18px rgba(255, 221, 45, 0.6)'],
+    duration: 800,
+    alternate: true,
+    ease: A24.EASE.inOut,
+  });
 }
 
 /* ---------- Таймеры ---------- */
@@ -220,10 +232,7 @@ function burstAt(point) {
   ring.style.left = `${point.x}px`;
   ring.style.top = `${point.y}px`;
   fxLayerEl.appendChild(ring);
-  ring.animate(
-    [{ transform: 'scale(0.3)', opacity: 1 }, { transform: 'scale(1.6)', opacity: 0 }],
-    { duration: 380, easing: 'ease-out' }
-  ).finished.then(() => ring.remove());
+  anime.animate(ring, { scale: [0.3, 1.6], opacity: [1, 0], duration: 380, ease: A24.EASE.out, onComplete: () => ring.remove() });
   for (let i = 0; i < 6; i++) {
     const spark = document.createElement('span');
     spark.className = 'fx-spark';
@@ -232,13 +241,15 @@ function burstAt(point) {
     fxLayerEl.appendChild(spark);
     const angle = (Math.PI * 2 * i) / 6 + Math.random() * 0.6;
     const dist = 20 + Math.random() * 14;
-    spark.animate(
-      [
-        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-        { transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0.2)`, opacity: 0 },
-      ],
-      { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
-    ).finished.then(() => spark.remove());
+    anime.animate(spark, {
+      x: [0, Math.cos(angle) * dist],
+      y: [0, Math.sin(angle) * dist],
+      scale: [1, 0.2],
+      opacity: [1, 0],
+      duration: 420,
+      ease: A24.EASE.outExpo,
+      onComplete: () => spark.remove(),
+    });
   }
 }
 
@@ -256,96 +267,99 @@ function flyBolt(from, to, delay, onArrive, src = 'assets/v2-bolt.png') {
     y: Math.min(pop.y, to.y) - 40 - Math.random() * 80,
   };
   const spin = (Math.random() - 0.5) * 60;
-  const frames = [
-    { transform: `translate(${from.x}px, ${from.y}px) scale(0.3) rotate(0deg)`, opacity: 0, offset: 0 },
-    { transform: `translate(${pop.x}px, ${pop.y}px) scale(1.15) rotate(${spin}deg)`, opacity: 1, offset: 0.24 },
-  ];
-  const steps = 12;
-  for (let k = 1; k <= steps; k++) {
-    const t = (k / steps) ** 2;
-    const x = (1 - t) ** 2 * pop.x + 2 * (1 - t) * t * ctrl.x + t * t * to.x;
-    const y = (1 - t) ** 2 * pop.y + 2 * (1 - t) * t * ctrl.y + t * t * to.y;
-    frames.push({
-      transform: `translate(${x}px, ${y}px) scale(${1.15 - 0.6 * t}) rotate(${spin * (1 - t)}deg)`,
-      opacity: 1,
-      offset: 0.24 + 0.76 * (k / steps),
-    });
-  }
-  return el
-    .animate(frames, { duration: 820, delay, fill: 'both' })
-    .finished.then(() => {
-      el.remove();
-      onArrive();
-    });
+  el.style.opacity = '0';
+  return anime.animate(el, {
+    keyframes: A24.arc(from, pop, ctrl, to, { popAt: 0.24, scaleFrom: 0.3, scalePop: 1.15, scaleTo: 0.55, spin }),
+    duration: 820,
+    delay,
+    ease: 'linear',
+  }).then(() => {
+    el.remove();
+    onArrive();
+  });
 }
 
-function easeOutCubic(t) {
-  return 1 - (1 - t) ** 3;
-}
-
-// шкала заполняется в rAF-цикле, чтобы ширина, счётчик и «зажигание» точек
-// были синхронны
+// шкала заполняется одной анимацией anime.js по числу очков: в onUpdate —
+// ширина полоски, число в бирке и «зажигание» сундуков, поэтому они синхронны.
+// По полоске пробегает блик
 function fillProgress(panel, tab, fromPoints, toPoints) {
   const fill = panel.querySelector('.tasks-fill');
   const counter = panel.querySelector('.tasks-points');
-  const fromF = pointsToFraction(fromPoints);
-  const toF = pointsToFraction(toPoints);
-  const duration = 900;
-  fill.classList.remove('is-filling');
-  fill.getBoundingClientRect();
-  fill.classList.add('is-filling');
-  return new Promise((resolve) => {
-    const start = performance.now();
-    function frame(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const e = easeOutCubic(t);
-      const pts = fromPoints + (toPoints - fromPoints) * e;
-      fill.style.width = `${(fromF + (toF - fromF) * e) * 100}%`;
-      counter.textContent = Math.round(pts);
+  const shine = fill.querySelector('.tasks-fill-shine');
+  if (shine) anime.animate(shine, { left: ['-60%', '110%'], opacity: [1, 0], duration: 900, ease: A24.EASE.out });
+  const state = { pts: fromPoints };
+  return anime.animate(state, {
+    pts: toPoints,
+    duration: 900,
+    ease: 'out(3)',
+    onUpdate: () => {
+      fill.style.width = `${pointsToFraction(state.pts) * 100}%`;
+      counter.textContent = Math.round(state.pts);
       // полоска дошла до сундука — он «просыпается»: свет и подпрыгивание
       MILESTONES.forEach((m, i) => {
         const el = panel.querySelector(`.tchest[data-milestone="${i}"]`);
-        if (el && el.classList.contains('is-locked') && pts >= m) {
+        if (el && el.classList.contains('is-locked') && state.pts >= m) {
           el.classList.replace('is-locked', 'is-ready');
           el.removeAttribute('tabindex');
-          el.animate([{ transform: 'translateX(-50%) scale(1)' }, { transform: 'translateX(-50%) scale(1.35)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });
+          A24.pulse(el, 1.35, 420, A24.EASE.spring);
+          animateReadyChest(el);
         }
       });
-      if (t < 1) requestAnimationFrame(frame);
-      else {
-        fill.classList.remove('is-filling');
-        resolve();
-      }
-    }
-    requestAnimationFrame(frame);
+    },
+  });
+}
+
+// готовый сундук: подпрыгивает (цикл 1600) и за ним «дышит» золотое свечение (3000)
+function animateReadyChest(chest) {
+  A24.loop(chest.querySelector('.tchest-img'), {
+    keyframes: {
+      '0%': { y: 0, rotate: 0 },
+      '55%': { y: 0, rotate: 0 },
+      '65%': { y: -6, rotate: -6 },
+      '75%': { y: 0, rotate: 4 },
+      '83%': { y: -2, rotate: -2 },
+      '100%': { y: 0, rotate: 0 },
+    },
+    duration: 1600,
+    ease: A24.EASE.inOut,
+  });
+  A24.loop(chest.querySelector('.tchest-glow'), {
+    keyframes: {
+      '0%': { rotate: -8, scale: 1, opacity: 1 },
+      '25%': { rotate: 0, scale: 1.06, opacity: 0.9 },
+      '50%': { rotate: 8, scale: 1, opacity: 1 },
+      '75%': { rotate: 0, scale: 1.06, opacity: 0.9 },
+      '100%': { rotate: -8, scale: 1, opacity: 1 },
+    },
+    duration: 3000,
+    ease: A24.EASE.inOut,
   });
 }
 
 function collapse(el) {
   const h = el.offsetHeight;
   el.style.overflow = 'hidden';
-  return el
-    .animate(
-      [
-        { height: `${h}px`, opacity: 1, marginBottom: '16px', transform: 'scale(1)' },
-        { height: '0px', opacity: 0, marginBottom: '0px', transform: 'scale(0.92)' },
-      ],
-      { duration: 320, easing: 'cubic-bezier(0.32, 0.72, 0.35, 1)' }
-    )
-    .finished.then(() => el.remove());
+  return anime.animate(el, {
+    height: [h, 0],
+    opacity: [1, 0],
+    marginBottom: [16, 0],
+    scale: [1, 0.92],
+    duration: 320,
+    ease: A24.EASE.ios,
+  }).then(() => el.remove());
 }
 
 function expandIn(el) {
   const h = el.offsetHeight;
   el.style.overflow = 'hidden';
-  el.animate(
-    [
-      { height: '0px', opacity: 0, marginBottom: '0px', transform: 'scale(0.92)' },
-      { height: `${h}px`, opacity: 1, marginBottom: '16px', transform: 'scale(1)' },
-    ],
-    { duration: 380, easing: 'cubic-bezier(0.32, 0.72, 0.35, 1)' }
-  ).finished.then(() => {
-    el.style.overflow = '';
+  A24.play(el, {
+    height: [0, h],
+    opacity: [0, 1],
+    marginBottom: [0, 16],
+    scale: [0.92, 1],
+    duration: 380,
+    ease: A24.EASE.ios,
+    onComplete: () => { el.style.overflow = ''; },
   });
 }
 
@@ -376,7 +390,7 @@ async function claimTask(tab, taskId) {
   const boltImg = row.querySelector('.t22-reward[data-cur="bolt"] img') || rewardTile.querySelector('img');
   const from = centerOf(boltImg);
   const to = centerOf(tag.querySelector('.t24-tag-icon') || tag.querySelector('img'));
-  rewardTile.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.86)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'ease-out' });
+  A24.squash(rewardTile);
 
   const count = boltAmount ? Math.max(5, Math.min(10, Math.round(boltAmount / 2))) : 0;
   const flights = [];
@@ -391,7 +405,7 @@ async function claimTask(tab, taskId) {
     for (let i = 0; i < 4; i++) {
       // как в 2.2: на каждую долетевшую снежинку таб «Игра» подпрыгивает и искрит
       flights.push(TASKS22.flyIcon(CURRENCY_ICONS.snow, snowFrom, gameTo, 150 + ri * 100 + i * 70).then(() => {
-        (gameIcon.closest('.ev-fab') || gameIcon.parentElement).animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+        A24.pulse(gameIcon.closest('.ev-fab') || gameIcon.parentElement, 1.18, 300);
         burstAt(gameTo);
       }));
     }
@@ -399,7 +413,7 @@ async function claimTask(tab, taskId) {
   for (let i = 0; i < count; i++) {
     flights.push(
       flyBolt(from, to, i * 65, () => {
-        tag.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
+        A24.pulse(tag, 1.25, 240);
         burstAt(to);
       }, taskRewardIcon(tab))
     );
@@ -446,7 +460,7 @@ function hideChestTip(remember) {
   if (chestTipEl) {
     const el = chestTipEl;
     chestTipEl = null;
-    el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160 }).finished.then(() => el.remove());
+    anime.animate(el, { opacity: [1, 0], duration: 160, ease: A24.EASE.ease }).then(() => el.remove());
   }
   if (remember) {
     try { localStorage.setItem(CHEST_TIP_KEY, '1'); } catch { /* приватный режим */ }
@@ -474,10 +488,7 @@ function showChestTip() {
   const left = Math.max(0, Math.min(cardRect.width - w, chestX - w / 2));
   chestTipEl.style.left = `${left}px`;
   chestTipEl.style.setProperty('--arrow', `${chestX - left}px`);
-  chestTipEl.animate(
-    [{ opacity: 0, transform: 'translateY(-6px) scale(0.92)' }, { opacity: 1, transform: 'none' }],
-    { duration: 260, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' }
-  );
+  A24.play(chestTipEl, { opacity: [0, 1], y: [-6, 0], scale: [0.92, 1], duration: 260, ease: A24.EASE.spring });
 }
 
 document.addEventListener('v2:screen', (e) => {
@@ -503,114 +514,143 @@ function once(el, type) {
 
 // opts.chest — вместо подарка сундук: падает закрытым, после тряски
 // открывается, и уже из открытого сундука вылетают призы
+const giftBgEl = giftOverlayEl.querySelector('.gift-overlay-bg');
+const giftBarEl = giftOverlayEl.querySelector('.gift-overlay-appbar');
+const giftBurstEls = Array.from(giftOverlayEl.querySelectorAll('.gift-burst'));
+let giftLoops = [];
+
+function stopGiftLoops() {
+  giftLoops.forEach((a) => a && a.cancel());
+  giftLoops = [];
+}
+
+// элемент появляется (from → к состоянию из CSS-класса cls), затем класс
+// ставится и инлайн-стили анимации убираются
+function giftReveal(el, from, cls, duration, ease) {
+  return anime.animate(el, {
+    ...from,
+    duration,
+    ease,
+    onComplete: () => {
+      el.classList.add(cls);
+      A24.clear(el, from);
+    },
+  });
+}
+
 async function openGiftOverlay(opts = {}) {
-  giftEl.getAnimations().forEach((a) => a.cancel());
-  giftEl.style.opacity = '';
+  const parts = [giftEl, giftFlashEl, giftHintEl, giftTitleEl, giftClaimBtn, giftBgEl, giftBarEl, giftOverlayEl, ...giftBurstEls, ...giftRewardEls];
+  stopGiftLoops();
+  anime.remove(parts);
+  parts.forEach((el) => el && el.removeAttribute('style'));
   giftEl.src = opts.chest ? 'assets/v2-chest-closed.png' : 'assets/v2-gift-big.png';
   giftEl.classList.toggle('is-chest', !!opts.chest);
-  giftRewardEls.forEach((r) => {
-    r.getAnimations().forEach((a) => a.cancel());
-    r.style.opacity = '0';
-  });
+  giftRewardEls.forEach((r) => { r.style.opacity = '0'; });
   giftTitleEl.classList.remove('is-visible');
   giftClaimBtn.classList.remove('is-visible');
-  giftOverlayEl.style.opacity = '';
+  giftHintEl.classList.remove('is-visible');
   giftOverlayEl.classList.add('is-open');
   giftOverlayEl.setAttribute('aria-hidden', 'false');
 
+  // фон, шапка и лучи проявляются; лучи медленно вращаются навстречу друг другу
+  anime.animate(giftBgEl, { opacity: [0, 1], duration: 350, ease: A24.EASE.ease });
+  anime.animate(giftBarEl, { opacity: [0, 1], duration: 300, delay: 200, ease: A24.EASE.ease });
+  anime.animate(giftBurstEls, { opacity: [0, 1], duration: 500, delay: 150, ease: A24.EASE.ease });
+  giftLoops.push(
+    A24.loop(giftBurstEls[0], { keyframes: { '0%': { rotate: 0, scale: 1 }, '50%': { rotate: 180, scale: 1.08 }, '100%': { rotate: 360, scale: 1 } }, duration: 14000, ease: 'linear' }),
+    A24.loop(giftBurstEls[1], { keyframes: { '0%': { rotate: 0, scale: 1 }, '50%': { rotate: -180, scale: 1.08 }, '100%': { rotate: -360, scale: 1 } }, duration: 9000, ease: 'linear' }),
+  );
+
   // подарок «падает» на экран с пружинкой
-  await giftEl.animate(
-    [
-      { transform: 'translateY(-60px) scale(0.2)', opacity: 0 },
-      { transform: 'translateY(10px) scale(1.12)', opacity: 1, offset: 0.55 },
-      { transform: 'translateY(-4px) scale(0.95)', offset: 0.78 },
-      { transform: 'translateY(0) scale(1)', opacity: 1 },
-    ],
-    { duration: 720, easing: 'ease-out' }
-  ).finished;
-  giftEl.classList.add('is-idle');
-  giftHintEl.classList.add('is-visible');
+  await anime.animate(giftEl, {
+    keyframes: {
+      '0%': { y: -60, scale: 0.2, opacity: 0 },
+      '55%': { y: 10, scale: 1.12, opacity: 1 },
+      '78%': { y: -4, scale: 0.95, opacity: 1 },
+      '100%': { y: 0, scale: 1, opacity: 1 },
+    },
+    duration: 720,
+    ease: A24.EASE.out,
+  });
+  // ждёт тапа: покачивается, подсказка мерцает
+  const idle = A24.loop(giftEl, {
+    keyframes: { '0%': { y: 0, rotate: 0 }, '25%': { y: -6, rotate: -3 }, '75%': { y: -6, rotate: 3 }, '100%': { y: 0, rotate: 0 } },
+    duration: 1200,
+    ease: A24.EASE.inOut,
+  });
+  const hint = A24.loop(giftHintEl, { opacity: [0.55, 1], duration: 600, alternate: true, ease: A24.EASE.inOut });
 
   // открываем по тапу или сами через пару секунд
   await Promise.race([wait(2400), once(giftStageEl, 'click')]);
-  giftHintEl.classList.remove('is-visible');
-  giftEl.classList.remove('is-idle');
+  if (idle) idle.cancel();
+  if (hint) hint.cancel();
+  anime.animate(giftHintEl, { opacity: 0, duration: 300, ease: A24.EASE.ease });
 
-  await giftEl.animate(
-    [
-      { transform: 'rotate(0deg) scale(1)' },
-      { transform: 'rotate(-9deg) scale(1.04)' },
-      { transform: 'rotate(9deg) scale(1.08)' },
-      { transform: 'rotate(-11deg) scale(1.12)' },
-      { transform: 'rotate(11deg) scale(1.16)' },
-      { transform: 'rotate(0deg) scale(1.2)' },
+  await anime.animate(giftEl, {
+    keyframes: [
+      { y: 0, rotate: -9, scale: 1.04 },
+      { rotate: 9, scale: 1.08 },
+      { rotate: -11, scale: 1.12 },
+      { rotate: 11, scale: 1.16 },
+      { rotate: 0, scale: 1.2 },
     ],
-    { duration: 520, easing: 'ease-in' }
-  ).finished;
+    duration: 520,
+    ease: A24.EASE.in,
+  });
 
-  giftFlashEl.animate(
-    [
-      { transform: 'scale(0.2)', opacity: 0 },
-      { transform: 'scale(7)', opacity: 1, offset: 0.3 },
-      { transform: 'scale(12)', opacity: 0 },
-    ],
-    { duration: 800, easing: 'ease-out' }
-  );
+  anime.animate(giftFlashEl, {
+    keyframes: { '0%': { scale: 0.2, opacity: 0 }, '30%': { scale: 7, opacity: 1 }, '100%': { scale: 12, opacity: 0 } },
+    duration: 800,
+    ease: A24.EASE.out,
+  });
   if (opts.chest) {
     // крышка откинута: показываем открытый сундук, и только потом — призы
     giftEl.src = 'assets/v2-chest-open.png';
-    await giftEl.animate(
-      [
-        { transform: 'scale(1.2)' },
-        { transform: 'scale(0.92, 1.08) translateY(-10px)', offset: 0.4 },
-        { transform: 'scale(1)' },
-      ],
-      { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' }
-    ).finished;
+    await anime.animate(giftEl, {
+      keyframes: {
+        '0%': { scaleX: 1.2, scaleY: 1.2, y: 0 },
+        '40%': { scaleX: 0.92, scaleY: 1.08, y: -10 },
+        '100%': { scaleX: 1, scaleY: 1, y: 0 },
+      },
+      duration: 420,
+      ease: A24.EASE.spring,
+    });
     await wait(250);
-    giftEl.animate(
-      [
-        { transform: 'scale(1)', opacity: 1 },
-        { transform: 'scale(0.9) translateY(30px)', opacity: 0.12 },
-      ],
-      { duration: 600, delay: 250, easing: 'ease-in-out', fill: 'forwards' }
-    );
+    anime.animate(giftEl, { scale: [1, 0.9], y: [0, 30], opacity: [1, 0.12], duration: 600, delay: 250, ease: A24.EASE.inOut });
   } else {
-    giftEl.animate(
-      [
-        { transform: 'scale(1.2)', opacity: 1 },
-        { transform: 'scale(1.6)', opacity: 0 },
-      ],
-      { duration: 300, easing: 'ease-in', fill: 'forwards' }
-    );
+    anime.animate(giftEl, { scale: [1.2, 1.6], opacity: [1, 0], duration: 300, ease: A24.EASE.in });
   }
 
   // награды вылетают из центра подарка на свои места
   const giftCenter = centerOf(giftStageEl);
-  giftTitleEl.classList.add('is-visible');
+  giftReveal(giftTitleEl, { opacity: [0, 1], y: [10, 0] }, 'is-visible', 350, A24.EASE.ios);
   await Promise.all(
     giftRewardEls.map((r, i) => {
       const c = centerOf(r);
       const dx = giftCenter.x - c.x;
       const dy = giftCenter.y - c.y;
       const spin = (Math.random() - 0.5) * 50;
-      return r.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px) scale(0.2) rotate(${spin}deg)`, opacity: 0 },
-          { transform: `translate(${dx * 0.15}px, ${dy * 0.15 - 20}px) scale(1.15) rotate(${-spin / 3}deg)`, opacity: 1, offset: 0.7 },
-          { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1 },
-        ],
-        { duration: 700, delay: 120 + i * 90, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' }
-      ).finished;
+      return anime.animate(r, {
+        keyframes: {
+          '0%': { x: dx, y: dy, scale: 0.2, rotate: spin, opacity: 0 },
+          '70%': { x: dx * 0.15, y: dy * 0.15 - 20, scale: 1.15, rotate: -spin / 3, opacity: 1 },
+          '100%': { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 },
+        },
+        duration: 700,
+        delay: 120 + i * 90,
+        ease: A24.EASE.outExpo,
+      });
     })
   );
-  giftClaimBtn.classList.add('is-visible');
+  giftReveal(giftClaimBtn, { opacity: [0, 1], y: [20, 0] }, 'is-visible', 350, A24.EASE.spring);
 
   await Promise.race([once(giftClaimBtn, 'click'), once(giftCloseBtn, 'click')]);
-  await giftOverlayEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished;
+  await anime.animate(giftOverlayEl, { opacity: [1, 0], duration: 260, ease: A24.EASE.in });
   giftOverlayEl.classList.remove('is-open');
   giftOverlayEl.setAttribute('aria-hidden', 'true');
-  giftOverlayEl.getAnimations().forEach((a) => a.cancel());
+  stopGiftLoops();
+  anime.remove(parts);
+  parts.forEach((el) => el && el.removeAttribute('style'));
 }
 
 /* ---------- Шторка «что внутри подарка» ---------- */
@@ -619,43 +659,19 @@ const sheetEl = document.getElementById('rewardsSheet');
 const sheetBackdropEl = document.getElementById('rewardsSheetBackdrop');
 
 function openSheet() {
-  sheetEl.style.transform = '';
-  sheetEl.classList.add('is-open');
-  sheetBackdropEl.classList.add('is-open');
+  sheetShow(sheetEl, sheetBackdropEl);
 }
 
 function closeSheet() {
-  sheetEl.style.transform = '';
-  sheetEl.classList.remove('is-open');
-  sheetBackdropEl.classList.remove('is-open');
+  if (!sheetEl.classList.contains('is-open')) return;
+  sheetHide(sheetEl, sheetBackdropEl);
 }
 
 document.getElementById('rewardsSheetClose').addEventListener('click', closeSheet);
 sheetBackdropEl.addEventListener('click', closeSheet);
 
-// смахивание шторки вниз
-let dragStartY = null;
-sheetEl.addEventListener('pointerdown', (e) => {
-  if (e.target.closest('.v2-sheet-close')) return;
-  dragStartY = e.clientY;
-  sheetEl.classList.add('is-dragging');
-  sheetEl.setPointerCapture(e.pointerId);
-});
-sheetEl.addEventListener('pointermove', (e) => {
-  if (dragStartY === null) return;
-  const dy = Math.max(0, e.clientY - dragStartY);
-  sheetEl.style.transform = `translateY(${dy}px)`;
-});
-function endDrag(e) {
-  if (dragStartY === null) return;
-  const dy = e.clientY - dragStartY;
-  dragStartY = null;
-  sheetEl.classList.remove('is-dragging');
-  if (dy > 90) closeSheet();
-  else sheetEl.style.transform = '';
-}
-sheetEl.addEventListener('pointerup', endDrag);
-sheetEl.addEventListener('pointercancel', endDrag);
+// смахивание шторки вниз — общее поведение шторок (js/sheets.js)
+attachSheetSwipe(sheetEl, closeSheet);
 
 /* ---------- Запуск ---------- */
 
@@ -720,7 +736,7 @@ async function openChest(chestEl) {
   TASK_TABS[tab].claimed.add(MILESTONES[i]);
   chestEl.outerHTML = milestoneHTML(tab, i);
   const fresh = panelEls[tab].querySelector(`.tchest[data-milestone="${i}"]`);
-  fresh.animate([{ transform: 'translateX(-50%) scale(0.6)' }, { transform: 'translateX(-50%) scale(1.15)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.32, 0.42, 1)' });
+  A24.play(fresh, { keyframes: [{ scale: [0.6, 1.15] }, { scale: 1 }], duration: 420, ease: A24.EASE.spring });
   chestOpening = false;
 }
 

@@ -16,21 +16,25 @@ function createChipTabs(rowEl, trackEl, onChange) {
   const contentEl = trackEl.parentElement;
   const panels = Array.from(trackEl.children);
   let index = Math.max(0, chips.findIndex((c) => c.classList.contains('v2-chip-active')));
-  let switchTimer = null;
+  let heightAnim = null;
 
+  // пилюля перетекает к чипсу: x / y / ширина, 380, пружина
   function placeIndicator(animate) {
     const chip = chips[index];
-    if (!animate) indicator.style.transition = 'none';
-    indicator.style.width = `${chip.offsetWidth}px`;
-    indicator.style.transform = `translate(${chip.offsetLeft}px, ${chip.offsetTop}px)`;
-    if (!animate) {
-      indicator.getBoundingClientRect();
-      indicator.style.transition = '';
-    }
+    const to = { x: chip.offsetLeft, y: chip.offsetTop, width: chip.offsetWidth };
+    if (animate) anime.animate(indicator, { ...to, duration: 380, ease: A24.EASE.spring });
+    else anime.set(indicator, to);
   }
 
-  function fitHeight() {
-    contentEl.style.height = `${panels[index].offsetHeight}px`;
+  // высота анимируется только при переключении вкладки (400, ios); изменения
+  // внутри панели (задание свернулось) меняют её сразу
+  function fitHeight(animate = false) {
+    const h = panels[index].offsetHeight;
+    if (animate) {
+      heightAnim = anime.animate(contentEl, { height: h, duration: 400, ease: A24.EASE.ios, onComplete: () => { heightAnim = null; } });
+    } else if (!heightAnim) {
+      contentEl.style.height = `${h}px`;
+    }
   }
 
   function select(i, animate = true) {
@@ -38,33 +42,15 @@ function createChipTabs(rowEl, trackEl, onChange) {
     index = i;
     chips.forEach((c, j) => c.classList.toggle('v2-chip-active', j === i));
     placeIndicator(animate);
-    if (animate) {
-      // height animates only during a switch; content changes inside a panel
-      // (a task collapsing, say) resize the container instantly
-      contentEl.classList.add('is-switching');
-      clearTimeout(switchTimer);
-      switchTimer = setTimeout(() => contentEl.classList.remove('is-switching'), 420);
-    } else {
-      trackEl.style.transition = 'none';
-    }
-    // панели вкладок сменяются фейдом, без горизонтального сдвига
-    trackEl.style.transition = 'none';
+    // панели вкладок сменяются фейдом (250), без горизонтального сдвига
     trackEl.style.transform = `translateX(-${i * 100}%)`;
-    if (animate) {
-      trackEl.getBoundingClientRect();
-      trackEl.style.transition = '';
-      panels[i].animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: 'ease-out' });
-    }
-    fitHeight();
-    if (!animate) {
-      trackEl.getBoundingClientRect();
-      trackEl.style.transition = '';
-    }
+    if (animate) A24.play(panels[i], { opacity: [0, 1], duration: 250, ease: A24.EASE.out });
+    fitHeight(animate);
     if (onChange) onChange(chips[i].dataset.tab);
   }
 
   chips.forEach((c, i) => c.addEventListener('click', () => select(i)));
-  const observer = new ResizeObserver(fitHeight);
+  const observer = new ResizeObserver(() => fitHeight());
   panels.forEach((p) => observer.observe(p));
   const resync = () => {
     placeIndicator(false);
@@ -91,23 +77,19 @@ function tabForScreen(screen) {
 }
 
 function moveTabHighlight(tabEl, animate) {
-  // у раздела без таба (профиль) подсветка гаснет на месте
-  tabHighlightEl.classList.toggle('is-hidden', !tabEl);
+  // у раздела без таба (профиль) подсветка гаснет на месте (250)
+  anime.animate(tabHighlightEl, { opacity: tabEl ? 1 : 0, duration: animate ? 250 : 0, ease: A24.EASE.ease });
   if (!tabEl) return;
-  if (!animate) tabHighlightEl.style.transition = 'none';
-  // highlight is 4px wider than the tab on each side, as in the tui-tab-bar spec
-  tabHighlightEl.style.width = `${tabEl.offsetWidth + 8}px`;
-  tabHighlightEl.style.transform = `translateX(${tabEl.offsetLeft - 4}px)`;
-  if (!animate) {
-    tabHighlightEl.getBoundingClientRect();
-    tabHighlightEl.style.transition = '';
-  }
+  // подсветка на 4px шире таба с каждой стороны (tui-tab-bar); переезжает
+  // x + ширина, 450, пружина
+  const to = { x: tabEl.offsetLeft - 4, width: tabEl.offsetWidth + 8 };
+  if (animate) anime.animate(tabHighlightEl, { ...to, duration: 450, ease: A24.EASE.spring });
+  else anime.set(tabHighlightEl, to);
 }
 
 const screenEls = Object.fromEntries(
   Array.from(document.querySelectorAll('.v2-screen')).map((el) => [el.dataset.screen, el])
 );
-let slideCleanupTimer = null;
 
 function showScreen(screen, animate = true) {
   if (!SCREENS.includes(screen)) screen = 'game';
@@ -121,10 +103,9 @@ function showScreen(screen, animate = true) {
 
   const toEl = screenEls[screen];
   const fromEl = prev ? screenEls[prev] : null;
-  clearTimeout(slideCleanupTimer);
   Object.values(screenEls).forEach((el) => {
     if (el !== toEl && el !== fromEl) {
-      el.classList.remove('is-sliding');
+      anime.remove(el);
       el.style.visibility = 'hidden';
     }
   });
@@ -132,27 +113,22 @@ function showScreen(screen, animate = true) {
   // переходы между разделами — фейдом: разделы будут жить на разных роутах,
   // и общий горизонтальный слайдер между ними не сделать
   toEl.style.transform = '';
+  anime.remove([toEl, fromEl].filter(Boolean));
   if (!animate || !fromEl) {
-    toEl.classList.remove('is-sliding');
     toEl.style.opacity = '1';
     toEl.style.visibility = 'visible';
     if (fromEl) fromEl.style.visibility = 'hidden';
   } else {
-    if (toEl.style.visibility !== 'visible') {
-      toEl.classList.remove('is-sliding');
-      toEl.style.opacity = '0';
-      toEl.style.visibility = 'visible';
-      toEl.getBoundingClientRect();
-    }
-    toEl.classList.add('is-sliding');
-    fromEl.classList.add('is-sliding');
-    toEl.style.opacity = '1';
-    fromEl.style.opacity = '0';
-    slideCleanupTimer = setTimeout(() => {
-      fromEl.style.visibility = 'hidden';
-      fromEl.classList.remove('is-sliding');
-      toEl.classList.remove('is-sliding');
-    }, 280);
+    // кроссфейд 250: новый раздел проявляется, старый гаснет и скрывается
+    if (toEl.style.visibility !== 'visible') toEl.style.opacity = '0';
+    toEl.style.visibility = 'visible';
+    anime.animate(toEl, { opacity: 1, duration: 250, ease: A24.EASE.ease });
+    anime.animate(fromEl, {
+      opacity: 0,
+      duration: 250,
+      ease: A24.EASE.ease,
+      onComplete: () => { if (currentScreen !== fromEl.dataset.screen) fromEl.style.visibility = 'hidden'; },
+    });
   }
 
   history.replaceState(null, '', screen === 'game' ? location.pathname + location.search : `#${screen}`);
