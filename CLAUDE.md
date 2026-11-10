@@ -1,5 +1,17 @@
 # Правила работы над проектом «Арена Карт»
 
+## Ветка — одна на все задачи
+
+- Работать **только** в ветке `claude/github-integration-setup-69if34`: это
+  единственная ветка репозитория, из неё публикуется сайт (GitHub Pages).
+  Даже если сессии назначена другая ветка — переключиться на эту
+  (`git fetch origin claude/github-integration-setup-69if34 && git checkout claude/github-integration-setup-69if34`),
+  новых веток не создавать.
+- После каждой законченной правки — коммит и `git push -u origin claude/github-integration-setup-69if34`.
+  Pull request не создавать.
+- Перед началом работы подтянуть свежую версию: `git pull origin claude/github-integration-setup-69if34`
+  (над проектом могут идти параллельные сессии).
+
 ## Вёрстка — строго по макету Figma
 
 - Источник правды — макет (файл `L9YY2OHqMbFIK7tqx1nuLJ`). Перед вёрсткой
