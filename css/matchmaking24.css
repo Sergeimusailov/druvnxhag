@@ -1,11 +1,21 @@
-/* Поиск соперника перед матчем (js/matchmaking24.js; макета нет — по смыслу,
-   в стиле проекта): общий фон приложения, шапка как в матче, игроки — компонент
-   матча крупнее (я слева вверху, соперник справа внизу), в центре скрещённые мечи. */
+/* Поиск соперника перед матчем (js/matchmaking24.js) — Figma 17687:179282
+   «Основной сценарий»: «Ищем соперника», «Нашли соперника», «Подключаемся к
+   матчу». Фон приложения, шапка tui-app-bar, игроки — аватар 96 и тёмная
+   плашка (я сверху, соперник снизу зеркально), в центре мечи в круге на луче. */
 
 /* пока идёт поиск, страница матча под экраном не скроллится */
 html.mm24-on,
 html.mm24-on body {
   overflow: hidden;
+}
+
+/* шторка «?» (js/match24.js) открывается и с экрана поиска — поверх него */
+html.mm24-on #m24Backdrop {
+  z-index: 201;
+}
+
+html.mm24-on #m24Faq {
+  z-index: 202;
 }
 
 .mm24 {
@@ -18,87 +28,78 @@ html.mm24-on body {
   max-width: 430px;
   translate: -50% 0;
   isolation: isolate;
+  overflow: hidden;
   color: #f6f7f8;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sf, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
 }
 
-/* фон — как у матча в версии 2: картинка приложения, притушенная на 70% */
+/* фон (image 10981) — картинка приложения, притушенная чёрным 50% */
 .mm24-bg {
   position: absolute;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    #0b0b0d url('../assets/v2-bg.png') center / cover no-repeat;
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    #000 url('../assets/v2-bg.png') center / cover no-repeat;
   pointer-events: none;
 }
 
-/* свечения: у меня — синее слева сверху, у соперника — красное справа снизу.
-   Мягкий радиальный градиент, а не filter: blur — Safari на iPhone резал
-   размытый слой на прямоугольники (тёмные «квадраты» на фоне) */
-.mm24-glow {
-  position: absolute;
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-}
-
-.mm24-glow.is-you {
-  left: -330px;
-  top: -120px;
-  background: radial-gradient(closest-side, #3d6bff 22%, rgba(61, 107, 255, 0.55) 48%, rgba(61, 107, 255, 0.18) 72%, rgba(61, 107, 255, 0));
-  opacity: 0.4;
-}
-
-.mm24-glow.is-opp {
-  right: -330px;
-  bottom: -120px;
-  background: radial-gradient(closest-side, #e32d2d 22%, rgba(227, 45, 45, 0.55) 48%, rgba(227, 45, 45, 0.18) 72%, rgba(227, 45, 45, 0));
-  opacity: 0;
-}
-
-/* Всё движение экрана — anime.js (js/matchmaking24.js): появление, радар,
-   «найден» (таймлайн), лоадер, шов и разъезд по диагонали. Шов: луч
-   вспыхивает белым (is-seam), затем две копии экрана, обрезанные по
-   диагонали (is-split), разъезжаются вверх и вниз — под ними матч */
-.mm24.is-seam {
+/* Всё движение экрана — anime.js (js/matchmaking24.js): появление, лоадер,
+   частицы из круга, «нашли» (таймлайн) и фейд в матч */
+.mm24.is-leaving {
   pointer-events: none;
 }
 
-.mm24.is-seam .mm24-beam {
-  background: linear-gradient(90deg, rgba(150, 170, 255, 0.9), #fff 50%, rgba(220, 150, 255, 0.9));
-}
-
-/* копии половин — снимок экрана как есть, без переходов */
-.mm24.is-split {
-  pointer-events: none;
-}
-
-.mm24.is-split,
-.mm24.is-split * {
-  transition: none !important;
-}
-
-
-/* шапка — как .match-topbar в версии 2: стеклянная «‹» 44, заголовок
-   «Поиск соперника» 17/600 (статус не дублируем — он под мечами), справа пусто */
+/* ---------- шапка tui-app-bar 44: «‹» и «?» синие #66a3ff, по центру «Матч»
+   17/600 −0.41 и этап поиска 13/400 −0.08 #9299a2. Строки статуса в браузере
+   нет — шапка на месте шапки матча (18px сверху) ---------- */
 .mm24-bar {
   position: absolute;
-  top: 18px;
-  left: 18px;
-  right: 18px;
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
+  display: flex;
   align-items: center;
+  height: 44px;
 }
 
-.mm24-back {
-  text-decoration: none;
+.mm24-back,
+.mm24-help {
+  flex: 1 0 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #66a3ff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* иконка 12×24 в слоте 32, отступ 8 */
+.mm24-back svg {
+  margin-left: 8px;
+}
+
+.mm24-help {
+  justify-content: flex-end;
+  padding-right: 16px;
+}
+
+.mm24-back:active svg,
+.mm24-help:active svg {
+  opacity: 0.5;
 }
 
 .mm24-title {
-  text-align: center;
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  white-space: nowrap;
 }
 
 .mm24-title-text {
@@ -106,32 +107,40 @@ html.mm24-on body {
   line-height: 20px;
   font-weight: 600;
   letter-spacing: -0.41px;
+  color: #f6f7f8;
 }
 
-/* ---------- игрок: аватар + плашка с именем и статусом (референс Marvel Snap) ---------- */
-/* я — сверху: аватар слева, синяя плашка вправо; соперник — снизу зеркально:
-   красная плашка слева, аватар справа. Рамка аватара 112 (r35), рубашка колоды
-   60 во внутреннем верхнем углу с наклоном 18° (как в шапке матча). Плашка 80px,
-   r20, заходит под аватар */
-/* игрок, мечи и соперник — колонкой с равными промежутками между низом шапки
-   и низом экрана (на коротких экранах тоже не слипаются) */
+.mm24-step {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: -0.08px;
+  color: #9299a2;
+}
+
+/* ---------- игрок, мечи и соперник — колонкой по центру под шапкой,
+   промежутки 40, снизу 40 ---------- */
 .mm24-stage {
   position: absolute;
-  top: 78px;
-  left: 32px;
-  right: 32px;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  top: calc(62px + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
   display: flex;
   flex-direction: column;
-  /* игроки ближе к мечам: блоки по центру с промежутком 48 (было space-evenly) */
+  align-items: stretch;
   justify-content: center;
-  gap: 48px;
+  gap: 40px;
+  padding-bottom: 40px;
 }
 
+/* строка игрока: отступы 48 по бокам, аватар 96 заходит на плашку на 6 */
 .mm24-player {
   position: relative;
   display: flex;
   align-items: center;
+  isolation: isolate;
+  padding: 0 48px;
 }
 
 .mm24-you {
@@ -140,50 +149,55 @@ html.mm24-on body {
 
 .mm24-ava {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   isolation: isolate;
   flex-shrink: 0;
-  width: 112px;
-  height: 112px;
+  width: 96px;
+  height: 96px;
 }
 
+.mm24-you .mm24-ava {
+  margin-right: -6px;
+}
+
+/* рамка 6 (цвет — рамка из профиля / #2265d3 в версии 3 / #e32d2d у соперника), r24 */
 .mm24 .mm24-frame {
   display: block;
-  width: 112px;
-  height: 112px;
-  padding: 7px;
-  border-radius: 35px;
-  /* без внешней тени: Safari на iPhone рисовал её тёмным прямоугольником
-     под аватаром (размытая тень внутри анимированного блока) */
+  width: 96px;
+  height: 96px;
+  padding: 6px;
+  border-radius: 24px;
 }
 
 .mm24 .m24-frame.mm24-frame .avatar {
   position: relative;
   z-index: 1;
   display: block;
-  width: 98px;
-  height: 98px;
+  width: 84px;
+  height: 84px;
   border: 0;
-  border-radius: 28px;
+  border-radius: 18px;
   object-fit: cover;
 }
 
+/* рубашка колоды 48, r20%, в нижнем внешнем углу аватара: у меня слева с
+   наклоном −24°, у соперника справа с наклоном 24° (центр на 9 / 87 от угла) */
 .mm24-deck {
   position: absolute;
   z-index: 2;
-  top: -14px;
-  width: 60px;
-  height: 60px;
+  top: 63px;
+  width: 48px;
+  height: 48px;
 }
 
 .mm24-you .mm24-deck {
-  right: -22px;
-  transform: rotate(-18deg);
+  left: -15px;
+  transform: rotate(-24deg);
 }
 
 .mm24-opp .mm24-deck {
-  left: -22px;
-  transform: rotate(18deg);
+  left: 64px;
+  transform: rotate(24deg);
 }
 
 /* isolation — режим наложения у эффектных рубашек (cb24-foil) смешивается
@@ -193,265 +207,145 @@ html.mm24-on body {
   inset: 0;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 18%;
-  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--cb, #888) 45%, #fff), 0 4px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 20%;
+  box-shadow: inset 0 0 0 2.4px color-mix(in srgb, var(--cb, #888) 45%, #fff);
 }
 
 .mm24-deck .cb24.is-epic {
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.8), 0 0 16px var(--glow, rgba(255, 255, 255, 0.4));
+  box-shadow: inset 0 0 0 2.4px rgba(255, 255, 255, 0.8), 0 0 12px var(--glow, rgba(255, 255, 255, 0.4));
 }
 
 .mm24-deck .cb24-emb {
-  border-width: 2.5px;
+  border-width: 2px;
 }
 
+/* плашка: чёрная 40%, обводка белая 10%, скругление 16 с внешней стороны;
+   12 сверху и снизу, 20 от аватара, 8 с другой стороны, между строк 4 */
 .mm24-plate {
-  flex: 1;
+  position: relative;
+  z-index: 1;
+  flex: 1 0 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 64px;
-  border-radius: 18px;
-  /* тёмно-серые плашки: на экране и так много цвета (свечения, рамки, мечи) */
-  background: #2c2c2e;
-  /* только обводка — внешняя тень в Safari на iPhone давала тёмный прямоугольник */
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.mm24-you .mm24-plate {
-  margin-left: -40px;
-  padding: 0 16px 0 56px;
+  gap: 4px;
+  padding: 12px 8px 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 16px 16px 0;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .mm24-opp .mm24-plate {
-  margin-right: -40px;
-  padding: 0 56px 0 16px;
+  margin-right: -6px;
+  padding: 12px 20px 12px 8px;
+  border-radius: 16px 0 0 16px;
   text-align: right;
 }
 
-/* имя 17/600 −0.41, статус из профиля 13/400 −0.08 60% */
+/* имя — SF Pro Display Bold 20 +0.38, статус — 15/400 −0.24 #9299a2 */
 .mm24-name {
-  font-size: 17px;
-  line-height: 22px;
-  font-weight: 600;
-  letter-spacing: -0.41px;
+  font-family: var(--font-sf-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .mm24-sub {
-  margin-top: 1px;
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: -0.08px;
-  color: rgba(246, 247, 248, 0.6);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+  color: #9299a2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ---------- место соперника снизу: радар поиска справа → игрок ---------- */
-.mm24-opp-slot {
-  position: relative;
-  flex-shrink: 0;
-  height: 112px;
-  /* рубашка колоды торчит над аватаром на 14 — столько же добавляем сверху */
-  margin-top: 14px;
-}
-
-.mm24-opp-slot .mm24-player {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  transform: translateX(140%);
-  opacity: 0;
-}
-
-/* радар на месте будущего аватара: кольца, луч, мелькающие аватарки с «?» */
-.mm24-radar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 112px;
-  height: 112px;
-}
-
-.mm24-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 35px;
-  border: 2px solid rgba(255, 221, 45, 0.6);
-  opacity: 0;
-}
-
-.mm24-sweep {
-  position: absolute;
-  inset: -16px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(255, 221, 45, 0.45), rgba(255, 221, 45, 0) 25%, transparent);
-}
-
-.mm24-scan {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 35px;
-  background: #2c2c2e;
-  box-shadow: inset 0 0 0 7px rgba(255, 255, 255, 0.12);
-  overflow: hidden;
-}
-
-.mm24-scan img {
-  position: absolute;
-  inset: 7px;
-  width: 98px;
-  height: 98px;
-  border-radius: 28px;
-  object-fit: cover;
-  filter: grayscale(0.8) brightness(0.6) blur(0.5px);
-}
-
-.mm24-dots i {
-  font-style: normal;
-  opacity: 0.2;
-}
-
-/* ---------- центр: мечи в светящемся круге, диагональное сияние, статус ---------- */
-/* как «VS» в референсе: тёмный круг 104 с фиолетовым ободком и свечением, через
-   него — диагональный луч света. Пока ищем — всё приглушено и «дышит»; соперник
-   найден — круг с размаху вспыхивает, мечи жёлтые со свечением, луч разгорается,
-   искры. Статус под кругом 17/600 −0.41: «Ищем соперника…» 60%, «Соперник
-   найден!» белым, «Начинаем матч» жёлтым с лоадером */
+/* ---------- центр: мечи 56 в чёрном круге 96 с жёлтой обводкой 4 на жёлтом
+   диагональном луче 323×88 (размытие 5) ---------- */
 .mm24-center {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  justify-content: center;
   isolation: isolate;
 }
 
-/* луч через центр круга и мягкое сияние за ним (элементы, а не ::before /
-   ::after — их двигает anime.js) */
-.mm24-beam,
-.mm24-halo {
+.mm24-streak {
   position: absolute;
   z-index: -1;
-  top: 52px;
+  top: 50%;
   left: 50%;
+  margin: -49.5px 0 0 -166.5px;
   pointer-events: none;
 }
 
-.mm24-beam {
-  width: 900px;
-  height: 3px;
-  margin: -1.5px 0 0 -450px;
-  background: linear-gradient(90deg, transparent 8%, rgba(110, 140, 255, 0.8) 38%, #fff 50%, rgba(205, 120, 255, 0.8) 62%, transparent 92%);
-  box-shadow: 0 0 14px rgba(170, 140, 255, 0.9);
-  rotate: -14deg;
-  opacity: 0.3;
-}
-
-.mm24-halo {
-  width: 340px;
-  height: 220px;
-  margin: -110px 0 0 -170px;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(150, 80, 255, 0.45), transparent);
-  opacity: 0.4;
-}
-
 .mm24-vs {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #24143b 0%, #0b0712 72%);
-  box-shadow:
-    0 0 0 3px rgba(181, 120, 255, 0.45),
-    0 0 24px rgba(160, 90, 255, 0.35),
-    inset 0 0 18px rgba(160, 90, 255, 0.3);
-  color: #fff;
-  /* смена свечения при «найден» — цвет, остаётся CSS-переходом */
-  transition: box-shadow 0.4s ease;
+  width: 96px;
+  height: 96px;
+  padding: 16px;
+  border: 4px solid #ffdd2d;
+  border-radius: 120px;
+  background: #000;
 }
 
 .mm24-swords {
   display: block;
-  width: 64px;
-  height: 64px;
-  opacity: 0.45;
-}
-
-.mm24.is-found .mm24-vs {
-  color: #ffdd2d;
-  box-shadow:
-    0 0 0 3px #e2c4ff,
-    0 0 36px rgba(200, 110, 255, 0.9),
-    0 0 80px rgba(90, 130, 255, 0.55),
-    inset 0 0 22px rgba(200, 110, 255, 0.5);
-}
-
-.mm24.is-found .mm24-swords {
-  filter: drop-shadow(0 0 10px rgba(255, 221, 45, 0.7)) drop-shadow(0 2px 0 #b88a00);
+  flex-shrink: 0;
 }
 
 .mm24-spark {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 7px;
-  height: 7px;
   border-radius: 50%;
   pointer-events: none;
 }
 
-.mm24-msg-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 20px;
+/* ---------- место соперника (96): «Ищем соперника» с лоадером → соперник ---------- */
+.mm24-opp-slot {
+  position: relative;
+  flex-shrink: 0;
+  height: 96px;
 }
 
-.mm24-msg {
-  font-size: 17px;
-  line-height: 20px;
-  font-weight: 600;
-  letter-spacing: -0.41px;
-  color: rgba(246, 247, 248, 0.6);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+.mm24-opp-slot .mm24-player {
+  position: absolute;
+  inset: 0;
+  transform: translateX(140%);
+  opacity: 0;
+}
+
+/* «Ищем соперника» — SF Pro Display Bold 20 +0.38, лоадер 24 справа через 8 */
+.mm24-search {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mm24-search-text {
+  font-family: var(--font-sf-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: 0.38px;
+  color: #f6f7f8;
   white-space: nowrap;
 }
 
-.mm24-msg.is-found {
-  color: #f6f7f8;
-}
-
-.mm24-msg.is-start {
-  color: #ffdd2d;
-}
-
-/* лоадер — жёлтое кольцо 18px, появляется с «Начинаем матч» */
 .mm24-loader {
-  display: none;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 221, 45, 0.25);
-  border-top-color: #ffdd2d;
-}
-
-.mm24.is-start .mm24-loader {
   display: block;
+  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

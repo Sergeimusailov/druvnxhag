@@ -83,6 +83,8 @@ if (MATCH24) {
     if (q) q.parentElement.classList.toggle('is-open');
   });
   const faq = bottomSheet(document.getElementById('m24Faq'), document.getElementById('m24Backdrop'));
+  // та же шторка открывается «?» на экране поиска соперника (js/matchmaking24.js)
+  window.M24_FAQ = faq;
   help.addEventListener('click', () => {
     list.parentElement.scrollTop = 0;
     faq.open();
