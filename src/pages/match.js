@@ -4,6 +4,8 @@ import '../../css/match.css';
 import '../../css/match-result.css';
 import '../../css/match-result3.css';
 import '../../css/ny24.css';
+import '../../css/catalog/fx.css';
+import '../../css/catalog/frames.css';
 import '../../css/cosmetics24.css';
 import '../../css/match24.css';
 import '../../css/leave24.css';

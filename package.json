@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
-    "preview": "rsbuild preview"
+    "preview": "rsbuild preview",
+    "gen:frames": "node build/gen-frames.mjs"
   },
   "devDependencies": {
     "@rsbuild/core": "^2.3.1"

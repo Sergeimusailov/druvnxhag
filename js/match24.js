@@ -11,11 +11,12 @@ const MATCH24 = (() => {
   const avatar = get('v2.profileAvatar') || PHOTO;
   const frame = get('v2.profileFrame') || 'white';
   const back = COSMETICS24.back(get('v2.profileBack') || 'classic').id;
-  // соперник — стандартный облик
-  const OPP = { back: 'classic' };
+  // соперник — случайная рамка из всего каталога (одна на матч: та же в
+  // поиске соперника, шапке матча и его профиле), стандартная рубашка
+  const OPP = { back: 'classic', frame: FRAME_CATALOG.random().id };
 
   return {
-    avatar, frame, back,
+    avatar, frame, back, oppFrame: OPP.frame,
     backHTML: (owner) => COSMETICS24.backHTML(owner === 'you' ? back : OPP.back),
   };
 })();
@@ -45,13 +46,13 @@ if (MATCH24) {
   COSMETICS24.applyFrame(youFrame, MATCH24.frame);
   you.querySelector('.player-name').textContent = 'Александр К.';
 
-  // соперник: красная рамка (цвет его карт на поле), стандартная рубашка
+  // соперник: случайная рамка из каталога, стандартная рубашка
   const oppImg = document.querySelector('.avatar-opp');
   const oppFrame = document.createElement('span');
   oppFrame.className = 'm24-frame';
   oppImg.replaceWith(oppFrame);
   oppFrame.appendChild(oppImg);
-  oppFrame.style.setProperty('--pf-frame', '#e32d2d');
+  COSMETICS24.applyFrame(oppFrame, MATCH24.oppFrame);
 
   document.getElementById('deckYou').innerHTML = MATCH24.backHTML('you');
   document.getElementById('deckOpp').innerHTML = MATCH24.backHTML('opp');
@@ -110,7 +111,7 @@ if (MATCH24) {
       <div class="m24-opp-head">
         <span class="m24-opp-back is-left">${MATCH24.backHTML('opp')}</span>
         <span class="m24-opp-back is-right">${MATCH24.backHTML('opp')}</span>
-        <span class="m24-opp-ava" style="--pf-frame:#e32d2d"><img src="${OPP_PROFILE.avatar}" alt=""></span>
+        <span class="m24-opp-ava" id="m24OppAva"><img src="${OPP_PROFILE.avatar}" alt=""></span>
       </div>
       <h2 class="m24-opp-name">${OPP_PROFILE.name}</h2>
       <p class="m24-opp-status">${OPP_PROFILE.status}</p>
@@ -136,6 +137,7 @@ if (MATCH24) {
     if (liked) A24.play(likeBtn.querySelector('svg'), { keyframes: [{ scale: 1.35 }, { scale: 0.9 }, { scale: 1 }], duration: 420, ease: A24.EASE.out });
   });
 
+  COSMETICS24.applyFrame(document.getElementById('m24OppAva'), MATCH24.oppFrame);
   const oppSheet = bottomSheet(document.getElementById('m24Opp'), document.getElementById('m24Backdrop'));
   oppFrame.setAttribute('role', 'button');
   oppFrame.setAttribute('tabindex', '0');

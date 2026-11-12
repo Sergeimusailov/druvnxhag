@@ -12,6 +12,8 @@ import '../../css/t-ads.css';
 import '../../css/tasks24.css';
 import '../../css/ny24.css';
 import '../../css/tooltip24.css';
+import '../../css/catalog/fx.css';
+import '../../css/catalog/frames.css';
 import '../../css/cosmetics24.css';
 import '../../css/profile24.css';
 import '../../css/v3.css';

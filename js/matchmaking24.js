@@ -79,10 +79,16 @@ window.MATCH_GATE = (() => {
   // на iPhone экран не тянется «резинкой» вместе со страницей
   root.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
 
-  // рамки как в матче: в версии 2 — из профиля, в версии 3 — синяя; у соперника красная
-  if (C && !isV3) C.applyFrame(root.querySelector('.mm24-you .mm24-frame'), frame);
-  else root.querySelector('.mm24-you .mm24-frame').style.setProperty('--pf-frame', '#2265d3');
-  root.querySelector('.mm24-opp .mm24-frame').style.setProperty('--pf-frame', '#e32d2d');
+  // рамки как в матче: в версии 2 — из профиля, у соперника — та же случайная
+  // из каталога, что в шапке матча (MATCH24.oppFrame); в версии 3 — синяя и красная
+  const oppFrameEl = root.querySelector('.mm24-opp .mm24-frame');
+  if (C && !isV3) {
+    C.applyFrame(root.querySelector('.mm24-you .mm24-frame'), frame);
+    C.applyFrame(oppFrameEl, typeof MATCH24 !== 'undefined' && MATCH24 ? MATCH24.oppFrame : FRAME_CATALOG.random().id);
+  } else {
+    root.querySelector('.mm24-you .mm24-frame').style.setProperty('--pf-frame', '#2265d3');
+    oppFrameEl.style.setProperty('--pf-frame', '#e32d2d');
+  }
 
   // «‹» — подтверждение выхода (js/leave24.js): без наград за матч
   const backEl = root.querySelector('.mm24-back');
