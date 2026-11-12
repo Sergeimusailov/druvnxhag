@@ -33,12 +33,8 @@
   const fmt = (n) => n.toLocaleString('ru-RU');
   const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-  const FRAMES = [
-    ['Золотая рамка', 'linear-gradient(135deg, #fff2a8, #f5b400 50%, #c27a00)'],
-    ['Радужная рамка', 'conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9)'],
-    ['Ледяная рамка', 'linear-gradient(135deg, #e6f6ff, #7fd4ff 50%, #3f8cff)'],
-    ['Огненная рамка', 'linear-gradient(135deg, #ffe066, #ff6a1a 55%, #c2161b)'],
-  ];
+  // рамка в подарок — случайная обычная из каталога (js/catalog/frames.js)
+  const giftFrame = () => FRAME_CATALOG.random((f) => f.rarity === 'basic');
 
   // подарки: карта, рамка, аватарка, монеты
   function rewardHTML(kind) {
@@ -47,8 +43,9 @@
       return { html: `<div class="card owner-you">${cardInnerHTML(card)}</div>`, label: card.name };
     }
     if (kind === 'frame') {
-      const [name, css] = rand(FRAMES);
-      return { html: `<span class="m3-frame" style="--f:${css}"><img src="assets/avatars-sq/sq-${String(1 + Math.floor(Math.random() * 16)).padStart(2, '0')}.png" alt=""></span>`, label: name };
+      const f = giftFrame();
+      const name = `Рамка «${f.name}»`;
+      return { html: `<span class="m3-frame" style="--f:${f.css.replace(/"/g, '&quot;')}"><img src="assets/avatars-sq/sq-${String(1 + Math.floor(Math.random() * 16)).padStart(2, '0')}.png" alt=""></span>`, label: name };
     }
     if (kind === 'avatar') {
       const n = String(1 + Math.floor(Math.random() * 16)).padStart(2, '0');

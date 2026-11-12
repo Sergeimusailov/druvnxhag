@@ -349,17 +349,10 @@ if (isApp3()) {
   document.getElementById('pfLevelGift').addEventListener('click', () => openSheet());
 
   // профиль: рамки аватара и рубашки колоды (вместо заглушек в настройках)
-  const PF_FRAMES = [
-    { id: 'white', name: 'Белая', css: '#fff' },
-    { id: 'gold', name: 'Золото', css: 'linear-gradient(135deg, #fff2a8, #f5b400 50%, #c27a00)' },
-    { id: 'rainbow', name: 'Радуга', css: 'conic-gradient(from 0deg, #ff7ad9, #ffdd2d, #6ff0ff, #b36bff, #ff7ad9)' },
-    { id: 'ice', name: 'Лёд', css: 'linear-gradient(135deg, #e6f6ff, #7fd4ff 50%, #3f8cff)' },
-    { id: 'fire', name: 'Огонь', css: 'linear-gradient(135deg, #ffe066, #ff6a1a 55%, #c2161b)' },
-    { id: 'violet', name: 'Фиолет', css: 'linear-gradient(135deg, #e3d4ff, #8c5cff 55%, #4b1fb0)' },
-    { id: 'mint', name: 'Мята', css: 'linear-gradient(135deg, #d6ffef, #2fd18f 55%, #0f7a52)' },
-    { id: 'dark', name: 'Тёмная', css: '#2c2c2e' },
-    { id: 'rose', name: 'Роза', css: 'linear-gradient(135deg, #ffe0ea, #ff5c8a 55%, #b0124a)' },
-  ];
+  // рамки — общий каталог (js/catalog/frames.js); прежний id «Радуги» версии 3
+  // 'rainbow' в каталоге называется 'spectrum'
+  const PF_FRAMES = FRAME_CATALOG.list;
+  const v3FrameId = (id) => (id === 'rainbow' ? 'spectrum' : id);
   const PF_BACKS = [
     { id: 'base', name: 'Классика', filter: '' },
     { id: 'blue', name: 'Синяя', filter: 'sepia(1) saturate(4) hue-rotate(180deg) brightness(0.9)' },
@@ -372,8 +365,7 @@ if (isApp3()) {
   const pfSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } };
   const avatarBox = document.querySelector('.pf-avatar');
   const applyFrame = (id) => {
-    const f = PF_FRAMES.find((x) => x.id === id) || PF_FRAMES[0];
-    avatarBox.style.setProperty('--pf-frame', f.css);
+    const f = FRAME_CATALOG.apply(avatarBox, v3FrameId(id));
     avatarBox.classList.add('has-frame');
     document.querySelectorAll('#psetFrames .pset-tile').forEach((t) => t.classList.toggle('is-selected', t.dataset.id === f.id));
   };
@@ -382,7 +374,8 @@ if (isApp3()) {
     document.querySelectorAll('.pf-cardback').forEach((img) => { img.style.filter = bk.filter; });
     document.querySelectorAll('#psetBacks .pset-tile').forEach((t) => t.classList.toggle('is-selected', t.dataset.id === bk.id));
   };
-  document.getElementById('psetFrames').innerHTML = PF_FRAMES.map((f) => `<button class="pset-tile" data-id="${f.id}"><span class="pset-frame" style="--pf-frame:${f.css}"><img src="assets/v2-avatar-square.png" alt=""></span><span class="pset-tile-name">${f.name}</span></button>`).join('');
+  document.getElementById('psetFrames').innerHTML = PF_FRAMES.map((f) => `<button class="pset-tile" data-id="${f.id}"><span class="pset-frame"><img src="assets/v2-avatar-square.png" alt=""></span><span class="pset-tile-name">${f.name}</span></button>`).join('');
+  document.querySelectorAll('#psetFrames .pset-tile').forEach((t) => FRAME_CATALOG.apply(t.querySelector('.pset-frame'), t.dataset.id));
   document.getElementById('psetBacks').innerHTML = PF_BACKS.map((bk) => `<button class="pset-tile" data-id="${bk.id}"><span class="pset-back"><img src="assets/v2-profile-cardback.png" alt="" style="filter:${bk.filter}"></span><span class="pset-tile-name">${bk.name}</span></button>`).join('');
   document.getElementById('psetFrames').addEventListener('click', (e) => {
     const t = e.target.closest('.pset-tile');

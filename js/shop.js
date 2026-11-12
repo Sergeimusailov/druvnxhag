@@ -240,9 +240,10 @@ function makeReward(entry, taken = new Set()) {
     return { kind: 'tokens', amount: Math.round(entry.min + Math.random() * (entry.max - entry.min)) };
   }
   if (entry.kind === 'frame') {
-    // косметика — эпическая рамка аватара или рубашка колоды (js/cosmetics24.js)
+    // косметика — рамка аватара (js/catalog/frames.js) или рубашка колоды (js/cosmetics24.js)
     const isBack = Math.random() < 0.5;
-    const item = pick((isBack ? COSMETICS24.BACKS : COSMETICS24.FRAMES).filter((x) => x.epic));
+    // рамки — редкие и эпические из каталога, рубашки — эпические
+    const item = pick(isBack ? COSMETICS24.BACKS.filter((x) => x.epic) : COSMETICS24.FRAMES.filter((x) => x.rarity !== 'basic'));
     return { kind: 'frame', back: isBack, id: item.id, name: `${isBack ? 'Рубашка' : 'Рамка'} «${item.name}»` };
   }
   return { kind: 'bonus', name: pick(BONUS_NAMES) };

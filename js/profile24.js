@@ -104,10 +104,21 @@ if (!isApp3()) {
 
   function renderSettings24() {
     document.getElementById('psetAvatars').innerHTML = P24_AVATARS.map((src, i) => tile('avatar', src, `<img src="${src}" alt="">`, i ? `Аватар ${i}` : 'Своё фото')).join('');
-    // две категории: обычные и эпические (анимированные)
-    const sections = (list, render, noun) => [false, true].map((epic) => `
-      <div class="pset-sec24${epic ? ' is-epic' : ''}"><b>${epic ? 'Эпические' : 'Обычные'}</b><span>${epic ? 'С анимацией и эффектами' : `${list.filter((x) => !x.epic).length} ${noun}`}</span></div>
-      <div class="pset-grid24">${list.filter((x) => !!x.epic === epic).map(render).join('')}</div>`).join('');
+    // секции по редкости: обычные, редкие (рамки), эпические (анимированные)
+    const TIERS = {
+      basic: ['Обычные', null],
+      rare: ['Редкие', 'Перелив и движущийся узор'],
+      epic: ['Эпические', 'С анимацией и эффектами'],
+    };
+    const tierOf = (x) => x.rarity || (x.epic ? 'epic' : 'basic');
+    const sections = (list, render, noun) => Object.keys(TIERS).map((t) => {
+      const items = list.filter((x) => tierOf(x) === t);
+      if (!items.length) return '';
+      const [title, sub] = TIERS[t];
+      return `
+      <div class="pset-sec24 is-${t}"><b>${title}</b><span>${sub || `${items.length} ${noun}`}</span></div>
+      <div class="pset-grid24">${items.map(render).join('')}</div>`;
+    }).join('');
     const framesEl = document.getElementById('psetFrames24');
     framesEl.classList.add('pset-cat24');
     framesEl.innerHTML = sections(C24.FRAMES, (f) => tile('frame', f.id, '<span class="pset-frame24"></span>', `Рамка «${f.name}»`), 'вариантов');

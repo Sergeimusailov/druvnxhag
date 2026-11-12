@@ -1,161 +1,7 @@
-/* Косметика профиля версии 2 (js/cosmetics24.js): рамки аватара и рубашки
-   колоды — обычные (заливка / градиент; сплошной цвет + свой узор) и
-   эпические (анимированные переливы, свечение, блики, частицы). */
-
-@property --fx-a {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes fxSpin {
-  to { --fx-a: 360deg; }
-}
-
-@keyframes fxSweep {
-  0% { background-position: 160% 0; }
-  55%, 100% { background-position: -60% 0; }
-}
-
-@keyframes fxTwinkle {
-  0%, 100% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
-  45% { transform: translate(-50%, -50%) scale(1) rotate(45deg); opacity: 1; }
-  70% { transform: translate(-50%, -50%) scale(0.2) rotate(90deg); opacity: 0.6; }
-}
-
-@keyframes fxRise {
-  0% { transform: translate(-50%, 0) scale(var(--s)); opacity: 0; }
-  15% { opacity: 1; }
-  100% { transform: translate(-50%, -46px) scale(0); opacity: 0; }
-}
-
-/* ================= Рамки ================= */
-
-.fr24-epic {
-  isolation: isolate;
-}
-
-/* содержимое рамки (картинка аватара / чёрное нутро превью) — поверх перелива */
-[data-app="2"] .pf-avatar.fr24-epic img {
-  position: relative;
-  z-index: 1;
-}
-
-.pset-frame24::after {
-  z-index: 1;
-}
-
-/* блик, пробегающий по рамке */
-.fx-shine::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.9) 50%, transparent 62%);
-  background-size: 300% 100%;
-  animation: fxSweep 2.8s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* искры по периметру */
-.fx-sp {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  z-index: 3;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
-  filter: drop-shadow(0 0 3px var(--spark, #fff));
-  animation: fxTwinkle 2.2s ease-in-out infinite;
-  animation-delay: var(--d);
-  pointer-events: none;
-}
-
-/* угольки, поднимающиеся вверх */
-.fx-em {
-  position: absolute;
-  left: var(--x);
-  bottom: 2px;
-  z-index: 3;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ffd34d;
-  box-shadow: 0 0 6px 2px rgba(255, 120, 20, 0.9);
-  animation: fxRise 2.4s ease-out infinite;
-  animation-delay: var(--d);
-  pointer-events: none;
-}
-
-/* Голограмма: радужное сияние вращается по кругу + блик + искры */
-.fx-holo {
-  background: conic-gradient(from var(--fx-a), #ff7ad9, #ffdd2d, #6ff0ff, #8a7dff, #ff7ad9) !important;
-  box-shadow: 0 0 16px rgba(179, 107, 255, 0.65), 0 0 4px rgba(111, 240, 255, 0.8);
-  animation: fxSpin 4s linear infinite;
-}
-
-/* Плазма: быстрое бирюзово-малиновое вращение и пульсирующее свечение */
-.fx-plasma {
-  background: conic-gradient(from var(--fx-a), #00e5ff, #1b2bff 25%, #ff2bd6 50%, #1b2bff 75%, #00e5ff) !important;
-  animation: fxSpin 2.2s linear infinite, fxPlasmaGlow 1.6s ease-in-out infinite;
-}
-
-@keyframes fxPlasmaGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.55); }
-  50% { box-shadow: 0 0 22px rgba(0, 229, 255, 0.95), 0 0 34px rgba(255, 43, 214, 0.45); }
-}
-
-/* Корона: литое золото, частый блик, золотые искры */
-.fx-royal {
-  --spark: #ffdd2d;
-  background: linear-gradient(135deg, #fff6c2, #f5b400 35%, #a86b00 55%, #ffe680 75%, #c27a00) !important;
-  box-shadow: 0 0 14px rgba(255, 200, 40, 0.55);
-}
-
-.fx-royal::before {
-  animation-duration: 2s;
-}
-
-/* Пламя: огонь течёт вверх по рамке, свечение мерцает, летят угольки */
-.fx-flame {
-  background: linear-gradient(0deg, #c2161b, #ff4d00 20%, #ffb000 40%, #ff4d00 60%, #c2161b 80%, #ff4d00) !important;
-  background-size: 100% 300% !important;
-  animation: fxFlameFlow 1.4s linear infinite, fxFlameGlow 0.9s ease-in-out infinite alternate;
-}
-
-@keyframes fxFlameFlow {
-  to { background-position: 0 -300%; }
-}
-
-@keyframes fxFlameGlow {
-  from { box-shadow: 0 0 10px rgba(255, 90, 0, 0.6); }
-  to { box-shadow: 0 0 20px rgba(255, 140, 0, 0.9), 0 -6px 18px rgba(255, 60, 0, 0.5); }
-}
-
-/* Иней: ледяной перелив дрейфует, блик, белые искры */
-.fx-frost {
-  --spark: #9fe3ff;
-  background: linear-gradient(135deg, #ffffff, #9fe3ff 25%, #3f8cff 50%, #c8f1ff 75%, #5fb8ff) !important;
-  background-size: 250% 250% !important;
-  box-shadow: 0 0 16px rgba(127, 212, 255, 0.7);
-  animation: fxDrift 4s ease-in-out infinite alternate;
-}
-
-@keyframes fxDrift {
-  from { background-position: 0 0; }
-  to { background-position: 100% 100%; }
-}
-
-/* Бездна: тёмное кольцо, по которому бежит светящаяся комета */
-.fx-void {
-  --spark: #d7a6ff;
-  background: conic-gradient(from var(--fx-a), #170a2e 0 62%, #6a2bd6 80%, #e9d6ff 96%, #fff 100%) !important;
-  box-shadow: 0 0 18px rgba(140, 92, 255, 0.6);
-  animation: fxSpin 1.8s linear infinite;
-}
+/* Косметика профиля версии 2 (js/cosmetics24.js): рубашки колоды — обычные
+   (сплошной цвет + свой узор) и эпические (анимированные переливы, свечение,
+   блики, частицы); секции «Обычные / Редкие / Эпические» в настройках.
+   Рамки аватара и частицы — каталог: css/catalog/frames.css, css/catalog/fx.css. */
 
 /* ================= Рубашки ================= */
 
@@ -298,26 +144,6 @@
   box-shadow: 0 0 12px rgba(140, 160, 255, 0.9), inset 0 0 8px rgba(140, 160, 255, 0.7);
 }
 
-.fx-st {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  z-index: 2;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.9);
-  transform: scale(var(--s));
-  animation: fxStar 2.6s ease-in-out infinite;
-  animation-delay: var(--d);
-}
-
-@keyframes fxStar {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 1; }
-}
-
 /* Шторм: тёмно-синяя, рамка и молния в центре вспыхивают, искры */
 .cb24-storm {
   --cb: #0a1838;
@@ -435,6 +261,13 @@
   color: transparent;
 }
 
+.pset-sec24.is-rare b {
+  background: linear-gradient(90deg, #7affc8, #36c6ff, #9d6bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .pset-sec24 span {
   font-size: 13px;
   line-height: 16px;
@@ -478,10 +311,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fr24-epic,
-  .fr24-epic::before,
-  .fx-sp,
-  .fx-em,
   .cb24,
   .cb24 * {
     animation: none !important;
