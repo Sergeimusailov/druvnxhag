@@ -43,8 +43,8 @@ const BACK_CATALOG = (() => {
   function noise(tone, seed) {
     const v = tone === 'dark' ? 0 : 1;
     return {
-      defs: `<filter id="nz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="${seed % 97}" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 ${v} 0 0 0 0 ${v} 0 0 0 0 ${v} 5 0 0 0 -2.85"/></filter>`,
-      body: `<rect width="100" height="100" filter="url(#nz)" opacity="${tone === 'dark' ? 0.22 : 0.3}"/>`,
+      defs: `<filter id="nz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="${seed % 97}" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 ${v} 0 0 0 0 ${v} 0 0 0 0 ${v} 5 0 0 0 -2.85"/></filter>`,
+      body: `<rect width="100" height="100" filter="url(#nz)" opacity="${tone === 'dark' ? 0.13 : 0.17}"/>`,
     };
   }
 
