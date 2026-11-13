@@ -102,10 +102,11 @@ const FRAME_CATALOG = (() => {
     ];
   }
 
-  // зерно «как в печати»: светлые или тёмные крапинки
+  // зерно «как в печати»: мелкие светлые или тёмные крапинки, как у рубашек;
+  // amount из описания рамки приглушается до 35%
   const noiseLayer = (tone, amount = 0.5) => {
     const v = tone === 'dark' ? 0 : 1;
-    const body = `<filter id="n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 ${v} 0 0 0 0 ${v} 0 0 0 0 ${v} 4.5 0 0 0 -2.5"/></filter><rect width="64" height="64" filter="url(#n)" opacity="${amount}"/>`;
+    const body = `<filter id="n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 ${v} 0 0 0 0 ${v} 0 0 0 0 ${v} 5 0 0 0 -2.85"/></filter><rect width="64" height="64" filter="url(#n)" opacity="${+(amount * 0.35).toFixed(3)}"/>`;
     return `${svgURL(64, 64, body)} 0 0 / 64px 64px`;
   };
 
