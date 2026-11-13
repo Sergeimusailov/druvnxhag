@@ -244,14 +244,15 @@ const BACK_CATALOG = (() => {
       let out = '';
       const sub = b.sub;
       if (sub === 'waves') {
-        for (let k = 0; k < 5; k++) {
-          const y0 = 48 + k * 11;
-          let d = `M-4 ${n(y0)}`;
-          for (let x = 2; x <= 106; x += 4) d += `L${x} ${n(y0 + 4.5 * Math.sin(x * 0.14 + k * 0.7))}`;
-          out += `<path d="${d}" fill="none" stroke="${c.ink}" stroke-width="4.5" stroke-linecap="round"/>`;
+        // три толстые волны внизу, косая черта, пара снежинок-точек
+        for (let k = 0; k < 3; k++) {
+          const y0 = 54 + k * 17;
+          let d = `M-6 ${n(y0)}`;
+          for (let x = 0; x <= 108; x += 4) d += `L${x} ${n(y0 + 6 * Math.sin(x * 0.1 + k * 0.9))}`;
+          out += `<path d="${d}" fill="none" stroke="${c.ink}" stroke-width="7.5" stroke-linecap="round"/>`;
         }
-        out += `<path d="M80 -6L36 66" stroke="${c.accent2}" stroke-width="5" stroke-linecap="round"/>`;
-        for (let i = 0; i < 5; i++) out += circle(r() * 100, r() * 36, 1.4 + r() * 1.2, c.ink);
+        out += `<path d="M84 -8L40 62" stroke="${c.accent2}" stroke-width="7" stroke-linecap="round"/>`;
+        [[18 + r() * 10, 16 + r() * 8], [62 + r() * 14, 34 + r() * 6], [22 + r() * 10, 40 + r() * 4]].forEach(([x, y]) => { out += circle(x, y, 2.6, c.ink); });
       } else if (sub === 'stairs') {
         let d = 'M0 100';
         let x = 0;
@@ -264,9 +265,10 @@ const BACK_CATALOG = (() => {
         for (let j = 0; j < 6; j++) for (let i = 0; i < 6 - j; i++) out += MOTIFS.diamond(10 + i * 18 + (j % 2) * 9, 90 - j * 18, 15, c.ink);
         out += `<circle cx="${n(72 + r() * 8)}" cy="${n(24 + r() * 8)}" r="9" fill="none" stroke="${c.accent2}" stroke-width="4.5"/>`;
       } else if (sub === 'stitch') {
-        for (let y = 6; y < 110; y += 20) for (let x = 6 + ((y - 6) / 20 % 2) * 10; x < 110; x += 20) out += `<path d="M${x - 6} ${y - 6}l12 12M${x + 6} ${y - 6}l-12 12" stroke="${c.ink}" stroke-width="4.5" stroke-linecap="square"/>`;
-        [[30 + r() * 10, 28 + r() * 10], [62 + r() * 10, 62 + r() * 10]].forEach(([x, y]) => {
-          out += `<path d="M${n(x - 8)} ${n(y - 8)}l16 16M${n(x + 8)} ${n(y - 8)}l-16 16" stroke="${c.accent2}" stroke-width="7" stroke-linecap="square"/>`;
+        // крупные стежки-крестики сеткой и два больших светлых креста
+        for (let y = 10; y < 116; y += 32) for (let x = 10 + ((y - 10) / 32 % 2) * 16; x < 116; x += 32) out += `<path d="M${x - 9} ${y - 9}l18 18M${x + 9} ${y - 9}l-18 18" stroke="${c.ink}" stroke-width="7" stroke-linecap="square"/>`;
+        [[34 + r() * 6, 34 + r() * 6], [68 + r() * 6, 70 + r() * 6]].forEach(([x, y]) => {
+          out += `<path d="M${n(x - 12)} ${n(y - 12)}l24 24M${n(x + 12)} ${n(y - 12)}l-24 24" stroke="${c.accent2}" stroke-width="10" stroke-linecap="square"/>`;
         });
       } else {
         // arcs: ряд крупных арок, столбики, шарики над ними
