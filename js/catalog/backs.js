@@ -265,11 +265,8 @@ const BACK_CATALOG = (() => {
         for (let j = 0; j < 6; j++) for (let i = 0; i < 6 - j; i++) out += MOTIFS.diamond(10 + i * 18 + (j % 2) * 9, 90 - j * 18, 15, c.ink);
         out += `<circle cx="${n(72 + r() * 8)}" cy="${n(24 + r() * 8)}" r="9" fill="none" stroke="${c.accent2}" stroke-width="4.5"/>`;
       } else if (sub === 'stitch') {
-        // крупные стежки-крестики сеткой и два больших светлых креста
+        // крупные стежки-крестики сеткой
         for (let y = 10; y < 116; y += 32) for (let x = 10 + ((y - 10) / 32 % 2) * 16; x < 116; x += 32) out += `<path d="M${x - 9} ${y - 9}l18 18M${x + 9} ${y - 9}l-18 18" stroke="${c.ink}" stroke-width="7" stroke-linecap="square"/>`;
-        [[34 + r() * 6, 34 + r() * 6], [68 + r() * 6, 70 + r() * 6]].forEach(([x, y]) => {
-          out += `<path d="M${n(x - 12)} ${n(y - 12)}l24 24M${n(x + 12)} ${n(y - 12)}l-24 24" stroke="${c.accent2}" stroke-width="10" stroke-linecap="square"/>`;
-        });
       } else {
         // arcs: ряд крупных арок, столбики, шарики над ними
         for (let x = 8; x < 104; x += 16) out += rect(x - 3.5, 68 + ((x - 8) / 16 % 2) * 8, 7, 40, c.ink);
