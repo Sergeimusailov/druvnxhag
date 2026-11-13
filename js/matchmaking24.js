@@ -27,7 +27,7 @@ window.MATCH_GATE = (() => {
   const oppAvatar = fromMatch('.avatar-opp', 'src') || 'assets/Ava01.png';
   const oppName = fromMatch('.player-opponent .player-name', 'textContent') || 'Константин К.';
   const frame = get('v2.profileFrame') || 'white';
-  const back = get('v2.profileBack') || 'classic';
+  const back = get('v2.profileBack') || '';
   const status = get(isV3 ? 'v3.profileStatus' : 'v2.profileStatus') || get('v2.profileStatus') || 'Т-Ранжира';
   const C = typeof COSMETICS24 !== 'undefined' ? COSMETICS24 : null;
 
@@ -71,7 +71,7 @@ window.MATCH_GATE = (() => {
       </div>
       <div class="mm24-opp-slot">
         <div class="mm24-search"><span class="mm24-search-text">Ищем соперника</span>${LOADER_SVG}</div>
-        ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', 'classic')}
+        ${playerHTML('opp', oppAvatar, oppName, 'Делай, как надо', typeof MATCH24 !== 'undefined' && MATCH24 ? MATCH24.oppBack : '')}
       </div>
     </div>`;
   document.body.appendChild(root);

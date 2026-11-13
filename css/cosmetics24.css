@@ -1,6 +1,6 @@
 /* Косметика профиля версии 2 (js/cosmetics24.js): рубашки колоды — обычные
-   (сплошной цвет + свой узор) и эпические (анимированные переливы, свечение,
-   блики, частицы); секции «Обычные / Редкие / Эпические» в настройках.
+   из каталога (js/catalog/backs.js: тёплый фон + снежинки) и эпические
+   (сейчас выключены, стили сохранены на будущее); секции по редкости в настройках.
    Рамки аватара и частицы — каталог: css/catalog/frames.css, css/catalog/fx.css. */
 
 /* ================= Рубашки ================= */
@@ -47,40 +47,14 @@
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
 
-/* обычные: свой сплошной цвет и свой узор */
-.cb24-classic {
-  --cb: #1c1c1e;
-  --pat: conic-gradient(from 45deg, #484848 25%, transparent 0 50%, #484848 0 75%, transparent 0) 0 0 / 22px 22px;
-  box-shadow: inset 0 0 0 3px #7f7f7f;
+/* обычные — из каталога (js/catalog/backs.js): фон и узор приходят
+   переменными --cb-bg / --pat, --cb — основной цвет (для кромки) */
+.cb24-gen {
+  background: var(--cb-bg, var(--cb));
 }
 
-.cb24-dots {
-  --cb: #d23a4a;
-  --pat: radial-gradient(circle, rgba(255, 255, 255, 0.35) 3px, transparent 3.5px) 0 0 / 13px 13px;
-}
-
-.cb24-stripes {
-  --cb: #2f6fe0;
-  --pat: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.24) 0 5px, transparent 5px 12px);
-}
-
-.cb24-rhombus {
-  --cb: #e8821e;
-  --pat: conic-gradient(from 45deg, rgba(255, 255, 255, 0.26) 25%, transparent 0 50%, rgba(255, 255, 255, 0.26) 0 75%, transparent 0) 0 0 / 15px 15px;
-}
-
-.cb24-rings {
-  --cb: #12907f;
-  --pat: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.24) 0 3px, transparent 3px 9px);
-}
-
-.cb24-zigzag {
-  --cb: #6a3fd1;
-  --pat:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) -8px 0 / 16px 16px,
-    linear-gradient(225deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) -8px 0 / 16px 16px,
-    linear-gradient(315deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) 0 0 / 16px 16px,
-    linear-gradient(45deg, rgba(255, 255, 255, 0.24) 25%, transparent 25%) 0 0 / 16px 16px;
+.cb24-gen .cb24-pat {
+  background-repeat: repeat;
 }
 
 /* ---------- эпические рубашки ---------- */

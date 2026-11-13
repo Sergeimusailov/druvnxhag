@@ -1,5 +1,5 @@
-// СГЕНЕРИРОВАНО build/gen-frames.mjs (зерно 2411) — руками не править,
-// перегенерировать: npm run gen:frames. Описание полей — docs/catalog.md.
+// СГЕНЕРИРОВАНО build/gen-frames.mjs — руками не править, дописать
+// недостающие: npm run gen:frames. Описание полей — docs/catalog.md.
 // Отрисовка — js/catalog/frames.js.
 
 const FRAMES_GENERATED = [
@@ -493,6 +493,198 @@ const FRAMES_GENERATED = [
       "kind": "star",
       "count": 7,
       "color": "#ffd34d"
+    }
+  },
+  {
+    "id": "basic-11",
+    "name": "Вишня",
+    "rarity": "basic",
+    "colors": [
+      "#ffd6dc",
+      "#d61f45",
+      "#7a0a22"
+    ],
+    "fill": {
+      "type": "radial",
+      "angle": 135
+    },
+    "pattern": {
+      "kind": "rhombus",
+      "size": 14,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "basic-12",
+    "name": "Коралл",
+    "rarity": "basic",
+    "colors": [
+      "#ffe3d6",
+      "#ff7a59",
+      "#c23a1e"
+    ],
+    "fill": {
+      "type": "radial",
+      "angle": 160
+    },
+    "pattern": {
+      "kind": "zigzag",
+      "size": 16,
+      "ink": "rgba(0,0,0,0.24)"
+    }
+  },
+  {
+    "id": "basic-13",
+    "name": "Шоколад",
+    "rarity": "basic",
+    "colors": [
+      "#f3e2d6",
+      "#8a5a3c",
+      "#3f2414"
+    ],
+    "fill": {
+      "type": "conic",
+      "angle": 45
+    },
+    "pattern": {
+      "kind": "checks",
+      "size": 20,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "basic-14",
+    "name": "Слива",
+    "rarity": "basic",
+    "colors": [
+      "#f0d9ef",
+      "#9b3b8f",
+      "#4d1047"
+    ],
+    "fill": {
+      "type": "linear2",
+      "angle": 135
+    },
+    "pattern": {
+      "kind": "stripes",
+      "size": 18,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "basic-15",
+    "name": "Хвоя",
+    "rarity": "basic",
+    "colors": [
+      "#dff5e3",
+      "#3f9e5a",
+      "#1c4f2c"
+    ],
+    "fill": {
+      "type": "radial",
+      "angle": 135
+    },
+    "pattern": {
+      "kind": "rings",
+      "size": 20,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "basic-16",
+    "name": "Ультрамарин",
+    "rarity": "basic",
+    "colors": [
+      "#dde3ff",
+      "#2f45d8",
+      "#101c6e"
+    ],
+    "fill": {
+      "type": "radial",
+      "angle": 315
+    },
+    "pattern": {
+      "kind": "stars",
+      "size": 20,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "basic-17",
+    "name": "Мёд",
+    "rarity": "basic",
+    "colors": [
+      "#fff6c9",
+      "#f2c230",
+      "#9c7300"
+    ],
+    "fill": {
+      "type": "linear",
+      "angle": 90
+    },
+    "pattern": {
+      "kind": "dots",
+      "size": 18,
+      "ink": "rgba(0,0,0,0.24)"
+    }
+  },
+  {
+    "id": "basic-18",
+    "name": "Сирень",
+    "rarity": "basic",
+    "colors": [
+      "#f6dcff",
+      "#c86bf0",
+      "#7a2aa6"
+    ],
+    "fill": {
+      "type": "conic",
+      "angle": 160
+    },
+    "pattern": {
+      "kind": "polka",
+      "size": 14,
+      "ink": "rgba(255,255,255,0.4)"
+    }
+  },
+  {
+    "id": "ny-ball",
+    "name": "Ёлочный шар",
+    "rarity": "basic",
+    "theme": "ny",
+    "colors": [
+      "#fe9951",
+      "#fd651a",
+      "#f12941"
+    ],
+    "fill": {
+      "type": "radial",
+      "angle": 0
+    },
+    "pattern": {
+      "kind": "snowflake",
+      "size": 20,
+      "ink": "rgba(255,255,255,0.55)"
+    }
+  },
+  {
+    "id": "ny-snowflake",
+    "name": "Снежинка",
+    "rarity": "basic",
+    "theme": "ny",
+    "colors": [
+      "#cedeff",
+      "#567dff",
+      "#283dd9"
+    ],
+    "fill": {
+      "type": "linear",
+      "angle": 135
+    },
+    "pattern": {
+      "kind": "snowflake",
+      "size": 20,
+      "ink": "rgba(255,255,255,0.5)"
     }
   }
 ];

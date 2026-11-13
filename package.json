@@ -7,7 +7,8 @@
     "dev": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "gen:frames": "node build/gen-frames.mjs"
+    "gen:frames": "node build/gen-frames.mjs",
+    "gen:backs": "node build/gen-backs.mjs"
   },
   "devDependencies": {
     "@rsbuild/core": "^2.3.1"

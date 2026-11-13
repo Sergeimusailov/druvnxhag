@@ -10,13 +10,13 @@ const MATCH24 = (() => {
   const PHOTO = 'assets/v2-avatar-photo.svg';
   const avatar = get('v2.profileAvatar') || PHOTO;
   const frame = get('v2.profileFrame') || 'white';
-  const back = COSMETICS24.back(get('v2.profileBack') || 'classic').id;
+  const back = COSMETICS24.back(get('v2.profileBack')).id;
   // соперник — случайная рамка из всего каталога (одна на матч: та же в
   // поиске соперника, шапке матча и его профиле), стандартная рубашка
-  const OPP = { back: 'classic', frame: FRAME_CATALOG.random().id };
+  const OPP = { back: BACK_CATALOG.list[0].id, frame: FRAME_CATALOG.random().id };
 
   return {
-    avatar, frame, back, oppFrame: OPP.frame,
+    avatar, frame, back, oppFrame: OPP.frame, oppBack: OPP.back,
     backHTML: (owner) => COSMETICS24.backHTML(owner === 'you' ? back : OPP.back),
   };
 })();

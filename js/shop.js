@@ -242,8 +242,8 @@ function makeReward(entry, taken = new Set()) {
   if (entry.kind === 'frame') {
     // косметика — рамка аватара (js/catalog/frames.js) или рубашка колоды (js/cosmetics24.js)
     const isBack = Math.random() < 0.5;
-    // рамки — редкие и эпические из каталога, рубашки — эпические
-    const item = pick(isBack ? COSMETICS24.BACKS.filter((x) => x.epic) : COSMETICS24.FRAMES.filter((x) => x.rarity !== 'basic'));
+    // любая из каталога (сейчас там только обычные — js/catalog/)
+    const item = pick(isBack ? COSMETICS24.BACKS : COSMETICS24.FRAMES);
     return { kind: 'frame', back: isBack, id: item.id, name: `${isBack ? 'Рубашка' : 'Рамка'} «${item.name}»` };
   }
   return { kind: 'bonus', name: pick(BONUS_NAMES) };

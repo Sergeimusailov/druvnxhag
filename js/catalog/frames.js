@@ -11,9 +11,10 @@
 // `background: var(--pf-frame)` + padding — толщина рамки), внутри картинка.
 // Редкость: basic — обычные (заливка/градиент + узор), rare — редкие
 // (анимированный перелив цвета, движущийся узор, частицы), epic — эпические
-// (свои CSS-эффекты в css/catalog/frames.css).
-// Обычные и редкие с id basic-NN / rare-NN — из генератора
-// (build/gen-frames.mjs → js/catalog/frames.generated.js).
+// (свои CSS-эффекты в css/catalog/frames.css). Сейчас в игре только обычные
+// (ACTIVE): 30 штук — 10 прежних, 18 сгенерированных basic-NN и 2 новогодние
+// ny-*; редкие и эпические описаны, но выключены.
+// Сгенерированные — из build/gen-frames.mjs → js/catalog/frames.generated.js.
 // Подробно — docs/catalog.md.
 
 const FRAME_CATALOG = (() => {
@@ -31,6 +32,8 @@ const FRAME_CATALOG = (() => {
     cross: (s, c) => `<path d="M${s / 2} ${s * 0.2}V${s * 0.8}M${s * 0.2} ${s / 2}H${s * 0.8}" stroke="${c}" stroke-width="${(s * 0.16).toFixed(1)}" stroke-linecap="round"/>`,
     triangles: (s, c) => `<path d="M${s / 2} ${s * 0.18}L${s * 0.84} ${s * 0.8}H${s * 0.16}Z" fill="${c}"/>`,
     stars: (s, c) => `<path d="M${s / 2} ${s * 0.1}L${s * 0.6} ${s * 0.4}L${s * 0.9} ${s / 2}L${s * 0.6} ${s * 0.6}L${s / 2} ${s * 0.9}L${s * 0.4} ${s * 0.6}L${s * 0.1} ${s / 2}L${s * 0.4} ${s * 0.4}Z" fill="${c}"/>`,
+    // снежинка с иконки новогоднего ивента (js/catalog/snowflake.js)
+    snowflake: (s, c) => SNOWFLAKE.svg(SNOWFLAKE.EVENT, { x: s / 2, y: s / 2, r: s * 0.44, ink: c }),
     scales: (s, c) => `<path d="M0 ${s / 2}A${s / 2} ${s / 2} 0 0 0 ${s} ${s / 2}M${-s / 2} ${s}A${s / 2} ${s / 2} 0 0 0 ${s / 2} ${s}A${s / 2} ${s / 2} 0 0 0 ${s * 1.5} ${s}M${-s / 2} 0A${s / 2} ${s / 2} 0 0 0 ${s / 2} 0A${s / 2} ${s / 2} 0 0 0 ${s * 1.5} 0" fill="none" stroke="${c}" stroke-width="${sw(s)}"/>`,
   };
 
@@ -83,15 +86,22 @@ const FRAME_CATALOG = (() => {
 
   const generated = (typeof FRAMES_GENERATED !== 'undefined' ? FRAMES_GENERATED : []).map((f) => ({ ...f, css: generatedCSS(f) }));
 
-  const list = [
+  // все описанные рамки (редкие и эпические сохранены на будущее)…
+  const all = [
     ...LEGACY_FRAMES,
-    ...generated.filter((f) => f.rarity === 'basic'),
+    ...generated.filter((f) => f.rarity === 'basic' && !f.theme),
+    ...generated.filter((f) => f.theme),
     ...generated.filter((f) => f.rarity === 'rare'),
     ...EPIC_FRAMES,
   ].map((f) => ({ ...f, epic: f.rarity === 'epic' }));
+  // …но в игре сейчас только обычные: выдаются, видны в настройках и у
+  // соперника. Включить редкость — добавить её сюда.
+  const ACTIVE = ['basic'];
+  const list = all.filter((f) => ACTIVE.includes(f.rarity));
 
   const byId = new Map(list.map((f) => [f.id, f]));
-  // старые id из прошлых версий настроек → нынешние
+  // старые id из прошлых версий настроек → нынешние; выбранная раньше
+  // выключенная (редкая / эпическая) рамка показывается «Белой»
   const ALIASES = { rainbow: 'holo' };
 
   const get = (id) => byId.get(ALIASES[id] || id) || list[0];
@@ -130,5 +140,5 @@ const FRAME_CATALOG = (() => {
     return f;
   }
 
-  return { list, get, byRarity, random, css, apply, patternURL, PATTERNS: FRAME_PATTERNS };
+  return { list, all, ACTIVE, get, byRarity, random, css, apply, patternURL, PATTERNS: FRAME_PATTERNS };
 })();

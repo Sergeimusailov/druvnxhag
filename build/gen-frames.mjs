@@ -1,22 +1,24 @@
 // Генератор рамок аватара: npm run gen:frames
 //
-// Подбирает по «зерну» сочетания «палитра + заливка + узор (+ анимация,
-// частицы)» и записывает готовый список в js/catalog/frames.generated.js.
-// Список фиксируется в файле: id и облик рамок не меняются, пока генератор
-// не запустят снова. Отрисовка по описанию — js/catalog/frames.js.
+// Дописывает рамки в js/catalog/frames.generated.js до нужного количества.
+// Уже выданные рамки (их id и облик) не трогает — новые получают следующие
+// номера и палитры, которых ещё нет. Отрисовка — js/catalog/frames.js.
 // Подробно — docs/catalog.md.
 //
-//   node build/gen-frames.mjs            — зерно по умолчанию
-//   node build/gen-frames.mjs --seed 42  — другой набор
+//   node build/gen-frames.mjs                — дописать недостающие
+//   node build/gen-frames.mjs --fresh        — собрать список заново (id поменяют облик!)
+//   node build/gen-frames.mjs --seed 42      — другое зерно для новых рамок
 import fs from 'node:fs';
 
+const FILE = new URL('../js/catalog/frames.generated.js', import.meta.url);
 const argSeed = process.argv.indexOf('--seed');
 const SEED = argSeed > 0 ? Number(process.argv[argSeed + 1]) : 2411;
+const FRESH = process.argv.includes('--fresh');
 
-const BASIC_COUNT = 10; // + 10 прежних обычных = 20
-const RARE_COUNT = 10;
+// сколько сгенерированных рамок должно быть (+ 10 прежних обычных в
+// js/catalog/frames.js = 30 обычных: 18 генерированных + 2 новогодние)
+const TARGET = { basic: 18, rare: 10 };
 
-// детерминированный ГПСЧ (mulberry32)
 function prng(seed) {
   let a = seed >>> 0;
   return () => {
@@ -27,7 +29,15 @@ function prng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-const rnd = prng(SEED);
+
+// уже выданные рамки
+let existing = [];
+if (!FRESH && fs.existsSync(FILE)) {
+  const src = fs.readFileSync(FILE, 'utf8');
+  existing = JSON.parse(src.slice(src.indexOf('['), src.lastIndexOf(']') + 1));
+}
+// новые рамки — своим потоком случайных чисел, чтобы не зависеть от старых
+const rnd = prng(SEED + existing.length * 7919);
 const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
 const int = (min, max) => min + Math.floor(rnd() * (max - min + 1));
 const shuffle = (arr) => {
@@ -39,7 +49,7 @@ const shuffle = (arr) => {
   return a;
 };
 
-// палитры обычных рамок: светлый, основной, тёмный (названия — имя рамки)
+// палитры обычных рамок: светлый, основной, тёмный (название — имя рамки)
 const BASIC_PALETTES = [
   ['Лаванда', ['#efe6ff', '#a98bff', '#5b3fc4']],
   ['Коралл', ['#ffe3d6', '#ff7a59', '#c23a1e']],
@@ -57,6 +67,14 @@ const BASIC_PALETTES = [
   ['Небо', ['#e5f7ff', '#5cc4ff', '#1d73b8']],
   ['Песок', ['#fbf1de', '#d9b27c', '#8a6634']],
   ['Сталь', ['#eef1f5', '#8d99ab', '#3e4757']],
+  ['Вишня', ['#ffd6dc', '#d61f45', '#7a0a22']],
+  ['Хвоя', ['#dff5e3', '#3f9e5a', '#1c4f2c']],
+  ['Терракота', ['#ffe0d1', '#d0673f', '#7f2f16']],
+  ['Ультрамарин', ['#dde3ff', '#2f45d8', '#101c6e']],
+  ['Фуксия', ['#ffd9f7', '#e03cc6', '#7d1170']],
+  ['Олива', ['#f1f3d8', '#9aa63a', '#4f5714']],
+  ['Шоколад', ['#f3e2d6', '#8a5a3c', '#3f2414']],
+  ['Полночь', ['#d7dbea', '#3b4470', '#141a33']],
 ];
 
 // палитры редких: четыре цвета для перелива
@@ -75,66 +93,86 @@ const RARE_PALETTES = [
   ['Сумерки', ['#0f1a3d', '#3a3f9e', '#e66aa8', '#ffb86b']],
 ];
 
+// новогодние рамки — цвета и узор с иконок новогоднего ивента:
+// ёлочный шар (assets/v2-snow-pts2.png) и снежинка (assets/v2-event-snowflake.png)
+const NY_FRAMES = [
+  {
+    id: 'ny-ball', name: 'Ёлочный шар', rarity: 'basic', theme: 'ny',
+    colors: ['#fe9951', '#fd651a', '#f12941'],
+    fill: { type: 'radial', angle: 0 },
+    pattern: { kind: 'snowflake', size: 20, ink: 'rgba(255,255,255,0.55)' },
+  },
+  {
+    id: 'ny-snowflake', name: 'Снежинка', rarity: 'basic', theme: 'ny',
+    colors: ['#cedeff', '#567dff', '#283dd9'],
+    fill: { type: 'linear', angle: 135 },
+    pattern: { kind: 'snowflake', size: 20, ink: 'rgba(255,255,255,0.5)' },
+  },
+];
+
 // узоры — отрисовка в js/catalog/frames.js (FRAME_PATTERNS)
 const PATTERNS = ['dots', 'polka', 'stripes', 'checks', 'rhombus', 'zigzag', 'waves', 'rings', 'cross', 'triangles', 'stars', 'scales'];
 const FILLS = ['solid', 'linear', 'linear2', 'radial', 'conic'];
 const ANIMS = ['spin', 'turn', 'flow'];
 const PARTICLES = [null, 'spark', 'ember', 'star'];
 
-// светлый ли цвет (узор на светлом — тёмный, на тёмном — светлый)
-const isLight = (hex) => {
-  const n = parseInt(hex.slice(1), 16);
-  const r = n >> 16, g = (n >> 8) & 255, b = n & 255;
-  return 0.299 * r + 0.587 * g + 0.114 * b > 150;
-};
-// самый светлый цвет палитры — частицы им заметнее всего
 const lum = (hex) => {
   const n = parseInt(hex.slice(1), 16);
   return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
 };
 const lightest = (colors) => colors.reduce((a, c) => (lum(c) > lum(a) ? c : a));
-const ink = (hex, strong) => (isLight(hex) ? `rgba(0,0,0,${strong ? 0.3 : 0.24})` : `rgba(255,255,255,${strong ? 0.5 : 0.4})`);
-
+const ink = (hex, strong) => (lum(hex) > 150 ? `rgba(0,0,0,${strong ? 0.3 : 0.24})` : `rgba(255,255,255,${strong ? 0.5 : 0.4})`);
 const pad = (n) => String(n).padStart(2, '0');
 
-const basicPalettes = shuffle(BASIC_PALETTES).slice(0, BASIC_COUNT);
-const basicPatterns = shuffle(PATTERNS);
-const basic = basicPalettes.map(([name, colors], i) => {
-  const fill = pick(FILLS);
-  return {
+const used = new Set(existing.map((f) => f.name));
+const count = (r) => existing.filter((f) => f.rarity === r && !f.theme).length;
+// узоры по кругу, начиная с наименее использованных
+const patternQueue = (r) => {
+  const n = (k) => existing.filter((f) => f.rarity === r && f.pattern.kind === k).length;
+  return shuffle(PATTERNS).sort((a, b) => n(a) - n(b));
+};
+
+const added = [];
+
+const basicPats = patternQueue('basic');
+const basicPalettes = shuffle(BASIC_PALETTES.filter(([name]) => !used.has(name)));
+for (let i = count('basic'); i < TARGET.basic && basicPalettes.length; i++) {
+  const [name, colors] = basicPalettes.shift();
+  added.push({
     id: `basic-${pad(i + 1)}`,
     name,
     rarity: 'basic',
     colors,
-    fill: { type: fill, angle: pick([45, 90, 135, 160, 200, 315]) },
-    pattern: { kind: basicPatterns[i % basicPatterns.length], size: pick([14, 16, 18, 20]), ink: ink(colors[1], false) },
-  };
-});
+    fill: { type: pick(FILLS), angle: pick([45, 90, 135, 160, 200, 315]) },
+    pattern: { kind: basicPats[(i - count('basic')) % basicPats.length], size: pick([14, 16, 18, 20]), ink: ink(colors[1], false) },
+  });
+}
 
-const rarePalettes = shuffle(RARE_PALETTES).slice(0, RARE_COUNT);
-const rarePatterns = shuffle(PATTERNS);
-const rare = rarePalettes.map(([name, colors], i) => {
-  const anim = ANIMS[i % ANIMS.length];
+const rarePats = patternQueue('rare');
+const rarePalettes = shuffle(RARE_PALETTES.filter(([name]) => !used.has(name)));
+for (let i = count('rare'); i < TARGET.rare && rarePalettes.length; i++) {
+  const [name, colors] = rarePalettes.shift();
   const particle = PARTICLES[int(0, PARTICLES.length - 1)];
-  const dirs = [[1, 0], [0, 1], [1, 1], [-1, 1], [0, -1]];
-  const [dx, dy] = pick(dirs);
-  // средний цвет палитры — по нему цвет узора
-  return {
+  const [dx, dy] = pick([[1, 0], [0, 1], [1, 1], [-1, 1], [0, -1]]);
+  added.push({
     id: `rare-${pad(i + 1)}`,
     name,
     rarity: 'rare',
     colors,
-    fill: { type: anim, angle: pick([45, 90, 135, 180]), speed: pick([3, 4, 5, 6]) },
-    pattern: { kind: rarePatterns[i % rarePatterns.length], size: pick([16, 18, 20]), ink: ink(colors[1], true), drift: [dx, dy], speed: pick([2, 3, 4]) },
+    fill: { type: ANIMS[i % ANIMS.length], angle: pick([45, 90, 135, 180]), speed: pick([3, 4, 5, 6]) },
+    pattern: { kind: rarePats[(i - count('rare')) % rarePats.length], size: pick([16, 18, 20]), ink: ink(colors[1], true), drift: [dx, dy], speed: pick([2, 3, 4]) },
     fx: particle ? { kind: particle, count: particle === 'spark' ? 5 : 7, color: lightest(colors) } : null,
-  };
-});
+  });
+}
 
-const out = `// СГЕНЕРИРОВАНО build/gen-frames.mjs (зерно ${SEED}) — руками не править,
-// перегенерировать: npm run gen:frames. Описание полей — docs/catalog.md.
+for (const ny of NY_FRAMES) if (!existing.some((f) => f.id === ny.id)) added.push(ny);
+
+const all = [...existing, ...added];
+const out = `// СГЕНЕРИРОВАНО build/gen-frames.mjs — руками не править, дописать
+// недостающие: npm run gen:frames. Описание полей — docs/catalog.md.
 // Отрисовка — js/catalog/frames.js.
 
-const FRAMES_GENERATED = ${JSON.stringify([...basic, ...rare], null, 2)};
+const FRAMES_GENERATED = ${JSON.stringify(all, null, 2)};
 `;
-fs.writeFileSync(new URL('../js/catalog/frames.generated.js', import.meta.url), out);
-console.log(`frames: ${basic.length} обычных, ${rare.length} редких → js/catalog/frames.generated.js`);
+fs.writeFileSync(FILE, out);
+console.log(`frames: было ${existing.length}, добавлено ${added.length} (${added.map((f) => f.id).join(', ') || '—'})`);

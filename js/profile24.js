@@ -21,7 +21,7 @@ if (!isApp3()) {
   const saved = {
     avatar: storageGet(P24_KEYS.avatar),
     frame: C24.frame(storageGet(P24_KEYS.frame) || 'white').id,
-    back: C24.back(storageGet(P24_KEYS.back) || 'classic').id,
+    back: C24.back(storageGet(P24_KEYS.back)).id,
     status: storageGet(P24_KEYS.status) || document.getElementById('profileStatus').textContent,
   };
   if (!P24_AVATARS.includes(saved.avatar)) saved.avatar = P24_PHOTO;
