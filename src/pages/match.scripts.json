@@ -4,6 +4,7 @@
   "js/cards.js",
   "js/sheets.js",
   "js/catalog/snowflake.js",
+  "js/catalog/motifs.js",
   "js/catalog/fx-emitter.js",
   "js/catalog/frames.generated.js",
   "js/catalog/frames.js",

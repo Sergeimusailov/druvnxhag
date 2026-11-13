@@ -4,196 +4,6 @@
 
 const FRAMES_GENERATED = [
   {
-    "id": "basic-01",
-    "name": "Лаванда",
-    "rarity": "basic",
-    "colors": [
-      "#efe6ff",
-      "#a98bff",
-      "#5b3fc4"
-    ],
-    "fill": {
-      "type": "linear",
-      "angle": 45
-    },
-    "pattern": {
-      "kind": "stars",
-      "size": 16,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-02",
-    "name": "Сталь",
-    "rarity": "basic",
-    "colors": [
-      "#eef1f5",
-      "#8d99ab",
-      "#3e4757"
-    ],
-    "fill": {
-      "type": "conic",
-      "angle": 315
-    },
-    "pattern": {
-      "kind": "rings",
-      "size": 16,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-03",
-    "name": "Персик",
-    "rarity": "basic",
-    "colors": [
-      "#ffeede",
-      "#ffa86b",
-      "#c8622b"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 45
-    },
-    "pattern": {
-      "kind": "waves",
-      "size": 14,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-04",
-    "name": "Янтарь",
-    "rarity": "basic",
-    "colors": [
-      "#fff1cc",
-      "#ffb020",
-      "#b86a00"
-    ],
-    "fill": {
-      "type": "linear",
-      "angle": 45
-    },
-    "pattern": {
-      "kind": "checks",
-      "size": 18,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-05",
-    "name": "Сапфир",
-    "rarity": "basic",
-    "colors": [
-      "#d9e6ff",
-      "#3d6bff",
-      "#122f9e"
-    ],
-    "fill": {
-      "type": "linear",
-      "angle": 90
-    },
-    "pattern": {
-      "kind": "cross",
-      "size": 16,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-06",
-    "name": "Малина",
-    "rarity": "basic",
-    "colors": [
-      "#ffd9e8",
-      "#e6336f",
-      "#8e0f3d"
-    ],
-    "fill": {
-      "type": "conic",
-      "angle": 315
-    },
-    "pattern": {
-      "kind": "dots",
-      "size": 18,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-07",
-    "name": "Изумруд",
-    "rarity": "basic",
-    "colors": [
-      "#d4fbe6",
-      "#1fbf75",
-      "#0a6440"
-    ],
-    "fill": {
-      "type": "linear2",
-      "angle": 160
-    },
-    "pattern": {
-      "kind": "stripes",
-      "size": 18,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-08",
-    "name": "Песок",
-    "rarity": "basic",
-    "colors": [
-      "#fbf1de",
-      "#d9b27c",
-      "#8a6634"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 200
-    },
-    "pattern": {
-      "kind": "scales",
-      "size": 18,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-09",
-    "name": "Индиго",
-    "rarity": "basic",
-    "colors": [
-      "#dfe0ff",
-      "#5a55e8",
-      "#28237d"
-    ],
-    "fill": {
-      "type": "linear",
-      "angle": 135
-    },
-    "pattern": {
-      "kind": "triangles",
-      "size": 20,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-10",
-    "name": "Небо",
-    "rarity": "basic",
-    "colors": [
-      "#e5f7ff",
-      "#5cc4ff",
-      "#1d73b8"
-    ],
-    "fill": {
-      "type": "conic",
-      "angle": 315
-    },
-    "pattern": {
-      "kind": "polka",
-      "size": 20,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
     "id": "rare-01",
     "name": "Аврора",
     "rarity": "rare",
@@ -496,158 +306,6 @@ const FRAMES_GENERATED = [
     }
   },
   {
-    "id": "basic-11",
-    "name": "Вишня",
-    "rarity": "basic",
-    "colors": [
-      "#ffd6dc",
-      "#d61f45",
-      "#7a0a22"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 135
-    },
-    "pattern": {
-      "kind": "rhombus",
-      "size": 14,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-12",
-    "name": "Коралл",
-    "rarity": "basic",
-    "colors": [
-      "#ffe3d6",
-      "#ff7a59",
-      "#c23a1e"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 160
-    },
-    "pattern": {
-      "kind": "zigzag",
-      "size": 16,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-13",
-    "name": "Шоколад",
-    "rarity": "basic",
-    "colors": [
-      "#f3e2d6",
-      "#8a5a3c",
-      "#3f2414"
-    ],
-    "fill": {
-      "type": "conic",
-      "angle": 45
-    },
-    "pattern": {
-      "kind": "checks",
-      "size": 20,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-14",
-    "name": "Слива",
-    "rarity": "basic",
-    "colors": [
-      "#f0d9ef",
-      "#9b3b8f",
-      "#4d1047"
-    ],
-    "fill": {
-      "type": "linear2",
-      "angle": 135
-    },
-    "pattern": {
-      "kind": "stripes",
-      "size": 18,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-15",
-    "name": "Хвоя",
-    "rarity": "basic",
-    "colors": [
-      "#dff5e3",
-      "#3f9e5a",
-      "#1c4f2c"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 135
-    },
-    "pattern": {
-      "kind": "rings",
-      "size": 20,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-16",
-    "name": "Ультрамарин",
-    "rarity": "basic",
-    "colors": [
-      "#dde3ff",
-      "#2f45d8",
-      "#101c6e"
-    ],
-    "fill": {
-      "type": "radial",
-      "angle": 315
-    },
-    "pattern": {
-      "kind": "stars",
-      "size": 20,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
-    "id": "basic-17",
-    "name": "Мёд",
-    "rarity": "basic",
-    "colors": [
-      "#fff6c9",
-      "#f2c230",
-      "#9c7300"
-    ],
-    "fill": {
-      "type": "linear",
-      "angle": 90
-    },
-    "pattern": {
-      "kind": "dots",
-      "size": 18,
-      "ink": "rgba(0,0,0,0.24)"
-    }
-  },
-  {
-    "id": "basic-18",
-    "name": "Сирень",
-    "rarity": "basic",
-    "colors": [
-      "#f6dcff",
-      "#c86bf0",
-      "#7a2aa6"
-    ],
-    "fill": {
-      "type": "conic",
-      "angle": 160
-    },
-    "pattern": {
-      "kind": "polka",
-      "size": 14,
-      "ink": "rgba(255,255,255,0.4)"
-    }
-  },
-  {
     "id": "ny-ball",
     "name": "Ёлочный шар",
     "rarity": "basic",
@@ -685,6 +343,619 @@ const FRAMES_GENERATED = [
       "kind": "snowflake",
       "size": 20,
       "ink": "rgba(255,255,255,0.5)"
+    }
+  },
+  {
+    "id": "frame-01",
+    "name": "Асфальт",
+    "rarity": "basic",
+    "style": "stitch",
+    "colors": [
+      "#3a3a40",
+      "#a7a7b0",
+      "#f2c14e"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 0
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "stitch",
+      "w": 7,
+      "h": 6,
+      "ink": "#a7a7b0"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-02",
+    "name": "Шалфей",
+    "rarity": "basic",
+    "style": "bands",
+    "colors": [
+      "#8fb59a",
+      "#e9f2e3",
+      "#2f4a3a"
+    ],
+    "fill": {
+      "type": "bands3",
+      "angle": 0,
+      "width": 4
+    },
+    "deco": null,
+    "noise": null
+  },
+  {
+    "id": "frame-03",
+    "name": "Шоколад",
+    "rarity": "basic",
+    "style": "teeth",
+    "colors": [
+      "#6b4330",
+      "#e8d2c2",
+      "#e3a33b"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 135
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "teeth",
+      "w": 10,
+      "h": 4,
+      "ink": "#e3a33b"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-04",
+    "name": "Бирюза",
+    "rarity": "basic",
+    "style": "studs",
+    "colors": [
+      "#1fa7a0",
+      "#d5fbf6",
+      "#0b4f4c"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 90
+    },
+    "deco": {
+      "kind": "studs",
+      "shape": "plus",
+      "size": 10,
+      "ink": "#d5fbf6",
+      "many": true,
+      "under": {
+        "pattern": "plus",
+        "size": 5,
+        "ink": "rgba(213,251,246,0.25)"
+      }
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-05",
+    "name": "Мята",
+    "rarity": "basic",
+    "style": "grain",
+    "colors": [
+      "#5fd3a8",
+      "#e4fff3",
+      "#14624a"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 315
+    },
+    "deco": null,
+    "noise": {
+      "tone": "dark",
+      "amount": 0.8
+    }
+  },
+  {
+    "id": "frame-06",
+    "name": "Вишня",
+    "rarity": "basic",
+    "style": "studs",
+    "colors": [
+      "#a3162e",
+      "#ffd6dc",
+      "#f2c14e"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 200
+    },
+    "deco": {
+      "kind": "studs",
+      "shape": "star",
+      "size": 12,
+      "ink": "#ffd6dc",
+      "many": true
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-07",
+    "name": "Изумруд",
+    "rarity": "basic",
+    "style": "grain",
+    "colors": [
+      "#1fbf75",
+      "#d4fbe6",
+      "#0a4a2f"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 45
+    },
+    "deco": null,
+    "noise": {
+      "tone": "light",
+      "amount": 0.5
+    }
+  },
+  {
+    "id": "frame-08",
+    "name": "Полночь",
+    "rarity": "basic",
+    "style": "micro",
+    "colors": [
+      "#1b2a5c",
+      "#9fb0e0",
+      "#f2c14e"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 90
+    },
+    "deco": {
+      "kind": "micro",
+      "pattern": "crosshatch",
+      "size": 7,
+      "ink": "rgba(242,193,78,0.55)"
+    },
+    "noise": {
+      "tone": "light",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-09",
+    "name": "Лайм",
+    "rarity": "basic",
+    "style": "split",
+    "colors": [
+      "#a9c93b",
+      "#f2ffd0",
+      "#2f5d2a"
+    ],
+    "fill": {
+      "type": "quarters",
+      "angle": 135
+    },
+    "deco": null,
+    "noise": null
+  },
+  {
+    "id": "frame-10",
+    "name": "Индиго",
+    "rarity": "basic",
+    "style": "micro",
+    "colors": [
+      "#3b3fa8",
+      "#d9dbff",
+      "#ffcf5a"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 160
+    },
+    "deco": {
+      "kind": "micro",
+      "pattern": "crosshatch",
+      "size": 6,
+      "ink": "rgba(217,219,255,0.5)"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-11",
+    "name": "Брусника",
+    "rarity": "basic",
+    "style": "scallop",
+    "colors": [
+      "#b0124a",
+      "#ffd9e6",
+      "#3b0a1c"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 315
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "scallop",
+      "w": 12,
+      "h": 5,
+      "ink": "#3b0a1c"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-12",
+    "name": "Небо",
+    "rarity": "basic",
+    "style": "split",
+    "colors": [
+      "#5cc4ff",
+      "#e5f7ff",
+      "#1d4f8a"
+    ],
+    "fill": {
+      "type": "split",
+      "angle": 45
+    },
+    "deco": null,
+    "noise": null
+  },
+  {
+    "id": "frame-13",
+    "name": "Фуксия",
+    "rarity": "basic",
+    "style": "micro",
+    "colors": [
+      "#d61f7c",
+      "#ffd1ea",
+      "#5a1c7a"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 160
+    },
+    "deco": {
+      "kind": "micro",
+      "pattern": "crosshatch",
+      "size": 4,
+      "ink": "rgba(90,28,122,0.55)"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-14",
+    "name": "Мак",
+    "rarity": "basic",
+    "style": "bold",
+    "colors": [
+      "#e2402f",
+      "#ffd8c9",
+      "#2b2b6b"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 45
+    },
+    "deco": {
+      "kind": "pattern",
+      "pattern": "rhombus",
+      "size": 18,
+      "ink": "rgba(43,43,107,0.55)"
+    },
+    "noise": {
+      "tone": "light",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-15",
+    "name": "Янтарь",
+    "rarity": "basic",
+    "style": "teeth",
+    "colors": [
+      "#f2a516",
+      "#fff1cc",
+      "#8a3b00"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 45
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "teeth",
+      "w": 8,
+      "h": 4,
+      "ink": "#fff1cc"
+    },
+    "noise": {
+      "tone": "dark",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-16",
+    "name": "Барвинок",
+    "rarity": "basic",
+    "style": "bands",
+    "colors": [
+      "#6f86d6",
+      "#dfe5ff",
+      "#24306b"
+    ],
+    "fill": {
+      "type": "bands3",
+      "angle": 0,
+      "width": 5
+    },
+    "deco": null,
+    "noise": {
+      "tone": "light",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-17",
+    "name": "Сирень",
+    "rarity": "basic",
+    "style": "stitch",
+    "colors": [
+      "#b48ae6",
+      "#f1e6ff",
+      "#4b2a7a"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 0
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "stitch",
+      "w": 7,
+      "h": 6,
+      "ink": "#f1e6ff"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-18",
+    "name": "Терракота",
+    "rarity": "basic",
+    "style": "micro",
+    "colors": [
+      "#c8623d",
+      "#ffe1d2",
+      "#5e2414"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 200
+    },
+    "deco": {
+      "kind": "micro",
+      "pattern": "crosshatch",
+      "size": 7,
+      "ink": "rgba(94,36,20,0.55)"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-19",
+    "name": "Охра",
+    "rarity": "basic",
+    "style": "grain",
+    "colors": [
+      "#d08a2e",
+      "#fce6c4",
+      "#4a2c0e"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 315
+    },
+    "deco": null,
+    "noise": {
+      "tone": "light",
+      "amount": 0.65
+    }
+  },
+  {
+    "id": "frame-20",
+    "name": "Море",
+    "rarity": "basic",
+    "style": "bold",
+    "colors": [
+      "#2a5da8",
+      "#d2e3ff",
+      "#f28c6b"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 160
+    },
+    "deco": {
+      "kind": "pattern",
+      "pattern": "stripes",
+      "size": 20,
+      "ink": "rgba(242,140,107,0.55)"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-21",
+    "name": "Коралл",
+    "rarity": "basic",
+    "style": "grain",
+    "colors": [
+      "#ff7a59",
+      "#ffe3d6",
+      "#7a1e10"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 315
+    },
+    "deco": null,
+    "noise": {
+      "tone": "dark",
+      "amount": 0.65
+    }
+  },
+  {
+    "id": "frame-22",
+    "name": "Персик",
+    "rarity": "basic",
+    "style": "bold",
+    "colors": [
+      "#ffa86b",
+      "#ffeede",
+      "#a8401a"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 90
+    },
+    "deco": {
+      "kind": "pattern",
+      "pattern": "cross",
+      "size": 20,
+      "ink": "rgba(255,238,222,0.55)"
+    },
+    "noise": {
+      "tone": "dark",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-23",
+    "name": "Песок",
+    "rarity": "basic",
+    "style": "scallop",
+    "colors": [
+      "#d9b27c",
+      "#fbf1de",
+      "#6b4a20"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 135
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "scallop",
+      "w": 8,
+      "h": 4,
+      "ink": "#6b4a20"
+    },
+    "noise": {
+      "tone": "dark",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-24",
+    "name": "Роза",
+    "rarity": "basic",
+    "style": "bold",
+    "colors": [
+      "#ff5c8a",
+      "#ffe0ea",
+      "#7a0f3a"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 90
+    },
+    "deco": {
+      "kind": "pattern",
+      "pattern": "polka",
+      "size": 20,
+      "ink": "rgba(122,15,58,0.55)"
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-25",
+    "name": "Слива",
+    "rarity": "basic",
+    "style": "teeth",
+    "colors": [
+      "#6d2f6f",
+      "#f0d9ef",
+      "#e3a33b"
+    ],
+    "fill": {
+      "type": "solid",
+      "angle": 160
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "teeth",
+      "w": 12,
+      "h": 5,
+      "ink": "#f0d9ef"
+    },
+    "noise": {
+      "tone": "light",
+      "amount": 0.4
+    }
+  },
+  {
+    "id": "frame-26",
+    "name": "Горчица",
+    "rarity": "basic",
+    "style": "studs",
+    "colors": [
+      "#e3a72f",
+      "#fff1c7",
+      "#7a3b1d"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 135
+    },
+    "deco": {
+      "kind": "studs",
+      "shape": "plus",
+      "size": 10,
+      "ink": "#fff1c7",
+      "many": false,
+      "under": {
+        "pattern": "microdots",
+        "size": 5,
+        "ink": "rgba(255,241,199,0.25)"
+      }
+    },
+    "noise": null
+  },
+  {
+    "id": "frame-27",
+    "name": "Хвоя",
+    "rarity": "basic",
+    "style": "scallop",
+    "colors": [
+      "#2f6b4f",
+      "#d8efe0",
+      "#e94b3c"
+    ],
+    "fill": {
+      "type": "grad",
+      "angle": 135
+    },
+    "deco": {
+      "kind": "edge",
+      "edge": "scallop",
+      "w": 8,
+      "h": 4,
+      "ink": "#e94b3c"
+    },
+    "noise": {
+      "tone": "light",
+      "amount": 0.4
     }
   }
 ];

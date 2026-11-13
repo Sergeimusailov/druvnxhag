@@ -15,9 +15,9 @@ const argSeed = process.argv.indexOf('--seed');
 const SEED = argSeed > 0 ? Number(process.argv[argSeed + 1]) : 2411;
 const FRESH = process.argv.includes('--fresh');
 
-// сколько сгенерированных рамок должно быть (+ 10 прежних обычных в
-// js/catalog/frames.js = 30 обычных: 18 генерированных + 2 новогодние)
-const TARGET = { basic: 18, rare: 10 };
+// сколько сгенерированных рамок должно быть: 27 обычных frame-NN + «Белая»
+// (js/catalog/frames.js) + 2 новогодние = 30 обычных в игре
+const TARGET = { basic: 27, rare: 10 };
 
 function prng(seed) {
   let a = seed >>> 0;
@@ -35,6 +35,8 @@ let existing = [];
 if (!FRESH && fs.existsSync(FILE)) {
   const src = fs.readFileSync(FILE, 'utf8');
   existing = JSON.parse(src.slice(src.indexOf('['), src.lastIndexOf(']') + 1));
+  // рамки старого вида basic-NN (градиент + крупный узор) выведены из игры
+  existing = existing.filter((f) => f.rarity !== 'basic' || f.theme || f.style);
 }
 // новые рамки — своим потоком случайных чисел, чтобы не зависеть от старых
 const rnd = prng(SEED + existing.length * 7919);
@@ -48,34 +50,6 @@ const shuffle = (arr) => {
   }
   return a;
 };
-
-// палитры обычных рамок: светлый, основной, тёмный (название — имя рамки)
-const BASIC_PALETTES = [
-  ['Лаванда', ['#efe6ff', '#a98bff', '#5b3fc4']],
-  ['Коралл', ['#ffe3d6', '#ff7a59', '#c23a1e']],
-  ['Лайм', ['#f4ffd1', '#a6e22e', '#4f8a0b']],
-  ['Сапфир', ['#d9e6ff', '#3d6bff', '#122f9e']],
-  ['Изумруд', ['#d4fbe6', '#1fbf75', '#0a6440']],
-  ['Янтарь', ['#fff1cc', '#ffb020', '#b86a00']],
-  ['Малина', ['#ffd9e8', '#e6336f', '#8e0f3d']],
-  ['Бирюза', ['#d2fbf7', '#20c9c0', '#0a6f73']],
-  ['Сирень', ['#f6dcff', '#c86bf0', '#7a2aa6']],
-  ['Персик', ['#ffeede', '#ffa86b', '#c8622b']],
-  ['Индиго', ['#dfe0ff', '#5a55e8', '#28237d']],
-  ['Мёд', ['#fff6c9', '#f2c230', '#9c7300']],
-  ['Слива', ['#f0d9ef', '#9b3b8f', '#4d1047']],
-  ['Небо', ['#e5f7ff', '#5cc4ff', '#1d73b8']],
-  ['Песок', ['#fbf1de', '#d9b27c', '#8a6634']],
-  ['Сталь', ['#eef1f5', '#8d99ab', '#3e4757']],
-  ['Вишня', ['#ffd6dc', '#d61f45', '#7a0a22']],
-  ['Хвоя', ['#dff5e3', '#3f9e5a', '#1c4f2c']],
-  ['Терракота', ['#ffe0d1', '#d0673f', '#7f2f16']],
-  ['Ультрамарин', ['#dde3ff', '#2f45d8', '#101c6e']],
-  ['Фуксия', ['#ffd9f7', '#e03cc6', '#7d1170']],
-  ['Олива', ['#f1f3d8', '#9aa63a', '#4f5714']],
-  ['Шоколад', ['#f3e2d6', '#8a5a3c', '#3f2414']],
-  ['Полночь', ['#d7dbea', '#3b4470', '#141a33']],
-];
 
 // палитры редких: четыре цвета для перелива
 const RARE_PALETTES = [
@@ -111,8 +85,8 @@ const NY_FRAMES = [
 ];
 
 // узоры — отрисовка в js/catalog/frames.js (FRAME_PATTERNS)
+// узоры редких рамок
 const PATTERNS = ['dots', 'polka', 'stripes', 'checks', 'rhombus', 'zigzag', 'waves', 'rings', 'cross', 'triangles', 'stars', 'scales'];
-const FILLS = ['solid', 'linear', 'linear2', 'radial', 'conic'];
 const ANIMS = ['spin', 'turn', 'flow'];
 const PARTICLES = [null, 'spark', 'ember', 'star'];
 
@@ -134,18 +108,73 @@ const patternQueue = (r) => {
 
 const added = [];
 
-const basicPats = patternQueue('basic');
-const basicPalettes = shuffle(BASIC_PALETTES.filter(([name]) => !used.has(name)));
-for (let i = count('basic'); i < TARGET.basic && basicPalettes.length; i++) {
-  const [name, colors] = basicPalettes.shift();
-  added.push({
-    id: `basic-${pad(i + 1)}`,
-    name,
-    rarity: 'basic',
-    colors,
-    fill: { type: pick(FILLS), angle: pick([45, 90, 135, 160, 200, 315]) },
-    pattern: { kind: basicPats[(i - count('basic')) % basicPats.length], size: pick([14, 16, 18, 20]), ink: ink(colors[1], false) },
-  });
+// ---------- обычные рамки: заливка + приём + шум ----------
+// плоские «печатные» палитры: основной, второй (светлый / контрастный), акцент
+const FRAME_PALETTES = [
+  ['Мак', ['#e2402f', '#ffd8c9', '#2b2b6b']], ['Горчица', ['#e3a72f', '#fff1c7', '#7a3b1d']],
+  ['Шалфей', ['#8fb59a', '#e9f2e3', '#2f4a3a']], ['Барвинок', ['#6f86d6', '#dfe5ff', '#24306b']],
+  ['Фуксия', ['#d61f7c', '#ffd1ea', '#5a1c7a']], ['Лайм', ['#a9c93b', '#f2ffd0', '#2f5d2a']],
+  ['Терракота', ['#c8623d', '#ffe1d2', '#5e2414']], ['Бирюза', ['#1fa7a0', '#d5fbf6', '#0b4f4c']],
+  ['Индиго', ['#3b3fa8', '#d9dbff', '#ffcf5a']], ['Брусника', ['#b0124a', '#ffd9e6', '#3b0a1c']],
+  ['Охра', ['#d08a2e', '#fce6c4', '#4a2c0e']], ['Мята', ['#5fd3a8', '#e4fff3', '#14624a']],
+  ['Сирень', ['#b48ae6', '#f1e6ff', '#4b2a7a']], ['Коралл', ['#ff7a59', '#ffe3d6', '#7a1e10']],
+  ['Асфальт', ['#3a3a40', '#a7a7b0', '#f2c14e']], ['Песок', ['#d9b27c', '#fbf1de', '#6b4a20']],
+  ['Море', ['#2a5da8', '#d2e3ff', '#f28c6b']], ['Вишня', ['#a3162e', '#ffd6dc', '#f2c14e']],
+  ['Хвоя', ['#2f6b4f', '#d8efe0', '#e94b3c']], ['Персик', ['#ffa86b', '#ffeede', '#a8401a']],
+  ['Слива', ['#6d2f6f', '#f0d9ef', '#e3a33b']], ['Небо', ['#5cc4ff', '#e5f7ff', '#1d4f8a']],
+  ['Янтарь', ['#f2a516', '#fff1cc', '#8a3b00']], ['Роза', ['#ff5c8a', '#ffe0ea', '#7a0f3a']],
+  ['Полночь', ['#1b2a5c', '#9fb0e0', '#f2c14e']], ['Изумруд', ['#1fbf75', '#d4fbe6', '#0a4a2f']],
+  ['Шоколад', ['#6b4330', '#e8d2c2', '#e3a33b']],
+];
+// приёмы и сколько рамок каждого (в сумме 27)
+const FRAME_PLAN = [
+  ['bold', 4], ['micro', 4], ['grain', 4], ['studs', 3], ['scallop', 3], ['teeth', 3], ['stitch', 2], ['split', 2], ['bands', 2],
+];
+const MICRO = ['microdots', 'hatch', 'pin', 'crosshatch', 'mcheck', 'plus'];
+const BOLD = ['dots', 'polka', 'stripes', 'checks', 'rhombus', 'zigzag', 'waves', 'rings', 'cross', 'triangles', 'stars', 'scales'];
+const STUDS = ['star', 'star8', 'diamond', 'dot', 'plus'];
+const alpha = (hex, a) => {
+  const v = parseInt(hex.slice(1), 16);
+  return `rgba(${v >> 16},${(v >> 8) & 255},${v & 255},${a})`;
+};
+const angle = () => pick([45, 90, 135, 160, 200, 315]);
+
+function frameSpec(style, colors) {
+  const [m, s2, a] = colors;
+  const light = lum(m) > 150;
+  const ink2 = alpha(s2, light ? 0.55 : 0.5);
+  const inkA = alpha(a, 0.55);
+  const tone = light ? 'dark' : 'light';
+  const f = { style, colors, fill: { type: pick(['solid', 'grad']), angle: angle() }, deco: null, noise: null };
+  if (style === 'bold') f.deco = { kind: 'pattern', pattern: pick(BOLD), size: pick([16, 18, 20, 22]), ink: pick([ink2, inkA]) };
+  if (style === 'micro') f.deco = { kind: 'micro', pattern: pick(MICRO), size: pick([4, 5, 6, 7]), ink: pick([ink2, inkA]) };
+  if (style === 'grain') { f.fill = { type: pick(['grad', 'duo']), angle: angle() }; f.noise = { tone, amount: pick([0.5, 0.65, 0.8]) }; }
+  if (style === 'studs') {
+    f.deco = { kind: 'studs', shape: pick(STUDS), size: pick([10, 12]), ink: pick([s2, a]), many: rnd() < 0.5 };
+    if (rnd() < 0.5) f.deco.under = { pattern: pick(MICRO), size: 5, ink: alpha(s2, 0.25) };
+  }
+  if (style === 'scallop' || style === 'teeth') f.deco = { kind: 'edge', edge: style, w: pick([8, 10, 12]), h: pick([4, 5]), ink: pick([s2, a]) };
+  if (style === 'stitch') { f.fill = { type: 'solid', angle: 0 }; f.deco = { kind: 'edge', edge: 'stitch', w: 7, h: 6, ink: s2 }; }
+  if (style === 'split') f.fill = { type: pick(['split', 'quarters']), angle: pick([45, 135, 0]) };
+  if (style === 'bands') f.fill = { type: pick(['bands', 'bands3']), angle: pick([0, 45, 90, 135]), width: pick([3, 4, 5]) };
+  // лёгкое зерно и на части остальных
+  if (!f.noise && style !== 'stitch' && rnd() < 0.3) f.noise = { tone, amount: 0.4 };
+  return f;
+}
+
+const frameCount = existing.filter((f) => f.id.startsWith('frame-')).length;
+const framePalettes = shuffle(FRAME_PALETTES.filter(([name]) => !used.has(name)));
+const styleQueue = shuffle(FRAME_PLAN.flatMap(([st, k]) => Array(k).fill(st)));
+// соседние — разных приёмов
+for (let i = 1; i < styleQueue.length; i++) {
+  if (styleQueue[i] === styleQueue[i - 1]) {
+    const j = styleQueue.findIndex((x, k) => k > i && x !== styleQueue[i]);
+    if (j > 0) [styleQueue[i], styleQueue[j]] = [styleQueue[j], styleQueue[i]];
+  }
+}
+for (let i = frameCount; i < TARGET.basic && framePalettes.length; i++) {
+  const [name, colors] = framePalettes.shift();
+  added.push({ id: `frame-${pad(i + 1)}`, name, rarity: 'basic', ...frameSpec(styleQueue[i % styleQueue.length], colors) });
 }
 
 const rarePats = patternQueue('rare');
