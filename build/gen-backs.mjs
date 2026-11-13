@@ -1,8 +1,8 @@
 // Генератор рубашек колоды: npm run gen:backs
 //
 // 30 обычных зимних рубашек восьми видов композиции (js/catalog/backs.js →
-// STYLES): сетка мотивов, «свитер», пейзаж, народная открытка, плакат с
-// уголками, гирлянды, снегопад, абстракция. Мотивы — ёлки, подарки,
+// STYLES): сетка мотивов, «свитер», пейзаж, народная открытка, крупная
+// форма (ёлка / снежки / горка), гирлянды, снегопад, абстракция. Мотивы — ёлки, подарки,
 // игрушки, снеговики, звёзды, снежинки (js/catalog/motifs.js). Цвета — 14
 // зимних палитр, фон — цвет или градиент, у части — шум «как в печати».
 // Результат — js/catalog/backs.generated.js (руками не править).
@@ -75,7 +75,9 @@ const PLAN = [
   { style: 'knit', names: ['Свитер', 'Варежка', 'Шарф', 'Носки'] },
   { style: 'poster', names: ['Сочельник', 'Полночь', 'Сугроб', 'Опушка'], dark: true },
   { style: 'folk', names: ['Узор', 'Лубок', 'Ярмарка', 'Рушник'], subs: ['scallop', 'zig'], motifs: [['tree'], ['gift'], ['snowflake'], ['star']] },
-  { style: 'chevron', names: ['Ёлочка', 'Снежки', 'Горка'], subs: ['down', 'up'] },
+  // крупная форма: у каждой своя (fixed) — гигантская ёлка, снежки, горка;
+  // subs оставлены, чтобы не сдвигать случайные числа остальных рубашек
+  { style: 'big', names: ['Ёлочка', 'Снежки', 'Горка'], subs: ['down', 'up'], fixed: ['tree', 'balls', 'slope'] },
   { style: 'garland', names: ['Гирлянда', 'Мишура', 'Огоньки'], dark: true },
   { style: 'snowfall', names: ['Метель', 'Вьюга', 'Позёмка'] },
   { style: 'geo', names: ['Иней', 'Сосулька', 'Каток', 'Стежок'], subs: ['waves', 'stairs', 'diamonds', 'stitch', 'arcs'] },
@@ -109,6 +111,7 @@ for (const plan of PLAN) {
       seed: Math.floor(rnd() * 1e6),
     };
     if (subs.length) back.sub = subs[i % subs.length];
+    if (plan.fixed) back.sub = plan.fixed[i];
     if (plan.motifs) back.motifs = plan.motifs[i % plan.motifs.length];
     if (plan.style === 'knit') back.motifs = shuffle(['tree', 'star', 'snowflake', 'gift']).slice(0, 2);
     if (plan.style === 'tile') { back.n = pick([3, 3, 4]); back.dots = rnd() < 0.5; back.variant = pick([0, 1, 2]); }

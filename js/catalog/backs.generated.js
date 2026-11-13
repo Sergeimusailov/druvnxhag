@@ -112,7 +112,7 @@ const BACKS_GENERATED = [
   "id": "winter-03",
   "name": "Горка",
   "rarity": "basic",
-  "style": "chevron",
+  "style": "big",
   "pal": {
    "bg": [
     "#7b90dc",
@@ -125,7 +125,7 @@ const BACKS_GENERATED = [
   "grad": 160,
   "noise": null,
   "seed": 939500,
-  "sub": "down"
+  "sub": "slope"
  },
  {
   "id": "winter-04",
@@ -791,7 +791,7 @@ const BACKS_GENERATED = [
   "id": "winter-22",
   "name": "Снежки",
   "rarity": "basic",
-  "style": "chevron",
+  "style": "big",
   "pal": {
    "bg": [
     "#22346e",
@@ -804,7 +804,7 @@ const BACKS_GENERATED = [
   "grad": 90,
   "noise": "light",
   "seed": 850568,
-  "sub": "up"
+  "sub": "balls"
  },
  {
   "id": "winter-23",
@@ -1091,7 +1091,7 @@ const BACKS_GENERATED = [
   "id": "winter-30",
   "name": "Ёлочка",
   "rarity": "basic",
-  "style": "chevron",
+  "style": "big",
   "pal": {
    "bg": [
     "#ecb53c",
@@ -1104,6 +1104,6 @@ const BACKS_GENERATED = [
   "grad": 160,
   "noise": "dark",
   "seed": 416249,
-  "sub": "down"
+  "sub": "tree"
  }
 ];

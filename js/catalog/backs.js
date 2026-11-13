@@ -68,7 +68,7 @@ const BACK_CATALOG = (() => {
       return out;
     },
 
-    // «свитер»: полосы узоров — показан крупный фрагмент (×1.8), 3–4 полосы
+    // «свитер»: полосы узоров — показан крупный фрагмент (×2.5), 2–3 полосы
     knit(b, r, c) {
       const colors = [c.ink, c.accent, c.accent2];
       const bands = ['zig', 'line', 'motif', 'line', 'dots', 'checks', 'zig', 'motif', 'xs'];
@@ -103,7 +103,7 @@ const BACK_CATALOG = (() => {
           y += 16;
         }
       }
-      return `<g transform="translate(50 50) scale(1.8) translate(-50 -50)">${out}</g>`;
+      return `<g transform="translate(50 50) scale(2.5) translate(-50 -50)">${out}</g>`;
     },
 
     // пейзаж: крупная луна у края, два-три больших дерева на холме, сугроб
@@ -163,61 +163,69 @@ const BACK_CATALOG = (() => {
       return out;
     },
 
-    // плакат: четыре толстых уголка-«ёлочки», крупная звезда, три снежка
-    chevron(b, r, c) {
+    // крупная форма — у каждой рубашки своя (sub):
+    //  tree  — гигантская ёлка из трёх ярусов во весь рост, игрушки, звезда
+    //  balls — горка из трёх огромных снежков у края, летящие снежки
+    //  slope — склон горки по диагонали с лыжнёй, большое солнце в углу
+    big(b, r, c) {
       let out = '';
-      const tipX = 34 + r() * 32;
-      const flip = b.sub === 'up';
-      const y0 = flip ? 58 : 4;
-      for (let k = 0; k < 4; k++) {
-        const y = y0 + k * 11;
-        const tipY = flip ? y - 28 : y + 28;
-        out += `<polyline points="-6,${n(y)} ${n(tipX)},${n(tipY)} 106,${n(y)}" fill="none" stroke="${c.ink}" stroke-width="5" stroke-linejoin="miter"/>`;
+      if (b.sub === 'tree') {
+        const x0 = 44 + r() * 12;
+        [[-2, 46, 34], [20, 76, 46], [46, 108, 60]].forEach(([top, bottom, hw]) => {
+          out += poly([[x0, top], [x0 + hw, bottom], [x0 - hw, bottom]], c.ink);
+        });
+        [[x0 - 14, 38, c.accent], [x0 + 18, 62, c.accent2], [x0 - 24, 70, c.accent2], [x0 + 6, 88, c.accent], [x0 + 34, 94, c.accent]].forEach(([x, y, col]) => { out += circle(x, y, 5.5, col); });
+        out += MOTIFS.star(x0, 9, 22, c.accent2);
+      } else if (b.sub === 'balls') {
+        const right = r() < 0.5;
+        const X = (x) => (right ? x : 100 - x);
+        out += circle(X(50), 90, 24, c.ink) + circle(X(92), 88, 22, c.ink) + circle(X(72), 52, 19, c.ink);
+        [[X(22), 30, 7], [X(38), 14, 4.5]].forEach(([x, y, rr]) => {
+          out += circle(x, y, rr, c.ink);
+          const dir = right ? -1 : 1;
+          for (let k = 0; k < 3; k++) out += `<path d="M${n(x + dir * (rr + 3))} ${n(y - rr * 0.6 + k * rr * 0.6)}h${n(dir * (6 + k * 3))}" stroke="${c.ink}" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`;
+        });
+      } else {
+        const up = r() < 0.5;
+        const Y = (y) => y;
+        const X = (x) => (up ? x : 100 - x);
+        out += circle(X(14), 14, 16, c.accent2);
+        out += `<path d="M${X(-5)} 100L${X(-5)} 84Q${X(50)} 78 ${X(105)} 30L${X(105)} 100Z" fill="${c.ink}"/>`;
+        [6, 15].forEach((d) => { out += `<path d="M${X(-5)} ${n(Y(84 + d))}Q${X(50)} ${n(78 + d)} ${X(105)} ${n(30 + d * 1.1)}" fill="none" stroke="${c.accent}" stroke-width="3.5" stroke-linecap="round"/>`; });
+        out += MOTIFS.tree(X(84), 30, 22, { ...c, ink: c.accent }, 3);
+        [[X(40), 40, 2.2], [X(58), 22, 1.8], [X(76), 12, 2.4], [X(30), 58, 1.8]].forEach(([x, y, rr]) => { out += circle(x, y, rr, c.ink); });
       }
-      const tipY = flip ? y0 - 40 : y0 + 3 * 11 + 42;
-      out += MOTIFS.star(tipX, tipY, 20, c.accent2);
-      // горка снежков — в стороне от острия
-      const bx = tipX < 50 ? 76 : 24;
-      const by = flip ? 10 : 74;
-      [[0, 0], [-6.5, 11], [6.5, 11]].forEach(([dx, dy]) => { out += circle(bx + dx, by + dy, 6, c.accent); });
       return out;
     },
 
-    // гирлянды: две нити, на каждой 3–4 крупные игрушки и звёзды
+    // гирлянда: одна провисающая нить, на ней 3–4 крупные игрушки и звезда
     garland(b, r, c) {
       let out = '';
       const cols = [c.accent, c.accent2, c.ink];
-      for (let i = 0; i < 10; i++) out += circle(r() * 100, 45 + r() * 55, 0.9 + r() * 1.1, c.ink);
-      const rows = 2;
-      for (let g = 0; g < rows; g++) {
-        const y0 = 2 + g * 46;
-        const y1 = y0 + (r() - 0.5) * 8;
-        const sag = 14 + r() * 8;
-        const P = (t) => {
-          const x = -5 + 110 * t;
-          const y = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * (Math.max(y0, y1) + sag) + t * t * y1;
-          return [x, y];
-        };
-        out += `<path d="M-5 ${n(y0)}Q50 ${n(Math.max(y0, y1) + sag)} 105 ${n(y1)}" fill="none" stroke="${c.ink}" stroke-width="1.6" opacity="0.85"/>`;
-        const count = 3 + Math.floor(r() * 2);
-        for (let k = 1; k <= count; k++) {
-          const [x, y] = P(k / (count + 1));
-          const len = 3 + ((k + g) % 3) * 3;
-          const col = cols[(k + g) % 3];
-          out += `<path d="M${n(x)} ${n(y)}v${len}" stroke="${c.ink}" stroke-width="1.1" opacity="0.85"/>`;
-          if ((k + g) % 4 === 3) out += MOTIFS.star(x, y + len + 6, 14, col);
-          else out += MOTIFS.ornament(x, y + len + 7, 16, { ...c, ink: col, accent: col === c.ink ? c.accent : c.ink });
-        }
+      for (let i = 0; i < 8; i++) out += circle(r() * 100, 62 + r() * 38, 1.4 + r() * 1.4, c.ink);
+      const y0 = 4 + r() * 6;
+      const y1 = y0 + (r() - 0.5) * 10;
+      const sag = 26 + r() * 8;
+      const P = (t) => [-5 + 110 * t, (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * (Math.max(y0, y1) + sag) + t * t * y1];
+      out += `<path d="M-5 ${n(y0)}Q50 ${n(Math.max(y0, y1) + sag)} 105 ${n(y1)}" fill="none" stroke="${c.ink}" stroke-width="2.4" opacity="0.9"/>`;
+      const count = 3 + Math.floor(r() * 2);
+      for (let k = 1; k <= count; k++) {
+        const [x, y] = P(k / (count + 1));
+        const len = 5 + (k % 2) * 9;
+        const col = cols[k % 3];
+        out += `<path d="M${n(x)} ${n(y)}v${len}" stroke="${c.ink}" stroke-width="1.6" opacity="0.9"/>`;
+        if (k === count && count === 4) out += MOTIFS.star(x, y + len + 11, 24, col);
+        else out += MOTIFS.ornament(x, y + len + 13, 30, { ...c, ink: col, accent: col === c.ink ? c.accent : c.ink });
       }
       return out;
     },
 
-    // снегопад: семь крупных снежинок разных форм, немного снега
+    // снегопад: четыре-пять очень крупных снежинок разных форм, немного снега
     snowfall(b, r, c) {
       let out = '';
       const items = [];
-      for (let tries = 0; items.length < 7 && tries < 800; tries++) {
-        const s = 16 + r() * 18;
+      for (let tries = 0; items.length < 5 && tries < 900; tries++) {
+        const s = 30 + r() * 20;
         const x = r() * 100;
         const y = r() * 100;
         if (items.some((o) => Math.hypot(o.x - x, o.y - y) < (o.s + s) / 2 + 3)) continue;
@@ -227,7 +235,7 @@ const BACK_CATALOG = (() => {
       items.forEach((o, i) => {
         out += `<g opacity="${n(0.65 + r() * 0.35)}">${MOTIFS.snowflake(o.x, o.y, o.s, c.ink, flakes[i % flakes.length], r() * 30)}</g>`;
       });
-      for (let i = 0; i < 10; i++) out += circle(r() * 100, r() * 100, 1 + r() * 1.4, i % 4 ? c.ink : c.accent2);
+      for (let i = 0; i < 8; i++) out += circle(r() * 100, r() * 100, 1.6 + r() * 1.6, i % 4 ? c.ink : c.accent2);
       return out;
     },
 
