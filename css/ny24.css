@@ -844,3 +844,17 @@
   background: #2c2c2e;
   color: #5ca8fe;
 }
+
+/* вход в событие с онбордингом: трек спрятан под шторкой и проявляется,
+   когда её закрыли (js: is-intro → revealAfterIntro22) */
+/* «Задания дня» — начало трека, проявляются вместе с ним;
+   плавно только проявление, прячутся мгновенно */
+.e22.is-ny24:not(.is-intro) #e22Track,
+.e22.is-ny24:not(.is-intro) #e23Preview {
+  transition: opacity 0.35s ease;
+}
+
+.e22.is-ny24.is-intro #e22Track,
+.e22.is-ny24.is-intro #e23Preview {
+  opacity: 0;
+}

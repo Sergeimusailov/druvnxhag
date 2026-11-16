@@ -514,9 +514,13 @@ function e22DailyTimer() {
 // fromTasks — вход кнопкой события из «Заданий»: там онбординг не нужен
 function openEvent22(id, { fromTasks = false } = {}) {
   const ev = EVENTS22.list[id];
-  // 2.3: при каждом входе в новогоднее событие поверх него — шторка-онбординг
-  // (Figma 16825:18801), кроме входа из «Заданий»
-  if (isNy24() && id === 'ny' && !fromTasks) setTimeout(() => nySheets.onboard.open(), 450);
+  // 2.3: при каждом входе в новогоднее событие сразу выезжает шторка-онбординг
+  // (Figma 16825:18801), кроме входа из «Заданий»; трек под ней спрятан и
+  // проявляется, когда шторку закрыли, — только потом летят очки и едет трек
+  const withIntro = isNy24() && id === 'ny' && !fromTasks;
+  e22AfterIntro = null;
+  e22Screen.classList.toggle('is-intro', withIntro);
+  if (withIntro) nySheets.onboard.open();
   e22Current = ev;
   e22Expanded = false;
   // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
@@ -553,8 +557,23 @@ function openEvent22(id, { fromTasks = false } = {}) {
   e22Screen.setAttribute('aria-hidden', 'false');
   // 2.3: сначала прилетают снежинки, заработанные в «Заданиях», потом едет трек
   // затем экран доезжает до первой награды, которую можно забрать
-  if (isNy23(ev)) setTimeout(() => playSnow23(ev).then(() => animateTrack22(ev)).then(() => scrollToClaimable24(ev)), 520);
-  else if (!tabbed) setTimeout(() => animateTrack22(ev), 520);
+  let start = null;
+  if (isNy23(ev)) start = () => playSnow23(ev).then(() => animateTrack22(ev)).then(() => scrollToClaimable24(ev));
+  else if (!tabbed) start = () => animateTrack22(ev);
+  if (start && withIntro) e22AfterIntro = start;
+  else if (start) setTimeout(start, 520);
+}
+
+// что запустить, когда закроют онбординг (анимации входа в событие)
+let e22AfterIntro = null;
+
+// онбординг закрыли: трек проявляется (fade 350мс), затем анимации входа
+function revealAfterIntro22() {
+  if (!e22Screen.classList.contains('is-intro')) return;
+  e22Screen.classList.remove('is-intro');
+  const start = e22AfterIntro;
+  e22AfterIntro = null;
+  if (start) setTimeout(start, 400);
 }
 
 // первая награда «Забрать» на треке — по центру экрана (если такая есть)
@@ -570,6 +589,8 @@ function scrollToClaimable24(ev) {
 
 function closeEvent22() {
   e22Current = null;
+  e22AfterIntro = null;
+  e22Screen.classList.remove('is-intro');
   e22Screen.classList.remove('is-open');
   e22Screen.setAttribute('aria-hidden', 'true');
   renderEntries22();
@@ -990,7 +1011,10 @@ syncEventFab23(currentScreen);
 const nyBsBackdrop = document.getElementById('nyBsBackdrop');
 const nySheets = {
   onboard: bottomSheet(document.getElementById('nyOnboardSheet'), nyBsBackdrop, {
-    onClose: () => { try { localStorage.setItem(NY_INTRO_KEY, '1'); } catch (e) { /* ignore */ } },
+    onClose: () => {
+      try { localStorage.setItem(NY_INTRO_KEY, '1'); } catch (e) { /* ignore */ }
+      revealAfterIntro22();
+    },
   }),
   faq: bottomSheet(document.getElementById('nyFaqSheet'), nyBsBackdrop),
   tickets: bottomSheet(document.getElementById('nyTicketsSheet'), nyBsBackdrop),
