@@ -28,8 +28,11 @@ const EVENTS22 = {
       seenPoints: 100,
       shown: 2,
       claimed: new Set([1]),
-      rewards: ['coins', 'avatar', 'frame', 'coins', 'card', 'avatar', 'ticket', 'frame', 'coins', 'ticket',
-        'skin', 'coins', 'card', 'ticket', 'coins+frame', 'coins+skin', 'ticket', 'coins+avatar', 'coins+card', 'ticket'],
+      // награды по таблице баланса (порог → награда), иконки — Figma 16632:127814;
+      // coins — сколько монет в награде (число на иконке и в тултипе)
+      rewards: ['coins', 'avatar', 'card', 'coins', 'card-rare', 'avatar', 'ticket', 'coins', 'card-coins', 'ticket',
+        'status', 'card-rare', 'card-epic', 'ticket', 'skin-coins', 'frame-coins', 'ticket', 'epic-coins', 'skin-coins', 'ticket'],
+      coins: [200, 0, 0, 200, 0, 0, 0, 250, 350, 0, 0, 0, 0, 0, 350, 350, 0, 350, 350, 0],
     },
     daily: {
       id: 'daily',
@@ -171,17 +174,18 @@ function renderEventFab23() {
   const firstUnclaimed = ev.rewards.findIndex((_, i) => i < reached && !ev.claimed.has(i + 1));
   const level = claimable ? firstUnclaimed + 1 : Math.min(reached + 1, ev.rewards.length);
   const [main, extra] = ev.rewards[level - 1].split('+').reverse();
-  // приз и количество — как на треке события (монеты «× 240», остальное «× 1»)
-  const ny24Item = NY24_ITEMS[main];
+  // приз и количество (монеты «× 200», остальное «× 1»); картинки кнопки —
+  // свои, по её макету (Figma 16746:39089)
+  const fabItem = NY24_FAB[main];
   const prizeEl = document.getElementById('eventFabPrize');
-  prizeEl.src = ny24Item ? ny24Item.src : REWARD_ITEMS[main].src;
-  prizeEl.classList.toggle('is-gold', !!(ny24Item && ny24Item.cls));
+  prizeEl.src = fabItem ? fabItem.src : rewardItem22(main).src;
+  prizeEl.classList.toggle('is-gold', !!(fabItem && fabItem.cls));
   const qtyEl = document.getElementById('eventFabQty');
-  qtyEl.textContent = (ny24Item && ny24Item.qty) || '× 1';
+  qtyEl.textContent = main === 'coins' && ev.coins ? `× ${ev.coins[level - 1]}` : '× 1';
   eventFab.classList.toggle('is-coins', main === 'coins');
   const extraEl = document.getElementById('eventFabExtra');
   extraEl.hidden = !extra;
-  if (extra) extraEl.src = REWARD_ITEMS[extra].src;
+  if (extra) extraEl.src = rewardItem22(extra).src;
   const fill = document.getElementById('eventFabFill');
   const text = document.getElementById('eventFabText');
   let frac;
@@ -307,12 +311,45 @@ function e22FillHeight(reached) {
   return Math.max(0, (reached ? e22LevelCenter(reached) : top) - top);
 }
 
+// картинки кнопки входа в событие (Figma 16746:39089)
+const NY24_FAB = {
+  coins: { src: 'assets/v2-ny-coins.png' },
+  ticket: { src: 'assets/v2-ny-ticket.png', cls: 'is-gold' },
+};
+
 // награды трека в 2.3: шестиугольник с рамкой (серый — закрыто, жёлтый со
 // свечением — можно забрать, зелёный с галкой — получено), количество снизу
+// иконки наград — компонент «Награды ивент» (Figma 16632:127814), выгружены
+// в квадрат 120×120 (иконка 80×80 по центру + место под тени); name — текст
+// тултипа по таблице баланса; legacy — картинка для старых версий трека;
+// num — где стоит число монет на иконке: по центру (просто монеты) или
+// у монетки справа снизу (составные награды)
 const NY24_ITEMS = {
-  coins: { src: 'assets/v2-ny-coins.png', alt: 'Монеты', qty: '× 240' },
-  ticket: { src: 'assets/v2-ny-ticket.png', alt: 'Билет на розыгрыш', cls: 'is-gold' },
+  coins: { src: 'assets/ny24-r-coins.png', name: 'Монетки', legacy: 'coins', num: 'center' },
+  avatar: { src: 'assets/ny24-r-avatar.png', name: 'Аватар', legacy: 'avatar' },
+  card: { src: 'assets/ny24-r-card.png', name: 'Обычная карточка', legacy: 'card' },
+  'card-rare': { src: 'assets/ny24-r-card-rare.png', name: 'Редкая карточка', legacy: 'card' },
+  'card-epic': { src: 'assets/ny24-r-card-epic.png', name: 'Эпическая карточка', legacy: 'card' },
+  ticket: { src: 'assets/ny24-r-ticket.png', name: 'Билет', legacy: 'ticket' },
+  status: { src: 'assets/ny24-r-status.png', name: 'Статус', legacy: 'frame' },
+  'card-coins': { src: 'assets/ny24-r-card-coins.png', name: 'Обычная карточка + монеты', legacy: 'card', num: 'side' },
+  'epic-coins': { src: 'assets/ny24-r-epic-coins.png', name: 'Монетки + эпическая карточка', legacy: 'card', num: 'side' },
+  'skin-coins': { src: 'assets/ny24-r-skin-coins.png', name: 'Монетки + зимний скин', legacy: 'skin', num: 'side' },
+  'frame-coins': { src: 'assets/ny24-r-frame-coins.png', name: 'Монетки + рамка', legacy: 'frame', num: 'side' },
 };
+
+// картинка награды для старых версий трека и кнопки входа в событие
+function rewardItem22(key) {
+  return REWARD_ITEMS[key] || REWARD_ITEMS[NY24_ITEMS[key].legacy];
+}
+
+// текст тултипа награды: «Монетки × 200», «Монетки + рамка · 350 монет»
+function ny24RewardName(ev, level) {
+  const item = NY24_ITEMS[ev.rewards[level - 1]];
+  const coins = ev.coins && ev.coins[level - 1];
+  if (!coins) return item.name;
+  return item.num === 'center' ? `${item.name} × ${coins}` : `${item.name} · ${coins} монет`;
+}
 
 function ny24LevelHTML(ev, level) {
   const type = ev.rewards[level - 1];
@@ -320,9 +357,8 @@ function ny24LevelHTML(ev, level) {
   const isTaken = ev.claimed.has(level);
   const side = level % 2 ? 'is-left' : 'is-right';
   const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
-  const [main] = type.split('+').reverse();
-  const item = NY24_ITEMS[main] || { ...REWARD_ITEMS[main] };
-  const qty = item.qty || (type.includes('coins+') ? '+ монеты' : '');
+  const item = NY24_ITEMS[type];
+  const coins = ev.coins && ev.coins[level - 1];
   let action = '';
   if (isTaken) action = `<span class="ev-card-taken" aria-label="Получено">${CHECK_ICON}</span>`;
   else if (isReached) action = `<button class="ev-card-claim" data-level="${level}">Забрать</button>`;
@@ -331,8 +367,8 @@ function ny24LevelHTML(ev, level) {
     <span class="ev-node is-cost">${ev.thresholds[level - 1]}</span>
     <div class="ev-card">
       <span class="ny24-hex"><span></span></span>
-      <img class="ev-card-item ${item.cls || ''}" src="${item.src}" alt="${item.alt}">
-      ${qty ? `<span class="ny24-qty">${qty}</span>` : ''}
+      <img class="ev-card-item" src="${item.src}" alt="${item.name}" data-reward-tip>
+      ${coins ? `<span class="ny24-qty is-${item.num}">${coins}</span>` : ''}
       ${action}
     </div>
   </div>`;
@@ -365,8 +401,8 @@ function e22LevelHTML(ev, level) {
   const state = !isReached ? 'is-locked' : isTaken ? 'is-taken' : 'is-claimable';
   // составная награда «монетки + X»: X крупно, монетки — значком в углу
   const [main, extra] = type.split('+').reverse();
-  const item = REWARD_ITEMS[main];
-  const extraHTML = extra ? `<img class="ev-card-extra" src="${REWARD_ITEMS[extra].src}" alt="${REWARD_ITEMS[extra].alt}">` : '';
+  const item = rewardItem22(main);
+  const extraHTML = extra ? `<img class="ev-card-extra" src="${rewardItem22(extra).src}" alt="${rewardItem22(extra).alt}">` : '';
   // в ромбе — не номер уровня, а сколько снежинок нужно набрать
   const label = ev.thresholds ? ev.thresholds[level - 1] : level;
   let action = '';
@@ -676,6 +712,13 @@ e23Demo.addEventListener('click', () => {
 e22Track.addEventListener('click', (e) => {
   const ev = e22Current;
   if (!ev) return;
+  // тап по картинке награды — тултип с её названием (как у таймера в превью)
+  const tipItem = e.target.closest('[data-reward-tip]');
+  if (tipItem) {
+    const level = Number(tipItem.closest('.ny24-level').dataset.level);
+    Tooltip24.show(tipItem, { text: ny24RewardName(ev, level), timeout: 3000, width: 200 });
+    return;
+  }
   if (e.target.closest('[data-tickets]')) {
     openTicketsSheet24();
     return;

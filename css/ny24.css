@@ -435,12 +435,16 @@
   opacity: 0.24;
 }
 
+/* иконка награды (Figma 16632:127814): 80×80 в 30px от края карточки;
+   картинка 120×120 — с полями 20px под тени, поэтому от края 10px */
 .ny24-level .ev-card-item {
-  top: 38px;
-  left: 38px;
-  width: 64px;
-  height: 64px;
+  top: 10px;
+  left: 10px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .ny24-level.is-locked .ev-card-item {
@@ -452,19 +456,30 @@
   filter: sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.08);
 }
 
+/* число монет на иконке: SF Pro Text 17/700, -0.41px, белое, обводка
+   #202020 2px снаружи; у монет — по центру иконки (txt2 23,56), у составных
+   наград — на монетке справа снизу (txt2 38,57) */
 .ny24-qty {
   position: absolute;
-  top: 88px;
-  left: 0;
-  right: 0;
+  top: 86px;
+  left: 70px;
   z-index: 1;
-  font-family: var(--font-rounded);
-  font-size: 15px;
+  transform: translateX(-50%);
+  font-family: var(--font-sf);
+  font-size: 17px;
+  line-height: 20px;
   font-weight: 700;
-  text-align: center;
+  letter-spacing: -0.41px;
+  white-space: nowrap;
   color: #fff;
-  -webkit-text-stroke: 6px #202020;
+  -webkit-text-stroke: 4px #202020;
   paint-order: stroke fill;
+  pointer-events: none;
+}
+
+.ny24-qty.is-side {
+  top: 87px;
+  left: 85px;
 }
 
 .ny24-level .ev-card-claim {
