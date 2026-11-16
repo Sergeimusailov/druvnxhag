@@ -208,7 +208,7 @@ html.mm24-on #m24Faq {
   isolation: isolate;
   overflow: hidden;
   border-radius: 20%;
-  box-shadow: inset 0 0 0 2.4px color-mix(in srgb, var(--cb, #888) 45%, #fff);
+  box-shadow: inset 0 0 0 2.4px var(--cb-rim, color-mix(in srgb, var(--cb, #888) 45%, #fff));
 }
 
 .mm24-deck .cb24.is-epic {

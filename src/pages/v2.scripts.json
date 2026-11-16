@@ -12,6 +12,7 @@
   "js/catalog/frames.generated.js",
   "js/catalog/frames.js",
   "js/catalog/backs.generated.js",
+  "js/catalog/backs.figma.js",
   "js/catalog/backs.js",
   "js/cosmetics24.js",
   "js/profile24.js",

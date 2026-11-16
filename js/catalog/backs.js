@@ -1,13 +1,14 @@
 // Каталог рубашек колоды — единый источник для профиля, настроек, поиска
 // матча и матча. Рубашку берут по id:
 //
-//   BACK_CATALOG.get('winter-07')   — описание (неизвестный id → первая рубашка)
-//   BACK_CATALOG.html('winter-07')  — разметка рубашки (квадрат, тянется по носителю)
+//   BACK_CATALOG.get('card-07')     — описание (неизвестный id → первая рубашка)
+//   BACK_CATALOG.html('card-07')    — разметка рубашки (квадрат, тянется по носителю)
 //   BACK_CATALOG.random()           — случайная из каталога
 //   BACK_CATALOG.list               — рубашки в игре; all — вместе с выключенными
 //
-// Сейчас в игре только обычные (ACTIVE): 30 зимних рубашек из генератора
-// (build/gen-backs.mjs → js/catalog/backs.generated.js). Рубашка — одна SVG-
+// Сейчас в игре 30 рубашек по макету Figma (js/catalog/backs.figma.js:
+// card-01…30, векторные перерисовки). Зимние рубашки из генератора
+// (build/gen-backs.mjs → js/catalog/backs.generated.js) выключены. Рубашка — одна SVG-
 // картинка 100×100 во весь размер: фон (цвет или градиент), композиция из
 // зимних мотивов (js/catalog/motifs.js), по желанию — шум «как в печати».
 // Виды композиций — STYLES ниже. Раскладка внутри вида берётся из зерна
@@ -291,8 +292,20 @@ const BACK_CATALOG = (() => {
 
   const url = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 
+  // рубашки по макету Figma (js/catalog/backs.figma.js) — сейчас в игре
+  const figma = (typeof BACKS_FIGMA !== 'undefined' ? BACKS_FIGMA : []).map((b) => ({
+    id: b.id,
+    name: b.name,
+    node: b.node,
+    rarity: 'basic',
+    figma: true,
+    bgCSS: `${url(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">${b.draw(BACK_FIGMA_HELPERS)}</svg>`)} center / 100% 100% no-repeat`,
+  }));
+
+  // зимние рубашки из генератора — выключены (retired), код сохранён
   const generated = (typeof BACKS_GENERATED !== 'undefined' ? BACKS_GENERATED : []).map((b) => ({
     ...b,
+    retired: true,
     colors: [b.pal.bg[0], b.pal.bg[1], b.pal.ink],
     bgCSS: `${url(svgFor(b))} center / 100% 100% no-repeat`,
   }));
@@ -308,10 +321,10 @@ const BACK_CATALOG = (() => {
     { id: 'prism', name: 'Призма', rarity: 'epic', fx: 'sheen' },
   ];
 
-  const all = [...generated, ...EPIC_BACKS].map((b) => ({ ...b, epic: b.rarity === 'epic' }));
+  const all = [...figma, ...generated, ...EPIC_BACKS].map((b) => ({ ...b, epic: b.rarity === 'epic' }));
   // в игре сейчас только обычные; включить редкость — добавить её сюда
   const ACTIVE = ['basic'];
-  const list = all.filter((b) => ACTIVE.includes(b.rarity));
+  const list = all.filter((b) => ACTIVE.includes(b.rarity) && !b.retired);
   const byId = new Map(list.map((b) => [b.id, b]));
 
   // неизвестный id (в том числе рубашки прошлых версий) → первая
@@ -333,6 +346,7 @@ const BACK_CATALOG = (() => {
   function html(id) {
     const b = get(id);
     if (b.epic) return epicHTML(b);
+    if (b.figma) return `<span class="cb24 cb24-gen cb24-fig" data-back="${b.id}" style="--cb-bg:${attr(b.bgCSS)}"></span>`;
     return `<span class="cb24 cb24-gen" data-back="${b.id}" style="--cb:${b.pal.bg[1]};--cb-bg:${attr(b.bgCSS)}"></span>`;
   }
 

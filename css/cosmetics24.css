@@ -53,6 +53,16 @@
   background: var(--cb-bg, var(--cb));
 }
 
+/* рубашки по макету Figma (18036:39909): фон #1c1c1e, обводка 2px #7f7f7f,
+   радиус 20 из 80 — 25% */
+.cb24-fig {
+  --cb: #1c1c1e;
+  --cb-rim: #7f7f7f;
+  border-radius: 25%;
+  background: var(--cb-bg) #1c1c1e;
+  box-shadow: inset 0 0 0 2px var(--cb-rim);
+}
+
 /* ---------- эпические рубашки ---------- */
 
 .cb24.is-epic .cb24-emb {
