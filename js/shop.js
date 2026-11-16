@@ -256,7 +256,7 @@ function makeReward(entry, taken = new Set()) {
     }
     if (style === 'frame') {
       const item = pick(COSMETICS24.FRAMES);
-      return { kind: 'frame', style, id: item.id, avatar: pick(STYLE_AVATARS), name: `Рамка «${item.name}»` };
+      return { kind: 'frame', style, id: item.id, name: `Рамка «${item.name}»` };
     }
     if (style === 'avatar') return { kind: 'frame', style, id: pick(STYLE_AVATARS), name: 'Аватар' };
     return { kind: 'frame', style, id: pick(STYLE_STATUSES), name: 'Статус' };
@@ -665,12 +665,12 @@ function rewardCellHTML(r) {
     sub = `${r.amount} шт.`;
     art = '<img class="lb-cell-img" src="assets/shop-prize2-keys.png" alt="">';
   } else {
-    // оформление показываем как есть: рубашку, рамку (с аватаром внутри),
+    // оформление показываем как есть: рубашку, рамку (только саму рамку, как в настройках профиля),
     // аватар; статус — иконкой-лентой из макета (Figma 18003:36096)
     title = 'Оформление';
     sub = STYLE_SUB[r.style];
     if (r.style === 'back') art = `<span class="lb-style lb-style-back">${COSMETICS24.backHTML(r.id)}</span>`;
-    else if (r.style === 'frame') art = `<span class="lb-style lb-style-frame" data-frame-id="${r.id}"><img src="${r.avatar}" alt=""></span>`;
+    else if (r.style === 'frame') art = `<span class="lb-style lb-style-frame" data-frame-id="${r.id}"></span>`;
     else if (r.style === 'avatar') art = `<img class="lb-style lb-style-avatar" src="${r.id}" alt="">`;
     else art = '<img class="lb-cell-img lb-style-status" src="assets/shop-prize2-status.png" alt="">';
   }

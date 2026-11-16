@@ -1027,8 +1027,8 @@
 /* сундуки в карточках и в шторке левитируют — anime.js (levitate() в js/shop.js) */
 
 
-/* награда «Оформление» — сам предмет 72×72 над подписью (рубашка, рамка с
-   аватаром, аватар); статус — картинка из макета на всю ячейку (Figma 18003:36096) */
+/* награда «Оформление» — сам предмет 72×72 над подписью (рубашка, рамка без
+   аватара, аватар); статус — картинка из макета на всю ячейку (Figma 18003:36096) */
 .lb-style {
   display: block;
   flex: none;
@@ -1049,16 +1049,17 @@
 }
 
 .lb-style-frame {
-  padding: 6px;
+  position: relative;
   background: var(--pf-frame);
 }
 
-.lb-style-frame > img {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* только рамка, без аватара: внутри чёрное, как плитка в настройках профиля */
+.lb-style-frame::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
   border-radius: 10px;
-  object-fit: cover;
+  background: #000;
 }
 
 .lb-style-avatar {
