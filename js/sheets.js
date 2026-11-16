@@ -15,6 +15,8 @@
 const sheetY = new WeakMap(); // текущий сдвиг шторки вниз, px (во время перетаскивания)
 
 function sheetTiming(sheetEl) {
+  // онбординг события выезжает резче: 300 мс, затемнение 250 мс
+  if (sheetEl.classList.contains('bs-onboard')) return [300, 250];
   return sheetEl.classList.contains('v2-sheet') ? [420, 300] : [450, 350];
 }
 
