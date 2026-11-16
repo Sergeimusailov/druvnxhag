@@ -699,6 +699,7 @@
   background: rgba(0, 0, 0, 0.25);
 }
 
+/* картинка — компонент «Картинка онбординг» (Figma 17687:179234), 393×377 */
 .bs-onboard-pic {
   position: relative;
   flex-shrink: 1;
@@ -721,7 +722,7 @@
   right: 0;
   font-size: 17px;
   text-align: center;
-  color: #333;
+  color: #f6f7f8;
 }
 
 .bs-onboard-title {
