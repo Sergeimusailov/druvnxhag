@@ -78,23 +78,67 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-02', name: 'Червячки', node: '18036:78043',
-    draw: ({ bg, line, ring }) => bg('#050507') + [
-      'M4 16Q20 2 36 14T66 12', 'M58 2C74 -2 92 8 98 22', 'M12 42C0 52 8 68 22 64', 'M52 48Q68 36 80 50Q90 60 84 78',
-      'M24 86Q38 70 52 88', 'M72 96Q84 82 100 90', 'M-2 68Q8 78 2 98', 'M84 36l12 8', 'M28 28q10 6 8 16', 'M64 24q-4 10 6 14',
-      'M40 66q-6 10 4 18', 'M96 56q-8 6 -2 16', 'M6 30q6 -8 14 -6', 'M60 74q6 8 16 4',
-    ].map((d) => line(d, '#454b54', 8)).join('') + ring(42, 34, 5.5, '#454b54', 5) + ring(90, 4, 5, '#454b54', 5) + ring(70, 92, 4.5, '#454b54', 4.5),
+    draw: ({ bg, rng, n }) => {
+      // червячки-дуги и колечки; фигуры не касаются друг друга (проверка расстояния)
+      const R = rng(202);
+      const W = 7;
+      const GAP = 3.5;
+      const taken = [];
+      const free = (pts) => pts.every(([x, y]) => taken.every(([a, b]) => Math.hypot(a - x, b - y) >= W + GAP));
+      let out = bg('#050507');
+      const arc = (cx, cy, r, a0, sweep) => {
+        const k = Math.max(3, Math.round((Math.abs(sweep) * r) / 1.5));
+        return Array.from({ length: k }, (_, i) => {
+          const a = a0 + (sweep * i) / (k - 1);
+          return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+        });
+      };
+      for (let tries = 0; tries < 4000; tries++) {
+        const cx = -8 + R() * 116;
+        const cy = -8 + R() * 116;
+        let pts;
+        let svg;
+        // сначала длинные червячки, колечки — в оставшиеся промежутки
+        const long = tries < 2500;
+        if (!long && R() < 0.5) {
+          pts = arc(cx, cy, 4, 0, Math.PI * 2);
+          svg = `<circle cx="${n(cx)}" cy="${n(cy)}" r="4" fill="none" stroke="#454b54" stroke-width="4.5"/>`;
+        } else {
+          const r = long ? 9 + R() * 9 : 5 + R() * 5;
+          const a0 = R() * Math.PI * 2;
+          const dir = R() < 0.5 ? -1 : 1;
+          const sweep = dir * Math.PI * (long ? 0.8 + R() * 0.7 : 0.6 + R() * 0.6);
+          pts = arc(cx, cy, r, a0, sweep);
+          // S-образный: вторая дуга в обратную сторону от конца первой
+          if (long && R() < 0.55) {
+            const [ex, ey] = pts[pts.length - 1];
+            const a1 = a0 + sweep;
+            const r2 = r * (0.6 + R() * 0.5);
+            const cx2 = ex + Math.cos(a1) * r2;
+            const cy2 = ey + Math.sin(a1) * r2;
+            pts = pts.concat(arc(cx2, cy2, r2, a1 + Math.PI, -dir * Math.PI * (0.6 + R() * 0.5)).slice(1));
+          }
+          svg = `<path d="M${pts.map(([x, y]) => `${n(x)} ${n(y)}`).join('L')}" fill="none" stroke="#454b54" stroke-width="${W}" stroke-linecap="round" stroke-linejoin="round"/>`;
+        }
+        if (!free(pts)) continue;
+        taken.push(...pts);
+        out += svg;
+      }
+      return out;
+    },
   },
   {
     id: 'card-03', name: 'Арлекин', node: '18047:78190',
     draw: ({ bg, diamond, star }) => {
+      // колонки ромбов через четверть ширины (красные / шалфейные по очереди),
+      // звёзды — посередине кремовых промежутков
       let out = bg('#ffe8c6');
-      const w = 100 / 6;
-      for (let c = 0; c < 6; c++) {
-        const x = c * w + w / 2;
-        const off = c % 2 ? 12.5 : 0;
-        for (let r = -1; r <= 4; r++) out += diamond(x, r * 25 + off + 12.5, 6.4, 12.5, c % 2 ? '#c9d3c0' : '#ec5a32');
+      for (let c = 0; c <= 4; c++) {
+        const x = c * 25;
+        const off = c % 2 ? 12 : 0;
+        for (let r = -1; r <= 5; r++) out += diamond(x, r * 24 + off + 3, 6.8, 12, c % 2 ? '#c9d3c0' : '#ec5a32');
       }
-      for (let c = 0; c <= 6; c++) for (let r = -1; r <= 4; r++) out += star(c * w, r * 25 + (c % 2 ? 0 : 12.5), 3.4, '#f5a33a');
+      for (let c = 0; c < 4; c++) for (let r = 0; r < 5; r++) out += star(12.5 + c * 25, 15 + r * 24, 5, '#f5a33a');
       return out;
     },
   },
@@ -195,24 +239,32 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-12', name: 'Камуфляж', node: '18047:78200',
-    draw: ({ bg, blob, circle }) => bg('#f2ead6')
-      + `<path d="${blob(30, 34, 46, 12, 8, 0.4)}" fill="#3e6288"/>`
-      + `<path d="${blob(84, 86, 26, 21, 7, 0.4)}" fill="#3e6288"/>`
-      + `<path d="${blob(34, 40, 24, 5, 7, 0.45)}" fill="#203f68"/>`
-      + `<path d="${blob(30, 46, 9, 9, 6, 0.4)}" fill="#0f1c2d"/>`
-      + `<path d="${blob(66, 58, 12, 3, 6, 0.4)}" fill="#f2ead6"/>`
-      + `<path d="M58 -4Q66 20 54 34T70 70Q78 86 66 104" fill="none" stroke="#f2ead6" stroke-width="7" stroke-linecap="round"/>`
-      + `<path d="M-4 66Q14 58 22 72T40 100" fill="none" stroke="#f2ead6" stroke-width="6" stroke-linecap="round"/>`
-      + circle(52, 74, 2.2, '#fff') + circle(22, 20, 1.8, '#fff'),
+    draw: ({ bg, blob, circle }) => {
+      // синяя основа, кремовые извилистые ленты, тёмные пятна внутри синего
+      const band = (d, w) => `<path d="${d}" fill="none" stroke="#f2ead6" stroke-width="${w}" stroke-linecap="round"/>`;
+      return bg('#3e6288')
+        + `<path d="${blob(24, 50, 24, 31, 7, 0.4)}" fill="#203f68"/>`
+        + `<path d="${blob(84, 84, 16, 33, 7, 0.4)}" fill="#203f68"/>`
+        + `<path d="${blob(70, 14, 13, 35, 6, 0.4)}" fill="#203f68"/>`
+        + `<path d="${blob(0, 0, 24, 36, 6, 0.3)}" fill="#f2ead6"/>`
+        + band('M46 -6C50 14 62 18 68 30S80 56 106 58', 14)
+        + band('M86 -6C90 8 96 18 106 22', 12)
+        + band('M-6 84C8 74 24 70 34 78S48 98 56 106', 14)
+        + band('M60 106C66 94 78 92 92 98', 9)
+        + `<path d="${blob(100, 86, 12, 39, 6, 0.3)}" fill="#f2ead6"/>`
+        + `<path d="${blob(28, 46, 11, 37, 6, 0.45)}" fill="#0f1c2d"/>`
+        + `<path d="${blob(70, 10, 7, 38, 6, 0.4)}" fill="#0f1c2d"/>`
+        + circle(30, 42, 1.6, '#fff') + circle(66, 66, 1.6, '#fff') + circle(16, 92, 1.4, '#fff');
+    },
   },
   {
     id: 'card-13', name: 'Смайлы', node: '18047:78201',
-    draw: ({ bg, circle, line }) => bg('#ffffff')
+    draw: ({ bg, circle }) => bg('#ffffff')
+      // цветные круги без лиц, немного «отдалены»: виден край композиции
+      + `<g transform="translate(50 50) scale(0.8) translate(-50 -50)">`
       + circle(92, 2, 24, '#f47fc0') + circle(-4, 42, 16, '#ec5b2e') + circle(56, 40, 36, '#8fd3ea')
-      + circle(12, 90, 34, '#18a356') + circle(86, 94, 30, '#f6b51e')
-      + line('M58 30q4 -4 8 0M72 30q4 -4 8 0M60 40q9 7 18 0', '#3c3c3c', 2)
-      + line('M8 78q4 3 8 0M22 78q4 3 8 0M10 86q8 6 16 0', '#3c3c3c', 2)
-      + line('M80 82q4 -4 8 0M84 92q7 5 14 0', '#3c3c3c', 2),
+      + circle(12, 90, 34, '#18a356') + circle(86, 94, 30, '#f6b51e') + circle(-14, 4, 14, '#f6b51e') + circle(110, 50, 12, '#18a356')
+      + '</g>',
   },
   {
     id: 'card-14', name: 'Конфетти', node: '18047:78202',
@@ -321,16 +373,20 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-22', name: 'Пиксели', node: '18047:78210',
-    draw: ({ bg, rect, rng }) => {
+    draw: ({ bg, rect, line, rng, n }) => {
+      // крупная сетка крестиков и квадратиков; светлые прямоугольные «пятна»
       const R = rng(22);
+      const zones = [[10, 2, 78, 18, 0.75], [44, 42, 70, 62, 0.6], [66, 82, 100, 100, 0.9], [0, 68, 12, 82, 0.55], [20, 88, 50, 100, 0.4]];
       let out = bg('#131313');
-      const grays = ['#3a3a3a', '#535353', '#6e6e6e', '#8a8a8a', '#a8a8a8'];
-      for (let y = 0; y < 100; y += 3.4) for (let x = 0; x < 100; x += 3.4) {
-        const zone = 0.5 + 0.5 * Math.sin(x * 0.07) * Math.cos(y * 0.09 + 1.2);
-        if (R() < 0.25 + zone * 0.7) {
-          const s = 1 + R() * 2.2;
-          out += rect(x, y, s, s, grays[Math.floor(R() * grays.length)]);
-        }
+      const step = 6;
+      for (let y = step / 2; y < 100; y += step) for (let x = step / 2; x < 100; x += step) {
+        let b = 0.12 + R() * 0.15;
+        zones.forEach(([x0, y0, x1, y1, v]) => { if (x >= x0 && x <= x1 && y >= y0 && y <= y1) b = Math.max(b, v * (0.7 + R() * 0.3)); });
+        const g = Math.round(50 + b * 170);
+        const col = `rgb(${g},${g},${g})`;
+        if (b > 0.5) out += rect(x - 2, y - 2, 4, 4, col);
+        else if (R() < 0.5) out += line(`M${n(x - 1.4)} ${n(y - 1.4)}l2.8 2.8M${n(x + 1.4)} ${n(y - 1.4)}l-2.8 2.8`, col, 0.9);
+        else out += rect(x - 1, y - 1, 2, 2, col);
       }
       return out;
     },
