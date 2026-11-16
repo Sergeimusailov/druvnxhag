@@ -58,7 +58,87 @@ const BACK_FIGMA_HELPERS = (() => {
     const v = tone === 'dark' ? 0 : 1;
     return `<defs><filter id="${id}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 ${v} 0 0 0 0 ${v} 0 0 0 0 ${v} 5 0 0 0 -2.6"/></filter></defs><rect width="100" height="100" filter="url(#${id})" opacity="${op}"/>`;
   };
-  return { n, rect, circle, ring, poly, line, bg, star, starPts, diamond, rng, blob, grain };
+
+  // червячки без касаний: дуги, S-образные фигуры и колечки; новая фигура
+  // ставится, только если все её точки дальше w + gap от уже поставленных.
+  // colors — [цвет, доля] (выбирается по доле), w — толщина
+  function worms(seed, { colors = [['#454b54', 1]], w = 7, gap = 3.5, tries = 4000, rings = true } = {}) {
+    const R = rng(seed);
+    const taken = [];
+    const free = (pts) => pts.every(([x, y]) => taken.every(([a, b]) => Math.hypot(a - x, b - y) >= w + gap));
+    const pickColor = () => { let t = R(); for (const [c, p] of colors) { if ((t -= p) <= 0) return c; } return colors[0][0]; };
+    const arc = (cx, cy, r, a0, sweep) => {
+      const k = Math.max(3, Math.round((Math.abs(sweep) * r) / 1.5));
+      return Array.from({ length: k }, (_, i) => {
+        const a = a0 + (sweep * i) / (k - 1);
+        return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+      });
+    };
+    let out = '';
+    for (let t = 0; t < tries; t++) {
+      const cx = -8 + R() * 116;
+      const cy = -8 + R() * 116;
+      const long = t < tries * 0.62;
+      const col = pickColor();
+      let pts;
+      let svg;
+      if (rings && !long && R() < 0.5) {
+        pts = arc(cx, cy, 4, 0, Math.PI * 2);
+        svg = `<circle cx="${n(cx)}" cy="${n(cy)}" r="4" fill="none" stroke="${col}" stroke-width="${n(w * 0.65)}"/>`;
+      } else {
+        const r = long ? 9 + R() * 9 : 5 + R() * 5;
+        const a0 = R() * Math.PI * 2;
+        const dir = R() < 0.5 ? -1 : 1;
+        const sweep = dir * Math.PI * (long ? 0.8 + R() * 0.7 : 0.6 + R() * 0.6);
+        pts = arc(cx, cy, r, a0, sweep);
+        if (long && R() < 0.55) {
+          const [ex, ey] = pts[pts.length - 1];
+          const a1 = a0 + sweep;
+          const r2 = r * (0.6 + R() * 0.5);
+          pts = pts.concat(arc(ex + Math.cos(a1) * r2, ey + Math.sin(a1) * r2, r2, a1 + Math.PI, -dir * Math.PI * (0.6 + R() * 0.5)).slice(1));
+        }
+        svg = `<path d="M${pts.map(([x, y]) => `${n(x)} ${n(y)}`).join('L')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }
+      if (!free(pts)) continue;
+      taken.push(...pts);
+      out += svg;
+    }
+    return out;
+  }
+
+  // равномерный разброс: сетка cols×rows, в каждой клетке точка со сдвигом
+  const jitter = (seed, cols, rows, amount = 0.32) => {
+    const R = rng(seed);
+    const pts = [];
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      pts.push([((i + 0.5 + (R() - 0.5) * 2 * amount) * 100) / cols, ((j + 0.5 + (R() - 0.5) * 2 * amount) * 100) / rows, R()]);
+    }
+    return pts;
+  };
+
+  // изолинии поля высот (marching squares) — линии одного поля не пересекаются
+  function contours(field, levels, step = 2) {
+    const N = Math.round(100 / step) + 1;
+    const v = [];
+    for (let j = 0; j < N; j++) { v[j] = []; for (let i = 0; i < N; i++) v[j][i] = field(i * step - 2, j * step - 2); }
+    return levels.map((L) => {
+      let d = '';
+      for (let j = 0; j < N - 1; j++) for (let i = 0; i < N - 1; i++) {
+        const a = v[j][i]; const b = v[j][i + 1]; const c = v[j + 1][i + 1]; const e = v[j + 1][i];
+        const x = i * step - 2; const y = j * step - 2;
+        const pts = [];
+        const cut = (p, q, x0, y0, x1, y1) => { if ((p < L) !== (q < L)) { const t = (L - p) / (q - p); pts.push([x0 + (x1 - x0) * t, y0 + (y1 - y0) * t]); } };
+        cut(a, b, x, y, x + step, y);
+        cut(b, c, x + step, y, x + step, y + step);
+        cut(e, c, x, y + step, x + step, y + step);
+        cut(a, e, x, y, x, y + step);
+        for (let k = 0; k + 1 < pts.length; k += 2) d += `M${n(pts[k][0])} ${n(pts[k][1])}L${n(pts[k + 1][0])} ${n(pts[k + 1][1])}`;
+      }
+      return d;
+    });
+  }
+
+  return { n, rect, circle, ring, poly, line, bg, star, starPts, diamond, rng, blob, grain, worms, jitter, contours };
 })();
 
 const BACKS_FIGMA = [
@@ -78,54 +158,7 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-02', name: 'Червячки', node: '18036:78043',
-    draw: ({ bg, rng, n }) => {
-      // червячки-дуги и колечки; фигуры не касаются друг друга (проверка расстояния)
-      const R = rng(202);
-      const W = 7;
-      const GAP = 3.5;
-      const taken = [];
-      const free = (pts) => pts.every(([x, y]) => taken.every(([a, b]) => Math.hypot(a - x, b - y) >= W + GAP));
-      let out = bg('#050507');
-      const arc = (cx, cy, r, a0, sweep) => {
-        const k = Math.max(3, Math.round((Math.abs(sweep) * r) / 1.5));
-        return Array.from({ length: k }, (_, i) => {
-          const a = a0 + (sweep * i) / (k - 1);
-          return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
-        });
-      };
-      for (let tries = 0; tries < 4000; tries++) {
-        const cx = -8 + R() * 116;
-        const cy = -8 + R() * 116;
-        let pts;
-        let svg;
-        // сначала длинные червячки, колечки — в оставшиеся промежутки
-        const long = tries < 2500;
-        if (!long && R() < 0.5) {
-          pts = arc(cx, cy, 4, 0, Math.PI * 2);
-          svg = `<circle cx="${n(cx)}" cy="${n(cy)}" r="4" fill="none" stroke="#454b54" stroke-width="4.5"/>`;
-        } else {
-          const r = long ? 9 + R() * 9 : 5 + R() * 5;
-          const a0 = R() * Math.PI * 2;
-          const dir = R() < 0.5 ? -1 : 1;
-          const sweep = dir * Math.PI * (long ? 0.8 + R() * 0.7 : 0.6 + R() * 0.6);
-          pts = arc(cx, cy, r, a0, sweep);
-          // S-образный: вторая дуга в обратную сторону от конца первой
-          if (long && R() < 0.55) {
-            const [ex, ey] = pts[pts.length - 1];
-            const a1 = a0 + sweep;
-            const r2 = r * (0.6 + R() * 0.5);
-            const cx2 = ex + Math.cos(a1) * r2;
-            const cy2 = ey + Math.sin(a1) * r2;
-            pts = pts.concat(arc(cx2, cy2, r2, a1 + Math.PI, -dir * Math.PI * (0.6 + R() * 0.5)).slice(1));
-          }
-          svg = `<path d="M${pts.map(([x, y]) => `${n(x)} ${n(y)}`).join('L')}" fill="none" stroke="#454b54" stroke-width="${W}" stroke-linecap="round" stroke-linejoin="round"/>`;
-        }
-        if (!free(pts)) continue;
-        taken.push(...pts);
-        out += svg;
-      }
-      return out;
-    },
+    draw: ({ bg, worms }) => bg('#050507') + worms(202, { colors: [['#454b54', 1]], w: 7 }),
   },
   {
     id: 'card-03', name: 'Арлекин', node: '18047:78190',
@@ -144,49 +177,42 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-04', name: 'Посыпка', node: '18047:78192',
-    draw: ({ bg, line, rng, n }) => {
-      const R = rng(4);
+    draw: ({ bg, line, jitter, n }) => {
+      // крупная посыпка, разбросана равномерно (сетка 4×5 со сдвигом)
       const cols = ['#f29ab8', '#7fb2e5', '#5cc28f', '#f5a35a', '#f2d04a', '#e86a6a'];
-      let out = bg('#fff8e8');
-      for (let i = 0; i < 20; i++) {
-        const x = 6 + R() * 88;
-        const y = 6 + R() * 88;
-        const a = R() * Math.PI;
-        out += line(`M${n(x)} ${n(y)}l${n(Math.cos(a) * 5)} ${n(Math.sin(a) * 5)}`, cols[i % cols.length], 1.9);
-      }
-      return out;
+      return bg('#fff8e8') + jitter(4, 4, 5, 0.3).map(([x, y, r], i) => {
+        const a = r * Math.PI;
+        return line(`M${n(x - Math.cos(a) * 4)} ${n(y - Math.sin(a) * 4)}l${n(Math.cos(a) * 8)} ${n(Math.sin(a) * 8)}`, cols[i % cols.length], 2.8);
+      }).join('');
     },
   },
   {
     id: 'card-05', name: 'Рельеф', node: '18047:78193',
-    draw: ({ bg, line, n }) => {
-      // изолинии: волнистые кольца вокруг двух вершин, от синего к голубому
-      const loop = (cx, cy, r, ph) => {
-        let d = '';
-        for (let k = 0; k <= 48; k++) {
-          const a = (Math.PI * 2 * k) / 48;
-          const rr = r * (1 + 0.16 * Math.sin(3 * a + ph) + 0.08 * Math.sin(5 * a + ph * 2));
-          d += `${k ? 'L' : 'M'}${n(cx + Math.cos(a) * rr)} ${n(cy + Math.sin(a) * rr)}`;
-        }
-        return `${d}Z`;
-      };
-      const cols = ['#33c3e8', '#2f9fe0', '#2f6fd6', '#4b4bd6', '#2f9fe0', '#33c3e8', '#2f6fd6', '#5b4fd8', '#2f9fe0', '#33c3e8', '#2f6fd6', '#4b4bd6'];
-      let out = bg('#000');
-      for (let i = 0; i < 12; i++) out += line(loop(14, 96, 10 + i * 9, i * 0.35), cols[i], 1.3);
-      for (let i = 0; i < 5; i++) out += line(loop(70, 34, 5 + i * 6, 1 + i * 0.4), cols[(i + 3) % cols.length], 1.3);
-      return out;
+    draw: ({ bg, contours }) => {
+      // изолинии рельефа: несколько холмов, линии одного поля не пересекаются
+      const hill = (x, y, cx, cy, h, r) => h * Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / (2 * r * r));
+      const field = (x, y) => hill(x, y, 64, 34, 1, 20) + hill(x, y, 22, 74, 0.8, 26) + hill(x, y, 96, 90, 0.55, 16)
+        + 0.06 * Math.sin(x * 0.09) * Math.cos(y * 0.11);
+      const levels = [0.08, 0.17, 0.27, 0.38, 0.5, 0.62, 0.75, 0.88];
+      const cols = ['#2f6fd6', '#33c3e8', '#4b4bd6', '#2f9fe0', '#33c3e8', '#5b4fd8', '#2f9fe0', '#33c3e8'];
+      return bg('#000') + contours(field, levels, 1.6).map((d, i) => `<path d="${d}" fill="none" stroke="${cols[i]}" stroke-width="2.3" stroke-linecap="round"/>`).join('');
     },
   },
   {
     id: 'card-06', name: 'Травы', node: '18047:78194',
     draw: ({ bg, line, n }) => {
+      // как в макете: две группы зелёных наклонных волн, жёлтые волны справа
+      // сверху, бирюзовые справа снизу, короткие штрихи в углах
+      const wavyV = (x, y0, y1, slant, amp = 2.6) => { let d = ''; for (let y = y0; y <= y1; y += 2.5) d += `${d ? 'L' : 'M'}${n(x + ((y - y0) / (y1 - y0)) * slant + amp * Math.sin(y * 0.34))} ${n(y)}`; return d; };
+      const wavyH = (y, x0, x1, amp = 2.4) => { let d = ''; for (let x = x0; x <= x1; x += 2.5) d += `${d ? 'L' : 'M'}${n(x)} ${n(y + amp * Math.sin(x * 0.34))}`; return d; };
+      const W = 3.8;
       let out = bg('#ffffff');
-      const wavyV = (x, y0, y1, amp) => { let d = `M${n(x)} ${y0}`; for (let y = y0; y <= y1; y += 3) d += `L${n(x + amp * Math.sin(y * 0.28))} ${y}`; return d; };
-      const wavyH = (y, x0, x1, amp) => { let d = `M${x0} ${n(y)}`; for (let x = x0; x <= x1; x += 3) d += `L${x} ${n(y + amp * Math.sin(x * 0.3))}`; return d; };
-      for (let x = 5; x < 58; x += 7) out += line(wavyV(x, -4, 104, 2.6), '#9cb36f', 2.6);
-      for (let y = 6; y < 44; y += 7) out += line(wavyH(y, 62, 104, 2), '#e9c046', 2.6);
-      for (let y = 62; y < 102; y += 7) out += line(wavyH(y, 60, 104, 2), '#9ccac6', 2.6);
-      out += line(wavyH(6, 2, 22, 1.6), '#e9c046', 2.6);
+      for (let k = 0; k < 4; k++) out += line(wavyV(6 + k * 9, 24, 98, 10), '#9cb36f', W);
+      for (let k = 0; k < 4; k++) out += line(wavyV(44 + k * 9, -4, 58, 8), '#9cb36f', W);
+      for (let k = 0; k < 4; k++) out += line(wavyH(20 + k * 8, 78, 106), '#e9c046', W);
+      for (let k = 0; k < 4; k++) out += line(wavyH(70 + k * 8, 54, 106), '#9ccac6', W);
+      for (let k = 0; k < 3; k++) out += line(`M${6 + k * 8} 2v10`, '#e9c046', W);
+      out += line('M2 80l6 18', '#e9c046', W) + line('M78 5h18', '#5b8fc4', W) + line('M34 100l4 -4', '#f2643a', W);
       return out;
     },
   },
@@ -231,11 +257,7 @@ const BACKS_FIGMA = [
   // ---------- ряд 2 ----------
   {
     id: 'card-11', name: 'Лабиринт', node: '18047:78199',
-    draw: ({ bg, line }) => bg('#050504')
-      + ['M14 30Q30 20 38 34T62 40', 'M70 20q16 -6 22 10t-6 24', 'M20 54q12 -4 18 8t14 10', 'M60 60q14 0 16 14', 'M8 76q10 10 22 6', 'M44 86q8 -8 18 -2', 'M36 6h18',
-        'M84 66q8 8 4 20', 'M4 44q8 -6 14 2', 'M46 22q-4 -8 6 -12', 'M30 70q4 -8 12 -4', 'M74 44q-6 4 -2 12', 'M56 96q6 -6 14 0', 'M2 12q6 4 4 12', 'M92 54l6 -6']
-        .map((d) => line(d, '#6b6b6b', 6)).join('')
-      + ['M0 6Q14 -2 24 10', 'M72 94Q86 76 100 86', 'M86 2l10 14', 'M2 92q6 -8 14 -4'].map((d) => line(d, '#e6c400', 6)).join(''),
+    draw: ({ bg, worms }) => bg('#050504') + worms(111, { colors: [['#6b6b6b', 0.55], ['#4a4a4a', 0.33], ['#e6c400', 0.12]], w: 6.5 }),
   },
   {
     id: 'card-12', name: 'Камуфляж', node: '18047:78200',
@@ -268,17 +290,13 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-14', name: 'Конфетти', node: '18047:78202',
-    draw: ({ bg, line, circle, rng, n }) => {
-      const R = rng(14);
+    draw: ({ bg, line, circle, jitter, n }) => {
+      // крупные цветные крестики и точки, равномерно (сетка 6×6 со сдвигом)
       const cols = ['#3aa0ff', '#38d39f', '#f5c542', '#ff5a5a', '#ff9a3a'];
-      let out = bg('#000000');
-      for (let i = 0; i < 30; i++) {
-        const x = 4 + R() * 92;
-        const y = 4 + R() * 92;
+      return bg('#000000') + jitter(14, 6, 6, 0.32).map(([x, y, r], i) => {
         const col = cols[i % cols.length];
-        out += i % 3 === 2 ? circle(x, y, 0.9, col) : line(`M${n(x - 1.5)} ${n(y - 1.5)}l3 3M${n(x + 1.5)} ${n(y - 1.5)}l-3 3`, col, 1.1);
-      }
-      return out;
+        return r < 0.3 ? circle(x, y, 1.4, col) : line(`M${n(x - 2.4)} ${n(y - 2.4)}l4.8 4.8M${n(x + 2.4)} ${n(y - 2.4)}l-4.8 4.8`, col, 1.8);
+      }).join('');
     },
   },
   {
