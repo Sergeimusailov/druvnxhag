@@ -202,17 +202,15 @@ const BACKS_FIGMA = [
     id: 'card-06', name: 'Травы', node: '18047:78194',
     draw: ({ bg, line, n }) => {
       // как в макете: две группы зелёных наклонных волн, жёлтые волны справа
-      // сверху, бирюзовые справа снизу, короткие штрихи в углах
+      // сверху, бирюзовые справа снизу; группы не касаются, обрывков у края нет
       const wavyV = (x, y0, y1, slant, amp = 2.6) => { let d = ''; for (let y = y0; y <= y1; y += 2.5) d += `${d ? 'L' : 'M'}${n(x + ((y - y0) / (y1 - y0)) * slant + amp * Math.sin(y * 0.34))} ${n(y)}`; return d; };
       const wavyH = (y, x0, x1, amp = 2.4) => { let d = ''; for (let x = x0; x <= x1; x += 2.5) d += `${d ? 'L' : 'M'}${n(x)} ${n(y + amp * Math.sin(x * 0.34))}`; return d; };
       const W = 3.8;
       let out = bg('#ffffff');
       for (let k = 0; k < 4; k++) out += line(wavyV(6 + k * 9, 24, 98, 10), '#9cb36f', W);
-      for (let k = 0; k < 4; k++) out += line(wavyV(44 + k * 9, -4, 58, 8), '#9cb36f', W);
-      for (let k = 0; k < 4; k++) out += line(wavyH(20 + k * 8, 78, 106), '#e9c046', W);
+      for (let k = 0; k < 3; k++) out += line(wavyV(46 + k * 9, -4, 58, 6), '#9cb36f', W);
+      for (let k = 0; k < 4; k++) out += line(wavyH(20 + k * 8, 82, 106), '#e9c046', W);
       for (let k = 0; k < 4; k++) out += line(wavyH(70 + k * 8, 54, 106), '#9ccac6', W);
-      for (let k = 0; k < 3; k++) out += line(`M${6 + k * 8} 2v10`, '#e9c046', W);
-      out += line('M2 80l6 18', '#e9c046', W) + line('M78 5h18', '#5b8fc4', W) + line('M34 100l4 -4', '#f2643a', W);
       return out;
     },
   },
