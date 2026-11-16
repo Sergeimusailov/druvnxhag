@@ -355,10 +355,6 @@
   box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
-.ny24-level .ev-node.is-cost {
-  color: #fff;
-}
-
 .e22.is-v21 .ny24-track .ny24-level.is-reached .ev-node.is-cost {
   color: #000;
   filter: none;
