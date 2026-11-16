@@ -1026,3 +1026,45 @@
 
 /* сундуки в карточках и в шторке левитируют — anime.js (levitate() в js/shop.js) */
 
+
+/* награда «Оформление» — сам предмет 72×72 над подписью (рубашка, рамка с
+   аватаром, аватар); статус — картинка из макета на всю ячейку (Figma 18003:36096) */
+.lb-style {
+  display: block;
+  flex: none;
+  width: 72px;
+  height: 72px;
+  margin-top: 18px;
+  border-radius: 16px;
+}
+
+.lb-style-back {
+  position: relative;
+  border-radius: 0;
+}
+
+.lb-style-back > .cb24 {
+  position: absolute;
+  inset: 0;
+}
+
+.lb-style-frame {
+  padding: 6px;
+  background: var(--pf-frame);
+}
+
+.lb-style-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.lb-style-avatar {
+  object-fit: cover;
+}
+
+.lb-cell-img.lb-style-status {
+  transform: none;
+}

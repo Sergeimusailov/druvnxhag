@@ -218,6 +218,13 @@ function flyReward({ wrap, rect }, target, delay = 0) {
   });
 }
 
+// пулы для награды «Оформление»: аватары — квадратные из профиля
+// (assets/avatars-sq), статусы — список из настроек профиля
+const STYLE_KINDS = ['back', 'frame', 'avatar', 'status'];
+const STYLE_AVATARS = Array.from({ length: 16 }, (_, i) => `assets/avatars-sq/sq-${String(i + 1).padStart(2, '0')}.png`);
+const STYLE_STATUSES = ['Т-Ранжира', 'Гааааaз', 'Данеумерявконце', 'Даумеронвконце', 'Т-Ылох', 'Делай, как надо', 'Как не надо, не делай', 'Тут — это вам не там', 'Жи-ши пиши от души', 'Марианскую впадину знаешь?'];
+const STYLE_SUB = { back: 'Рубашка карты', frame: 'Рамка аватара', avatar: 'Аватар', status: 'Статус' };
+
 function makeReward(entry, taken = new Set()) {
   if (entry.kind === 'card') {
     // прототип: эпическая карта — всегда новая (пока есть неоткрытые),
@@ -240,11 +247,19 @@ function makeReward(entry, taken = new Set()) {
     return { kind: 'tokens', amount: Math.round(entry.min + Math.random() * (entry.max - entry.min)) };
   }
   if (entry.kind === 'frame') {
-    // косметика — рамка аватара (js/catalog/frames.js) или рубашка колоды (js/cosmetics24.js)
-    const isBack = Math.random() < 0.5;
-    // любая из каталога (сейчас там только обычные — js/catalog/)
-    const item = pick(isBack ? COSMETICS24.BACKS : COSMETICS24.FRAMES);
-    return { kind: 'frame', back: isBack, id: item.id, name: `${isBack ? 'Рубашка' : 'Рамка'} «${item.name}»` };
+    // оформление — одно из четырёх с равным шансом: рубашка колоды, рамка
+    // аватара (каталог js/catalog/, сейчас только обычные), аватар или статус
+    const style = pick(STYLE_KINDS);
+    if (style === 'back') {
+      const item = pick(COSMETICS24.BACKS);
+      return { kind: 'frame', style, id: item.id, name: `Рубашка «${item.name}»` };
+    }
+    if (style === 'frame') {
+      const item = pick(COSMETICS24.FRAMES);
+      return { kind: 'frame', style, id: item.id, avatar: pick(STYLE_AVATARS), name: `Рамка «${item.name}»` };
+    }
+    if (style === 'avatar') return { kind: 'frame', style, id: pick(STYLE_AVATARS), name: 'Аватар' };
+    return { kind: 'frame', style, id: pick(STYLE_STATUSES), name: 'Статус' };
   }
   return { kind: 'bonus', name: pick(BONUS_NAMES) };
 }
@@ -402,7 +417,7 @@ function prizeText(e) {
   if (e.kind === 'card') return ['Карта', CARD_PRIZE_SUB[e.rarity], 'is-text'];
   if (e.kind === 'coins') return ['Монеты', `${e.min} — ${e.max} шт.`];
   if (e.kind === 'tokens') return ['Ключи', `${e.min} — ${e.max} шт.`];
-  if (e.kind === 'frame') return ['Оформление', 'Рамки, рубашки, профиль', 'is-text'];
+  if (e.kind === 'frame') return ['Оформление', 'Рубашка, рамка, аватар или статус', 'is-text'];
   return ['Бонус', `Шанс выпадения ${e.chance}%`];
 }
 function rewardPreview(e) {
@@ -423,7 +438,7 @@ function prizeTip(key) {
     'card-purple': 'Редкая или эпическая карта',
     coins: 'Монеты, за которые открываются обычный и редкий сундуки',
     tokens: 'Ключи, которые открывают эпический сундук',
-    frame: 'Рамка аватара, рубашка колоды или оформление профиля',
+    frame: 'Одно из оформлений: рубашка колоды, рамка аватара, аватар или статус',
     bonus: 'Скидка или кешбэк от партнёров — появится в «Бонусах»',
   }[key];
 }
@@ -650,9 +665,14 @@ function rewardCellHTML(r) {
     sub = `${r.amount} шт.`;
     art = '<img class="lb-cell-img" src="assets/shop-prize2-keys.png" alt="">';
   } else {
+    // оформление показываем как есть: рубашку, рамку (с аватаром внутри),
+    // аватар; статус — иконкой-лентой из макета (Figma 18003:36096)
     title = 'Оформление';
-    sub = r.back ? 'Рубашка карты' : 'Рамка аватара';
-    art = '<img class="lb-cell-img" src="assets/shop-prize2-styles.png" alt="">';
+    sub = STYLE_SUB[r.style];
+    if (r.style === 'back') art = `<span class="lb-style lb-style-back">${COSMETICS24.backHTML(r.id)}</span>`;
+    else if (r.style === 'frame') art = `<span class="lb-style lb-style-frame" data-frame-id="${r.id}"><img src="${r.avatar}" alt=""></span>`;
+    else if (r.style === 'avatar') art = `<img class="lb-style lb-style-avatar" src="${r.id}" alt="">`;
+    else art = '<img class="lb-cell-img lb-style-status" src="assets/shop-prize2-status.png" alt="">';
   }
   return `<div class="lb-cell lb-cell-${r.kind}${r.dup ? ' is-dup' : ''}"><div class="lb-cell-art">${art}</div><p class="lb-cell-title">${title}</p><span class="lb-cell-sub">${sub}</span></div>`;
 }
@@ -927,6 +947,7 @@ async function playLootbox(box, list) {
   lbOverlayEl.style.opacity = '';
   // сетка наград рисуется сразу (невидимой) — пути вылета считаются от неё
   lbRewardsEl.innerHTML = rewards.map(rewardCellHTML).join('');
+  lbRewardsEl.querySelectorAll('[data-frame-id]').forEach((el) => COSMETICS24.applyFrame(el, el.dataset.frameId));
   const cells = Array.from(lbRewardsEl.children);
   cells.forEach((c) => { c.style.opacity = '0'; });
   lbOverlayEl.classList.add('is-open');
