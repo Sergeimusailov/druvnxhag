@@ -350,13 +350,29 @@ const BACKS_FIGMA = [
   },
   {
     id: 'card-19', name: 'Ромбы', node: '18047:78207',
-    draw: ({ bg, rect }) => {
-      let out = `<defs><pattern id="hd" width="2.6" height="2.6" patternUnits="userSpaceOnUse"><rect width="1.3" height="1.3" fill="#7a7a7a"/></pattern></defs>${bg('#050505')}`;
-      const s = 24;
-      for (let j = -1; j <= 5; j++) for (let i = -1; i <= 5; i++) {
-        const x = i * s + (j % 2 ? s / 2 : 0);
-        const y = j * s / 2;
-        out += rect(x - 8.5, y - 8.5, 17, 17, (i + j) % 3 ? 'url(#hd)' : '#2a2a2a', ` transform="rotate(45 ${x} ${y})"`);
+    draw: ({ bg, diamond, rng }) => {
+      // ромбы встык, каждый залит растром (точки по диагональной сетке);
+      // яркость плавно гаснет сверху вниз, часть ромбов тёмные
+      const R = rng(19);
+      const LV = [[0, 0], [0.5, 80], [0.62, 130], [0.75, 185], [0.88, 240]];
+      let defs = '<defs>';
+      LV.forEach(([size, g], li) => {
+        if (!li) return;
+        const P = 2.8;
+        const d = size * 2.35;
+        defs += `<pattern id="ht${li}" width="${P}" height="${P}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${P}" height="${P}" fill="#060606"/><rect x="${(P - d) / 2}" y="${(P - d) / 2}" width="${d}" height="${d}" fill="rgb(${g},${g},${g})"/></pattern>`;
+      });
+      defs += '</defs>';
+      let out = defs + bg('#060606');
+      const h = 11.5;
+      for (let j = -1; j <= 10; j++) for (let i = -1; i <= 5; i++) {
+        const x = i * 2 * h + (j % 2 ? h : 0);
+        const y = j * h;
+        const fade = Math.max(0.14, 1 - Math.max(0, y + 4) / 100);
+        const v = fade * (0.3 + R() * 0.85);
+        const lv = R() < 0.28 ? 0 : Math.min(4, Math.round(v * 4.4));
+        const fill = lv ? `url(#ht${lv})` : '#060606';
+        out += diamond(x, y, h, h, fill, ` stroke="${fill}" stroke-width="0.8"`);
       }
       return out;
     },
