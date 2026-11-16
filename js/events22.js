@@ -252,7 +252,7 @@ function syncEventFab23(screen) {
 document.addEventListener('v2:screen', (e) => syncEventFab23(e.detail.screen));
 eventFab?.addEventListener('click', () => {
   A24.pulse(eventFab, 0.92, 200);
-  openEvent22('ny');
+  openEvent22('ny', { fromTasks: true });
 });
 
 /* ---------- Трек ---------- */
@@ -511,8 +511,12 @@ function e22DailyTimer() {
   return formatLeft(resetTimes(now).daily - now);
 }
 
-function openEvent22(id) {
+// fromTasks — вход кнопкой события из «Заданий»: там онбординг не нужен
+function openEvent22(id, { fromTasks = false } = {}) {
   const ev = EVENTS22.list[id];
+  // 2.3: при каждом входе в новогоднее событие поверх него — шторка-онбординг
+  // (Figma 16825:18801), кроме входа из «Заданий»
+  if (isNy24() && id === 'ny' && !fromTasks) setTimeout(() => nySheets.onboard.open(), 450);
   e22Current = ev;
   e22Expanded = false;
   // 2.1: синяя тема трека, бейдж над заголовком и кнопка «К заданиям»
@@ -959,10 +963,9 @@ function nyIntroSeen() {
 
 // виджет на главной (2.1): первый раз — правила, затем событие
 function openNyFromHome() {
-  // 2.3: при первом заходе — событие и сразу шторка-онбординг поверх него
+  // 2.3: событие, шторку-онбординг поверх открывает сам openEvent22
   if (isNy24()) {
     openEvent22('ny');
-    if (!nyIntroSeen()) setTimeout(() => nySheets.onboard.open(), 450);
     return;
   }
   if (nyIntroSeen()) openEvent22('ny');
