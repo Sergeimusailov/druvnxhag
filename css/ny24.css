@@ -443,7 +443,10 @@
   cursor: pointer;
 }
 
-.ny24-level.is-locked .ev-card-item {
+/* закрытая награда — без прозрачности, как в макете; селектор сильнее
+   старого `.ev-level.is-locked .ev-card-item { opacity: 0.75 }` из event.css,
+   который в сборке идёт после этого файла */
+.ev-level.ny24-level.is-locked .ev-card-item {
   opacity: 1;
 }
 
