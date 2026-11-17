@@ -4,47 +4,47 @@
 то, по чему экраны берут рамку или рубашку (`FRAME_CATALOG.apply(el, id)`,
 `BACK_CATALOG.html(id)`). Ниже — документация для разработки.
 
-Таблицы и картинки рубашек обновляет `node build/catalog-previews.cjs`
-(после любых правок каталога).
+Таблицы и превью обновляет `node build/catalog-previews.cjs` (после любых
+правок каталога). Превью — только для документации: в игре рамки и рубашки
+рисуются CSS и SVG, картинок нет.
 
 ## Рамки в игре (30)
 
-По макету Figma, раздел «Рамки» (`18162:84720`). Картинка — сама рамка
-(`assets/catalog/frames/<id>.webp`).
+По макету Figma, раздел «Рамки» (`18162:84720`), на CSS и SVG.
 
 <!-- catalog:frames -->
 | id | Название | Вид | Узел Figma |
 |---|---|---|---|
-| `fr-01` | Серебро | <img src="../assets/catalog/frames/fr-01.webp" width="56" height="56" alt="Серебро"> | 18162:84950 |
-| `fr-02` | Апельсин | <img src="../assets/catalog/frames/fr-02.webp" width="56" height="56" alt="Апельсин"> | 18162:84978 |
-| `fr-03` | Аметист | <img src="../assets/catalog/frames/fr-03.webp" width="56" height="56" alt="Аметист"> | 18162:85008 |
-| `fr-04` | Конфетти | <img src="../assets/catalog/frames/fr-04.webp" width="56" height="56" alt="Конфетти"> | 18162:84951 |
-| `fr-05` | Лайм | <img src="../assets/catalog/frames/fr-05.webp" width="56" height="56" alt="Лайм"> | 18162:84981 |
-| `fr-06` | Северное сияние | <img src="../assets/catalog/frames/fr-06.webp" width="56" height="56" alt="Северное сияние"> | 18162:85011 |
-| `fr-07` | Закат | <img src="../assets/catalog/frames/fr-07.webp" width="56" height="56" alt="Закат"> | 18162:84954 |
-| `fr-08` | Мандарин | <img src="../assets/catalog/frames/fr-08.webp" width="56" height="56" alt="Мандарин"> | 18162:84984 |
-| `fr-09` | Лимон | <img src="../assets/catalog/frames/fr-09.webp" width="56" height="56" alt="Лимон"> | 18162:85014 |
-| `fr-10` | Фиалка | <img src="../assets/catalog/frames/fr-10.webp" width="56" height="56" alt="Фиалка"> | 18162:84957 |
-| `fr-11` | Рассвет | <img src="../assets/catalog/frames/fr-11.webp" width="56" height="56" alt="Рассвет"> | 18162:84987 |
-| `fr-12` | Полночь | <img src="../assets/catalog/frames/fr-12.webp" width="56" height="56" alt="Полночь"> | 18162:85017 |
-| `fr-13` | Вихрь | <img src="../assets/catalog/frames/fr-13.webp" width="56" height="56" alt="Вихрь"> | 18162:84960 |
-| `fr-14` | Лазурь | <img src="../assets/catalog/frames/fr-14.webp" width="56" height="56" alt="Лазурь"> | 18162:84990 |
-| `fr-15` | Лаванда | <img src="../assets/catalog/frames/fr-15.webp" width="56" height="56" alt="Лаванда"> | 18162:85020 |
-| `fr-16` | Искры | <img src="../assets/catalog/frames/fr-16.webp" width="56" height="56" alt="Искры"> | 18162:84963 |
-| `fr-17` | Звёздочки | <img src="../assets/catalog/frames/fr-17.webp" width="56" height="56" alt="Звёздочки"> | 18162:84993 |
-| `fr-18` | Малина | <img src="../assets/catalog/frames/fr-18.webp" width="56" height="56" alt="Малина"> | 18162:85023 |
-| `fr-19` | Абрикос | <img src="../assets/catalog/frames/fr-19.webp" width="56" height="56" alt="Абрикос"> | 18162:84966 |
-| `fr-20` | Лучи | <img src="../assets/catalog/frames/fr-20.webp" width="56" height="56" alt="Лучи"> | 18162:84996 |
-| `fr-21` | Рельеф | <img src="../assets/catalog/frames/fr-21.webp" width="56" height="56" alt="Рельеф"> | 18162:85026 |
-| `fr-22` | Неон | <img src="../assets/catalog/frames/fr-22.webp" width="56" height="56" alt="Неон"> | 18162:84969 |
-| `fr-23` | Фейерверк | <img src="../assets/catalog/frames/fr-23.webp" width="56" height="56" alt="Фейерверк"> | 18162:84999 |
-| `fr-24` | Пузыри | <img src="../assets/catalog/frames/fr-24.webp" width="56" height="56" alt="Пузыри"> | 18162:85029 |
-| `fr-25` | Далматин | <img src="../assets/catalog/frames/fr-25.webp" width="56" height="56" alt="Далматин"> | 18162:84972 |
-| `fr-26` | Снежинки | <img src="../assets/catalog/frames/fr-26.webp" width="56" height="56" alt="Снежинки"> | 18162:85002 |
-| `fr-27` | Волны | <img src="../assets/catalog/frames/fr-27.webp" width="56" height="56" alt="Волны"> | 18162:85032 |
-| `fr-28` | Пастель | <img src="../assets/catalog/frames/fr-28.webp" width="56" height="56" alt="Пастель"> | 18162:84975 |
-| `fr-29` | Платина | <img src="../assets/catalog/frames/fr-29.webp" width="56" height="56" alt="Платина"> | 18162:85005 |
-| `fr-30` | Горошек | <img src="../assets/catalog/frames/fr-30.webp" width="56" height="56" alt="Горошек"> | 18162:85035 |
+| `fr-01` | Серебро | <img src="catalog/frames/fr-01.png" width="56" height="56" alt="Серебро"> | 18162:84950 |
+| `fr-02` | Апельсин | <img src="catalog/frames/fr-02.png" width="56" height="56" alt="Апельсин"> | 18162:84978 |
+| `fr-03` | Аметист | <img src="catalog/frames/fr-03.png" width="56" height="56" alt="Аметист"> | 18162:85008 |
+| `fr-04` | Конфетти | <img src="catalog/frames/fr-04.png" width="56" height="56" alt="Конфетти"> | 18162:84951 |
+| `fr-05` | Лайм | <img src="catalog/frames/fr-05.png" width="56" height="56" alt="Лайм"> | 18162:84981 |
+| `fr-06` | Северное сияние | <img src="catalog/frames/fr-06.png" width="56" height="56" alt="Северное сияние"> | 18162:85011 |
+| `fr-07` | Закат | <img src="catalog/frames/fr-07.png" width="56" height="56" alt="Закат"> | 18162:84954 |
+| `fr-08` | Мандарин | <img src="catalog/frames/fr-08.png" width="56" height="56" alt="Мандарин"> | 18162:84984 |
+| `fr-09` | Лимон | <img src="catalog/frames/fr-09.png" width="56" height="56" alt="Лимон"> | 18162:85014 |
+| `fr-10` | Фиалка | <img src="catalog/frames/fr-10.png" width="56" height="56" alt="Фиалка"> | 18162:84957 |
+| `fr-11` | Рассвет | <img src="catalog/frames/fr-11.png" width="56" height="56" alt="Рассвет"> | 18162:84987 |
+| `fr-12` | Полночь | <img src="catalog/frames/fr-12.png" width="56" height="56" alt="Полночь"> | 18162:85017 |
+| `fr-13` | Вихрь | <img src="catalog/frames/fr-13.png" width="56" height="56" alt="Вихрь"> | 18162:84960 |
+| `fr-14` | Лазурь | <img src="catalog/frames/fr-14.png" width="56" height="56" alt="Лазурь"> | 18162:84990 |
+| `fr-15` | Лаванда | <img src="catalog/frames/fr-15.png" width="56" height="56" alt="Лаванда"> | 18162:85020 |
+| `fr-16` | Искры | <img src="catalog/frames/fr-16.png" width="56" height="56" alt="Искры"> | 18162:84963 |
+| `fr-17` | Звёздочки | <img src="catalog/frames/fr-17.png" width="56" height="56" alt="Звёздочки"> | 18162:84993 |
+| `fr-18` | Малина | <img src="catalog/frames/fr-18.png" width="56" height="56" alt="Малина"> | 18162:85023 |
+| `fr-19` | Абрикос | <img src="catalog/frames/fr-19.png" width="56" height="56" alt="Абрикос"> | 18162:84966 |
+| `fr-20` | Лучи | <img src="catalog/frames/fr-20.png" width="56" height="56" alt="Лучи"> | 18162:84996 |
+| `fr-21` | Рельеф | <img src="catalog/frames/fr-21.png" width="56" height="56" alt="Рельеф"> | 18162:85026 |
+| `fr-22` | Неон | <img src="catalog/frames/fr-22.png" width="56" height="56" alt="Неон"> | 18162:84969 |
+| `fr-23` | Фейерверк | <img src="catalog/frames/fr-23.png" width="56" height="56" alt="Фейерверк"> | 18162:84999 |
+| `fr-24` | Пузыри | <img src="catalog/frames/fr-24.png" width="56" height="56" alt="Пузыри"> | 18162:85029 |
+| `fr-25` | Далматин | <img src="catalog/frames/fr-25.png" width="56" height="56" alt="Далматин"> | 18162:84972 |
+| `fr-26` | Снежинки | <img src="catalog/frames/fr-26.png" width="56" height="56" alt="Снежинки"> | 18162:85002 |
+| `fr-27` | Волны | <img src="catalog/frames/fr-27.png" width="56" height="56" alt="Волны"> | 18162:85032 |
+| `fr-28` | Пастель | <img src="catalog/frames/fr-28.png" width="56" height="56" alt="Пастель"> | 18162:84975 |
+| `fr-29` | Платина | <img src="catalog/frames/fr-29.png" width="56" height="56" alt="Платина"> | 18162:85005 |
+| `fr-30` | Горошек | <img src="catalog/frames/fr-30.png" width="56" height="56" alt="Горошек"> | 18162:85035 |
 <!-- /catalog:frames -->
 
 ## Рубашки в игре (30)
@@ -104,8 +104,8 @@
 | Файл | Что внутри |
 |---|---|
 | `js/catalog/frames.js` | `FRAME_CATALOG`: рамки, отрисовка (SVG-узоры, заливки), `apply()` |
-| `js/catalog/frames.figma.js` | `FRAMES_FIGMA`: 30 рамок по макету Figma (`fr-01…30`) — сейчас в игре |
-| `assets/catalog/frames/fr-NN.webp` | картинки рамок по макету (экспорт из Figma @3x, 240×240) |
+| `js/catalog/frames.figma.js` | `FRAMES_FIGMA`: 30 рамок по макету Figma (`fr-01…30`) на CSS и SVG — сейчас в игре |
+| `js/catalog/frames.figma.data.js` | векторные данные рамок из Figma: SVG рамок и матрицы радиальных градиентов. Не править руками |
 | `build/catalog-previews.cjs` | превью для этой документации: картинки рубашек и таблицы вверху |
 | `js/catalog/frames.generated.js` | `FRAMES_GENERATED`: сгенерированные рамки. **Руками не править** |
 | `build/gen-frames.mjs` | генератор рамок: `npm run gen:frames` |
@@ -121,7 +121,7 @@
 | `css/cosmetics24.css` | `.cb24`: рубашка (обычные — `.cb24-gen`, эпические — `.cb24-<id>`) |
 
 Подключение: в `src/pages/<страница>.scripts.json` до `js/cosmetics24.js` идут
-`snowflake.js`, `motifs.js`, `fx-emitter.js`, `frames.generated.js`, `frames.figma.js`, `frames.js`,
+`snowflake.js`, `motifs.js`, `fx-emitter.js`, `frames.generated.js`, `frames.figma.data.js`, `frames.figma.js`, `frames.js`,
 `backs.generated.js`, `backs.figma.js`, `backs.js`. Стили каталога подключаются в
 `src/pages/<страница>.js` до `cosmetics24.css`. Сейчас каталог есть на
 страницах `v2` и `match`. `js/cosmetics24.js` (`COSMETICS24`) — прокси к
@@ -144,18 +144,27 @@ FRAME_CATALOG.css(id)                   // фон строкой (для под�
 переменную, а для редких и эпических ещё классы и частицы.
 
 **Сейчас в игре — 30 рамок по макету Figma** (`fr-01…30`, раздел «Рамки»,
-узел `18162:84720`). В макете рамка — квадрат 80×80: фон-кольцо 8px
-(градиент, узор или картинки поверх), радиус 16, внутри чёрный квадрат
-64×64 с радиусом 12. Часть узоров в макете — растровые картинки (у рамок
-04, 07, 10, 21, 23, 26), поэтому каждая рамка экспортирована из Figma
-целиком (PNG @3x → WebP 240×240, ~3–6 КБ) и рисуется фоном элемента:
-`--pf-frame: url("assets/catalog/frames/fr-NN.webp") center / 100% 100% no-repeat`.
+узел `18162:84720`). В макете рамка — квадрат 80×80: фон-кольцо 8px,
+радиус 16, внутри чёрный квадрат 64×64 с радиусом 12. В игре всё нарисовано
+CSS и SVG, без картинок. Фон рамки — строка CSS `background` в `--pf-frame`:
 
-Картинка растягивается на элемент рамки. Кольцо в ней — 10% стороны, а
-`padding` рамок на экранах — 6–8% (профиль 8/120, матч 4/64, поиск 7/112).
-Поэтому аватар закрывает чёрную середину и часть кольца изнутри: видимое
-кольцо такой же толщины, как раньше на этих экранах. Радиус картинки — 20%
-стороны, как у рамки профиля.
+| Как сделан фон | Рамки |
+|---|---|
+| CSS `linear-gradient` из макета | 01, 29 (серебро), 04, 07, 21 |
+| CSS `conic-gradient` (центр и угол пересчитаны из матрицы Figma) | 14, 16, 26 |
+| цвет | 12, 15, 23 |
+| SVG `radialGradient` с матрицей из Figma (`FRAMES_FIGMA_RADIAL`) | 02, 03, 05, 06, 08, 09, 10, 11 |
+| вся рамка — вектор из Figma (`FRAMES_FIGMA_SVG`, числа округлены до 0,1) | 13, 17, 18, 19, 20, 22, 24, 25, 27, 28, 30; у 16 — узор «искры» поверх конического фона |
+| узор поверх градиента перерисован векторно — в макете там растровые картинки | 04 конфетти, 07 ленточки (градиент от серого к белому, толщина 2,55–2,75), 10 снежная пыль, 21 изолинии, 23 искры, 26 снежинки |
+
+Слой рисуется на весь элемент (`center / 100% 100%`). Кольцо в нём — 10%
+стороны, а `padding` рамок на экранах — 6–8% (профиль 8/120, матч 4/64,
+поиск 7/112). Поэтому аватар закрывает чёрную середину и часть кольца
+изнутри: видимое кольцо такой же толщины, как раньше на этих экранах.
+
+Перерисованные узоры (04, 07, 10, 21, 23, 26) повторяют характер и цвета
+макета, но не пиксельно: искры в макете объёмные, у нас плоские со
+свечением, снежинки проще по рисунку.
 
 Особенности макета: рамки 01 «Серебро» и 29 «Платина» в макете одинаковые
 (файлы совпадают). Названия рамок придуманы по виду: в макете узлы

@@ -12,8 +12,8 @@
 // Редкость: basic — обычные (заливка/градиент + узор), rare — редкие
 // (анимированный перелив цвета, движущийся узор, частицы), epic — эпические
 // (свои CSS-эффекты в css/catalog/frames.css). Сейчас в игре 30 обычных рамок
-// по макету Figma (js/catalog/frames.figma.js, fr-01…30) — картинки
-// assets/catalog/frames/fr-NN.webp. Сгенерированные frame-NN, новогодние ny-*,
+// по макету Figma (js/catalog/frames.figma.js, fr-01…30) — CSS-градиенты и SVG,
+// без картинок. Сгенерированные frame-NN, новогодние ny-*,
 // прежние градиенты, редкие и эпические описаны, но выключены (retired / ACTIVE).
 // Сгенерированные — из build/gen-frames.mjs → js/catalog/frames.generated.js.
 // Подробно — docs/catalog.md.
@@ -169,19 +169,8 @@ const FRAME_CATALOG = (() => {
   const generated = (typeof FRAMES_GENERATED !== 'undefined' ? FRAMES_GENERATED : []).map((f) => ({ ...f, css: generatedCSS(f) }));
 
   // все описанные рамки (редкие и эпические сохранены на будущее)…
-  // рамки по макету Figma (js/catalog/frames.figma.js) — картинки, сейчас в игре
-  // путь — абсолютный от адреса страницы: url() внутри CSS-переменной браузер
-  // разрешает относительно файла стилей, где стоит var(), а не страницы
-  const FRAME_IMG_DIR = (() => {
-    try { return new URL('assets/catalog/frames/', document.baseURI).href; } catch (e) { return 'assets/catalog/frames/'; }
-  })();
-  const figma = (typeof FRAMES_FIGMA !== 'undefined' ? FRAMES_FIGMA : []).map((f) => ({
-    ...f,
-    rarity: 'basic',
-    figma: true,
-    img: `assets/catalog/frames/${f.id}.webp`,
-    css: `url("${FRAME_IMG_DIR}${f.id}.webp") center / 100% 100% no-repeat`,
-  }));
+  // рамки по макету Figma (js/catalog/frames.figma.js) — CSS и SVG, сейчас в игре
+  const figma = (typeof FRAMES_FIGMA !== 'undefined' ? FRAMES_FIGMA : []).map((f) => ({ ...f, rarity: 'basic', figma: true }));
 
   // сгенерированные и прежние обычные рамки выведены из игры (retired), код сохранён
   generated.forEach((f) => { if (f.rarity === 'basic') f.retired = true; });
