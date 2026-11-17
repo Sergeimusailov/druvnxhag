@@ -10,6 +10,7 @@
   "js/catalog/motifs.js",
   "js/catalog/fx-emitter.js",
   "js/catalog/frames.generated.js",
+  "js/catalog/frames.figma.js",
   "js/catalog/frames.js",
   "js/catalog/backs.generated.js",
   "js/catalog/backs.figma.js",

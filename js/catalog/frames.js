@@ -1,7 +1,7 @@
 // Каталог рамок аватара — единый источник для всех экранов (профиль,
 // настройки профиля, поиск матча, матч, награды). Рамку берут по id:
 //
-//   FRAME_CATALOG.get('rare-03')          — описание рамки (неизвестный id → «Белая»)
+//   FRAME_CATALOG.get('fr-07')            — описание рамки (неизвестный id → первая, fr-01)
 //   FRAME_CATALOG.apply(el, 'rare-03')    — нарисовать рамку на элементе
 //   FRAME_CATALOG.random()                — случайная рамка из всего пула
 //   FRAME_CATALOG.list / byRarity('rare') — списки
@@ -11,10 +11,10 @@
 // `background: var(--pf-frame)` + padding — толщина рамки), внутри картинка.
 // Редкость: basic — обычные (заливка/градиент + узор), rare — редкие
 // (анимированный перелив цвета, движущийся узор, частицы), epic — эпические
-// (свои CSS-эффекты в css/catalog/frames.css). Сейчас в игре только обычные
-// (ACTIVE): 30 штук — «Белая», 27 сгенерированных frame-NN (заливка + приём:
-// крупный или мелкий узор, зерно, камушки, фестоны, зубцы, строчка, полосы)
-// и 2 новогодние ny-*; редкие, эпические и прежние градиенты описаны, но выключены.
+// (свои CSS-эффекты в css/catalog/frames.css). Сейчас в игре 30 обычных рамок
+// по макету Figma (js/catalog/frames.figma.js, fr-01…30) — картинки
+// assets/catalog/frames/fr-NN.webp. Сгенерированные frame-NN, новогодние ny-*,
+// прежние градиенты, редкие и эпические описаны, но выключены (retired / ACTIVE).
 // Сгенерированные — из build/gen-frames.mjs → js/catalog/frames.generated.js.
 // Подробно — docs/catalog.md.
 
@@ -145,7 +145,7 @@ const FRAME_CATALOG = (() => {
   // ---------- прежние рамки: в игре только «Белая» (рамка по умолчанию),
   // остальные — простые градиенты — выключены (retired) ----------
   const LEGACY_FRAMES = [
-    { id: 'white', name: 'Белая', rarity: 'basic', css: '#fff' },
+    { id: 'white', name: 'Белая', rarity: 'basic', retired: true, css: '#fff' },
     { id: 'dark', name: 'Графит', rarity: 'basic', retired: true, css: '#48484a' },
     { id: 'gold', name: 'Золото', rarity: 'basic', retired: true, css: 'linear-gradient(135deg, #fff2a8, #f5b400 50%, #c27a00)' },
     { id: 'ice', name: 'Лёд', rarity: 'basic', retired: true, css: 'linear-gradient(135deg, #e6f6ff, #7fd4ff 50%, #3f8cff)' },
@@ -169,7 +169,25 @@ const FRAME_CATALOG = (() => {
   const generated = (typeof FRAMES_GENERATED !== 'undefined' ? FRAMES_GENERATED : []).map((f) => ({ ...f, css: generatedCSS(f) }));
 
   // все описанные рамки (редкие и эпические сохранены на будущее)…
+  // рамки по макету Figma (js/catalog/frames.figma.js) — картинки, сейчас в игре
+  // путь — абсолютный от адреса страницы: url() внутри CSS-переменной браузер
+  // разрешает относительно файла стилей, где стоит var(), а не страницы
+  const FRAME_IMG_DIR = (() => {
+    try { return new URL('assets/catalog/frames/', document.baseURI).href; } catch (e) { return 'assets/catalog/frames/'; }
+  })();
+  const figma = (typeof FRAMES_FIGMA !== 'undefined' ? FRAMES_FIGMA : []).map((f) => ({
+    ...f,
+    rarity: 'basic',
+    figma: true,
+    img: `assets/catalog/frames/${f.id}.webp`,
+    css: `url("${FRAME_IMG_DIR}${f.id}.webp") center / 100% 100% no-repeat`,
+  }));
+
+  // сгенерированные и прежние обычные рамки выведены из игры (retired), код сохранён
+  generated.forEach((f) => { if (f.rarity === 'basic') f.retired = true; });
+
   const all = [
+    ...figma,
     ...LEGACY_FRAMES,
     ...generated.filter((f) => f.rarity === 'basic' && !f.theme && f.style),
     ...generated.filter((f) => f.rarity === 'basic' && !f.theme && !f.style),

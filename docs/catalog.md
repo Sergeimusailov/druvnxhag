@@ -1,11 +1,100 @@
 # Каталог косметики
 
+Сначала — что сейчас в игре: рамки и рубашки с id, названием и видом. id —
+то, по чему экраны берут рамку или рубашку (`FRAME_CATALOG.apply(el, id)`,
+`BACK_CATALOG.html(id)`). Ниже — документация для разработки.
+
+Таблицы и картинки рубашек обновляет `node build/catalog-previews.cjs`
+(после любых правок каталога).
+
+## Рамки в игре (30)
+
+По макету Figma, раздел «Рамки» (`18162:84720`). Картинка — сама рамка
+(`assets/catalog/frames/<id>.webp`).
+
+<!-- catalog:frames -->
+| id | Название | Вид | Узел Figma |
+|---|---|---|---|
+| `fr-01` | Серебро | <img src="../assets/catalog/frames/fr-01.webp" width="56" height="56" alt="Серебро"> | 18162:84950 |
+| `fr-02` | Апельсин | <img src="../assets/catalog/frames/fr-02.webp" width="56" height="56" alt="Апельсин"> | 18162:84978 |
+| `fr-03` | Аметист | <img src="../assets/catalog/frames/fr-03.webp" width="56" height="56" alt="Аметист"> | 18162:85008 |
+| `fr-04` | Конфетти | <img src="../assets/catalog/frames/fr-04.webp" width="56" height="56" alt="Конфетти"> | 18162:84951 |
+| `fr-05` | Лайм | <img src="../assets/catalog/frames/fr-05.webp" width="56" height="56" alt="Лайм"> | 18162:84981 |
+| `fr-06` | Северное сияние | <img src="../assets/catalog/frames/fr-06.webp" width="56" height="56" alt="Северное сияние"> | 18162:85011 |
+| `fr-07` | Закат | <img src="../assets/catalog/frames/fr-07.webp" width="56" height="56" alt="Закат"> | 18162:84954 |
+| `fr-08` | Мандарин | <img src="../assets/catalog/frames/fr-08.webp" width="56" height="56" alt="Мандарин"> | 18162:84984 |
+| `fr-09` | Лимон | <img src="../assets/catalog/frames/fr-09.webp" width="56" height="56" alt="Лимон"> | 18162:85014 |
+| `fr-10` | Фиалка | <img src="../assets/catalog/frames/fr-10.webp" width="56" height="56" alt="Фиалка"> | 18162:84957 |
+| `fr-11` | Рассвет | <img src="../assets/catalog/frames/fr-11.webp" width="56" height="56" alt="Рассвет"> | 18162:84987 |
+| `fr-12` | Полночь | <img src="../assets/catalog/frames/fr-12.webp" width="56" height="56" alt="Полночь"> | 18162:85017 |
+| `fr-13` | Вихрь | <img src="../assets/catalog/frames/fr-13.webp" width="56" height="56" alt="Вихрь"> | 18162:84960 |
+| `fr-14` | Лазурь | <img src="../assets/catalog/frames/fr-14.webp" width="56" height="56" alt="Лазурь"> | 18162:84990 |
+| `fr-15` | Лаванда | <img src="../assets/catalog/frames/fr-15.webp" width="56" height="56" alt="Лаванда"> | 18162:85020 |
+| `fr-16` | Искры | <img src="../assets/catalog/frames/fr-16.webp" width="56" height="56" alt="Искры"> | 18162:84963 |
+| `fr-17` | Звёздочки | <img src="../assets/catalog/frames/fr-17.webp" width="56" height="56" alt="Звёздочки"> | 18162:84993 |
+| `fr-18` | Малина | <img src="../assets/catalog/frames/fr-18.webp" width="56" height="56" alt="Малина"> | 18162:85023 |
+| `fr-19` | Абрикос | <img src="../assets/catalog/frames/fr-19.webp" width="56" height="56" alt="Абрикос"> | 18162:84966 |
+| `fr-20` | Лучи | <img src="../assets/catalog/frames/fr-20.webp" width="56" height="56" alt="Лучи"> | 18162:84996 |
+| `fr-21` | Рельеф | <img src="../assets/catalog/frames/fr-21.webp" width="56" height="56" alt="Рельеф"> | 18162:85026 |
+| `fr-22` | Неон | <img src="../assets/catalog/frames/fr-22.webp" width="56" height="56" alt="Неон"> | 18162:84969 |
+| `fr-23` | Фейерверк | <img src="../assets/catalog/frames/fr-23.webp" width="56" height="56" alt="Фейерверк"> | 18162:84999 |
+| `fr-24` | Пузыри | <img src="../assets/catalog/frames/fr-24.webp" width="56" height="56" alt="Пузыри"> | 18162:85029 |
+| `fr-25` | Далматин | <img src="../assets/catalog/frames/fr-25.webp" width="56" height="56" alt="Далматин"> | 18162:84972 |
+| `fr-26` | Снежинки | <img src="../assets/catalog/frames/fr-26.webp" width="56" height="56" alt="Снежинки"> | 18162:85002 |
+| `fr-27` | Волны | <img src="../assets/catalog/frames/fr-27.webp" width="56" height="56" alt="Волны"> | 18162:85032 |
+| `fr-28` | Пастель | <img src="../assets/catalog/frames/fr-28.webp" width="56" height="56" alt="Пастель"> | 18162:84975 |
+| `fr-29` | Платина | <img src="../assets/catalog/frames/fr-29.webp" width="56" height="56" alt="Платина"> | 18162:85005 |
+| `fr-30` | Горошек | <img src="../assets/catalog/frames/fr-30.webp" width="56" height="56" alt="Горошек"> | 18162:85035 |
+<!-- /catalog:frames -->
+
+## Рубашки в игре (30)
+
+По макету Figma, раздел «Рубашки» (`18036:39909`), перерисованы векторами (SVG).
+
+<!-- catalog:backs -->
+| id | Название | Вид | Узел Figma |
+|---|---|---|---|
+| `card-01` | Базовая | <img src="catalog/backs/card-01.png" width="56" height="56" alt="Базовая"> | 18036:78019 |
+| `card-02` | Червячки | <img src="catalog/backs/card-02.png" width="56" height="56" alt="Червячки"> | 18036:78043 |
+| `card-03` | Арлекин | <img src="catalog/backs/card-03.png" width="56" height="56" alt="Арлекин"> | 18047:78190 |
+| `card-04` | Посыпка | <img src="catalog/backs/card-04.png" width="56" height="56" alt="Посыпка"> | 18047:78192 |
+| `card-05` | Рельеф | <img src="catalog/backs/card-05.png" width="56" height="56" alt="Рельеф"> | 18047:78193 |
+| `card-06` | Травы | <img src="catalog/backs/card-06.png" width="56" height="56" alt="Травы"> | 18047:78194 |
+| `card-07` | Озорная | <img src="catalog/backs/card-07.png" width="56" height="56" alt="Озорная"> | 18047:78195 |
+| `card-08` | Мемфис | <img src="catalog/backs/card-08.png" width="56" height="56" alt="Мемфис"> | 18047:78196 |
+| `card-09` | Звёзды | <img src="catalog/backs/card-09.png" width="56" height="56" alt="Звёзды"> | 18047:78197 |
+| `card-10` | Синева | <img src="catalog/backs/card-10.png" width="56" height="56" alt="Синева"> | 18047:78198 |
+| `card-11` | Лабиринт | <img src="catalog/backs/card-11.png" width="56" height="56" alt="Лабиринт"> | 18047:78199 |
+| `card-12` | Камуфляж | <img src="catalog/backs/card-12.png" width="56" height="56" alt="Камуфляж"> | 18047:78200 |
+| `card-13` | Смайлы | <img src="catalog/backs/card-13.png" width="56" height="56" alt="Смайлы"> | 18047:78201 |
+| `card-14` | Конфетти | <img src="catalog/backs/card-14.png" width="56" height="56" alt="Конфетти"> | 18047:78202 |
+| `card-15` | Воронка | <img src="catalog/backs/card-15.png" width="56" height="56" alt="Воронка"> | 18047:78203 |
+| `card-16` | Цветочки | <img src="catalog/backs/card-16.png" width="56" height="56" alt="Цветочки"> | 18047:78204 |
+| `card-17` | Космос | <img src="catalog/backs/card-17.png" width="56" height="56" alt="Космос"> | 18047:78205 |
+| `card-18` | Облака | <img src="catalog/backs/card-18.png" width="56" height="56" alt="Облака"> | 18047:78206 |
+| `card-19` | Ромбы | <img src="catalog/backs/card-19.png" width="56" height="56" alt="Ромбы"> | 18047:78207 |
+| `card-20` | Растр | <img src="catalog/backs/card-20.png" width="56" height="56" alt="Растр"> | 18047:78208 |
+| `card-21` | Кристаллы | <img src="catalog/backs/card-21.png" width="56" height="56" alt="Кристаллы"> | 18047:78209 |
+| `card-22` | Пиксели | <img src="catalog/backs/card-22.png" width="56" height="56" alt="Пиксели"> | 18047:78210 |
+| `card-23` | Пламя | <img src="catalog/backs/card-23.png" width="56" height="56" alt="Пламя"> | 18047:78211 |
+| `card-24` | Ацтек | <img src="catalog/backs/card-24.png" width="56" height="56" alt="Ацтек"> | 18047:78212 |
+| `card-25` | Вспышка | <img src="catalog/backs/card-25.png" width="56" height="56" alt="Вспышка"> | 18047:78213 |
+| `card-26` | Вертушка | <img src="catalog/backs/card-26.png" width="56" height="56" alt="Вертушка"> | 18047:78214 |
+| `card-27` | Плитка | <img src="catalog/backs/card-27.png" width="56" height="56" alt="Плитка"> | 18047:78215 |
+| `card-28` | Спираль | <img src="catalog/backs/card-28.png" width="56" height="56" alt="Спираль"> | 18047:78216 |
+| `card-29` | Сетка | <img src="catalog/backs/card-29.png" width="56" height="56" alt="Сетка"> | 18047:78217 |
+| `card-30` | Карнавал | <img src="catalog/backs/card-30.png" width="56" height="56" alt="Карнавал"> | 18047:78218 |
+<!-- /catalog:backs -->
+
+---
+
+# Для разработки
+
 Каталог — единственный источник **рамок аватара** и **рубашек колоды**.
 Профиль, настройки профиля, поиск матча, матч (свой аватар, соперник,
 профиль соперника), награды магазина и итога матча берут их по id.
-Рисуется всё через HTML, CSS и SVG, без canvas и WebGL.
 
-**Сейчас в игре только обычная редкость:** 30 рамок и 30 рубашек.
+**Сейчас в игре только обычная редкость:** 30 рамок и 30 рубашек по макету.
 Редкие и эпические описаны и нарисованы, но выключены (`ACTIVE = ['basic']`
 в `frames.js` и `backs.js`). Их будем включать в следующих версиях
 постепенно: для этого достаточно дописать редкость в `ACTIVE`.
@@ -15,6 +104,9 @@
 | Файл | Что внутри |
 |---|---|
 | `js/catalog/frames.js` | `FRAME_CATALOG`: рамки, отрисовка (SVG-узоры, заливки), `apply()` |
+| `js/catalog/frames.figma.js` | `FRAMES_FIGMA`: 30 рамок по макету Figma (`fr-01…30`) — сейчас в игре |
+| `assets/catalog/frames/fr-NN.webp` | картинки рамок по макету (экспорт из Figma @3x, 240×240) |
+| `build/catalog-previews.cjs` | превью для этой документации: картинки рубашек и таблицы вверху |
 | `js/catalog/frames.generated.js` | `FRAMES_GENERATED`: сгенерированные рамки. **Руками не править** |
 | `build/gen-frames.mjs` | генератор рамок: `npm run gen:frames` |
 | `js/catalog/backs.js` | `BACK_CATALOG`: рубашки, отрисовка фона и узора, `html()` |
@@ -29,7 +121,7 @@
 | `css/cosmetics24.css` | `.cb24`: рубашка (обычные — `.cb24-gen`, эпические — `.cb24-<id>`) |
 
 Подключение: в `src/pages/<страница>.scripts.json` до `js/cosmetics24.js` идут
-`snowflake.js`, `motifs.js`, `fx-emitter.js`, `frames.generated.js`, `frames.js`,
+`snowflake.js`, `motifs.js`, `fx-emitter.js`, `frames.generated.js`, `frames.figma.js`, `frames.js`,
 `backs.generated.js`, `backs.figma.js`, `backs.js`. Стили каталога подключаются в
 `src/pages/<страница>.js` до `cosmetics24.css`. Сейчас каталог есть на
 страницах `v2` и `match`. `js/cosmetics24.js` (`COSMETICS24`) — прокси к
@@ -51,18 +143,31 @@ FRAME_CATALOG.css(id)                   // фон строкой (для под�
 толщину задаёт `padding`, внутри лежит картинка аватара. `apply()` сам ставит
 переменную, а для редких и эпических ещё классы и частицы.
 
-**Состав: 30 обычных** (`list` в этом порядке):
+**Сейчас в игре — 30 рамок по макету Figma** (`fr-01…30`, раздел «Рамки»,
+узел `18162:84720`). В макете рамка — квадрат 80×80: фон-кольцо 8px
+(градиент, узор или картинки поверх), радиус 16, внутри чёрный квадрат
+64×64 с радиусом 12. Часть узоров в макете — растровые картинки (у рамок
+04, 07, 10, 21, 23, 26), поэтому каждая рамка экспортирована из Figma
+целиком (PNG @3x → WebP 240×240, ~3–6 КБ) и рисуется фоном элемента:
+`--pf-frame: url("assets/catalog/frames/fr-NN.webp") center / 100% 100% no-repeat`.
 
-| Что | Сколько | id |
-|---|---|---|
-| «Белая» — рамка по умолчанию | 1 | `white` |
-| Сгенерированные: плоская «печатная» палитра + один приём | 27 | `frame-01…27` |
-| Новогодние: цвета и узор с иконок ивента | 2 | `ny-ball` («Ёлочный шар»: цвета шара `assets/v2-snow-pts2.png`), `ny-snowflake` («Снежинка»: цвета `assets/v2-event-snowflake.png`); узор — снежинка ивента |
+Картинка растягивается на элемент рамки. Кольцо в ней — 10% стороны, а
+`padding` рамок на экранах — 6–8% (профиль 8/120, матч 4/64, поиск 7/112).
+Поэтому аватар закрывает чёрную середину и часть кольца изнутри: видимое
+кольцо такой же толщины, как раньше на этих экранах. Радиус картинки — 20%
+стороны, как у рамки профиля.
 
-Выключены (описаны в `all`): 9 прежних простых градиентов (`retired`:
-`dark`, `gold`, `ice`…), 10 редких `rare-01…10` и 6 эпических (`holo`,
-`plasma`, `royal`, `flame`, `frost`, `void`). Сохранённый выбор выключенной
-рамки показывается «Белой». Синонимы: `rainbow` → `holo`.
+Особенности макета: рамки 01 «Серебро» и 29 «Платина» в макете одинаковые
+(файлы совпадают). Названия рамок придуманы по виду: в макете узлы
+называются номерами.
+
+Выключены (описаны в `all`, `retired`): «Белая» и 9 прежних градиентов,
+27 сгенерированных `frame-01…27`, новогодние `ny-ball` / `ny-snowflake`,
+а также 10 редких `rare-01…10` и 6 эпических (`holo`, `plasma`, `royal`,
+`flame`, `frost`, `void`). Сохранённый выбор выключенной рамки показывается
+первой рамкой каталога (`fr-01`). Синонимы: `rainbow` → `holo`.
+
+**Сгенерированные рамки (выключены).** Ниже — как они устроены.
 
 **Приёмы обычных рамок** (`style`; фон рамки — слои CSS `background`, всё SVG в `data:`-URL):
 
