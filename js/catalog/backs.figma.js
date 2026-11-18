@@ -540,14 +540,16 @@ const BACKS_FIGMA = [
       const pal = ['#fb9a3c', '#f9a8c8', '#f2643a', '#fde3d0'];
       const w = 33;
       const h = 46;
+      // звезда в каждом ромбе; звёзды — вторым проходом, чтобы ромбы их не перекрывали
+      let stars = '';
       for (let j = -1; j <= 5; j++) for (let i = -1; i <= 3; i++) {
         const x = i * w + (j % 2 ? w / 2 : 0);
         const y = j * h / 2;
         const col = pal[(((i + j * 2) % 4) + 4) % 4];
         out += diamond(x, y, w / 2, h / 2, col);
-        if ((i + j) % 2 === 0) out += star(x, y, 7, col === '#fb9a3c' || col === '#f2643a' ? '#ffffff' : '#fb9a3c', 4, 0.3);
+        stars += star(x, y, 7, col === '#fb9a3c' || col === '#f2643a' ? '#ffffff' : '#fb9a3c', 4, 0.3);
       }
-      return out;
+      return out + stars;
     },
   },
 ];
