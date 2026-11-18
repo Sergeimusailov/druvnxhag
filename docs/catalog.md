@@ -13,38 +13,38 @@
 По макету Figma, раздел «Рамки» (`18162:84720`), на CSS и SVG.
 
 <!-- catalog:frames -->
-| id | Название | Вид | Узел Figma |
+| id | Название | Вид | Редкость |
 |---|---|---|---|
-| `fr-01` | Серебро | <img src="catalog/frames/fr-01.png" width="56" height="56" alt="Серебро"> | 18162:84950 |
-| `fr-02` | Апельсин | <img src="catalog/frames/fr-02.png" width="56" height="56" alt="Апельсин"> | 18162:84978 |
-| `fr-03` | Аметист | <img src="catalog/frames/fr-03.png" width="56" height="56" alt="Аметист"> | 18162:85008 |
-| `fr-04` | Конфетти | <img src="catalog/frames/fr-04.png" width="56" height="56" alt="Конфетти"> | 18162:84951 |
-| `fr-05` | Лайм | <img src="catalog/frames/fr-05.png" width="56" height="56" alt="Лайм"> | 18162:84981 |
-| `fr-06` | Северное сияние | <img src="catalog/frames/fr-06.png" width="56" height="56" alt="Северное сияние"> | 18162:85011 |
-| `fr-07` | Закат | <img src="catalog/frames/fr-07.png" width="56" height="56" alt="Закат"> | 18162:84954 |
-| `fr-08` | Мандарин | <img src="catalog/frames/fr-08.png" width="56" height="56" alt="Мандарин"> | 18162:84984 |
-| `fr-09` | Лимон | <img src="catalog/frames/fr-09.png" width="56" height="56" alt="Лимон"> | 18162:85014 |
-| `fr-10` | Фиалка | <img src="catalog/frames/fr-10.png" width="56" height="56" alt="Фиалка"> | 18162:84957 |
-| `fr-11` | Рассвет | <img src="catalog/frames/fr-11.png" width="56" height="56" alt="Рассвет"> | 18162:84987 |
-| `fr-12` | Полночь | <img src="catalog/frames/fr-12.png" width="56" height="56" alt="Полночь"> | 18162:85017 |
-| `fr-13` | Вихрь | <img src="catalog/frames/fr-13.png" width="56" height="56" alt="Вихрь"> | 18162:84960 |
-| `fr-14` | Лазурь | <img src="catalog/frames/fr-14.png" width="56" height="56" alt="Лазурь"> | 18162:84990 |
-| `fr-15` | Лаванда | <img src="catalog/frames/fr-15.png" width="56" height="56" alt="Лаванда"> | 18162:85020 |
-| `fr-16` | Искры | <img src="catalog/frames/fr-16.png" width="56" height="56" alt="Искры"> | 18162:84963 |
-| `fr-17` | Звёздочки | <img src="catalog/frames/fr-17.png" width="56" height="56" alt="Звёздочки"> | 18162:84993 |
-| `fr-18` | Малина | <img src="catalog/frames/fr-18.png" width="56" height="56" alt="Малина"> | 18162:85023 |
-| `fr-19` | Абрикос | <img src="catalog/frames/fr-19.png" width="56" height="56" alt="Абрикос"> | 18162:84966 |
-| `fr-20` | Лучи | <img src="catalog/frames/fr-20.png" width="56" height="56" alt="Лучи"> | 18162:84996 |
-| `fr-21` | Рельеф | <img src="catalog/frames/fr-21.png" width="56" height="56" alt="Рельеф"> | 18162:85026 |
-| `fr-22` | Неон | <img src="catalog/frames/fr-22.png" width="56" height="56" alt="Неон"> | 18162:84969 |
-| `fr-23` | Фейерверк | <img src="catalog/frames/fr-23.png" width="56" height="56" alt="Фейерверк"> | 18162:84999 |
-| `fr-24` | Пузыри | <img src="catalog/frames/fr-24.png" width="56" height="56" alt="Пузыри"> | 18162:85029 |
-| `fr-25` | Далматин | <img src="catalog/frames/fr-25.png" width="56" height="56" alt="Далматин"> | 18162:84972 |
-| `fr-26` | Снежинки | <img src="catalog/frames/fr-26.png" width="56" height="56" alt="Снежинки"> | 18162:85002 |
-| `fr-27` | Волны | <img src="catalog/frames/fr-27.png" width="56" height="56" alt="Волны"> | 18162:85032 |
-| `fr-28` | Пастель | <img src="catalog/frames/fr-28.png" width="56" height="56" alt="Пастель"> | 18162:84975 |
-| `fr-29` | Платина | <img src="catalog/frames/fr-29.png" width="56" height="56" alt="Платина"> | 18162:85005 |
-| `fr-30` | Горошек | <img src="catalog/frames/fr-30.png" width="56" height="56" alt="Горошек"> | 18162:85035 |
+| `fr-01` | Серебро | <img src="catalog/frames/fr-01.png" width="56" height="56" alt="Серебро"> | Обычная |
+| `fr-02` | Апельсин | <img src="catalog/frames/fr-02.png" width="56" height="56" alt="Апельсин"> | Обычная |
+| `fr-03` | Аметист | <img src="catalog/frames/fr-03.png" width="56" height="56" alt="Аметист"> | Обычная |
+| `fr-04` | Конфетти | <img src="catalog/frames/fr-04.png" width="56" height="56" alt="Конфетти"> | Обычная |
+| `fr-05` | Лайм | <img src="catalog/frames/fr-05.png" width="56" height="56" alt="Лайм"> | Обычная |
+| `fr-06` | Северное сияние | <img src="catalog/frames/fr-06.png" width="56" height="56" alt="Северное сияние"> | Обычная |
+| `fr-07` | Закат | <img src="catalog/frames/fr-07.png" width="56" height="56" alt="Закат"> | Обычная |
+| `fr-08` | Мандарин | <img src="catalog/frames/fr-08.png" width="56" height="56" alt="Мандарин"> | Обычная |
+| `fr-09` | Лимон | <img src="catalog/frames/fr-09.png" width="56" height="56" alt="Лимон"> | Обычная |
+| `fr-10` | Фиалка | <img src="catalog/frames/fr-10.png" width="56" height="56" alt="Фиалка"> | Обычная |
+| `fr-11` | Рассвет | <img src="catalog/frames/fr-11.png" width="56" height="56" alt="Рассвет"> | Обычная |
+| `fr-12` | Полночь | <img src="catalog/frames/fr-12.png" width="56" height="56" alt="Полночь"> | Обычная |
+| `fr-13` | Вихрь | <img src="catalog/frames/fr-13.png" width="56" height="56" alt="Вихрь"> | Обычная |
+| `fr-14` | Лазурь | <img src="catalog/frames/fr-14.png" width="56" height="56" alt="Лазурь"> | Обычная |
+| `fr-15` | Лаванда | <img src="catalog/frames/fr-15.png" width="56" height="56" alt="Лаванда"> | Обычная |
+| `fr-16` | Искры | <img src="catalog/frames/fr-16.png" width="56" height="56" alt="Искры"> | Обычная |
+| `fr-17` | Звёздочки | <img src="catalog/frames/fr-17.png" width="56" height="56" alt="Звёздочки"> | Обычная |
+| `fr-18` | Малина | <img src="catalog/frames/fr-18.png" width="56" height="56" alt="Малина"> | Обычная |
+| `fr-19` | Абрикос | <img src="catalog/frames/fr-19.png" width="56" height="56" alt="Абрикос"> | Обычная |
+| `fr-20` | Лучи | <img src="catalog/frames/fr-20.png" width="56" height="56" alt="Лучи"> | Обычная |
+| `fr-21` | Рельеф | <img src="catalog/frames/fr-21.png" width="56" height="56" alt="Рельеф"> | Обычная |
+| `fr-22` | Неон | <img src="catalog/frames/fr-22.png" width="56" height="56" alt="Неон"> | Обычная |
+| `fr-23` | Фейерверк | <img src="catalog/frames/fr-23.png" width="56" height="56" alt="Фейерверк"> | Обычная |
+| `fr-24` | Пузыри | <img src="catalog/frames/fr-24.png" width="56" height="56" alt="Пузыри"> | Обычная |
+| `fr-25` | Далматин | <img src="catalog/frames/fr-25.png" width="56" height="56" alt="Далматин"> | Обычная |
+| `fr-26` | Снежинки | <img src="catalog/frames/fr-26.png" width="56" height="56" alt="Снежинки"> | Обычная |
+| `fr-27` | Волны | <img src="catalog/frames/fr-27.png" width="56" height="56" alt="Волны"> | Обычная |
+| `fr-28` | Пастель | <img src="catalog/frames/fr-28.png" width="56" height="56" alt="Пастель"> | Обычная |
+| `fr-29` | Платина | <img src="catalog/frames/fr-29.png" width="56" height="56" alt="Платина"> | Обычная |
+| `fr-30` | Горошек | <img src="catalog/frames/fr-30.png" width="56" height="56" alt="Горошек"> | Обычная |
 <!-- /catalog:frames -->
 
 ## Рубашки в игре (30)
@@ -52,38 +52,38 @@
 По макету Figma, раздел «Рубашки» (`18036:39909`), перерисованы векторами (SVG).
 
 <!-- catalog:backs -->
-| id | Название | Вид | Узел Figma |
+| id | Название | Вид | Редкость |
 |---|---|---|---|
-| `card-01` | Базовая | <img src="catalog/backs/card-01.png" width="56" height="56" alt="Базовая"> | 18036:78019 |
-| `card-02` | Червячки | <img src="catalog/backs/card-02.png" width="56" height="56" alt="Червячки"> | 18036:78043 |
-| `card-03` | Арлекин | <img src="catalog/backs/card-03.png" width="56" height="56" alt="Арлекин"> | 18047:78190 |
-| `card-04` | Посыпка | <img src="catalog/backs/card-04.png" width="56" height="56" alt="Посыпка"> | 18047:78192 |
-| `card-05` | Рельеф | <img src="catalog/backs/card-05.png" width="56" height="56" alt="Рельеф"> | 18047:78193 |
-| `card-06` | Травы | <img src="catalog/backs/card-06.png" width="56" height="56" alt="Травы"> | 18047:78194 |
-| `card-07` | Озорная | <img src="catalog/backs/card-07.png" width="56" height="56" alt="Озорная"> | 18047:78195 |
-| `card-08` | Мемфис | <img src="catalog/backs/card-08.png" width="56" height="56" alt="Мемфис"> | 18047:78196 |
-| `card-09` | Звёзды | <img src="catalog/backs/card-09.png" width="56" height="56" alt="Звёзды"> | 18047:78197 |
-| `card-10` | Синева | <img src="catalog/backs/card-10.png" width="56" height="56" alt="Синева"> | 18047:78198 |
-| `card-11` | Лабиринт | <img src="catalog/backs/card-11.png" width="56" height="56" alt="Лабиринт"> | 18047:78199 |
-| `card-12` | Камуфляж | <img src="catalog/backs/card-12.png" width="56" height="56" alt="Камуфляж"> | 18047:78200 |
-| `card-13` | Смайлы | <img src="catalog/backs/card-13.png" width="56" height="56" alt="Смайлы"> | 18047:78201 |
-| `card-14` | Конфетти | <img src="catalog/backs/card-14.png" width="56" height="56" alt="Конфетти"> | 18047:78202 |
-| `card-15` | Воронка | <img src="catalog/backs/card-15.png" width="56" height="56" alt="Воронка"> | 18047:78203 |
-| `card-16` | Цветочки | <img src="catalog/backs/card-16.png" width="56" height="56" alt="Цветочки"> | 18047:78204 |
-| `card-17` | Космос | <img src="catalog/backs/card-17.png" width="56" height="56" alt="Космос"> | 18047:78205 |
-| `card-18` | Облака | <img src="catalog/backs/card-18.png" width="56" height="56" alt="Облака"> | 18047:78206 |
-| `card-19` | Ромбы | <img src="catalog/backs/card-19.png" width="56" height="56" alt="Ромбы"> | 18047:78207 |
-| `card-20` | Растр | <img src="catalog/backs/card-20.png" width="56" height="56" alt="Растр"> | 18047:78208 |
-| `card-21` | Кристаллы | <img src="catalog/backs/card-21.png" width="56" height="56" alt="Кристаллы"> | 18047:78209 |
-| `card-22` | Пиксели | <img src="catalog/backs/card-22.png" width="56" height="56" alt="Пиксели"> | 18047:78210 |
-| `card-23` | Пламя | <img src="catalog/backs/card-23.png" width="56" height="56" alt="Пламя"> | 18047:78211 |
-| `card-24` | Ацтек | <img src="catalog/backs/card-24.png" width="56" height="56" alt="Ацтек"> | 18047:78212 |
-| `card-25` | Вспышка | <img src="catalog/backs/card-25.png" width="56" height="56" alt="Вспышка"> | 18047:78213 |
-| `card-26` | Вертушка | <img src="catalog/backs/card-26.png" width="56" height="56" alt="Вертушка"> | 18047:78214 |
-| `card-27` | Плитка | <img src="catalog/backs/card-27.png" width="56" height="56" alt="Плитка"> | 18047:78215 |
-| `card-28` | Спираль | <img src="catalog/backs/card-28.png" width="56" height="56" alt="Спираль"> | 18047:78216 |
-| `card-29` | Сетка | <img src="catalog/backs/card-29.png" width="56" height="56" alt="Сетка"> | 18047:78217 |
-| `card-30` | Карнавал | <img src="catalog/backs/card-30.png" width="56" height="56" alt="Карнавал"> | 18047:78218 |
+| `card-01` | Базовая | <img src="catalog/backs/card-01.png" width="56" height="56" alt="Базовая"> | Обычная |
+| `card-02` | Червячки | <img src="catalog/backs/card-02.png" width="56" height="56" alt="Червячки"> | Обычная |
+| `card-03` | Арлекин | <img src="catalog/backs/card-03.png" width="56" height="56" alt="Арлекин"> | Обычная |
+| `card-04` | Посыпка | <img src="catalog/backs/card-04.png" width="56" height="56" alt="Посыпка"> | Обычная |
+| `card-05` | Рельеф | <img src="catalog/backs/card-05.png" width="56" height="56" alt="Рельеф"> | Обычная |
+| `card-06` | Травы | <img src="catalog/backs/card-06.png" width="56" height="56" alt="Травы"> | Обычная |
+| `card-07` | Озорная | <img src="catalog/backs/card-07.png" width="56" height="56" alt="Озорная"> | Обычная |
+| `card-08` | Мемфис | <img src="catalog/backs/card-08.png" width="56" height="56" alt="Мемфис"> | Обычная |
+| `card-09` | Звёзды | <img src="catalog/backs/card-09.png" width="56" height="56" alt="Звёзды"> | Обычная |
+| `card-10` | Синева | <img src="catalog/backs/card-10.png" width="56" height="56" alt="Синева"> | Обычная |
+| `card-11` | Лабиринт | <img src="catalog/backs/card-11.png" width="56" height="56" alt="Лабиринт"> | Обычная |
+| `card-12` | Камуфляж | <img src="catalog/backs/card-12.png" width="56" height="56" alt="Камуфляж"> | Обычная |
+| `card-13` | Смайлы | <img src="catalog/backs/card-13.png" width="56" height="56" alt="Смайлы"> | Обычная |
+| `card-14` | Конфетти | <img src="catalog/backs/card-14.png" width="56" height="56" alt="Конфетти"> | Обычная |
+| `card-15` | Воронка | <img src="catalog/backs/card-15.png" width="56" height="56" alt="Воронка"> | Обычная |
+| `card-16` | Цветочки | <img src="catalog/backs/card-16.png" width="56" height="56" alt="Цветочки"> | Обычная |
+| `card-17` | Космос | <img src="catalog/backs/card-17.png" width="56" height="56" alt="Космос"> | Обычная |
+| `card-18` | Облака | <img src="catalog/backs/card-18.png" width="56" height="56" alt="Облака"> | Обычная |
+| `card-19` | Ромбы | <img src="catalog/backs/card-19.png" width="56" height="56" alt="Ромбы"> | Обычная |
+| `card-20` | Растр | <img src="catalog/backs/card-20.png" width="56" height="56" alt="Растр"> | Обычная |
+| `card-21` | Кристаллы | <img src="catalog/backs/card-21.png" width="56" height="56" alt="Кристаллы"> | Обычная |
+| `card-22` | Пиксели | <img src="catalog/backs/card-22.png" width="56" height="56" alt="Пиксели"> | Обычная |
+| `card-23` | Пламя | <img src="catalog/backs/card-23.png" width="56" height="56" alt="Пламя"> | Обычная |
+| `card-24` | Ацтек | <img src="catalog/backs/card-24.png" width="56" height="56" alt="Ацтек"> | Обычная |
+| `card-25` | Вспышка | <img src="catalog/backs/card-25.png" width="56" height="56" alt="Вспышка"> | Обычная |
+| `card-26` | Вертушка | <img src="catalog/backs/card-26.png" width="56" height="56" alt="Вертушка"> | Обычная |
+| `card-27` | Плитка | <img src="catalog/backs/card-27.png" width="56" height="56" alt="Плитка"> | Обычная |
+| `card-28` | Спираль | <img src="catalog/backs/card-28.png" width="56" height="56" alt="Спираль"> | Обычная |
+| `card-29` | Сетка | <img src="catalog/backs/card-29.png" width="56" height="56" alt="Сетка"> | Обычная |
+| `card-30` | Карнавал | <img src="catalog/backs/card-30.png" width="56" height="56" alt="Карнавал"> | Обычная |
 <!-- /catalog:backs -->
 
 ---

@@ -25,8 +25,8 @@ const OUT_FR = path.join(ROOT, 'docs/catalog/frames');
   const page = await browser.newPage({ viewport: { width: 200, height: 200 }, deviceScaleFactor: 2 });
   await page.setContent(`<!doctype html><meta charset="utf-8"><style>${css} body{margin:0;background:transparent} #t{position:relative;width:80px;height:80px} #f{position:relative;width:80px;height:80px;border-radius:16px} #f i{position:absolute;inset:8px;border-radius:12px;background:#000}</style><div id="t"></div><div id="f"><i></i></div><script>${js}</script>`);
   const { backs, frames } = await page.evaluate(() => ({
-    backs: BACK_CATALOG.list.map((b) => ({ id: b.id, name: b.name, node: b.node })),
-    frames: FRAME_CATALOG.list.map((f) => ({ id: f.id, name: f.name, node: f.node })),
+    backs: BACK_CATALOG.list.map((b) => ({ id: b.id, name: b.name, rarity: b.rarity })),
+    frames: FRAME_CATALOG.list.map((f) => ({ id: f.id, name: f.name, rarity: f.rarity })),
   }));
   for (const b of backs) {
     await page.evaluate((id) => { document.getElementById('t').innerHTML = BACK_CATALOG.html(id); }, b.id);
@@ -38,10 +38,11 @@ const OUT_FR = path.join(ROOT, 'docs/catalog/frames');
   }
   await browser.close();
 
-  const row = (id, name, img, node) => `| \`${id}\` | ${name} | <img src="${img}" width="56" height="56" alt="${name}"> | ${node || ''} |`;
-  const table = (items) => ['| id | Название | Вид | Узел Figma |', '|---|---|---|---|', ...items].join('\n');
-  const framesMd = table(frames.map((f) => row(f.id, f.name, `catalog/frames/${f.id}.png`, f.node)));
-  const backsMd = table(backs.map((b) => row(b.id, b.name, `catalog/backs/${b.id}.png`, b.node)));
+  const RARITY = { basic: 'Обычная', rare: 'Редкая', epic: 'Эпическая' };
+  const row = (id, name, img, rarity) => `| \`${id}\` | ${name} | <img src="${img}" width="56" height="56" alt="${name}"> | ${RARITY[rarity] || rarity} |`;
+  const table = (items) => ['| id | Название | Вид | Редкость |', '|---|---|---|---|', ...items].join('\n');
+  const framesMd = table(frames.map((f) => row(f.id, f.name, `catalog/frames/${f.id}.png`, f.rarity)));
+  const backsMd = table(backs.map((b) => row(b.id, b.name, `catalog/backs/${b.id}.png`, b.rarity)));
 
   const docPath = path.join(ROOT, 'docs/catalog.md');
   let doc = fs.readFileSync(docPath, 'utf8');
